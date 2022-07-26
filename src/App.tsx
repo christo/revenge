@@ -11,6 +11,15 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
+
 // May need to add more but these seem initially sufficient
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 // biggest currently imaginable case a d81 double-sided disk image including error byte block
@@ -61,16 +70,6 @@ function CurrentFileSummary(props: { file:File }) {
         <div className="contents">
             <FileContents bytes={bytes}/>
         </div>
-    </div>;
-}
-
-function TestGrid(props:{n:number}) {
-    let items = [];
-    for (let i = 0; i < props.n; i++) {
-        items.push(i);
-    }
-    return <div className="hexbytes">
-        {items.map(i => <span className="hexbyte" key={`fb_${i}`}>{i.toString()}</span>)}
     </div>;
 }
 
@@ -147,18 +146,18 @@ function App() {
         setFile(file);
     };
     return (
-        <div className="App">
-
-            <MenuAppBar/>
-            <div className="mainContent">
-                <div className="dropZone">
-                    <FileUploader handleChange={handleChange} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <div className="App">
+                <MenuAppBar/>
+                <div className="mainContent">
+                    <div className="dropZone">
+                        <FileUploader handleChange={handleChange} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
+                    </div>
+                    {file ? <CurrentFileSummary file={file}/> : null}
                 </div>
-                {file ? <CurrentFileSummary file={file}/> : null}
-                {/*<TestGrid n={160}/>*/}
             </div>
-        </div>
-
+        </ThemeProvider>
     );
 }
 
