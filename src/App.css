@@ -1,3 +1,15 @@
+@font-face {
+   font-family: "BebasNeueRegular";
+   src: local("Bebas Neue"),
+    url("./fonts/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
+}
+
+@font-face {
+   font-family: "JetBrains Mono";
+   src: local("JetBrains_Mono"),
+    url("./fonts/JetBrains_Mono/static/JetBrainsMono-SemiBold.ttf") format("truetype");
+}
+
 body {
   background-color: #282c34;
   color: white;
@@ -5,6 +17,10 @@ body {
 
 .App {
   margin: 0;
+}
+
+.byLine {
+  font-family: 'BebasNeueRegular', cursive;
 }
 
 .byLine {
@@ -30,9 +46,8 @@ body {
 
 .fileSummary .filesize {
   padding-right: 1em;
-  font-family: monospace;
+  font-family: "JetBrains Mono", monospace;
 }
-
 
 .hexbytes {
   width: 90ch;
@@ -45,8 +60,9 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .hexbyte {
   background-color: #282c34;
-  font-family: monospace;
+  font-family: "JetBrains Mono", monospace;
   color: aliceblue;
 }

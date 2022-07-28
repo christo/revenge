@@ -10,8 +10,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 const darkTheme = createTheme({
@@ -27,9 +28,8 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 // as per http://unusedino.de/ec64/technical/formats/d81.html
 const MAX_SIZE_MB = 1;
 
-const toHexBytes = (buf:ArrayBuffer):string[] => {
+const toHexBytes = (bytes:Uint8Array):string[] => {
     let elements:string[] = [];
-    const bytes = new Uint8Array(buf)
     for(const [_index, entry] of bytes.entries()) {
         elements.push((entry & 0xFF).toString(16).padStart(2, '0'));
     }
@@ -41,11 +41,11 @@ interface FileContents {
     loading: boolean
 }
 
-function FileContents(props: { bytes:Promise<ArrayBuffer> }):JSX.Element {
+function FileDetail(props: { bytes:Promise<ArrayBuffer> }):JSX.Element {
     const [rendered, setRendered] = useState<FileContents>({bytes: [], loading: true});
     props.bytes.then((buf:ArrayBuffer) => {
-        const bytes:string[] = toHexBytes(buf);
-        setRendered({bytes: bytes, loading: false})
+        const bytes = new Uint8Array(buf)
+        setRendered({bytes: toHexBytes(bytes), loading: false})
     }).catch( (e:Error) => {
         console.error(e);
     });
@@ -68,7 +68,7 @@ function CurrentFileSummary(props: { file:File }) {
             {props.file.size} bytes
         </span>
         <div className="contents">
-            <FileContents bytes={bytes}/>
+            <FileDetail bytes={bytes}/>
         </div>
     </div>;
 }
@@ -98,9 +98,10 @@ function MenuAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Revenge <i className="byLine">retrocomputing reverse engineering environment</i>
+          <Typography variant="h4" component="div" sx={{ flexGrow: 1, fontFamily: 'BebasNeueRegular' }} >
+            Revenge
           </Typography>
+            <i className="byLine">retrocomputing reverse engineering environment</i>
           {(
             <div>
               <IconButton
@@ -147,7 +148,7 @@ function App() {
     };
     return (
         <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
+            {/*<CssBaseline />*/}
             <div className="App">
                 <MenuAppBar/>
                 <div className="mainContent">
