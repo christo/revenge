@@ -11,6 +11,10 @@ Implemented in TypeScript as a first project for learning the language.
 
 ## TODO
 
+* reading list
+  * https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
+  * https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
+  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 * file type recognition
     * list of recognised types
     * list of supported types
