@@ -13,7 +13,8 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import {detect} from "./machine/c64";
+import {FileBlob} from "./machine/FileBlob";
 
 const darkTheme = createTheme({
     palette: {
@@ -28,38 +29,37 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 // as per http://unusedino.de/ec64/technical/formats/d81.html
 const MAX_SIZE_MB = 1;
 
-const toHexBytes = (bytes:Uint8Array):string[] => {
-    let elements:string[] = [];
-    for(const [_index, entry] of bytes.entries()) {
-        elements.push((entry & 0xFF).toString(16).padStart(2, '0'));
-    }
-    return elements;
-}
-
 interface FileContents {
-    bytes: string[],
+    fb: FileBlob,
     loading: boolean
 }
 
-function FileDetail(props: { bytes:Promise<ArrayBuffer> }):JSX.Element {
-    const [rendered, setRendered] = useState<FileContents>({bytes: [], loading: true});
-    props.bytes.then((buf:ArrayBuffer) => {
-        const bytes = new Uint8Array(buf)
-        setRendered({bytes: toHexBytes(bytes), loading: false})
-    }).catch( (e:Error) => {
-        console.error(e);
-    });
-    return <div className="hexbytes">
-        { // TODO add offset column
-            !rendered.loading ? (rendered.bytes.map((bs:string, i:number) => {
-                return <span className="hexbyte" key={`fb_${i}`}>{bs}</span>;
-            })) : (<p>loading...</p>)
-        }
+function DetectedInfo(props: { fb: FileBlob }) {
+    const t = detect(props.fb);
+    return <div className="dataDetail">
+        <span>Filetype:</span>
+        <span>{t.name}</span>
+        <span>{t.desc}</span>
+        <span>{t.note}</span>
+        <span>{t.exts}</span>
+    </div>;
+}
+
+function FileDetail(props: {fb:FileBlob}) {
+    return <div>
+        <DetectedInfo fb={props.fb}/>
+        <div className="hexbytes">
+        {(props.fb.toHexBytes().map((bs:string, i:number) => {
+            return <span className="hexbyte" key={`fb_${i}`}>{bs}</span>;
+        }))}
+        </div>
     </div>
 }
 
 function CurrentFileSummary(props: { file:File }) {
-    let bytes:Promise<ArrayBuffer> = props.file.arrayBuffer();
+    const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
+    FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
+
     return <div className="fileSummary">
         <span className="filename">
             {props.file.name}
@@ -68,7 +68,7 @@ function CurrentFileSummary(props: { file:File }) {
             {props.file.size} bytes
         </span>
         <div className="contents">
-            <FileDetail bytes={bytes}/>
+            {!rendered.loading ? <FileDetail fb={rendered.fb}/> : (<p>loading...</p>)}
         </div>
     </div>;
 }
@@ -86,7 +86,6 @@ function MenuAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -140,15 +139,11 @@ function MenuAppBar() {
   );
 }
 
-
 function App() {
-    const [file, setFile] = useState(null);
-    const handleChange = (file: any, e: any) => {
-        setFile(file);
-    };
+    const [file, setFile] = useState<File |null>(null);
+    const handleChange = setFile;
     return (
         <ThemeProvider theme={darkTheme}>
-            {/*<CssBaseline />*/}
             <div className="App">
                 <MenuAppBar/>
                 <div className="mainContent">

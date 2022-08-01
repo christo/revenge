@@ -49,6 +49,10 @@ body {
   font-family: "JetBrains Mono", monospace;
 }
 
+.dataDetail > span {
+  margin-right: 1em;
+}
+
 .hexbytes {
   width: 90ch;
   margin-top: 1em;
@@ -62,7 +66,6 @@ body {
 }
 
 .hexbyte {
-  background-color: #282c34;
   font-family: "JetBrains Mono", monospace;
   color: aliceblue;
 }
