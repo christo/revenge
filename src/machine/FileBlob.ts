@@ -11,10 +11,9 @@ class FileBlob {
         this.bytes = bytes;
     }
 
-    static async fromFile(file:File):Promise<FileBlob>  {
-        return file.arrayBuffer().then((buf:ArrayBuffer) => {
-            return new FileBlob(file.name, file.size, new Uint8Array(buf));
-        });
+    static async fromFile(f:File) {
+        let mkBlob = (buf:ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
+        return f.arrayBuffer().then(mkBlob);
     }
 
     toHexBytes():string[] {
