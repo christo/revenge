@@ -54,10 +54,10 @@ body {
 }
 
 .hexbytes {
-  width: 90ch;
+  width: 80ch;
   margin-top: 1em;
   display: grid;
-  gap: 0.2em;
+  gap: 0.1em;
   grid-template-columns: repeat(16, 1fr);
   grid-column-start: 1;
   grid-column-end: 16;

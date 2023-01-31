@@ -32,6 +32,8 @@ Implemented in TypeScript as a first project for learning the language.
 * binary diff two files (linear)
 * user accounts
 * sharing, permissions
+* enable multiple people to do analysis of files, to store, share and collaborate on the 
+analysis of files
 
 ## Done
 
