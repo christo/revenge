@@ -68,6 +68,7 @@ class BlobType {
         if (this.prefix.length > 0 && this.prefix.length >= fileBlob.size) {
             let bytes: Uint8Array = fileBlob.bytes;
             for (let i = 0; i < this.prefix.length; i++) {
+                console.log(`${this.prefix[i]} : ${bytes[i]}`)
                 if (this.prefix[i] !== bytes[i]) {
                     return false;
                 }
@@ -81,9 +82,9 @@ class BlobType {
 }
 
 const UNKNOWN = new BlobType("unknown", "type not detected")
-const BASIC_PRG = new BlobType("prg", "BASIC program", "prg");
+const BASIC_PRG = new BlobType("prg", "BASIC program", "prg", [0x01, 0x08]);
 BASIC_PRG.setNote('PRG files have a relatively free format and detection relies on the file extension.');
-const CRT_A000 = new BlobType("cart", "cartridge binary at $a000", "crt", [0x00, 0x0a]);
+const CRT_A000 = new BlobType("cart", "cartridge binary at $a000", "prg", [0x00, 0x0a]);
 
 // TODO CRT format as detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 
