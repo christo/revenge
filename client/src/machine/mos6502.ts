@@ -157,36 +157,37 @@ const TXA = new Op("TXA", "transfer X to accumulator");
 const TXS = new Op("TXS", "transfer X to stack pointer");
 const TYA = new Op("TYA", "transfer Y to accumulator");
 
-function assertByte(value: number) {
-    if (value < 0 || value > 255) {
-        throw Error("expecting an unsigned byte value (was " + value + ")");
-    }
-    return value & 0xff;
-}
-
+/**
+ * Representation of the number of machine cycles that an instruction takes. This is
+ * dependent on crossing page boundaries and, for branch instructions, whether the
+ * branch was taken.
+ */
 class Cycles {
-    /** System-wide per-instruction minimum */
+    /** System-wide per-instruction minimum guard. */
     static MIN_CYCLES = 2;
-    /** System-wide per-instruction maximum */
+    /** System-wide per-instruction maximum guard. */
     static MAX_CYCLES = 7;
 
+    /** Fixed cycle cost. */
     static FIXED = (n: number) => new Cycles(n, 0, 0, 0);
+    /** For branches, additional cost for taking branch, further cost for branching across page boundary. */
     static BRANCH = (n: number) => new Cycles(n, 0, 1, 2);
+    /** Costs n cycles with additional cycle for crossing page boundary. */
     static XPAGE = (n: number) => new Cycles(n, 1, 0, 0);
 
-    private minCycles: number;
-    private crossPagePenalty: number;
-    private branchSamePagePenalty: number;
-    private branchCrossPagePenalty: number;
+    private min: number;
+    private xPage: number;
+    private branch: number;
+    private branchXPage: number;
 
-    private constructor(minCycles: number, crossPagePenalty: number, branchSamePagePenalty: number, branchCrossPagePenalty: number) {
-        if (minCycles < Cycles.MIN_CYCLES || minCycles > Cycles.MAX_CYCLES) {
+    private constructor(min: number, xPage: number, branch: number, branchXPage: number) {
+        if (min < Cycles.MIN_CYCLES || min > Cycles.MAX_CYCLES) {
             throw new Error(`Cycles out of range: ${Cycles.MIN_CYCLES}-${Cycles.MAX_CYCLES}`);
         }
-        this.minCycles = minCycles;
-        this.crossPagePenalty = crossPagePenalty;
-        this.branchSamePagePenalty = branchSamePagePenalty;
-        this.branchCrossPagePenalty = branchCrossPagePenalty;
+        this.min = min;
+        this.xPage = xPage;
+        this.branch = branch;
+        this.branchXPage = branchXPage;
     }
 }
 
@@ -194,7 +195,7 @@ class Instruction implements InstructionLike {
     private readonly _op: Op;
     private readonly _numBytes: number;
     private readonly _mode: AddressingMode;
-    private opcode: number; // byte
+    private readonly opcode: number; // byte
     private minCycles: Cycles;
     private illegal: boolean;
 
@@ -219,34 +220,53 @@ class Instruction implements InstructionLike {
         return this._mode;
     }
 
-    get rawByte(): number {
-        return this.opcode;
+    ifMachineInstruction(fn: (i: Instruction) => void) {
+        fn(this);
     }
 
-    isMachineInstruction(): boolean {
-        return true;
+    ifNotMachineInstruction(fn: (il: InstructionLike) => void): void {
+        // do nothing, we are a machine instruction
+    }
+
+    get rawBytes(): Array<number> {
+        return [this.opcode];
     }
 }
 
 interface InstructionLike {
-    isMachineInstruction(): boolean;
-    get rawByte(): number;
+    get rawBytes(): Array<number>;
+
+    ifMachineInstruction(fn: (i: Instruction) => void): void;
+
+    ifNotMachineInstruction(fn: (il: InstructionLike) => void): void;
 }
 
+const assertByte = (value: number) => {
+    if (value < 0 || value > 255) {
+        throw Error("expecting an unsigned byte value (was " + value + ")");
+    }
+    return value & 0xff;
+};
+
+/** Assembler pseudo-op that reserves literal bytes. */
 class ByteDeclaration implements InstructionLike {
 
-    private readonly _rawByte: number;
+    private readonly _rawBytes: Array<number>;
 
-    constructor(rawByte: number) {
-        this._rawByte = assertByte(rawByte);
+    constructor(rawBytes: Array<number>) {
+        this._rawBytes = rawBytes.map(b => assertByte(b));
     }
 
-    isMachineInstruction(): boolean {
-        return false;
+    ifMachineInstruction(fn: (i: Instruction) => void) {
+        // do not run the function
     }
 
-    get rawByte(): number {
-        return this._rawByte;
+    ifNotMachineInstruction(fn: (il: InstructionLike) => void) {
+        fn(this);
+    }
+
+    get rawBytes(): Array<number> {
+        return this._rawBytes;
     }
 }
 
@@ -518,8 +538,13 @@ class InstructionLine {
         this.hibyte = assertByte(hibyte);
     }
 
-    /** Gives the operand as a 16 bit value. */
+    /** Gives the operand as a 16 bit number value. */
     operand16 = () => (this.hibyte << 8) & this.lobyte
+}
+
+interface Dialect {
+    readonly name: string;
+    readonly env: Environment;
 }
 
 /**
@@ -529,13 +554,22 @@ class InstructionLine {
  * Some assembler dialects have other ways of rendering addressing modes (e.g suffix on mnemonic).
  * Can support use of symbols instead of numbers - user may prefer to autolabel kernal addresses.
  */
-class Dialect {
+class DefaultDialect implements Dialect {
+    private readonly _env: Environment;
 
-    name: string;
-
-    constructor(name?: string) {
-        this.name = name ? name : "Default Dialect";
+    get name(): string {
+        return "Default Dialect";
     }
+
+    get env(): Environment {
+        return this._env;
+    }
+
+    constructor(env: Environment) {
+        this._env = env;
+    }
+
+// currently outputs in lowercase though this could be a config option
 
     /**
      * Parse input from index offset characters in until end of line or end of input,
@@ -558,14 +592,21 @@ class Dialect {
     }
 
     render(fil: FullInstructionLine) {
-        let s = fil.labels.map((s, i) => s + ": \n").reduce((p, c) => p + c);
-        let i:InstructionLike = fil.instructionLine.instruction;
-        if (i.isMachineInstruction()) {
-            let ii:Instruction = i as Instruction;  // TODO how should one do this without casting?
-            return s + "    " + ii.op.mnemonic + " " + this.renderOperand(fil.instructionLine);
-        } else {
-            return `.byte $${this.hex8(i.rawByte)}`;
-        }
+        // do full-line comments first, making sure that embedded newlines in comments get line comment prefixes
+        // TODO cross-platform line endings
+        const le = this._env.targetLineEndings();
+        let ccs = (p: string, c: string) => p + c; // concat strings / flatten whatever
+        let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs);
+        s += fil.labels.map(s => s + ": " + le).reduce(ccs);
+        let i: InstructionLike = fil.instructionLine.instruction;
+        // NOTE: trying out weird extreme avoidance of casting:
+        i.ifMachineInstruction(mi => {
+            s += "    " + mi.op.mnemonic.toLowerCase() + " " + this.renderOperand(fil.instructionLine);
+        });
+        i.ifNotMachineInstruction(il => {
+            s += `.byte ` + il.rawBytes.map((b, i) => i === 0 ? "$" : ", $" + this.hex8(b));
+        });
+        return s;
     }
 
     /**
@@ -581,7 +622,7 @@ class Dialect {
         let operand = "";
         switch (mode) {
             case MODE_ACCUMULATOR:
-                operand = "A";
+                operand = "a";
                 break;
             case MODE_ABSOLUTE:
                 operand = this.hex16(il.operand16());
@@ -624,8 +665,8 @@ class Dialect {
         return operand;
     }
 
-    private hex16 = (x: number) => "$" + x.toString(16);
-    private hex8 = (x: number) => "$" + assertByte(x).toString(16);
+    private hex16 = (x: number) => "$" + x.toString(16).toLowerCase();
+    private hex8 = (x: number) => "$" + assertByte(x).toString(16).toLowerCase();
 }
 
 /**
@@ -637,8 +678,18 @@ class FullInstructionLine {
     private readonly _instructionLine: InstructionLine;
     private readonly _comments: Array<string>;
 
+    private static validateLabels(labels: Array<string>) {
+        labels.forEach(l => {
+            if (l.matchAll(/(^\d|\s)/)) {
+                throw Error("labels must not start with digits or contain whitespace");
+            }
+            // TODO labels must not equal a mnemonic (or start with? or contain?)
+        })
+        return labels;
+    }
+
     constructor(labels: Array<string>, instructionLine: InstructionLine, comments: Array<string>) {
-        this._labels = labels;
+        this._labels = FullInstructionLine.validateLabels(labels);
         this._instructionLine = instructionLine;
         this._comments = comments;
     }
@@ -656,6 +707,33 @@ class FullInstructionLine {
     }
 }
 
+/**
+ * Holds config, options etc.
+ * Difference between Dialect and Environment is that a Dialect might be specific to the target assembler
+ * syntax used, whereas the Environment has local configuration like line endings, comment decoration styling,
+ * text encoding, natural language (e.g. can generate german comments) and per-line choices for using labels
+ * including globally known memory map symbols. Some people want numeric values for certain locations, other
+ * people want symbols. Dialect holds stuff like what is the comment style - prefix char for line comments is
+ * often ';' but for kick assembler, it's '//' and kick also supports block comments whereas others may not.
+ * Having said that, the Dialect should accept configuration and the Environment is the best place for this to
+ * live.
+ *
+ * Reverse engineering session config, etc. should go in the environment but maybe the default environment
+ * for newly created sessions can be configured per-user too.
+ *
+ * TODO: maybe make this a config tree. (is there a convenient config api?)
+ */
+class Environment {
+    static DEFAULT_ENV = new Environment();
+
+    targetLineEndings() {
+        return "\n";
+    }
+
+    // TODO get marked regions
+
+}
+
 /** Stateful translator of bytes to their parsed instruction line */
 class Disassembler {
 
@@ -664,7 +742,8 @@ class Disassembler {
     bytes: Uint8Array;
     currentAddress: number;
 
-    // keep a log of jump and branch targets as well as instruction value fetch targets
+    // keep a log of jump and branch targets as well as instruction value fetch targets?
+    // may need a two-pass disassembler for that
 
     constructor(bytes: Uint8Array, index: number, baseAddress: number) {
         if (index >= bytes.length || index < 0) {
@@ -676,7 +755,7 @@ class Disassembler {
         this.currentAddress = baseAddress;
     }
 
-    eatByteOrDie() {
+    private eatByteOrDie() {
         if (this.currentIndex >= this.bytes.length) {
             throw Error("No more bytes");
         }
@@ -686,14 +765,6 @@ class Disassembler {
         } else {
             return (value & 0xff);
         }
-    }
-
-    /**
-     * Returns true if we have any bytes to disassemble, even though
-     * they might not make a valid instruction.
-     */
-    hasNextLine() {
-        return this.currentIndex < this.bytes.length;
     }
 
     nextInstructionLine() {
@@ -707,10 +778,12 @@ class Disassembler {
 
         // if the instruction doesn't define an operand byte, its value is not guaranteed to be defined
 
-        // if we are out of bytes, maybe render as .byte 0xnn ?
+        // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
+
         let firstByte = 0;
         let secondByte = 0;
         if (numInstructionBytes >= 1) {
+
             firstByte = this.eatByteOrDie();
         }
         if (numInstructionBytes === 2) {
@@ -726,44 +799,44 @@ class Disassembler {
         return new FullInstructionLine(labels, il, comments);
     }
 
+    hasNext() {
+        return this.currentIndex < this.bytes.length;
+    }
+
     needsLabel = (addr: number) => false;
     generateLabels = (addr: number) => [];
     needsComment = (addr: number) => false;
     generateComments = (addr: number) => [];
 
-    disassemble() {
-        // use default dialect renderer
-        // TODO lazy iterator(?) version of this.
-        const result = [];
-        while (this.hasNextLine()) {
-            result.push(this.nextInstructionLine());
-        }
-        return result;
-    }
+
 }
 
 class Mos6502 {
-    static INSTRUCTIONS = I;
+    static readonly INSTRUCTIONS = I;
 
-    static STACK_LO = 0x0100;
-    static STACK_HI = 0x01ff;
+    static readonly STACK_LO = 0x0100;
+    static readonly STACK_HI = 0x01ff;
 
     // NMI (Non-Maskable Interrupt) vector, 16-bit (LB, HB)
-    static VECTOR_NMI_LB = 0xfffa;
-    static VECTOR_NMI_HB = 0xfffb;
+    static readonly VECTOR_NMI_LB = 0xfffa;
+    static readonly VECTOR_NMI_HB = 0xfffb;
 
     // RES (Reset) vector, 16-bit (LB, HB)
-    static VECTOR_RESET_LB = 0xfffc;
-    static VECTOR_RESET_HB = 0xfffd;
+    static readonly VECTOR_RESET_LB = 0xfffc;
+    static readonly VECTOR_RESET_HB = 0xfffd;
 
     //  IRQ (Interrupt Request) vector, 16-bit (LB, HB)
-    static VECTOR_IRQ_LB = 0xfffe;
-    static VECTOR_IRQ_HB = 0xffff;
+    static readonly VECTOR_IRQ_LB = 0xfffe;
+    static readonly VECTOR_IRQ_HB = 0xffff;
 }
 
+// TODO trim down to minimal exports
 export {
     Mos6502,
     Disassembler,
-    Dialect,
+    DefaultDialect,
+    Environment,
+    InstructionLine,
+    FullInstructionLine,
     InstructionSet
 };

@@ -8,9 +8,24 @@ Starting with simple disassembly of the 6502 for the Vic-20 an C64.
 
 Implemented in TypeScript as a first project for learning the language.
 
+6502 info from https://www.masswerk.at/6502/6502_instruction_set.html
+
+## Design Notes
+
+### Canonicalisation
+
+The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
+forms to be recognised. In the case of character data, the canonical form might make the reverse 
+form equivalent. In the case of code, the canonical form will have equivalences that, for example
+use the y register instead of the x register, all else being equal. Canonical forms for code may
+execute in a different number of cycles or use a different number of bytes or have instructions
+in a different order (some design is required to analyse alternate orderings with preservation
+of semantics). Canonicalisation is a form of program transformation where the goal is to identify 
+use-case-specific essence. 
 
 ## TODO
 
+* dumb disassembly
 * reading list
   * https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
   * https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
@@ -19,6 +34,12 @@ Implemented in TypeScript as a first project for learning the language.
     * list of recognised types
     * list of supported types
     * manual choice of file type
+    * type possibility list with probabilities etc.
+    * build database of file content recognition.
+* fragment content hash, db etc.?
+* common data fragments identified between files
+* canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
+natch)
 * file back-end
     * store file on back-end
     * recognise already loaded files with content hash
@@ -26,7 +47,6 @@ Implemented in TypeScript as a first project for learning the language.
     * store file-level notes and byte-offset / byte-range notes
     * unified back-end between bootstrap filetree and uploaded stuff
 * petscii view
-* dumb disassembly
 * data section detection
 * vic 20 / c64 hardware register detection
 * binary diff two files (linear)
@@ -34,6 +54,9 @@ Implemented in TypeScript as a first project for learning the language.
 * sharing, permissions
 * enable multiple people to do analysis of files, to store, share and collaborate on the 
 analysis of files
+* search github and elsewhere for existing databases of software. Maybe model database sources? Try for md5 or sha
+content hashes for file identification. archive.org software entries have multiple stored in xml files, e.g.
+ see https://archive.org/download/BoloMacintosh which is part of https://archive.org/details/softwarelibrary_mac
 
 ## Done
 

@@ -67,5 +67,6 @@ body {
 
 .hexbyte {
   font-family: "JetBrains Mono", monospace;
+  font-weight: bold;
   color: aliceblue;
 }

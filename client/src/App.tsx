@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FileUploader} from "react-drag-drop-files";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,9 +12,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {detect} from "./machine/c64";
+import {createTheme, ThemeProvider, TypeAction} from '@mui/material/styles';
+import {detect, fileTypes, TypeActions} from "./machine/c64";
 import {FileBlob} from "./machine/FileBlob";
+import {Button} from "@mui/material";
 
 const darkTheme = createTheme({
     palette: {
@@ -22,8 +23,6 @@ const darkTheme = createTheme({
     },
 });
 
-// May need to add more but these seem initially sufficient
-const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 // biggest currently imaginable case a d81 double-sided disk image including error byte block
 // according to the following URL this weighs in at 822400 bytes
 // as per http://unusedino.de/ec64/technical/formats/d81.html
@@ -35,30 +34,44 @@ interface FileContents {
 }
 
 function DetectedInfo(props: { fb: FileBlob }) {
-    const t = detect(props.fb);
-    return <div className="dataDetail">
-        <span>Filetype:</span>
-        <span>{t.name}</span>
-        <span>{t.desc}</span>
-        <span>{t.note}</span>
-        <span>{t.exts}</span>
+    const typeAction:TypeActions = detect(props.fb);
+    const t = typeAction.t;
+    return <div className="dataMeta" >
+        <div className="typeActions">
+            {typeAction.actions.map((a, i) => {
+                return <div className="typeAction"><Button onClick={a.f}>{a.label}</Button></div>;
+            })}
+        </div>
+        <div className="dataDetail">
+            <span>Filetype:</span>
+            <span>{t.name}</span>
+            <span>{t.desc}</span>
+            <span>{t.note}</span>
+            <span>{t.exts}</span>
+        </div>
     </div>;
+}
+
+function hexByte(v: number) {
+    return (v & 0xFF).toString(16).padStart(2, '0')
 }
 
 function FileDetail(props: {fb:FileBlob}) {
     return <div>
         <DetectedInfo fb={props.fb}/>
         <div className="hexbytes">
-        {(props.fb.toHexBytes().map((bs:string, i:number) => {
-            return <span className="hexbyte" key={`fb_${i}`}>{bs}</span>;
-        }))}
+        {props.fb.toHexBytes().map((x, i) => {
+            return <span className="hexbyte" key={`fb_${i}`}>{x}</span>;
+        })}
         </div>
     </div>
 }
 
 function CurrentFileSummary(props: { file:File }) {
     const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
-    FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
+    useEffect(() => {
+        FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
+    }, []);
 
     return <div className="fileSummary">
         <span className="filename">
