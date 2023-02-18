@@ -665,8 +665,8 @@ class DefaultDialect implements Dialect {
         return operand;
     }
 
-    private hex16 = (x: number) => "$" + x.toString(16).toLowerCase();
-    private hex8 = (x: number) => "$" + assertByte(x).toString(16).toLowerCase();
+    private hex16 = (x: number) => "$" + x.toString(16).padStart(2, "0").toLowerCase();
+    private hex8 = (x: number) => "$" + assertByte(x).toString(16).padStart(2, "0").toLowerCase();
 }
 
 /**
