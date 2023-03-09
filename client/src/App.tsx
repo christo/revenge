@@ -15,7 +15,9 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {ActionExecutor, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
 import {FileBlob} from "./machine/FileBlob";
-import {Button} from "@mui/material";
+import {Button, CircularProgress} from "@mui/material";
+import axios from "axios";
+import {request} from "http";
 
 const darkTheme = createTheme({
     palette: {
@@ -160,15 +162,44 @@ function MenuAppBar() {
     );
 }
 
+type Error = {message:String, name:String, code:String, config:String, request:Request, response:Response};
+
+
 function QuickLoads() {
     const [rendered, setRendered] = useState<String[]>([]);
+    const [items, setItems] = useState<String[]>([]);
+    const [error, setError] = useState<Error>();
+    const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
+        axios.get("/quickloads", {})
+            .then(r=>{
+                setIsLoaded(true);
+                setItems(r.data);
+            })
+            .catch((err:any) => {
+                setIsLoaded(true);
+                setError(err);
+            }).finally(() => {});
         //call setRendered
         //FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
     }, []);
 
-    /*
 
+    if (error) {
+
+        return (<div>
+            Error: {error.message}
+        </div>);
+    } else if (!isLoaded) {
+        return <CircularProgress />;
+    } else {
+        return <div className="quickloads">
+            {items.map((item, i) => {
+                return <p key={`ql_${i}`}>{item} .</p>
+            })}
+        </div>;
+    }
+    /*
     return <div className="fileSummary">
         <span className="filename">
             {props.file.name}
