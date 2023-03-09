@@ -2,6 +2,7 @@
   "name": "revenge",
   "version": "0.1.0",
   "private": true,
+  "license": "Copyright 2023, Chris Mountford, All Rights Reserved.",
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
