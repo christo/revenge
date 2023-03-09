@@ -13,7 +13,7 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ArrayGen, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
+import {ActionExecutor, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
 import {FileBlob} from "./machine/FileBlob";
 import {Button} from "@mui/material";
 
@@ -35,22 +35,18 @@ interface FileContents {
     loading: boolean
 }
 
-function Disassembly(props: { arr: Array<any> }) {
+function Disassembly(props: { arr: Array<[string,string]> }) {
     return <div className="disassembly">
         {props.arr.map((x, i) => {
-            return <span className="line">{x}</span>
+            return <span key={`dis_${i}`} className={x[0]}>{x[1]}</span>
         })}
     </div>;
 }
 
-function hexByte(v: number) {
-    return (v & 0xFF).toString(16).padStart(2, '0')
-}
-
-const resultLogger: Continuation = (f: ArrayGen) => f().forEach(console.log);
+const resultLogger: Continuation = (f: ActionExecutor) => f().forEach(console.log);
 
 function FileDetail(props: { fb: FileBlob }) {
-    // TODO foreach action, we need a renderer which knows how to render that action type
+    // TODO for each action, we need a renderer which knows how to render that action type
     // TODO When the action button is clicked, the renderer needs to fill the FileDetail
 
     const typeAction: TypeActions = detect(props.fb);
@@ -164,6 +160,33 @@ function MenuAppBar() {
     );
 }
 
+function QuickLoads() {
+    const [rendered, setRendered] = useState<String[]>([]);
+    useEffect(() => {
+        //call setRendered
+        //FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
+    }, []);
+
+    /*
+
+    return <div className="fileSummary">
+        <span className="filename">
+            {props.file.name}
+        </span>
+        <span className="filesize">
+            {props.file.size} bytes
+        </span>
+        <div className="contents">
+            {!rendered.loading ? <FileDetail fb={rendered.fb}/> : (<p>loading...</p>)}
+        </div>
+    </div>;
+     */
+
+    return <div><p>Quickload:</p>
+
+    </div>;
+}
+
 function App() {
     const [file, setFile] = useState<File | null>(null);
     const handleChange = setFile;
@@ -175,6 +198,7 @@ function App() {
                     <div className="dropZone">
                         <FileUploader handleChange={handleChange} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
                     </div>
+                    <QuickLoads/>
                     {file ? <CurrentFileSummary file={file}/> : null}
                 </div>
             </div>
