@@ -25,6 +25,7 @@ class FileBlob {
 
     toHexBytes():string[] {
         let elements: string[] = [];
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of this.bytes.entries()) {
             elements.push((entry & 0xFF).toString(16).padStart(2, '0'));
         }
@@ -68,7 +69,7 @@ class FileLike {
  * End users should be able to ascribe a type to a given file or may like help in detecting the type. Note that
  * VIC-20 cartridges historically have no file format, unlike the C64 CRT format which has a header. The file
  * extension PRG is often used for the byte dump of typical commodore files in which the first two bytes form the
- * little-endian 16 bit address into which the code expects to be loaded. Many VIC-20 carts were archived in this
+ * little-endian 16-bit address into which the code expects to be loaded. Many VIC-20 carts were archived in this
  * format.
  *
  */
