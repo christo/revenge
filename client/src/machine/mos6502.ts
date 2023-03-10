@@ -596,8 +596,8 @@ class DefaultDialect implements Dialect {
         // TODO cross-platform line endings
         const le = this._env.targetLineEndings();
         let ccs = (p: string, c: string) => p + c; // concat strings / flatten whatever
-        let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs);
-        s += fil.labels.map(s => s + ": " + le).reduce(ccs);
+        let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs,"");
+        s += fil.labels.map(s => s + ": " + le).reduce(ccs,"");
         let i: InstructionLike = fil.instructionLine.instruction;
         // NOTE: trying out weird extreme avoidance of casting:
         i.ifMachineInstruction(mi => {
