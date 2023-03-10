@@ -54,10 +54,10 @@ body {
 }
 
 .hexbytes {
-  width: 80ch;
+  width: 64ch;
   margin-top: 1em;
   display: grid;
-  gap: 0.1em;
+  gap: 0.12em;
   grid-template-columns: repeat(16, 1fr);
   grid-column-start: 1;
   grid-column-end: 16;
@@ -68,5 +68,6 @@ body {
 .hexbyte {
   font-family: "JetBrains Mono", monospace;
   font-weight: bold;
-  color: aliceblue;
+  font-size: medium;
+  color: #e3d5c9;
 }

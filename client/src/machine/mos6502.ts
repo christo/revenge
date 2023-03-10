@@ -277,9 +277,10 @@ class InstructionSet {
     private mnemonicToByte = new Map<string, number>([]);
     private ops: Array<Op> = [];
     private modes: Array<AddressingMode> = [];
+    /** The number of bytes in the instruction with the given opcode */
     private bytes: Array<number> = [];
     private cycles: Array<Cycles> = [];
-    private instructions: Array<Instruction> = [];
+    private instructions: Array<InstructionLike> = [];
 
     add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
         const o = assertByte(opcode);
@@ -311,6 +312,17 @@ class InstructionSet {
 
     instruction(opcode: number) {
         return this.instructions[assertByte(opcode)];
+    }
+
+    /**
+     * Add illegal opcodes as byte declarations for missing bytes. Bit hacky but ok for now.
+     */
+    fillIllegals() {
+        for (let i = 0; i < 256; i++) {
+            if (!this.instructions[i]) {
+                this.instructions[i] = new ByteDeclaration([i]);
+            }
+        }
     }
 }
 
@@ -522,12 +534,13 @@ I.add(0x8a, TXA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x9a, TXS, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 
-// TODO add illegal opcodes
+I.fillIllegals();
+
 
 class InstructionLine {
-    instruction: InstructionLike;    // contains operand byte size
-    lobyte: number;              // literal if defined by instruction
-    hibyte: number;              // literal if defined by instruction
+    readonly instruction: InstructionLike;    // contains operand byte size
+    readonly lobyte: number;              // literal if defined by instruction
+    readonly hibyte: number;              // literal if defined by instruction
 
     // TODO implement instruction feature API? AST for renderer?
     // TODO implement value fetch somewhere maybe not here
@@ -546,6 +559,7 @@ interface Dialect {
     readonly name: string;
     readonly env: Environment;
 }
+
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -599,13 +613,21 @@ class DefaultDialect implements Dialect {
         let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs,"");
         s += fil.labels.map(s => s + ": " + le).reduce(ccs,"");
         let i: InstructionLike = fil.instructionLine.instruction;
+
         // NOTE: trying out weird extreme avoidance of casting:
         i.ifMachineInstruction(mi => {
-            s += "    " + mi.op.mnemonic.toLowerCase() + " " + this.renderOperand(fil.instructionLine);
+            s += this._env.indent() + mi.op.mnemonic.toLowerCase() + " " + this.renderOperand(fil.instructionLine);
         });
         i.ifNotMachineInstruction(il => {
-            s += `.byte ` + il.rawBytes.map((b, i) => i === 0 ? "$" : ", $" + this.hex8(b));
+            s += this._env.indent() + `.byte `
+            il.rawBytes.forEach((b, i) => {
+                if (i !== 0) {
+                    s += ", ";
+                }
+                s += this.hex8(b);
+            });
         });
+
         return s;
     }
 
@@ -730,6 +752,9 @@ class Environment {
         return "\n";
     }
 
+    indent() {
+        return "    ";
+    }
     // TODO get marked regions
 
 }
@@ -760,8 +785,8 @@ class Disassembler {
             throw Error("No more bytes");
         }
         const value = this.bytes.at(this.currentIndex++);
-        if (!value) {
-            throw Error("Illegal state, no byte at current index");
+        if (typeof value === "undefined") {
+            throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
         } else {
             return (value & 0xff);
         }
@@ -780,17 +805,16 @@ class Disassembler {
 
         // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
 
-        let firstByte = 0;
-        let secondByte = 0;
-        if (numInstructionBytes >= 1) {
-
-            firstByte = this.eatByteOrDie();
+        let firstOperandByte = 0;
+        let secondOperandByte = 0;
+        if (numInstructionBytes > 1) {
+            firstOperandByte = this.eatByteOrDie();
         }
         if (numInstructionBytes === 2) {
-            secondByte = this.eatByteOrDie();
+            secondOperandByte = this.eatByteOrDie();
         }
 
-        const il = new InstructionLine(I.instruction(opcode), firstByte, secondByte);
+        const il = new InstructionLine(I.instruction(opcode), firstOperandByte, secondOperandByte);
 
         let comments: Array<string> = [];
         if (this.needsComment(this.currentAddress)) {
@@ -807,8 +831,6 @@ class Disassembler {
     generateLabels = (addr: number) => [];
     needsComment = (addr: number) => false;
     generateComments = (addr: number) => [];
-
-
 }
 
 class Mos6502 {

@@ -25,7 +25,10 @@ const disassemble = (t:BlobType, fb:FileBlob) => {
             let out = " *=$" + hexByte(fb.bytes[0]) + hexByte(fb.bytes[1]);
             let disassemblyResult:ActionResult = [[["text", out]]];
             while(dis.hasNext()) {
-                disassemblyResult.push([["text", dialect.render(dis.nextInstructionLine())]]);
+                let nil = dis.nextInstructionLine();
+                let rendered = dialect.render(nil);
+                console.log(`rendered: ${rendered}`);
+                disassemblyResult.push([["text", rendered]]);
             }
             return disassemblyResult;
         }

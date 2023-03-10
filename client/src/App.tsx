@@ -59,11 +59,11 @@ function FileDetail(props: { fb: FileBlob }) {
         <div className="dataMeta">
             <div className="typeActions">
                 {typeAction.actions.map((a, i) => {
-                    return <div className="typeAction"><Button onClick={() => resultLogger(a.f)}>{a.label}</Button></div>;
+                    return <div className="typeAction" key={`ac_${i}`}><Button onClick={() => resultLogger(a.f)}>{a.label}</Button></div>;
                 })}
             </div>
             <div className="dataDetail">
-                <span>Filetype:</span>
+                <span>smells like:</span>
                 <span>{t.name}</span>
                 <span>{t.desc}</span>
                 <span>{t.note}</span>
