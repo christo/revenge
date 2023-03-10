@@ -83,7 +83,7 @@ function CurrentFileSummary(props: { file: File | FileLike }) {
     const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
     useEffect(() => {
         FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
-    }, []);
+    }, [props.file]);
 
     return <div className="fileSummary">
         <span className="filename">
