@@ -14,16 +14,18 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {ActionExecutor, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
-import {FileBlob} from "./machine/FileBlob";
-import {Button, CircularProgress} from "@mui/material";
+import {FileBlob, FileLike} from "./machine/FileBlob";
+import {Button, CircularProgress, Stack} from "@mui/material";
 import axios from "axios";
-import {request} from "http";
 
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
 });
+
+
+
 
 /**
  * Maximum allowed size for file uploads.
@@ -77,7 +79,7 @@ function FileDetail(props: { fb: FileBlob }) {
     </div>;
 }
 
-function CurrentFileSummary(props: { file: File }) {
+function CurrentFileSummary(props: { file: File | FileLike }) {
     const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
     useEffect(() => {
         FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
@@ -165,9 +167,8 @@ function MenuAppBar() {
 type Error = {message:String, name:String, code:String, config:String, request:Request, response:Response};
 
 
-function QuickLoads() {
-    const [rendered, setRendered] = useState<String[]>([]);
-    const [items, setItems] = useState<String[]>([]);
+function QuickLoads(props: {setFile: (f: FileLike) => void}) {
+    const [items, setItems] = useState<FileLike[]>([]);
     const [error, setError] = useState<Error>();
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
@@ -180,13 +181,13 @@ function QuickLoads() {
                 setIsLoaded(true);
                 setError(err);
             }).finally(() => {});
-        //call setRendered
-        //FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
-    }, []);
 
+    }, []);
+    let handleFile = (item:FileLike) => {
+        props.setFile(item);
+    };
 
     if (error) {
-
         return (<div>
             Error: {error.message}
         </div>);
@@ -194,42 +195,28 @@ function QuickLoads() {
         return <CircularProgress />;
     } else {
         return <div className="quickloads">
+            <Stack direction="column" spacing={2}>
             {items.map((item, i) => {
-                return <p key={`ql_${i}`}>{item} .</p>
+                return <Button onClick={() => handleFile(item)} size="small" variant="outlined" key={`ql_${i}`}>{item.name}</Button>
             })}
+            </Stack>
         </div>;
     }
-    /*
-    return <div className="fileSummary">
-        <span className="filename">
-            {props.file.name}
-        </span>
-        <span className="filesize">
-            {props.file.size} bytes
-        </span>
-        <div className="contents">
-            {!rendered.loading ? <FileDetail fb={rendered.fb}/> : (<p>loading...</p>)}
-        </div>
-    </div>;
-     */
-
-    return <div><p>Quickload:</p>
-
-    </div>;
 }
 
 function App() {
-    const [file, setFile] = useState<File | null>(null);
-    const handleChange = setFile;
+    const [file, setFile] = useState<File | FileLike | null>(null);
     return (
         <ThemeProvider theme={darkTheme}>
             <div className="App">
                 <MenuAppBar/>
                 <div className="mainContent">
-                    <div className="dropZone">
-                        <FileUploader handleChange={handleChange} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
-                    </div>
-                    <QuickLoads/>
+                    <Box sx={{display: "flex", gap: 1, justifyContent: "right"}}>
+                        <QuickLoads setFile={(f)=>setFile(f)}/>
+                        <div className="dropZone">
+                            <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
+                        </div>
+                    </Box>
                     {file ? <CurrentFileSummary file={file}/> : null}
                 </div>
             </div>

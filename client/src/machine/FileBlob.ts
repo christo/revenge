@@ -13,9 +13,14 @@ class FileBlob {
         this.bytes = bytes;
     }
 
-    static async fromFile(f: File) {
-        let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
-        return f.arrayBuffer().then(mkBlob);
+    static async fromFile(f: File | FileLike ) {
+        if (f instanceof File) {
+            let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
+            return f.arrayBuffer().then(mkBlob);
+        } else {
+            console.log("making FileBlob from FileLike");
+            return new FileBlob(f.name, f.size, f.data);
+        }
     }
 
     toHexBytes():string[] {
@@ -24,6 +29,34 @@ class FileBlob {
             elements.push((entry & 0xFF).toString(16).padStart(2, '0'));
         }
         return elements;
+    }
+}
+
+class FileLike {
+    private readonly _name: string;
+    private readonly _data: Uint8Array;
+    private readonly _size: number;
+
+    constructor(name: string, data: Uint8Array) {
+        if (!data.byteLength) {
+            throw Error("byteLength undefined?");
+        }
+        this._name = name;
+        this._data = data;
+        this._size=data.byteLength
+
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    get data(): Uint8Array {
+        return this._data;
+    }
+
+    get size(): number {
+        return this._size;
     }
 }
 
@@ -102,4 +135,4 @@ const COMMON_MLPS = [
 // TODO CRT format as detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 
 
-export {FileBlob, BlobType, BASIC_PRG, UNKNOWN, COMMON_MLPS}
+export {FileBlob, BlobType, FileLike, BASIC_PRG, UNKNOWN, COMMON_MLPS}
