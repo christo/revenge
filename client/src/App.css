@@ -85,6 +85,20 @@ body {
   border-radius: 2px;
   font-weight: bold;
 }
-. pct {
+.pct {
   font-weight: bold;
+}
+
+.addr {
+  margin-right: 1em;
+}
+
+.hex {
+  min-width: 9ch;
+  width: 9ch;
+}
+
+.dis {
+  position: absolute;
+  left: 29ch;
 }
