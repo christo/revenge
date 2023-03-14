@@ -34,17 +34,21 @@ type ActionFunction = (t:BlobType, fb:FileBlob)=>TypeActions;
 /** User action that disassembles the file. */
 const disassemble = (t:BlobType, fb:FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
-    const dis = new Disassembler(fb.bytes, 2, (fb.bytes[0]<<8) & fb.bytes[1]);
+
     let userActions:Array<UserAction> = [{
         label: "disassemble",
         f: () => {
+            const baseAddress = (fb.bytes[1]<<8) + fb.bytes[0];
+            const dis = new Disassembler(fb.bytes, 2, baseAddress);
             let disassemblyResult:ActionResult = [];
             disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hex8(fb.bytes[1]) + hex8(fb.bytes[0])]]);
-            dis.reset();
+
             while(dis.hasNext()) {
-                let disasm:[string, string] = ["dis", dialect.render(dis.nextInstructionLine())];
-                let addr:[string, string] = ["addr", hex16(dis.currentAddress)]
-                disassemblyResult.push([disasm]);
+                let addr:[string, string] = ["addr", hex16(dis.currentAddress)];
+                let full = dis.nextInstructionLine();
+                let disasm:[string, string] = ["dis", dialect.render(full)];
+                let hex:[string, string] = ["hex", full.asHex()];
+                disassemblyResult.push([addr, hex, disasm]);
             }
             return disassemblyResult;
         }

@@ -240,6 +240,8 @@ interface InstructionLike {
     ifMachineInstruction(fn: (i: Instruction) => void): void;
 
     ifNotMachineInstruction(fn: (il: InstructionLike) => void): void;
+
+    get numBytes(): number;
 }
 
 const assertByte = (value: number) => {
@@ -268,6 +270,10 @@ class ByteDeclaration implements InstructionLike {
 
     get rawBytes(): Array<number> {
         return this._rawBytes;
+    }
+
+    get numBytes(): number {
+        return this._rawBytes.length;
     }
 }
 
@@ -540,6 +546,7 @@ I.fillIllegals();
 
 class InstructionLine {
     readonly instruction: InstructionLike;    // contains operand byte size
+    // TODO rename first byte and second byte
     readonly lobyte: number;              // literal if defined by instruction
     readonly hibyte: number;              // literal if defined by instruction
 
@@ -555,7 +562,9 @@ class InstructionLine {
     /** Gives the operand as a 16-bit number value. */
     operand16 = () => {
         let operand = (this.hibyte << 8) & this.lobyte;
-        console.log(`operand16 ${hex16(operand)}`)
+        if (operand !== 0) {
+            console.log(`operand16 ${hex16(operand)}`)
+        }
         return operand;
     }
 }
@@ -730,6 +739,21 @@ class FullInstructionLine {
     get comments(): Array<string> {
         return this._comments;
     }
+
+    asHex() {
+        const hInst = hex8(this._instructionLine.instruction.rawBytes[0]);
+
+        if (this._instructionLine.instruction.numBytes === 1) {
+            return hInst;
+        }
+        if (this._instructionLine.instruction.numBytes === 2) {
+            return `${hInst} ${hex8(this._instructionLine.lobyte)}`
+        }
+        if (this._instructionLine.instruction.numBytes === 3) {
+            return `${hInst} ${hex8(this._instructionLine.lobyte)} ${hex8(this._instructionLine.hibyte)}`;
+        }
+        throw Error("unexpected num bytes for instruction");
+    }
 }
 
 /**
@@ -768,7 +792,7 @@ class Disassembler {
     originalIndex: number;
     currentIndex: number;
     bytes: Uint8Array;
-    currentAddress: number;
+    private _currentAddress: number;
 
     // keep a log of jump and branch targets as well as instruction value fetch targets?
     // may need a two-pass disassembler for that
@@ -780,7 +804,7 @@ class Disassembler {
         this.originalIndex = index;
         this.currentIndex = index;
         this.bytes = bytes;
-        this.currentAddress = baseAddress;
+        this._currentAddress = baseAddress;
     }
 
     private eatByteOrDie() {
@@ -798,8 +822,8 @@ class Disassembler {
     nextInstructionLine() {
         let labels: Array<string> = [];
         // need to allow multiple labels
-        if (this.needsLabel(this.currentAddress)) {
-            labels = this.generateLabels(this.currentAddress)
+        if (this.needsLabel(this._currentAddress)) {
+            labels = this.generateLabels(this._currentAddress)
         }
         const opcode = this.eatByteOrDie();
         const numInstructionBytes = I.numBytes(opcode) || 1;
@@ -820,8 +844,8 @@ class Disassembler {
         const il = new InstructionLine(I.instruction(opcode), firstOperandByte, secondOperandByte);
 
         let comments: Array<string> = [];
-        if (this.needsComment(this.currentAddress)) {
-            comments = this.generateComments(this.currentAddress);
+        if (this.needsComment(this._currentAddress)) {
+            comments = this.generateComments(this._currentAddress);
         }
         return new FullInstructionLine(labels, il, comments);
     }
@@ -835,8 +859,9 @@ class Disassembler {
     needsComment = (addr: number) => false;
     generateComments = (addr: number) => [];
 
-    reset() {
-        this.currentIndex = this.originalIndex;
+    get currentAddress(): number {
+        // may not always be this because it can be assigned by assembler directive in source
+        return this._currentAddress + this.currentIndex - this.originalIndex;
     }
 }
 
