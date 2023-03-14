@@ -7,12 +7,28 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 
 
 type ActionExecutor = ()=>ActionResult;
+
+/**
+ * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
+ * A generic displayable structure with a sequence of entries. Each entry is a sequence of
+ * string tuples. The string tuple represents a name-value pair that will be rendered with
+ * the name as a className and the value as the text content of a span element.
+ */
 type ActionResult = [string,string][][]; // 2d array of tuples
 
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo:ActionExecutor)=>void;
+
+/** Holds the UI button label and function to call when the button is clicked */
 type UserAction = { label: string, f: ActionExecutor };
+
+/** The list of actions for a single BlobType */
 type TypeActions = { t: BlobType, actions: Array<UserAction>};
+
+/**
+ * Encapsulation of the function for determining the set of actions that can be taken
+ * given knowledge of the type and contents of a file.
+ */
 type ActionFunction = (t:BlobType, fb:FileBlob)=>TypeActions;
 
 /** User action that disassembles the file. */
@@ -27,8 +43,7 @@ const disassemble = (t:BlobType, fb:FileBlob) => {
             while(dis.hasNext()) {
                 let nil = dis.nextInstructionLine();
                 let rendered = dialect.render(nil);
-                console.log(`rendered: ${rendered}`);
-                disassemblyResult.push([["text", rendered]]);
+                disassemblyResult.push([["dis", rendered]]);
             }
             return disassemblyResult;
         }
@@ -57,6 +72,14 @@ const printBasic:ActionFunction = (t: BlobType, fb:FileBlob) => {
     };
 };
 
+const hexDumper:UserAction = {
+    label: "Hex Dump",
+    f: () => {
+        // TODO rewrite hexdump to work with this structure; may need to add outer className to ActionResult
+        return [[["hexbyte", "ff"]]];
+    }
+};
+
 /**
  * Returns a best-guess file type and user actions that can be done on it.
  *
@@ -74,7 +97,7 @@ const detect = (fileBlob:FileBlob):TypeActions => {
     // on some features. For example a 'prg' extension suggests the file is in original commodore format with the
     // load address as the first two little endian bytes.
 
-    return {t:UNKNOWN, actions: []};
+    return {t:UNKNOWN, actions: [hexDumper]};
 }
 
 // we don't need this yet...
@@ -86,4 +109,4 @@ class C64 {
 }
 
 export {C64, detect, fileTypes};
-export type { TypeActions, Continuation, ActionExecutor };
+export type { TypeActions, Continuation, ActionExecutor, ActionResult, UserAction };

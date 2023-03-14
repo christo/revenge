@@ -8,8 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "analyse": "node --loader ts-node/esm src/analyse.ts",
-    "start": "node --loader ts-node/esm src/index.ts",
-    "dev": "concurrently \"npx tsc --sourceMap --watch\" \"nodemon -q dist/index.js\""
+    "start": "node --loader ts-node/esm src/index.ts"
   },
   "keywords": [],
   "author": "Chris Mountford",

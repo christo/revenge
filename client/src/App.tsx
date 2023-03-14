@@ -13,7 +13,7 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
+import {ActionExecutor, ActionResult, UserAction, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, CircularProgress, Stack} from "@mui/material";
 import axios from "axios";
@@ -47,11 +47,33 @@ function Disassembly(props: { arr: Array<[string,string]> }) {
     </div>;
 }
 
-const resultLogger: Continuation = (f: ActionExecutor) => f().forEach(console.log);
+function HexDump(props: {fb: FileBlob}) {
+    return <div className="hexbytes">
+        {props.fb.toHexBytes().map((x, i) => {
+            return <span className="hexbyte" key={`hb_${i}`}>{x}</span>;
+        })}
+    </div>
+}
+
+function DetailRenderer(props: {ae: ActionExecutor}) {
+    return <div className="actionResult">
+        {props.ae().map((tl, i) => {
+            return <div className="line" key={`fb_${i}`}>
+                {tl.map((tup, j) => {
+                    return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>
+                })}
+            </div>
+        })}
+    </div>
+}
+
+function FileContents(props: { fb: FileBlob, action: UserAction | null}) {
+    return props.action == null ? <HexDump fb={props.fb}/> : <DetailRenderer ae={props.action.f}/>;
+}
 
 function FileDetail(props: { fb: FileBlob }) {
-    // TODO for each action, we need a renderer which knows how to render that action type
-    // TODO When the action button is clicked, the renderer needs to fill the FileDetail
+
+    const [action, setAction] = useState<UserAction | null>(null);
 
     const typeAction: TypeActions = detect(props.fb);
     const t = typeAction.t;
@@ -59,23 +81,21 @@ function FileDetail(props: { fb: FileBlob }) {
         <div className="dataMeta">
             <div className="typeActions">
                 {typeAction.actions.map((a, i) => {
-                    return <div className="typeAction" key={`ac_${i}`}><Button onClick={() => resultLogger(a.f)}>{a.label}</Button></div>;
+                    return <div className="typeAction" key={`ac_${i}`}>
+                        <Button onClick={()=>setAction(a)}>{a.label}</Button>
+                    </div>;
                 })}
             </div>
+
             <div className="dataDetail">
-                <span>smells like:</span>
-                <span>{t.name}</span>
-                <span>{t.desc}</span>
-                <span>{t.note}</span>
-                <span>{t.exts}</span>
+                <span className="smell">Smells like</span>
+                <span className="name">{t.name}</span>
+                <span className="desc">{t.desc}</span>
+                <span className="note">{t.note}</span>
+                <span className="note">{t.exts}</span>
             </div>
         </div>
-
-        <div className="hexbytes">
-            {props.fb.toHexBytes().map((x, i) => {
-                return <span className="hexbyte" key={`fb_${i}`}>{x}</span>;
-            })}
-        </div>
+        <FileContents fb={props.fb} action={action}/>
     </div>;
 }
 
