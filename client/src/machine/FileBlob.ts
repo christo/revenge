@@ -1,4 +1,4 @@
-import {hexByte} from "../misc/BinUtils";
+import {hex8} from "../misc/BinUtils";
 
 class FileBlob {
     public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, new Uint8Array(0));
@@ -118,7 +118,7 @@ BASIC_PRG.setNote('BASIC prg files have an expected address prefix and ought to 
 
 function prg(prefix: ArrayLike<number>) {
     // we assume a prefix of at least 2 bytes
-    const addr = hexByte(prefix[1]) + hexByte(prefix[0]); // little-endian rendition
+    const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
     // consider moving the start address calculation into the BlobByte implementation
     return new BlobType("prg@" + addr, "program binary to load at $" + addr, "prg", prefix);
 }

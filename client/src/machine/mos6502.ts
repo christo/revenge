@@ -7,6 +7,7 @@
 
  */
 
+import {hex16, hex8} from "../misc/BinUtils";
 
 class AddressingMode {
     code: string;
@@ -551,8 +552,12 @@ class InstructionLine {
         this.hibyte = assertByte(hibyte);
     }
 
-    /** Gives the operand as a 16 bit number value. */
-    operand16 = () => (this.hibyte << 8) & this.lobyte
+    /** Gives the operand as a 16-bit number value. */
+    operand16 = () => {
+        let operand = (this.hibyte << 8) & this.lobyte;
+        console.log(`operand16 ${hex16(operand)}`)
+        return operand;
+    }
 }
 
 interface Dialect {
@@ -624,7 +629,7 @@ class DefaultDialect implements Dialect {
                 if (i !== 0) {
                     s += ", ";
                 }
-                s += this.hex8(b);
+                s += "$" + hex8(b);
             });
         });
 
@@ -647,48 +652,46 @@ class DefaultDialect implements Dialect {
                 operand = "a";
                 break;
             case MODE_ABSOLUTE:
-                operand = this.hex16(il.operand16());
+                operand = "$" + hex16(il.operand16());
                 break;
             case MODE_ABSOLUTE_X:
-                operand = this.hex16(il.operand16()) + ", x";
+                operand = "$" + hex16(il.operand16()) + ", x";
                 break;
             case MODE_ABSOLUTE_Y:
-                operand = this.hex16(il.operand16()) + ", y";
+                operand = "$" + hex16(il.operand16()) + ", y";
                 break;
             case MODE_IMMEDIATE:
-                operand = "#" + this.hex8(il.lobyte);
+                operand = "#$" + hex8(il.lobyte);
                 break;
             case MODE_IMPLIED:
                 operand = "";
                 break;
             case MODE_INDIRECT:
-                operand = "(" + this.hex16(il.operand16()) + ")";
+                operand = "($" + hex16(il.operand16()) + ")";
                 break;
             case MODE_INDIRECT_X:
-                operand = "(" + this.hex8(il.lobyte) + ", x)";
+                operand = "($" + hex8(il.lobyte) + ", x)";
                 break;
             case MODE_INDIRECT_Y:
-                operand = "(" + this.hex8(il.lobyte) + "), y";
+                operand = "($" + hex8(il.lobyte) + "), y";
                 break;
             case MODE_RELATIVE:
                 // TODO can be negative byte, maybe render decimal
-                operand = this.hex8(il.lobyte);
+                operand = "$" + hex8(il.lobyte);
                 break;
             case MODE_ZEROPAGE:
-                operand = this.hex8(il.lobyte);
+                operand = "$" + hex8(il.lobyte);
                 break;
             case MODE_ZEROPAGE_X:
-                operand = this.hex8(il.lobyte) + ", x"
+                operand = "$" + hex8(il.lobyte) + ", x"
                 break;
             case MODE_ZEROPAGE_Y:
-                operand = this.hex8(il.lobyte) + ", y"
+                operand = "$" + hex8(il.lobyte) + ", y"
                 break;
         }
         return operand;
     }
 
-    private hex16 = (x: number) => "$" + x.toString(16).padStart(2, "0").toLowerCase();
-    private hex8 = (x: number) => "$" + assertByte(x).toString(16).padStart(2, "0").toLowerCase();
 }
 
 /**
@@ -810,7 +813,7 @@ class Disassembler {
         if (numInstructionBytes > 1) {
             firstOperandByte = this.eatByteOrDie();
         }
-        if (numInstructionBytes === 2) {
+        if (numInstructionBytes === 3) {
             secondOperandByte = this.eatByteOrDie();
         }
 

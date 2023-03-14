@@ -1,6 +1,6 @@
 import {DefaultDialect, Disassembler, Environment, Mos6502} from "./mos6502";
 import {BASIC_PRG, BlobType, COMMON_MLPS, FileBlob, UNKNOWN} from "./FileBlob";
-import {hexByte} from "../misc/BinUtils";
+import {hex16, hex8} from "../misc/BinUtils";
 
 // May need to add more but these seem initially sufficient
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
@@ -39,14 +39,12 @@ const disassemble = (t:BlobType, fb:FileBlob) => {
         label: "disassemble",
         f: () => {
             let disassemblyResult:ActionResult = [];
-            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hexByte(fb.bytes[1]) + hexByte(fb.bytes[0])]]);
+            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hex8(fb.bytes[1]) + hex8(fb.bytes[0])]]);
             dis.reset();
             while(dis.hasNext()) {
-                let tupl:[string, string] = ["dis", dialect.render(dis.nextInstructionLine())];
-                disassemblyResult.push([tupl]);
-            }
-            if (disassemblyResult.length < 2) {
-                debugger;
+                let disasm:[string, string] = ["dis", dialect.render(dis.nextInstructionLine())];
+                let addr:[string, string] = ["addr", hex16(dis.currentAddress)]
+                disassemblyResult.push([disasm]);
             }
             return disassemblyResult;
         }
