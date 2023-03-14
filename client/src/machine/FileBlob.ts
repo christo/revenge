@@ -125,6 +125,7 @@ function prg(prefix: ArrayLike<number>) {
 
 /** Common load addresses for machine language programs. */
 const COMMON_MLPS = [
+    prg([0x00, 0x40]),  // $4000
     prg([0x00, 0x60]),  // $6000
     prg([0x00, 0x80]),  // $8000
     prg([0x00, 0xa0]),  // $a000
