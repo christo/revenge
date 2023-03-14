@@ -66,13 +66,6 @@ function FileDetail(props: { fb: FileBlob }) {
     const t = typeAction.t;
     return <div>
         <div className="dataMeta">
-            <div className="typeActions">
-                {typeAction.actions.map((a, i) => {
-                    return <div className="typeAction" key={`ac_${i}`}>
-                        <Button onClick={()=>setAction(a)}>{a.label}</Button>
-                    </div>;
-                })}
-            </div>
 
             <div className="dataDetail">
                 <span className="smell">Smells like</span>
@@ -81,6 +74,15 @@ function FileDetail(props: { fb: FileBlob }) {
                 <span className="note">{t.note}</span>
                 <span className="note">{t.exts}</span>
             </div>
+
+            <div className="typeActions">
+                {typeAction.actions.map((a, i) => {
+                    return <div className="typeAction" key={`ac_${i}`}>
+                        <Button onClick={()=>setAction(a)}>{a.label}</Button>
+                    </div>;
+                })}
+            </div>
+
         </div>
         <FileContents fb={props.fb} action={action}/>
     </div>;
