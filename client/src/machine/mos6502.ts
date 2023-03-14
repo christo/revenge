@@ -831,6 +831,10 @@ class Disassembler {
     generateLabels = (addr: number) => [];
     needsComment = (addr: number) => false;
     generateComments = (addr: number) => [];
+
+    reset() {
+        this.currentIndex = this.originalIndex;
+    }
 }
 
 class Mos6502 {

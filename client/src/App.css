@@ -71,3 +71,20 @@ body {
   font-size: medium;
   color: #e3d5c9;
 }
+
+.actionResult > .line {
+  font-family: "JetBrains Mono", monospace;
+  margin-top: 3px;
+}
+
+.hloc {
+  background-color: #a3b3d5;
+  color: #313131;
+  padding: 1px 3px;
+  margin-left: 3px;
+  border-radius: 2px;
+  font-weight: bold;
+}
+. pct {
+  font-weight: bold;
+}

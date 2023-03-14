@@ -24,9 +24,6 @@ const darkTheme = createTheme({
     },
 });
 
-
-
-
 /**
  * Maximum allowed size for file uploads.
  * The biggest currently imaginable case a d81 double-sided disk image including error byte block according to the
@@ -37,14 +34,6 @@ const MAX_SIZE_MB = 1;
 interface FileContents {
     fb: FileBlob,
     loading: boolean
-}
-
-function Disassembly(props: { arr: Array<[string,string]> }) {
-    return <div className="disassembly">
-        {props.arr.map((x, i) => {
-            return <span key={`dis_${i}`} className={x[0]}>{x[1]}</span>
-        })}
-    </div>;
 }
 
 function HexDump(props: {fb: FileBlob}) {
@@ -60,11 +49,11 @@ function DetailRenderer(props: {ae: ActionExecutor}) {
         {props.ae().map((tl, i) => {
             return <div className="line" key={`fb_${i}`}>
                 {tl.map((tup, j) => {
-                    return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>
+                    return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
                 })}
-            </div>
+            </div>;
         })}
-    </div>
+    </div>;
 }
 
 function FileContents(props: { fb: FileBlob, action: UserAction | null}) {
@@ -72,9 +61,7 @@ function FileContents(props: { fb: FileBlob, action: UserAction | null}) {
 }
 
 function FileDetail(props: { fb: FileBlob }) {
-
     const [action, setAction] = useState<UserAction | null>(null);
-
     const typeAction: TypeActions = detect(props.fb);
     const t = typeAction.t;
     return <div>
@@ -185,7 +172,6 @@ function MenuAppBar() {
 }
 
 type Error = {message:String, name:String, code:String, config:String, request:Request, response:Response};
-
 
 function QuickLoads(props: {setFile: (f: FileLike) => void}) {
     const [items, setItems] = useState<FileLike[]>([]);

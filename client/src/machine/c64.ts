@@ -38,12 +38,15 @@ const disassemble = (t:BlobType, fb:FileBlob) => {
     let userActions:Array<UserAction> = [{
         label: "disassemble",
         f: () => {
-            let out = " *=$" + hexByte(fb.bytes[0]) + hexByte(fb.bytes[1]);
-            let disassemblyResult:ActionResult = [[["text", out]]];
+            let disassemblyResult:ActionResult = [];
+            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hexByte(fb.bytes[1]) + hexByte(fb.bytes[0])]]);
+            dis.reset();
             while(dis.hasNext()) {
-                let nil = dis.nextInstructionLine();
-                let rendered = dialect.render(nil);
-                disassemblyResult.push([["dis", rendered]]);
+                let tupl:[string, string] = ["dis", dialect.render(dis.nextInstructionLine())];
+                disassemblyResult.push([tupl]);
+            }
+            if (disassemblyResult.length < 2) {
+                debugger;
             }
             return disassemblyResult;
         }
