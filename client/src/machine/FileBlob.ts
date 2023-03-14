@@ -18,7 +18,6 @@ class FileBlob {
             let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
             return f.arrayBuffer().then(mkBlob);
         } else {
-            console.log("making FileBlob from FileLike");
             return new FileBlob(f.name, f.size, f.data);
         }
     }
@@ -100,7 +99,6 @@ class BlobType {
         if (this.prefix.length <= fileBlob.size && this.prefix.length > 0) {
             let bytes: Uint8Array = fileBlob.bytes;
             for (let i = 0; i < this.prefix.length; i++) {
-                console.log(`${this.prefix[i]} : ${bytes[i]}`)
                 if (this.prefix[i] !== bytes[i]) {
                     return false;
                 }
