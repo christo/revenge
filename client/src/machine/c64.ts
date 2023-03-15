@@ -1,10 +1,9 @@
 import {DefaultDialect, Disassembler, Environment, Mos6502} from "./mos6502";
-import {BASIC_PRG, BlobType, COMMON_MLPS, FileBlob, UNKNOWN} from "./FileBlob";
+import {BASIC_PRG, BlobSniffer, C64_CRT, CartSniffer, COMMON_MLPS, FileBlob, UNKNOWN} from "./FileBlob";
 import {hex16, hex8} from "../misc/BinUtils";
 
 // May need to add more but these seem initially sufficient
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
-
 
 type ActionExecutor = ()=>ActionResult;
 
@@ -23,23 +22,22 @@ type Continuation = (fo:ActionExecutor)=>void;
 type UserAction = { label: string, f: ActionExecutor };
 
 /** The list of actions for a single BlobType */
-type TypeActions = { t: BlobType, actions: Array<UserAction>};
+type TypeActions = { t: BlobSniffer, actions: Array<UserAction>};
 
 /**
  * Encapsulation of the function for determining the set of actions that can be taken
  * given knowledge of the type and contents of a file.
  */
-type ActionFunction = (t:BlobType, fb:FileBlob)=>TypeActions;
+type ActionFunction = (t:BlobSniffer, fb:FileBlob)=>TypeActions;
 
 /** User action that disassembles the file. */
-const disassemble = (t:BlobType, fb:FileBlob) => {
+const disassemble = (t:BlobSniffer, fb:FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
 
     let userActions:Array<UserAction> = [{
         label: "disassemble",
         f: () => {
-            const baseAddress = (fb.bytes[1]<<8) + fb.bytes[0];
-            const dis = new Disassembler(fb.bytes, 2, baseAddress);
+            const dis = new Disassembler(fb, t.getDisassemblyMeta());
             let disassemblyResult:ActionResult = [];
             disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hex8(fb.bytes[1]) + hex8(fb.bytes[0])]]);
 
@@ -61,7 +59,7 @@ const disassemble = (t:BlobType, fb:FileBlob) => {
 
 
 /** User action that prints the file as a basic program. */
-const printBasic:ActionFunction = (t: BlobType, fb:FileBlob) => {
+const printBasic:ActionFunction = (t: BlobSniffer, fb:FileBlob) => {
     let ar:ActionResult = [[["debug",'print ya basic \n ']]];
 
     let ae:ActionExecutor = () => {
@@ -85,14 +83,27 @@ const hexDumper:UserAction = {
     }
 };
 
+function crt64Actions(fileBlob: FileBlob) {
+    // TODO flesh out the desc from the cart header metadata as defined here:
+    // https://codebase64.org/doku.php?id=base:crt_file_format
+    return {t:C64_CRT, actions: [hexDumper]};
+}
+
 /**
  * Returns a best-guess file type and user actions that can be done on it.
  *
  * @param fileBlob
  */
 const detect = (fileBlob:FileBlob):TypeActions => {
+    if (CartSniffer.VIC20.sniff(fileBlob) > 1) {
+        const t:BlobSniffer = CartSniffer.VIC20;
+        return disassemble(t, fileBlob);
+    }
     // run through various detection matchers, falling through to unknown
-    if (BASIC_PRG.extensionMatch(fileBlob.name) && BASIC_PRG.dataMatch(fileBlob)) return printBasic(BASIC_PRG, fileBlob);
+    if (C64_CRT.dataMatch(fileBlob)) {
+        return crt64Actions(fileBlob);
+    }
+    if (BASIC_PRG.extensionMatch(fileBlob) && BASIC_PRG.dataMatch(fileBlob)) return printBasic(BASIC_PRG, fileBlob);
     for (let i = 0; i < COMMON_MLPS.length; i++) {
         const prg = COMMON_MLPS[i];
         if (prg.dataMatch(fileBlob)) return disassemble(prg, fileBlob);

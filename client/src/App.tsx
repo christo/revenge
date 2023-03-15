@@ -14,7 +14,7 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {ActionExecutor, ActionResult, UserAction, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
-import {FileBlob, FileLike} from "./machine/FileBlob";
+import {DisassemblyMeta, FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, CircularProgress, Stack} from "@mui/material";
 import axios from "axios";
 
@@ -72,7 +72,6 @@ function FileDetail(props: { fb: FileBlob }) {
                 <span className="name">{t.name}</span>
                 <span className="desc">{t.desc}</span>
                 <span className="note">{t.note}</span>
-                <span className="note">{t.exts}</span>
             </div>
 
             <div className="typeActions">

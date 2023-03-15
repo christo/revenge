@@ -8,6 +8,7 @@
  */
 
 import {hex16, hex8} from "../misc/BinUtils";
+import {BlobSniffer, DisassemblyMeta, FileBlob} from "./FileBlob";
 
 class AddressingMode {
     code: string;
@@ -546,22 +547,21 @@ I.fillIllegals();
 
 class InstructionLine {
     readonly instruction: InstructionLike;    // contains operand byte size
-    // TODO rename first byte and second byte
-    readonly lobyte: number;              // literal if defined by instruction
-    readonly hibyte: number;              // literal if defined by instruction
+    readonly firstByte: number;              // literal if defined by instruction
+    readonly secondByte: number;              // literal if defined by instruction
 
     // TODO implement instruction feature API? AST for renderer?
     // TODO implement value fetch somewhere maybe not here
 
     constructor(instruction: InstructionLike, lobyte: number, hibyte: number) {
         this.instruction = instruction;
-        this.lobyte = assertByte(lobyte);
-        this.hibyte = assertByte(hibyte);
+        this.firstByte = assertByte(lobyte);
+        this.secondByte = assertByte(hibyte);
     }
 
     /** Gives the operand as a 16-bit number value. */
     operand16 = () => {
-        let operand = (this.hibyte << 8) & this.lobyte;
+        let operand = (this.secondByte << 8) & this.firstByte;
         if (operand !== 0) {
             console.log(`operand16 ${hex16(operand)}`)
         }
@@ -670,7 +670,7 @@ class DefaultDialect implements Dialect {
                 operand = "$" + hex16(il.operand16()) + ", y";
                 break;
             case MODE_IMMEDIATE:
-                operand = "#$" + hex8(il.lobyte);
+                operand = "#$" + hex8(il.firstByte);
                 break;
             case MODE_IMPLIED:
                 operand = "";
@@ -679,23 +679,23 @@ class DefaultDialect implements Dialect {
                 operand = "($" + hex16(il.operand16()) + ")";
                 break;
             case MODE_INDIRECT_X:
-                operand = "($" + hex8(il.lobyte) + ", x)";
+                operand = "($" + hex8(il.firstByte) + ", x)";
                 break;
             case MODE_INDIRECT_Y:
-                operand = "($" + hex8(il.lobyte) + "), y";
+                operand = "($" + hex8(il.firstByte) + "), y";
                 break;
             case MODE_RELATIVE:
                 // TODO can be negative byte, maybe render decimal
-                operand = "$" + hex8(il.lobyte);
+                operand = "$" + hex8(il.firstByte);
                 break;
             case MODE_ZEROPAGE:
-                operand = "$" + hex8(il.lobyte);
+                operand = "$" + hex8(il.firstByte);
                 break;
             case MODE_ZEROPAGE_X:
-                operand = "$" + hex8(il.lobyte) + ", x"
+                operand = "$" + hex8(il.firstByte) + ", x"
                 break;
             case MODE_ZEROPAGE_Y:
-                operand = "$" + hex8(il.lobyte) + ", y"
+                operand = "$" + hex8(il.firstByte) + ", y"
                 break;
         }
         return operand;
@@ -747,10 +747,10 @@ class FullInstructionLine {
             return hInst;
         }
         if (this._instructionLine.instruction.numBytes === 2) {
-            return `${hInst} ${hex8(this._instructionLine.lobyte)}`
+            return `${hInst} ${hex8(this._instructionLine.firstByte)}`
         }
         if (this._instructionLine.instruction.numBytes === 3) {
-            return `${hInst} ${hex8(this._instructionLine.lobyte)} ${hex8(this._instructionLine.hibyte)}`;
+            return `${hInst} ${hex8(this._instructionLine.firstByte)} ${hex8(this._instructionLine.secondByte)}`;
         }
         throw Error("unexpected num bytes for instruction");
     }
@@ -797,14 +797,17 @@ class Disassembler {
     // keep a log of jump and branch targets as well as instruction value fetch targets?
     // may need a two-pass disassembler for that
 
-    constructor(bytes: Uint8Array, index: number, baseAddress: number) {
+
+    constructor(fb: FileBlob, type:DisassemblyMeta) {
+        let index = type.disassemblyStartIndex(fb);
+        let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
             throw Error("index out of range");
         }
         this.originalIndex = index;
         this.currentIndex = index;
         this.bytes = bytes;
-        this._currentAddress = baseAddress;
+        this._currentAddress = type.baseAddress(fb);
     }
 
     private eatByteOrDie() {
@@ -825,29 +828,39 @@ class Disassembler {
         if (this.needsLabel(this._currentAddress)) {
             labels = this.generateLabels(this._currentAddress)
         }
+        let comments: Array<string> = [];
+        if (this.needsComment(this._currentAddress)) {
+            comments = this.generateComments(this._currentAddress);
+        }
+
         const opcode = this.eatByteOrDie();
         const numInstructionBytes = I.numBytes(opcode) || 1;
 
         // if the instruction doesn't define an operand byte, its value is not guaranteed to be defined
 
         // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
+        let remainingBytes = this.bytes.length - this.currentIndex;
 
-        let firstOperandByte = 0;
-        let secondOperandByte = 0;
-        if (numInstructionBytes > 1) {
-            firstOperandByte = this.eatByteOrDie();
-        }
-        if (numInstructionBytes === 3) {
-            secondOperandByte = this.eatByteOrDie();
-        }
+        if (remainingBytes <= 0) {
+            let bytes = [opcode]
+            for (let i = 0; i < remainingBytes; i++) {
+                bytes.push(this.currentIndex++)
+            }
+            const bd = new ByteDeclaration(bytes);
+            return new FullInstructionLine(labels, new InstructionLine(bd, 0, 0), comments);
+        } else {
+            let firstOperandByte = 0;
+            let secondOperandByte = 0;
+            if (numInstructionBytes > 1) {
+                firstOperandByte = this.eatByteOrDie();
+            }
+            if (numInstructionBytes === 3) {
+                secondOperandByte = this.eatByteOrDie();
+            }
 
-        const il = new InstructionLine(I.instruction(opcode), firstOperandByte, secondOperandByte);
-
-        let comments: Array<string> = [];
-        if (this.needsComment(this._currentAddress)) {
-            comments = this.generateComments(this._currentAddress);
+            const il = new InstructionLine(I.instruction(opcode), firstOperandByte, secondOperandByte);
+            return new FullInstructionLine(labels, il, comments);
         }
-        return new FullInstructionLine(labels, il, comments);
     }
 
     hasNext() {
