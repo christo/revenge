@@ -92,7 +92,6 @@ body {
 .addr {
   margin-right: 1em;
   opacity: 60%;
-
 }
 
 .line {
@@ -102,8 +101,8 @@ body {
 
 .hex {
   display: inline-block;
-  min-width: 9ch;
-  width: 9ch;
+  min-width: 12ch;
+  width: 12ch;
   background-color: #282c34;
   border-radius: 4px;
   padding: 2px   4px;
