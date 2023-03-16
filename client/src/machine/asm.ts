@@ -5,8 +5,8 @@ import {DisassemblyMeta, FileBlob} from "./FileBlob";
 import {
     Instruction,
     InstructionLike,
-    InstructionWithOperands,
     InstructionSet,
+    InstructionWithOperands,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
     MODE_ABSOLUTE_Y,
@@ -23,6 +23,7 @@ import {
     Mos6502
 } from "./mos6502";
 import {UserAction} from "./revenge";
+import {spacecat, stringcat} from "../misc/fp";
 
 export {}
 export {Disassembler};
@@ -39,11 +40,11 @@ export class ByteDeclaration implements InstructionLike {
         this._rawBytes = rawBytes.map(b => assertByte(b));
     }
 
-    ifMachineInstruction(fn: (i: Instruction) => void) {
+    handleCode(fn: (i: Instruction) => void) {
         // do not run the function
     }
 
-    ifNotMachineInstruction(fn: (il: InstructionLike) => void) {
+    handleData(fn: (il: InstructionLike) => void) {
         fn(this);
     }
 
@@ -81,6 +82,15 @@ class BooBoo {
     }
 }
 
+type Tag = [string,string]
+type TagSeq = Tag[]
+
+/**
+ * Turns a tagSeq into plain text, discarding the tags.
+ * @param ts
+ */
+const tagText = (ts:TagSeq) => ts.map(t=>t[1]).reduce(spacecat, "");
+
 /**
  * Need to support options, possibly at specific memory locations.
  * Global option may be lowercase opcodes.
@@ -90,6 +100,8 @@ class BooBoo {
  */
 class DefaultDialect implements Dialect {
     private readonly _env: Environment;
+
+    private static readonly KW_BYTE_DECLARATION: string = '.byte';
 
     get name(): string {
         return "Default Dialect";
@@ -111,7 +123,6 @@ class DefaultDialect implements Dialect {
         } else {
             return [];
         }
-
     }
 
     /**
@@ -134,30 +145,91 @@ class DefaultDialect implements Dialect {
         // return value could also contain input offset, length, maybe metadata for comment etc.
     }
 
-    render(fil: FullInstructionLine) {
+    private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
+        const mnemonic:Tag = ["mn", mi.op.mnemonic.toLowerCase()];
+        const operand:Tag = ["opnd", this.renderOperand(fil.instructionLine)];
+        return [mnemonic, operand];
+    }
+
+    private renderData(il: InstructionLike) {
+        return this._env.indent() + tagText(this.byteDeclaration(il));
+    }
+
+    private renderLabels(fil: FullInstructionLine, le: string) {
+        return fil.labels.map(s => this.labelFormat(s) + le).reduce(stringcat, "");
+    }
+
+    private renderComments(fil: FullInstructionLine, le: string) {
+        return fil.comments.map(c => this.commentPrefix() + c.replaceAll(le, le + this.commentPrefix())).reduce(stringcat, "");
+    }
+
+    private commentPrefix() {
+        return "; ";
+    }
+
+    private labelFormat(s: string) {
+        return s + ": ";
+    }
+
+    private byteDeclaration(il: InstructionLike):TagSeq {
+        let kw:Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
+        let s2 = "";
+        il.rawBytes.forEach((b, i) => {
+            if (i !== 0) {
+                s2 += ", ";
+            }
+            s2 += this.hexByteText(b);
+        });
+        return [kw, ["hexarray", s2]];
+    }
+
+    private hexByteText(b: number) {
+        return "$" + hex8(b);
+    }
+
+    /**
+     * Returns the given instruction as text.
+     * @param fil
+     */
+    text(fil: FullInstructionLine) {
         // treating comments as prefix full-lines is simpler than end of line comments
         const le = this._env.targetLineEndings();
-        let ccs = (p: string, c: string) => p + c; // concat strings / flatten whatever
-        let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs, "");
+        // concat strings / flatten whatever
+        let comments = this.renderComments(fil, le);
         // in this dialect, labels have their own line and end with colon
-        s += fil.labels.map(s => s + ": " + le).reduce(ccs, "");
+        let labels = this.renderLabels(fil, le);
         let i: InstructionLike = fil.instructionLine.instruction;
 
+        let codeOrData = "";
         // NOTE: trying out weird extreme avoidance of casting:
-        i.ifMachineInstruction(mi => {
-            s += this._env.indent() + mi.op.mnemonic.toLowerCase() + " " + this.renderOperand(fil.instructionLine);
+        // TODO stop the madness, this experiment failed
+        i.handleCode(mi => {
+            codeOrData = this._env.indent() + tagText(this.taggedCode(mi, fil));
         });
-        i.ifNotMachineInstruction(il => {
-            s += this._env.indent() + `.byte `
-            il.rawBytes.forEach((b, i) => {
-                if (i !== 0) {
-                    s += ", ";
-                }
-                s += "$" + hex8(b);
-            });
+        i.handleData(il => {
+            codeOrData = this.renderData(il);
         });
 
-        return s;
+        return comments + labels + codeOrData;
+    }
+
+    /** Returns the given instruction as TagSeq elements in lexical order */
+    tagged(fil: FullInstructionLine):TagSeq {
+        // TODO: sequence of tuples of token type and value
+        // make it so text can be rendered by trivial map reduce
+        const le = this._env.targetLineEndings(); // TODO shouldn't need this here?
+        const comments:Tag = ["comment", this.renderComments(fil, le)];
+        const labels:Tag = ["label", this.renderLabels(fil, le)]; // TODO check multiple label situation
+        let i: InstructionLike = fil.instructionLine.instruction
+
+        let tagged:TagSeq = [comments, labels];
+        i.handleCode(mi => {
+            tagged = tagged.concat(this.taggedCode(mi, fil));
+        });
+        i.handleData(il => {
+            tagged.push(["data", this.renderData(il)]);
+        });
+        return tagged;
     }
 
     /**
@@ -363,12 +435,12 @@ class Disassembler {
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["resetVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["defResetVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["nmiVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["defNmiVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");

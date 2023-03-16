@@ -29,7 +29,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
                 const addr = dis.currentAddress;
                 let hexAddr: [string, string] = ["addr", hex16(addr)];
                 let full = dis.nextInstructionLine();
-                let disasm: [string, string] = ["dis", dialect.render(full)];
+                let disasm: [string, string] = ["dis", dialect.text(full)];
                 let hex: [string, string] = ["hex", full.asHex()];
                 disassemblyResult.push([hexAddr, hex, disasm]);
             }

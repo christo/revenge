@@ -220,11 +220,11 @@ class Instruction implements InstructionLike {
         return this._mode;
     }
 
-    ifMachineInstruction(fn: (i: Instruction) => void) {
+    handleCode(fn: (i: Instruction) => void) {
         fn(this);
     }
 
-    ifNotMachineInstruction(fn: (il: InstructionLike) => void): void {
+    handleData(fn: (il: InstructionLike) => void): void {
         // do nothing, we are a machine instruction
     }
 
@@ -236,9 +236,9 @@ class Instruction implements InstructionLike {
 interface InstructionLike {
     get rawBytes(): Array<number>;
 
-    ifMachineInstruction(fn: (i: Instruction) => void): void;
+    handleCode(fn: (i: Instruction) => void): void;
 
-    ifNotMachineInstruction(fn: (il: InstructionLike) => void): void;
+    handleData(fn: (il: InstructionLike) => void): void;
 
     get numBytes(): number;
 }
@@ -306,10 +306,10 @@ class IllegalOpcode implements InstructionLike {
         this._bytes = bytes;
     }
 
-    ifMachineInstruction(fn: (i: Instruction) => void): void {
+    handleCode(fn: (i: Instruction) => void): void {
     }
 
-    ifNotMachineInstruction(fn: (il: InstructionLike) => void) {
+    handleData(fn: (il: InstructionLike) => void) {
         fn(this);
     }
 
