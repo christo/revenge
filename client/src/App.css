@@ -101,8 +101,8 @@ body {
 
 .hex {
   display: inline-block;
-  min-width: 12ch;
-  width: 12ch;
+  min-width: 9ch;
+  width: 9ch;
   background-color: #282c34;
   border-radius: 4px;
   padding: 2px   4px;
