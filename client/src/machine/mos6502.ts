@@ -55,7 +55,6 @@ class StatusRegisterFlag {
     }
 
     isSet(sr: number) {
-        // TODO check that ts type for byte is sensible here
         return sr & this.mask;
     }
 }
@@ -351,8 +350,6 @@ class IllegalOpcode implements InstructionLike {
 // build the instruction set
 const I = new InstructionSet();
 
-// TODO confirm that addressing mode defines bytes (seems to) in which case move byte spec to addressing mode
-
 // ADC
 I.add(0x69, ADC, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
 I.add(0x65, ADC, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
@@ -563,9 +560,6 @@ class InstructionWithOperands {
     readonly instruction: InstructionLike;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
-
-    // TODO implement instruction feature API? AST for renderer?
-    // TODO implement value fetch somewhere maybe not here
 
     constructor(instruction: InstructionLike, lobyte: number, hibyte: number) {
         this.instruction = instruction;
