@@ -23,29 +23,6 @@ const VIC20_CART = new CartSniffer(
     VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET
 );
 
-class Vic20CartDisassemblyMeta implements DisassemblyMeta {
-    baseAddress(fb: FileBlob): number {
-        return fb.readVector(VIC20_BASE_ADDRESS_OFFSET);
-    }
-
-    coldResetVector(fb: FileBlob): number {
-        return fb.readVector(VIC20_COLD_VECTOR_OFFSET);
-    }
-
-    warmResetVector(fb: FileBlob): number {
-        return fb.readVector(VIC20_WARM_VECTOR_OFFSET);
-    }
-
-    disassemblyStartIndex(fb: FileBlob): number {
-        // TODO implement segments
-        return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
-    }
-
-    contentStartIndex(fb: FileBlob): number {
-        return 2; // TODO fix
-    }
-}
-
 /** Common load addresses for machine language programs. */
 const COMMON_MLPS = [
     prg([0x00, 0x40]),  // 0x4000
