@@ -1,6 +1,7 @@
-import {DefaultDialect, Disassembler, Environment, Mos6502} from "./mos6502";
+import {Mos6502, Mos6502InstructionSet} from "./mos6502";
 import {BASIC_PRG, BlobSniffer, C64_CRT, CartSniffer, COMMON_MLPS, FileBlob, UNKNOWN} from "./FileBlob";
 import {hex16, hex8} from "../misc/BinUtils";
+import {DefaultDialect, Disassembler, Environment} from "./asm";
 
 // May need to add more but these seem initially sufficient
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
@@ -37,7 +38,7 @@ const disassemble = (t:BlobSniffer, fb:FileBlob) => {
     let userActions:Array<UserAction> = [{
         label: "disassemble",
         f: () => {
-            const dis = new Disassembler(fb, t.getDisassemblyMeta());
+            const dis = new Disassembler(Mos6502InstructionSet, fb, t.getDisassemblyMeta());
             let disassemblyResult:ActionResult = [];
 
             // start with assembler directive for setting the base address.

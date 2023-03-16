@@ -9,3 +9,10 @@ export const stringToArray = (s: string) => {
     }
     return prefix;
 }
+
+export const assertByte = (value: number) => {
+    if (value < 0 || value > 255) {
+        throw Error("expecting an unsigned byte value (was " + value + ")");
+    }
+    return value & 0xff;
+};
