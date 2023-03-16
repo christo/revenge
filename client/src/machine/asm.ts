@@ -19,6 +19,7 @@ import {
     MODE_ZEROPAGE_X,
     MODE_ZEROPAGE_Y, Mos6502InstructionSet
 } from "./mos6502";
+import {UserAction} from "./revenge";
 
 export {}
 export {Disassembler};
@@ -255,7 +256,7 @@ class FullInstructionLine {
             return `${hInst} ${hex8(this._instructionLine.firstByte)} ${hex8(this._instructionLine.secondByte)}`;
         }
         // must be a data declaration because it takes more than 3 bytes
-        return "...";
+        return this._instructionLine.instruction.rawBytes.map(hex8).reduce((p,c)=> (`${p} ${c}`));
 
     }
 }
@@ -319,6 +320,19 @@ class Disassembler {
         this.disMeta = type;
     }
 
+    private consumeBytes(count:number):number[] {
+        const bytes:number[] = [];
+        for (let i = 1; i <= count; i++) {
+            const value = this.fb.bytes.at(this.currentIndex++);
+            if (typeof value === "undefined") {
+                throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
+            } else {
+                bytes.push(value);
+            }
+        }
+        return bytes;
+    }
+
     private eatByteOrDie() {
         if (this.currentIndex >= this.fb.bytes.length) {
             throw Error("No more bytes");
@@ -342,35 +356,28 @@ class Disassembler {
             comments = this.generateComments(this.currentAddress);
         }
 
-        // TODO unhard-code cart stuff:
+        // TODO somehow move the driving details into the BlobSniffer:
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
-            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            const bd = new ByteDeclaration(this.consumeBytes(2));
             return new FullInstructionLine(["cartBase"], new InstructionLine(bd, 0, 0), []);
         }
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
-            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            const bd = new ByteDeclaration(this.consumeBytes(2));
             return new FullInstructionLine(["resetVector"], new InstructionLine(bd, 0, 0), []);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
-            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            const bd = new ByteDeclaration(this.consumeBytes(2));
             return new FullInstructionLine(["nmiVector"], new InstructionLine(bd, 0, 0), []);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");
-            const bd = new ByteDeclaration([
-                this.eatByteOrDie(),
-                this.eatByteOrDie(),
-                this.eatByteOrDie(),
-                this.eatByteOrDie(),
-                this.eatByteOrDie(),
-                this.eatByteOrDie()
-            ]);
+            const bd = new ByteDeclaration(this.consumeBytes(5));
             return new FullInstructionLine(["cartSig"], new InstructionLine(bd, 0, 0), []);
         }
-        if (this.currentIndex < 12) {
+        if (this.currentIndex < 11) {
             throw Error("well this is unexpected!");
         }
 
@@ -423,3 +430,13 @@ class Disassembler {
         return this._currentAddress + this.currentIndex - this.originalIndex;
     }
 }
+
+const hexDumper:UserAction = {
+    label: "Hex Dump",
+    f: () => {
+        // TODO rewrite hexdump to work with this structure; may need to add outer className to ActionResult
+        return [[["hexbyte", "ff"]]];
+    }
+};
+
+export {hexDumper}

@@ -1,5 +1,3 @@
-import {hex8, stringToArray} from "../misc/BinUtils";
-
 class FileBlob {
     public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, new Uint8Array(0));
 
@@ -106,40 +104,22 @@ interface BlobSniffer {
  * Represents a file type where file type detection heuristics such as
  * file name extension, magic number prefixes detect file contents.
  */
-class BlobType implements BlobSniffer, DisassemblyMeta {
+class BlobType implements BlobSniffer {
 
     name: string;
     desc: string;
     exts: string[];
     note: string;
     prefix: Uint8Array;
+    dm: DisassemblyMeta;
 
-    constructor(name: string, desc: string, ext?: string, prefix?: ArrayLike<number>) {
+    constructor(name: string, desc: string, ext?: string, prefix?: ArrayLike<number>, dm?:DisassemblyMeta) {
         this.desc = desc;
         this.name = name;
+        this.dm = dm ? dm : NullDisassemblyMeta.INSTANCE;
         this.exts = ext ? [ext] : [];
         this.note = "";
         this.prefix = prefix ? new Uint8Array(prefix) : new Uint8Array(0);
-    }
-
-    baseAddress(fb: FileBlob): number {
-        return fb.readVector(CartSniffer.VIC20_BASE_ADDRESS_OFFSET);
-    }
-
-    coldResetVector(fb: FileBlob): number {
-        return fb.readVector(CartSniffer.VIC20_COLD_VECTOR_OFFSET);
-    }
-    warmResetVector(fb: FileBlob): number {
-        return fb.readVector(CartSniffer.VIC20_WARM_VECTOR_OFFSET);
-    }
-
-    disassemblyStartIndex(fb: FileBlob): number {
-        // TODO implement segments
-        return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
-    }
-
-    contentStartIndex(fb:FileBlob): number {
-        return 2; // TODO fix
     }
 
     extensionMatch(fb: FileBlob) {
@@ -148,7 +128,7 @@ class BlobType implements BlobSniffer, DisassemblyMeta {
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
-        return this;
+        return this.dm;
     }
 
     dataMatch(fileBlob: FileBlob) {
@@ -163,17 +143,6 @@ class BlobType implements BlobSniffer, DisassemblyMeta {
         this.note = note;
     }
 }
-
-/**
- * VIC-20 cartridge magic signature A0CBM in petscii where
- * CBM is in reverse video (&70).
- *
- */
-const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
-/**
- * The C64 magic cartridge signature CBM80 in petscii.
- */
-const CBM80 = [0xC3, 0xC2, 0xCD, 0x38, 0x30];
 
 /** Will have different types of data later (petscii, sid music, character) */
 enum SegmentType {
@@ -221,130 +190,38 @@ interface DisassemblyMeta {
     contentStartIndex(fb: FileBlob): number;
 }
 
-/**
- * Cart ROM dumps without any emulator metadata file format stuff.
- * Currently very VIC-20-biased.
- */
-class CartSniffer implements BlobSniffer, DisassemblyMeta {
+class NullDisassemblyMeta implements DisassemblyMeta {
 
-    /** VIC-20 cart image that contains A0CBM magic sequence. */
-    static VIC20 = new CartSniffer("VIC-20 cart image", "ROM dump from VIC-20", "",A0CBM, 6);
+    static INSTANCE = new NullDisassemblyMeta();
 
-    /** The loading address vector is in the image at this offset. */
-    static VIC20_BASE_ADDRESS_OFFSET = 0;
-    /** The cold reset vector is stored at this offset. */
-    static VIC20_COLD_VECTOR_OFFSET = 2;
-    /** The warm reset vector (NMI) is stored at this offset. */
-    static VIC20_WARM_VECTOR_OFFSET = 4;
-    /** C64 reset vector is stored at this offset. */
-    static C64_RESET_VECTOR_OFFSET = 4;
-
-    /**
-     * The base address for all 8kb C64 carts.
-     */
-    static C64_8K_BASE_ADDRESS = 0x8000;
-
-    /**
-     * 16kb carts load two 8k blocks, ROML at the normal base address
-     * and ROMH at this address.
-     */
-    static C64_ROMH_BASE_ADDRESS = 0xa000;
-
-    /**
-     * Ultimax carts (for the pre-64 Japanese CBM Max machine) load two
-     * 8kb images, ROML at the normal base address and ROMH at this one.
-     */
-    static C64_ULTIMAX_ROMH_BASE_ADDRESS = 0xa000;
-
-    readonly name: string;
-    readonly desc: string;
-    readonly note: string;
-    private readonly magic: Uint8Array;
-    private readonly magicOffset: number;
-
-    /**
-     * Carts images have a fixed, magic signature of bytes at a known offset.
-     *
-     * @param magic the magic sequence.
-     * @param offset where the magic happens.
-     */
-    constructor(name:string, desc:string, note:string, magic:ArrayLike<number>, offset:number) {
-        this.name = name;
-        this.desc = desc;
-        this.note = note;
-        this.magic = new Uint8Array(magic);
-        this.magicOffset = offset;
+    private constructor() {
+        // intentionally left blank
     }
 
-    sniff(fb: FileBlob): number {
-        const magicMatch = fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
-        // TODO look at the warm and cold jump vectors to see if they land in-range and at probable code.
-        return magicMatch;
+    baseAddress(fb: FileBlob): number {
+        return 0;
     }
 
-    getDisassemblyMeta(): DisassemblyMeta {
-        return this;
+    coldResetVector(fb: FileBlob): number {
+        return 0;
     }
 
-    /**
-     * The address the file should be loaded into. Real images have multiple segments loaded into
-     * different addresses and some file formats accommodate this.
-     * @param fileBlob
-     */
-    baseAddress(fb: FileBlob) {
-        return fb.readVector(CartSniffer.VIC20_BASE_ADDRESS_OFFSET);
-    }
-
-    /**
-     * Address of start of code for a cold boot.
-     * @param fileBlob
-     */
-    coldResetVector(fb: FileBlob) {
-        return fb.readVector(CartSniffer.VIC20_COLD_VECTOR_OFFSET);
-    }
-
-    /**
-     * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
-     * @param fileBlob
-     */
-    warmResetVector(fb: FileBlob) {
-        return fb.readVector(CartSniffer.VIC20_WARM_VECTOR_OFFSET);
+    contentStartIndex(fb: FileBlob): number {
+        return 0;
     }
 
     disassemblyStartIndex(fb: FileBlob): number {
-        return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
+        return 0;
     }
 
-    contentStartIndex(fb:FileBlob): number {
-        return 2; // TODO fix
+    warmResetVector(fb: FileBlob): number {
+        return 0;
     }
 
 }
 
-const UNKNOWN = new BlobType("unknown", "type not detected")
-const BASIC_PRG = new BlobType("basic prg", "BASIC program", "prg", [0x01, 0x08]);
-BASIC_PRG.setNote('BASIC prg files have an expected address prefix and ought to have valid basic token syntax.');
 
-function prg(prefix: ArrayLike<number>) {
-    // we assume a prefix of at least 2 bytes
-    const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
-    // consider moving the start address calculation into the BlobByte implementation
-    return new BlobType("prg@" + addr, "program binary to load at $" + addr, "prg", prefix);
-}
-
-// CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
-const prefix = stringToArray("C64 CARTRIDGE   ");
-const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", "crt", prefix);
-
-/** Common load addresses for machine language programs. */
-const COMMON_MLPS = [
-    prg([0x00, 0x40]),  // 0x4000
-    prg([0x00, 0x60]),  // 0x6000
-    prg([0x00, 0x80]),  // 0x8000
-    prg([0x00, 0xa0]),  // 0xa000
-    prg([0x00, 0xc0]),  // 0xc000
-];
-
-export {FileBlob, FileLike, BASIC_PRG, UNKNOWN, COMMON_MLPS, C64_CRT, CartSniffer};
+const UNKNOWN = new BlobType("unknown", "type not detected", )
+export {FileBlob, FileLike, UNKNOWN, BlobType};
 export type {BlobSniffer, DisassemblyMeta};
 

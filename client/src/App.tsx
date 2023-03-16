@@ -13,8 +13,9 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, ActionResult, UserAction, Continuation, detect, fileTypes, TypeActions} from "./machine/c64";
-import {DisassemblyMeta, FileBlob, FileLike} from "./machine/FileBlob";
+import {ActionExecutor, detect, TypeActions, UserAction} from "./machine/revenge";
+import {fileTypes} from "./machine/cbm";
+import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, CircularProgress, Stack} from "@mui/material";
 import axios from "axios";
 

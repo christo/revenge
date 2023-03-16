@@ -92,19 +92,21 @@ body {
 .addr {
   margin-right: 1em;
   opacity: 60%;
+
 }
 
 .line {
   line-height: 1.5;
+  display:flex;
 }
 
 .hex {
+  display: inline-block;
   min-width: 9ch;
   width: 9ch;
   background-color: #282c34;
   border-radius: 4px;
   padding: 2px   4px;
-  margin: 0.2em;
 }
 
 .dis {
