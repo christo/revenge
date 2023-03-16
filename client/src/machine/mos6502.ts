@@ -7,7 +7,6 @@
  */
 
 import {assertByte, hex16} from "../misc/BinUtils";
-import {ByteDeclaration} from "./asm";
 
 class AddressingMode {
     code: string;
@@ -302,6 +301,7 @@ class InstructionSet {
 
 class IllegalOpcode implements InstructionLike {
     private readonly _bytes: number[];
+
     constructor(bytes: number[]) {
         this._bytes = bytes;
     }
@@ -534,7 +534,7 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.fillIllegals();
 
 
-class  InstructionLine {
+class InstructionLine {
     readonly instruction: InstructionLike;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction

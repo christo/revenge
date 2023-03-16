@@ -31,6 +31,7 @@ class Vic20CartDisassemblyMeta implements DisassemblyMeta {
     coldResetVector(fb: FileBlob): number {
         return fb.readVector(VIC20_COLD_VECTOR_OFFSET);
     }
+
     warmResetVector(fb: FileBlob): number {
         return fb.readVector(VIC20_WARM_VECTOR_OFFSET);
     }
@@ -40,7 +41,7 @@ class Vic20CartDisassemblyMeta implements DisassemblyMeta {
         return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
     }
 
-    contentStartIndex(fb:FileBlob): number {
+    contentStartIndex(fb: FileBlob): number {
         return 2; // TODO fix
     }
 }

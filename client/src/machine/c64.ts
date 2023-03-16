@@ -7,7 +7,7 @@ import {stringToArray} from "../misc/BinUtils";
 function crt64Actions(fileBlob: FileBlob) {
     // TODO flesh out the desc from the cart header metadata as defined here:
     // https://codebase64.org/doku.php?id=base:crt_file_format
-    return {t:C64_CRT, actions: [hexDumper]};
+    return {t: C64_CRT, actions: [hexDumper]};
 }
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
@@ -17,6 +17,7 @@ const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell"
 // we don't need this yet...
 class C64 {
     cpu;
+
     constructor() {
         this.cpu = new Mos6502();
     }

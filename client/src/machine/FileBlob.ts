@@ -11,7 +11,7 @@ class FileBlob {
         this.bytes = bytes;
     }
 
-    static async fromFile(f: File | FileLike ) {
+    static async fromFile(f: File | FileLike) {
         if (f instanceof File) {
             let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
             return f.arrayBuffer().then(mkBlob);
@@ -20,7 +20,7 @@ class FileBlob {
         }
     }
 
-    toHexBytes():string[] {
+    toHexBytes(): string[] {
         let elements: string[] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of this.bytes.entries()) {
@@ -45,11 +45,11 @@ class FileBlob {
     }
 
     /** Read a little-endian vector at the given offset. */
-    readVector(offset:number) {
+    readVector(offset: number) {
         if (offset < 0 || offset > this.bytes.length - 1) {
             throw Error("offset out of range for vector read");
         }
-        return (this.bytes[offset+1]<<8) + this.bytes[offset]
+        return (this.bytes[offset + 1] << 8) + this.bytes[offset]
     }
 }
 
@@ -64,7 +64,7 @@ class FileLike {
         }
         this._name = name;
         this._data = data;
-        this._size=data.byteLength
+        this._size = data.byteLength
 
     }
 
@@ -92,7 +92,8 @@ interface BlobSniffer {
      * signifies increasing confidence. Zero is absolute certainty. Negative values must not be returned.
      * @param fb the file contents to sniff
      */
-    sniff(fb:FileBlob): number;
+    sniff(fb: FileBlob): number;
+
     getDisassemblyMeta(): DisassemblyMeta;
 
     name: string;
@@ -113,7 +114,7 @@ class BlobType implements BlobSniffer {
     prefix: Uint8Array;
     dm: DisassemblyMeta;
 
-    constructor(name: string, desc: string, ext?: string, prefix?: ArrayLike<number>, dm?:DisassemblyMeta) {
+    constructor(name: string, desc: string, ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
         this.desc = desc;
         this.name = name;
         this.dm = dm ? dm : NullDisassemblyMeta.INSTANCE;
@@ -146,7 +147,7 @@ class BlobType implements BlobSniffer {
 
 /** Will have different types of data later (petscii, sid music, character) */
 enum SegmentType {
-    CODE,DATA
+    CODE, DATA
 }
 
 class Segment {
@@ -221,7 +222,7 @@ class NullDisassemblyMeta implements DisassemblyMeta {
 }
 
 
-const UNKNOWN = new BlobType("unknown", "type not detected", )
+const UNKNOWN = new BlobType("unknown", "type not detected",)
 export {FileBlob, FileLike, UNKNOWN, BlobType};
 export type {BlobSniffer, DisassemblyMeta};
 

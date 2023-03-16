@@ -14,10 +14,13 @@ import {
     MODE_IMMEDIATE,
     MODE_IMPLIED,
     MODE_INDIRECT,
-    MODE_INDIRECT_X, MODE_INDIRECT_Y,
-    MODE_RELATIVE, MODE_ZEROPAGE,
+    MODE_INDIRECT_X,
+    MODE_INDIRECT_Y,
+    MODE_RELATIVE,
+    MODE_ZEROPAGE,
     MODE_ZEROPAGE_X,
-    MODE_ZEROPAGE_Y, Mos6502InstructionSet
+    MODE_ZEROPAGE_Y,
+    Mos6502InstructionSet
 } from "./mos6502";
 import {UserAction} from "./revenge";
 
@@ -256,7 +259,7 @@ class FullInstructionLine {
             return `${hInst} ${hex8(this._instructionLine.firstByte)} ${hex8(this._instructionLine.secondByte)}`;
         }
         // must be a data declaration because it takes more than 3 bytes
-        return this._instructionLine.instruction.rawBytes.map(hex8).reduce((p,c)=> (`${p} ${c}`));
+        return this._instructionLine.instruction.rawBytes.map(hex8).reduce((p, c) => (`${p} ${c}`));
 
     }
 }
@@ -304,7 +307,7 @@ class Disassembler {
 
     private disMeta: DisassemblyMeta;
 
-    constructor(iset:InstructionSet, fb: FileBlob, type: DisassemblyMeta) {
+    constructor(iset: InstructionSet, fb: FileBlob, type: DisassemblyMeta) {
         this.iset = iset;
         let index = type.contentStartIndex(fb);
         console.log(`starting disassembly at index ${index}`);
@@ -320,8 +323,8 @@ class Disassembler {
         this.disMeta = type;
     }
 
-    private consumeBytes(count:number):number[] {
-        const bytes:number[] = [];
+    private consumeBytes(count: number): number[] {
+        const bytes: number[] = [];
         for (let i = 1; i <= count; i++) {
             const value = this.fb.bytes.at(this.currentIndex++);
             if (typeof value === "undefined") {
@@ -431,7 +434,7 @@ class Disassembler {
     }
 }
 
-const hexDumper:UserAction = {
+const hexDumper: UserAction = {
     label: "Hex Dump",
     f: () => {
         // TODO rewrite hexdump to work with this structure; may need to add outer className to ActionResult
