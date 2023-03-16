@@ -531,8 +531,8 @@ I.add(0x8a, TXA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x9a, TXS, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 
+// have instruction set variants for the chip variants but also whether to allow illegal opcodes
 I.fillIllegals();
-
 
 class InstructionWithOperands {
     readonly instruction: InstructionLike;    // contains operand byte size
@@ -581,7 +581,7 @@ export {
     Mos6502,
     Instruction,
     InstructionWithOperands,
-    InstructionSet, I as Mos6502InstructionSet,
+    InstructionSet,
     MODE_ABSOLUTE,
     MODE_IMPLIED,
     MODE_ZEROPAGE,

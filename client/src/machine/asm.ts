@@ -20,7 +20,7 @@ import {
     MODE_ZEROPAGE,
     MODE_ZEROPAGE_X,
     MODE_ZEROPAGE_Y,
-    Mos6502InstructionSet
+    Mos6502
 } from "./mos6502";
 import {UserAction} from "./revenge";
 
@@ -380,7 +380,7 @@ class Disassembler {
         }
 
         const opcode = this.eatByteOrDie();
-        const numInstructionBytes = Mos6502InstructionSet.numBytes(opcode) || 1;
+        const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
 
         // if the instruction doesn't define an operand byte, its value is not guaranteed to be defined
 

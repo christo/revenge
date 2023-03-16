@@ -2,7 +2,7 @@
 
 import {BlobSniffer, BlobType, DisassemblyMeta, FileBlob} from "./FileBlob";
 import {DefaultDialect, Disassembler, Environment} from "./asm";
-import {Mos6502InstructionSet} from "./mos6502";
+import {Mos6502} from "./mos6502";
 import {hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, UserAction} from "./revenge";
 
@@ -17,7 +17,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
     let userActions: Array<UserAction> = [{
         label: "disassemble",
         f: () => {
-            const dis = new Disassembler(Mos6502InstructionSet, fb, t.getDisassemblyMeta());
+            const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
             let disassemblyResult: ActionResult = [];
 
             // start with assembler directive for setting the base address.
