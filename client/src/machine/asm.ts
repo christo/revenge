@@ -387,7 +387,7 @@ class Disassembler {
         this.currentIndex = index;
         this.fb = fb;
         this._currentAddress = type.baseAddress(fb);
-        this.labels = [["resetVector", type.coldResetVector(fb)], ["nmiVector", type.warmResetVector(fb)]];
+        this.labels = [["handleReset", type.coldResetVector(fb)], ["handleNmi", type.warmResetVector(fb)]];
         this.disMeta = type;
     }
 
@@ -435,12 +435,12 @@ class Disassembler {
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["defResetVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["resetVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["defNmiVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["nmiVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");

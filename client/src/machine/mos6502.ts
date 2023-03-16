@@ -575,9 +575,11 @@ class InstructionWithOperands {
 
     /** Gives the operand as a 16-bit number value. */
     operand16 = () => {
-        let operand = (this.secondByte << 8) & this.firstByte;
+        let operand = (this.secondByte << 8) + this.firstByte;
         if (operand !== 0) {
             console.log(`operand16 ${hex16(operand)}`)
+        } else {
+            // debugger;
         }
         return operand;
     }
