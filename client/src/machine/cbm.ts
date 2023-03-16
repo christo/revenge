@@ -22,7 +22,6 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
 
             // start with assembler directive for setting the base address.
             const base = "$" + hex16(t.getDisassemblyMeta().baseAddress(fb));
-            // TODO: need a dialect-agnostic method for tagging syntactic elements
             disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", base]]);
 
             while (dis.hasNext()) {

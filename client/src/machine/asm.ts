@@ -155,11 +155,13 @@ class DefaultDialect implements Dialect {
         return this._env.indent() + tagText(this.byteDeclaration(il));
     }
 
-    private renderLabels(fil: FullInstructionLine, le: string) {
+    private renderLabels(fil: FullInstructionLine) {
+        const le = this._env.targetLineEndings();
         return fil.labels.map(s => this.labelFormat(s) + le).reduce(stringcat, "");
     }
 
-    private renderComments(fil: FullInstructionLine, le: string) {
+    private renderComments(fil: FullInstructionLine) {
+        const le = this._env.targetLineEndings();
         return fil.comments.map(c => this.commentPrefix() + c.replaceAll(le, le + this.commentPrefix())).reduce(stringcat, "");
     }
 
@@ -195,9 +197,9 @@ class DefaultDialect implements Dialect {
         // treating comments as prefix full-lines is simpler than end of line comments
         const le = this._env.targetLineEndings();
         // concat strings / flatten whatever
-        let comments = this.renderComments(fil, le);
+        let comments = this.renderComments(fil);
         // in this dialect, labels have their own line and end with colon
-        let labels = this.renderLabels(fil, le);
+        let labels = this.renderLabels(fil);
         let i: InstructionLike = fil.instructionLine.instruction;
 
         let codeOrData = "";
@@ -215,11 +217,8 @@ class DefaultDialect implements Dialect {
 
     /** Returns the given instruction as TagSeq elements in lexical order */
     tagged(fil: FullInstructionLine):TagSeq {
-        // TODO: sequence of tuples of token type and value
-        // make it so text can be rendered by trivial map reduce
-        const le = this._env.targetLineEndings(); // TODO shouldn't need this here?
-        const comments:Tag = ["comment", this.renderComments(fil, le)];
-        const labels:Tag = ["label", this.renderLabels(fil, le)]; // TODO check multiple label situation
+        const comments:Tag = ["comment", this.renderComments(fil)];
+        const labels:Tag = ["label", this.renderLabels(fil)];
         let i: InstructionLike = fil.instructionLine.instruction
 
         let tagged:TagSeq = [comments, labels];
@@ -349,7 +348,6 @@ class FullInstructionLine {
  * Reverse engineering session config, etc. should go in the environment but maybe the default environment
  * for newly created sessions can be configured per-user too.
  *
- * TODO: maybe make this a config tree. (is there a convenient config api?)
  */
 class Environment {
     static DEFAULT_ENV = new Environment();
