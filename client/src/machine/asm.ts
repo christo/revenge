@@ -5,7 +5,7 @@ import {DisassemblyMeta, FileBlob} from "./FileBlob";
 import {
     Instruction,
     InstructionLike,
-    InstructionLine,
+    InstructionWithOperands,
     InstructionSet,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
@@ -135,8 +135,7 @@ class DefaultDialect implements Dialect {
     }
 
     render(fil: FullInstructionLine) {
-        // do full-line comments first, making sure that embedded newlines in comments get line comment prefixes
-        // TODO cross-platform line endings
+        // treating comments as prefix full-lines is simpler than end of line comments
         const le = this._env.targetLineEndings();
         let ccs = (p: string, c: string) => p + c; // concat strings / flatten whatever
         let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs, "");
@@ -167,7 +166,7 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: InstructionLine) {
+    private renderOperand(il: InstructionWithOperands) {
         const i = il.instruction as Instruction;    // TODO get rid of cast
         const mode = i.mode;
 
@@ -225,10 +224,10 @@ class DefaultDialect implements Dialect {
  */
 class FullInstructionLine {
     private readonly _labels: Array<string>;
-    private readonly _instructionLine: InstructionLine;
+    private readonly _instructionLine: InstructionWithOperands;
     private readonly _comments: Array<string>;
 
-    constructor(labels: Array<string>, instructionLine: InstructionLine, comments: Array<string>) {
+    constructor(labels: Array<string>, instructionLine: InstructionWithOperands, comments: Array<string>) {
         this._labels = labels;
         this._instructionLine = instructionLine;
         this._comments = comments;
@@ -238,7 +237,7 @@ class FullInstructionLine {
         return this._labels;
     }
 
-    get instructionLine(): InstructionLine {
+    get instructionLine(): InstructionWithOperands {
         return this._instructionLine;
     }
 
@@ -290,9 +289,6 @@ class Environment {
     indent() {
         return "    ";
     }
-
-    // TODO get marked regions
-
 }
 
 /** Stateful translator of bytes to their parsed instruction line */
@@ -323,15 +319,10 @@ class Disassembler {
         this.disMeta = type;
     }
 
-    private consumeBytes(count: number): number[] {
+    private eatBytes(count: number): number[] {
         const bytes: number[] = [];
         for (let i = 1; i <= count; i++) {
-            const value = this.fb.bytes.at(this.currentIndex++);
-            if (typeof value === "undefined") {
-                throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
-            } else {
-                bytes.push(value);
-            }
+            bytes.push(this.eatByte());
         }
         return bytes;
     }
@@ -340,6 +331,10 @@ class Disassembler {
         if (this.currentIndex >= this.fb.bytes.length) {
             throw Error("No more bytes");
         }
+        return this.eatByte();
+    }
+
+    private eatByte() {
         const value = this.fb.bytes.at(this.currentIndex++);
         if (typeof value === "undefined") {
             throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
@@ -362,23 +357,23 @@ class Disassembler {
         // TODO somehow move the driving details into the BlobSniffer:
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
-            const bd = new ByteDeclaration(this.consumeBytes(2));
-            return new FullInstructionLine(["cartBase"], new InstructionLine(bd, 0, 0), []);
+            const bd = new ByteDeclaration(this.eatBytes(2));
+            return new FullInstructionLine(["cartBase"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
-            const bd = new ByteDeclaration(this.consumeBytes(2));
-            return new FullInstructionLine(["resetVector"], new InstructionLine(bd, 0, 0), []);
+            const bd = new ByteDeclaration(this.eatBytes(2));
+            return new FullInstructionLine(["resetVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
-            const bd = new ByteDeclaration(this.consumeBytes(2));
-            return new FullInstructionLine(["nmiVector"], new InstructionLine(bd, 0, 0), []);
+            const bd = new ByteDeclaration(this.eatBytes(2));
+            return new FullInstructionLine(["nmiVector"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");
-            const bd = new ByteDeclaration(this.consumeBytes(5));
-            return new FullInstructionLine(["cartSig"], new InstructionLine(bd, 0, 0), []);
+            const bd = new ByteDeclaration(this.eatBytes(5));
+            return new FullInstructionLine(["cartSig"], new InstructionWithOperands(bd, 0, 0), []);
         }
         if (this.currentIndex < 11) {
             throw Error("well this is unexpected!");
@@ -398,7 +393,7 @@ class Disassembler {
                 bytes.push(this.currentIndex++);
             }
             const bd = new ByteDeclaration(bytes);
-            return new FullInstructionLine(labels, new InstructionLine(bd, 0, 0), comments);
+            return new FullInstructionLine(labels, new InstructionWithOperands(bd, 0, 0), comments);
         } else {
             let firstOperandByte = 0;
             let secondOperandByte = 0;
@@ -409,7 +404,7 @@ class Disassembler {
                 secondOperandByte = this.eatByteOrDie();
             }
 
-            const il = new InstructionLine(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+            const il = new InstructionWithOperands(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
             return new FullInstructionLine(labels, il, comments);
         }
     }

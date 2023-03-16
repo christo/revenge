@@ -534,7 +534,7 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.fillIllegals();
 
 
-class InstructionLine {
+class InstructionWithOperands {
     readonly instruction: InstructionLike;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
@@ -580,7 +580,7 @@ class Mos6502 {
 export {
     Mos6502,
     Instruction,
-    InstructionLine,
+    InstructionWithOperands,
     InstructionSet, I as Mos6502InstructionSet,
     MODE_ABSOLUTE,
     MODE_IMPLIED,
