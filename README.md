@@ -43,19 +43,37 @@ in a different order (some design is required to analyse alternate orderings wit
 of semantics). Canonicalisation is a form of program transformation where the goal is to identify 
 use-case-specific essence. 
 
+## Assembly Dialects
+
+Assembler dialects being considered:
+
+* "oldstyle" as one of the supported dialects in vasm, Ben Eater's choice
+* 64tass
+* Easy6502 http://skilldrick.github.io/easy6502/ [GitHub](https://github.com/skilldrick/easy6502)
+* [Kick Assembler](http://theweb.dk/KickAssembler/Main.html) closed source
+* xa65 
+* ca65 - part of [cc65](https://www.cc65.org/)
+
+## Done 
+
+* drag and drop file loading
+* load file contents into summary view
+* hex view (minimal)
+* dumb disassembly
+* file type recognition
+  * basics - can recognise at least two types and offer to disassemble if it knows how
+  * vic20 raw cartridge image recognition
+* representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
+
 ## TODO
 
-* dumb disassembly
-* reading list
-  * https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
-  * https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
-  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+* multiple disassembly dialect support
+* data section detection
 * file type recognition
-    * list of recognised types
-    * list of supported types
-    * manual choice of file type
-    * type possibility list with probabilities etc.
-    * build database of file content recognition.
+  * manual choice of file type
+  * type possibility list with probabilities etc.
+* vic 20 / c64 hardware register detection
+* build database of file content recognition.
 * fragment content hash, db etc.?
 * common data fragments identified between files
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
@@ -67,8 +85,6 @@ natch)
     * store file-level notes and byte-offset / byte-range notes
     * unified back-end between bootstrap filetree and uploaded stuff
 * petscii view (views abstraction)
-* data section detection
-* vic 20 / c64 hardware register detection
 * binary diff two files (linear)
 * user accounts
 * sharing, permissions
@@ -77,10 +93,10 @@ analysis of files
 * search GitHub and elsewhere for existing databases of software. Maybe model database sources? Try for md5 or sha
 content hashes for file identification. archive.org software entries have multiple stored in xml files, e.g.
  see https://archive.org/download/BoloMacintosh which is part of https://archive.org/details/softwarelibrary_mac
-* representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics 
 
-## Done
 
-* drag and drop file loading
-* load file contents into summary view
-* hex view (minimal)
+## Reading List
+
+* https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
+* https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
