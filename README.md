@@ -68,6 +68,7 @@ Assembler dialects being considered:
 ## TODO
 
 * multiple disassembly dialect support
+* BASIC prg support
 * data section detection
 * file type recognition
   * manual choice of file type
