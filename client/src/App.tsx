@@ -64,6 +64,9 @@ function FileDetail(props: { fb: FileBlob }) {
     const [action, setAction] = useState<UserAction | null>(null);
     const typeAction: TypeActions = detect(props.fb);
     const t = typeAction.t;
+    useEffect(() => {
+        setAction(null);
+    },[props.fb]);
     return <div>
         <div className="dataMeta">
 

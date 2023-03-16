@@ -138,6 +138,10 @@ class BlobType implements BlobSniffer, DisassemblyMeta {
         return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
     }
 
+    contentStartIndex(fb:FileBlob): number {
+        return 2; // TODO fix
+    }
+
     extensionMatch(fb: FileBlob) {
         const filename = fb.name;
         return this.exts.reduce((a, n) => a || filename.toLowerCase().endsWith("." + n), false);
@@ -212,7 +216,9 @@ interface DisassemblyMeta {
     warmResetVector(fb: FileBlob): number;
 
     /** Temporary until we implement segments */
-    disassemblyStartIndex(fb: FileBlob):number;
+    disassemblyStartIndex(fb: FileBlob): number;
+
+    contentStartIndex(fb: FileBlob): number;
 }
 
 /**
@@ -308,6 +314,11 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
     disassemblyStartIndex(fb: FileBlob): number {
         return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
     }
+
+    contentStartIndex(fb:FileBlob): number {
+        return 2; // TODO fix
+    }
+
 }
 
 const UNKNOWN = new BlobType("unknown", "type not detected")

@@ -8,7 +8,7 @@
  */
 
 import {hex16, hex8} from "../misc/BinUtils";
-import {BlobSniffer, DisassemblyMeta, FileBlob} from "./FileBlob";
+import {DisassemblyMeta, FileBlob} from "./FileBlob";
 
 class AddressingMode {
     code: string;
@@ -545,7 +545,7 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.fillIllegals();
 
 
-class InstructionLine {
+class  InstructionLine {
     readonly instruction: InstructionLike;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
@@ -572,8 +572,27 @@ class InstructionLine {
 interface Dialect {
     readonly name: string;
     readonly env: Environment;
+
+    /**
+     * Check that the given label conforms to the rules for labels, returning a possibly empty array of
+     * errors.
+     *
+     * @param label the label to check for syntactic validity.
+     */
+    validateLabel(label:String):BooBoo[];
 }
 
+/**
+ * Error class, all the sensible names have been domain squatted by typescript/javascript.
+ *
+ */
+class BooBoo {
+    private mesg: string;
+
+    constructor(mesg:string) {
+        this.mesg = mesg;
+    }
+}
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -597,7 +616,16 @@ class DefaultDialect implements Dialect {
         this._env = env;
     }
 
-// currently outputs in lowercase though this could be a config option
+    validateLabel(l: String): BooBoo[] {
+        // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
+        const regExpMatchArrays = l.matchAll(/(^\d|\s)/g);
+        if (regExpMatchArrays) {
+            return [new BooBoo(`Label must not start with digit or contain whitespace: ${l}`)];
+        } else {
+            return [];
+        }
+
+    }
 
     /**
      * Parse input from index offset characters in until end of line or end of input,
@@ -625,6 +653,7 @@ class DefaultDialect implements Dialect {
         const le = this._env.targetLineEndings();
         let ccs = (p: string, c: string) => p + c; // concat strings / flatten whatever
         let s = fil.comments.map(c => "; " + c.replaceAll(le, le + "; ")).reduce(ccs,"");
+        // in this dialect, labels have their own line and end with colon
         s += fil.labels.map(s => s + ": " + le).reduce(ccs,"");
         let i: InstructionLike = fil.instructionLine.instruction;
 
@@ -712,18 +741,8 @@ class FullInstructionLine {
     private readonly _instructionLine: InstructionLine;
     private readonly _comments: Array<string>;
 
-    private static validateLabels(labels: Array<string>) {
-        labels.forEach(l => {
-            if (l.matchAll(/(^\d|\s)/)) {
-                throw Error("labels must not start with digits or contain whitespace");
-            }
-            // TODO labels must not equal a mnemonic (or start with? or contain?)
-        })
-        return labels;
-    }
-
     constructor(labels: Array<string>, instructionLine: InstructionLine, comments: Array<string>) {
-        this._labels = FullInstructionLine.validateLabels(labels);
+        this._labels = labels;
         this._instructionLine = instructionLine;
         this._comments = comments;
     }
@@ -752,7 +771,9 @@ class FullInstructionLine {
         if (this._instructionLine.instruction.numBytes === 3) {
             return `${hInst} ${hex8(this._instructionLine.firstByte)} ${hex8(this._instructionLine.secondByte)}`;
         }
-        throw Error("unexpected num bytes for instruction");
+        // must be a data declaration because it takes more than 3 bytes
+        return "...";
+
     }
 }
 
@@ -791,30 +812,33 @@ class Disassembler {
 
     originalIndex: number;
     currentIndex: number;
-    bytes: Uint8Array;
+    fb: FileBlob;
     private _currentAddress: number;
 
-    // keep a log of jump and branch targets as well as instruction value fetch targets?
-    // may need a two-pass disassembler for that
+    labels:[string,number][];
 
+    private disMeta: DisassemblyMeta;
 
     constructor(fb: FileBlob, type:DisassemblyMeta) {
-        let index = type.disassemblyStartIndex(fb);
+        let index = type.contentStartIndex(fb);
+        console.log(`starting disassembly at index ${index}`);
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
             throw Error("index out of range");
         }
         this.originalIndex = index;
         this.currentIndex = index;
-        this.bytes = bytes;
+        this.fb = fb;
         this._currentAddress = type.baseAddress(fb);
+        this.labels = [["resetVector", type.coldResetVector(fb)], ["nmiVector", type.warmResetVector(fb)]];
+        this.disMeta = type;
     }
 
     private eatByteOrDie() {
-        if (this.currentIndex >= this.bytes.length) {
+        if (this.currentIndex >= this.fb.bytes.length) {
             throw Error("No more bytes");
         }
-        const value = this.bytes.at(this.currentIndex++);
+        const value = this.fb.bytes.at(this.currentIndex++);
         if (typeof value === "undefined") {
             throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
         } else {
@@ -825,12 +849,44 @@ class Disassembler {
     nextInstructionLine() {
         let labels: Array<string> = [];
         // need to allow multiple labels
-        if (this.needsLabel(this._currentAddress)) {
-            labels = this.generateLabels(this._currentAddress)
+        if (this.needsLabel(this.currentAddress)) {
+            labels = this.generateLabels(this.currentAddress)
         }
         let comments: Array<string> = [];
-        if (this.needsComment(this._currentAddress)) {
-            comments = this.generateComments(this._currentAddress);
+        if (this.needsComment(this.currentAddress)) {
+            comments = this.generateComments(this.currentAddress);
+        }
+
+        // TODO unhard-code cart stuff:
+        if (this.currentIndex === 0) {
+            console.log("manually handling base address");
+            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            return new FullInstructionLine(["cartBase"], new InstructionLine(bd, 0,0), []);
+        }
+        if (this.currentIndex === 2) {
+            console.log("manually handling reset vector");
+            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            return new FullInstructionLine(["resetVector"], new InstructionLine(bd, 0,0), []);
+        }
+        if (this.currentIndex === 4) {
+            console.log("manually handling nmi vector");
+            const bd = new ByteDeclaration([this.eatByteOrDie(), this.eatByteOrDie()]);
+            return new FullInstructionLine(["nmiVector"], new InstructionLine(bd, 0,0), []);
+        }
+        if (this.currentIndex === 6) {
+            console.log("manually handling cart magic");
+            const bd = new ByteDeclaration([
+                this.eatByteOrDie(),
+                this.eatByteOrDie(),
+                this.eatByteOrDie(),
+                this.eatByteOrDie(),
+                this.eatByteOrDie(),
+                this.eatByteOrDie()
+            ]);
+            return new FullInstructionLine(["cartSig"], new InstructionLine(bd, 0,0), []);
+        }
+        if (this.currentIndex < 12) {
+            throw Error("well this is unexpected!");
         }
 
         const opcode = this.eatByteOrDie();
@@ -839,12 +895,12 @@ class Disassembler {
         // if the instruction doesn't define an operand byte, its value is not guaranteed to be defined
 
         // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
-        let remainingBytes = this.bytes.length - this.currentIndex;
+        let remainingBytes = this.fb.bytes.length - this.currentIndex;
 
         if (remainingBytes <= 0) {
             let bytes = [opcode]
             for (let i = 0; i < remainingBytes; i++) {
-                bytes.push(this.currentIndex++)
+                bytes.push(this.currentIndex++);
             }
             const bd = new ByteDeclaration(bytes);
             return new FullInstructionLine(labels, new InstructionLine(bd, 0, 0), comments);
@@ -864,11 +920,15 @@ class Disassembler {
     }
 
     hasNext() {
-        return this.currentIndex < this.bytes.length;
+        return this.currentIndex < this.fb.bytes.length;
     }
 
-    needsLabel = (addr: number) => false;
-    generateLabels = (addr: number) => [];
+    needsLabel = (addr: number) => {
+        return typeof this.labels.find(t => t[1] === addr) !== "undefined";
+    };
+
+    generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t=>t[0]);
+
     needsComment = (addr: number) => false;
     generateComments = (addr: number) => [];
 

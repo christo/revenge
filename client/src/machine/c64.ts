@@ -39,14 +39,19 @@ const disassemble = (t:BlobSniffer, fb:FileBlob) => {
         f: () => {
             const dis = new Disassembler(fb, t.getDisassemblyMeta());
             let disassemblyResult:ActionResult = [];
-            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", "$" + hex8(fb.bytes[1]) + hex8(fb.bytes[0])]]);
+
+            // start with assembler directive for setting the base address.
+            const base = "$" + hex16(t.getDisassemblyMeta().baseAddress(fb));
+            // TODO: need a dialect-agnostic method for tagging syntactic elements
+            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", base]]);
 
             while(dis.hasNext()) {
-                let addr:[string, string] = ["addr", hex16(dis.currentAddress)];
+                const addr = dis.currentAddress;
+                let hexAddr:[string, string] = ["addr", hex16(addr)];
                 let full = dis.nextInstructionLine();
                 let disasm:[string, string] = ["dis", dialect.render(full)];
                 let hex:[string, string] = ["hex", full.asHex()];
-                disassemblyResult.push([addr, hex, disasm]);
+                disassemblyResult.push([hexAddr, hex, disasm]);
             }
             return disassemblyResult;
         }
