@@ -1,6 +1,5 @@
 // Commodore 8-bit machine stuff
 
-
 import {BlobSniffer, BlobType, DisassemblyMeta, FileBlob} from "./FileBlob";
 import {DefaultDialect, Disassembler, Environment} from "./asm";
 import {Mos6502InstructionSet} from "./mos6502";

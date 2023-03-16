@@ -3,7 +3,7 @@
 import {BlobSniffer, FileBlob, UNKNOWN} from "./FileBlob";
 import {BASIC_PRG, disassemble, printBasic} from "./cbm";
 import {hexDumper} from "./asm";
-import {C64_CRT, crt64Actions} from "./c64";
+import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
 import {COMMON_MLPS, VIC20_CART} from "./vic20";
 
 type ActionExecutor = () => ActionResult;
@@ -36,9 +36,13 @@ type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
  *
  * @param fileBlob
  */
-const detect = (fileBlob: FileBlob): TypeActions => {
+const sniff = (fileBlob: FileBlob): TypeActions => {
     if (VIC20_CART.sniff(fileBlob) > 1) {
         const t: BlobSniffer = VIC20_CART;
+        return disassemble(t, fileBlob);
+    }
+    if (C64_8K_CART.sniff(fileBlob) > 1) {
+        const t: BlobSniffer = C64_8K_CART;
         return disassemble(t, fileBlob);
     }
     // run through various detection matchers, falling through to unknown
@@ -58,5 +62,5 @@ const detect = (fileBlob: FileBlob): TypeActions => {
     return {t: UNKNOWN, actions: [hexDumper]};
 }
 
-export {detect};
+export {sniff};
 export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor}

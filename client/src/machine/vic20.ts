@@ -1,11 +1,13 @@
+// VIC-20 specific details
+
 import {CartSniffer, prg} from "./cbm";
-import {DisassemblyMeta, FileBlob} from "./FileBlob";
 
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
  * CBM is in reverse video (&70).
  */
 const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
+const MAGIC_OFFSET = 6;
 
 /** The loading address vector is in the image at this offset. */
 const VIC20_BASE_ADDRESS_OFFSET = 0;
@@ -19,7 +21,7 @@ const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
     "ROM dump from VIC-20",
     "contains A0CBM signature",
-    A0CBM, 6,
+    A0CBM, MAGIC_OFFSET,
     VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET
 );
 

@@ -13,7 +13,7 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, detect, TypeActions, UserAction} from "./machine/revenge";
+import {ActionExecutor, sniff, TypeActions, UserAction} from "./machine/revenge";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, CircularProgress, Stack} from "@mui/material";
@@ -63,7 +63,7 @@ function FileContents(props: { fb: FileBlob, action: UserAction | null}) {
 
 function FileDetail(props: { fb: FileBlob }) {
     const [action, setAction] = useState<UserAction | null>(null);
-    const typeAction: TypeActions = detect(props.fb);
+    const typeAction: TypeActions = sniff(props.fb);
     const t = typeAction.t;
     useEffect(() => {
         setAction(null);
