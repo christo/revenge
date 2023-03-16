@@ -206,10 +206,12 @@ function QuickLoads(props: {setFile: (f: FileLike) => void}) {
         return <CircularProgress />;
     } else {
         return <div className="quickloads">
+            <Stack direction="row" spacing={2}><p>Quickload:</p>
             <Stack direction="column" spacing={2}>
             {items.map((item, i) => {
                 return <Button onClick={() => handleFile(item)} size="small" variant="outlined" key={`ql_${i}`}>{item.name}</Button>
             })}
+            </Stack>
             </Stack>
         </div>;
     }

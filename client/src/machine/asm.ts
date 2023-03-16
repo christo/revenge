@@ -146,7 +146,7 @@ class DefaultDialect implements Dialect {
     }
 
     private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
-        const mnemonic:Tag = ["mn", mi.op.mnemonic.toLowerCase()];
+        const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
         const operand:Tag = ["opnd", this.renderOperand(fil.instructionLine)];
         return [mnemonic, operand];
     }
@@ -509,4 +509,5 @@ const hexDumper: UserAction = {
     }
 };
 
-export {hexDumper}
+export {hexDumper, BooBoo, tagText}
+export type {Tag, TagSeq}

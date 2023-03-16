@@ -108,7 +108,61 @@ body {
   padding: 2px   4px;
 }
 
-.dis {
+.label {
   position: absolute;
-  left: 29ch;
+  left: 23ch;
 }
+
+.data {
+  position: absolute;
+  left: 40ch;
+}
+
+.mn {
+  font-weight: bold;
+  position: absolute;
+  left: 40ch;
+  padding: 1px 3px;
+  margin-left: 3px;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+/* Arithmetic */
+.arith {background-color: rgba(75, 204, 227, 0.2)
+}
+/* Branch instructions */
+.br {background-color: rgba(227, 197, 75, 0.2)
+}
+/* Stack instructions */
+.st {background-color: rgba(136, 227, 75, 0.2)
+}
+/* Logic instructions */
+.lg {background-color: rgba(184, 75, 227, 0.2)}
+/* Flow instructions */
+.fl {background-color: rgba(227, 98, 75, 0.2)
+}
+/* Status register instructions */
+.sr {background-color: rgba(75, 146, 227, 0.2)
+}
+/* Interrupt instructions */
+.int {background-color: rgba(95, 75, 227, 0.2)
+}
+/* Memory instructions */
+.mem {background-color: rgba(227, 143, 75, 0.2)
+}
+/* Transfer instructions */
+.tr {background-color: rgba(75, 227, 192, 0.2)
+}
+/* Subroutine instructions */
+.sub {background-color: rgba(227, 75, 214, 0.2)
+}
+/* Misc */
+.ms {background-color: rgba(114, 95, 121, 0.2)
+}
+
+.opnd {
+  position: absolute;
+  left: 45ch;
+}
+

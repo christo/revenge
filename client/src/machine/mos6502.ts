@@ -27,10 +27,13 @@ class AddressingMode {
 class Op {
     mnemonic: string;
     description: string;
+    /** mnemonic category */
+    cat: string;
 
-    constructor(mnemonic: string, description: string) {
+    constructor(mnemonic: string, description: string, cat: string) {
         this.mnemonic = mnemonic;
         this.description = description;
+        this.cat = cat;
     }
 }
 
@@ -99,63 +102,85 @@ const MODE_ZEROPAGE_X = new AddressingMode("zpg,X", "zeropage, X-indexed", "OPC 
 const MODE_ZEROPAGE_Y = new AddressingMode("zpg,Y", "zeropage, Y-indexed", "OPC $LL,Y",
     "operand is zeropage address; effective address is address incremented by Y without carry", 1);
 
+/** Arithmetic */
+const MATH = "arith";
+/** Branch instructions */
+const BRA = "br";
+/** Stack instructions */
+const ST = "st";
+/** Logic instructions */
+const LG = "lg"
+/** Flow instructions */
+const FL = "fl";
+/** Status register instructions */
+const SR = "sr";
+/** Interrupt instructions */
+const INT = "int";
+/** Memory instructions */
+const MEM = "mem";
+/** Transfer instructions */
+const TR = "tr";
+/** Subroutine instructions */
+const SUB = "sub"
+/** Misc */
+const MS = "ms";
 
-const ADC = new Op("ADD", "add with carry");
-const AND = new Op("AND", "and (with accumulator)");
-const ASL = new Op("ASL", "arithmetic shift left");
-const BCC = new Op("BCC", "branch on carry clear");
-const BCS = new Op("BCS", "branch on carry set");
-const BEQ = new Op("BEQ", "branch on equal (zero set)");
-const BIT = new Op("BIT", "bit test");
-const BMI = new Op("BMI", "branch on minus (negative set)");
-const BNE = new Op("BNE", "branch on not equal (zero clear)");
-const BPL = new Op("BPL", "branch on plus (negative clear)");
-const BRK = new Op("BRK", "break / interrupt");
-const BVC = new Op("BVC", "branch on overflow clear");
-const BVS = new Op("BVS", "branch on overflow set");
-const CLC = new Op("CLC", "clear carry");
-const CLD = new Op("CLD", "clear decimal");
-const CLI = new Op("CLI", "clear interrupt disable");
-const CLV = new Op("CLV", "clear overflow");
-const CMP = new Op("CMP", "compare (with accumulator)");
-const CPX = new Op("CPX", "compare with X");
-const CPY = new Op("CPY", "compare with Y");
-const DEC = new Op("DEC", "decrement");
-const DEX = new Op("DEX", "decrement X");
-const DEY = new Op("DEY", "decrement Y");
-const EOR = new Op("EOR", "exclusive or (with accumulator)");
-const INC = new Op("INC", "increment");
-const INX = new Op("INX", "increment X");
-const INY = new Op("INY", "increment Y");
-const JMP = new Op("JMP", "jump");
-const JSR = new Op("JSR", "jump subroutine");
-const LDA = new Op("LDA", "load accumulator");
-const LDX = new Op("LDX", "load X");
-const LDY = new Op("LDY", "load Y");
-const LSR = new Op("LSR", "logical shift right");
-const NOP = new Op("NOP", "no operation");
-const ORA = new Op("ORA", "or with accumulator");
-const PHA = new Op("PHA", "push accumulator");
-const PHP = new Op("PHP", "push processor status (SR)");
-const PLA = new Op("PLA", "pull accumulator");
-const PLP = new Op("PLP", "pull processor status (SR)");
-const ROL = new Op("ROL", "rotate left");
-const ROR = new Op("ROR", "rotate right");
-const RTI = new Op("RTI", "return from interrupt");
-const RTS = new Op("RTS", "return from subroutine");
-const SBC = new Op("SBC", "subtract with carry");
-const SEC = new Op("SEC", "set carry");
-const SED = new Op("SED", "set decimal");
-const SEI = new Op("SEI", "set interrupt disable");
-const STA = new Op("STA", "store accumulator");
-const STX = new Op("STX", "store X");
-const STY = new Op("STY", "store Y");
-const TAX = new Op("TAX", "transfer accumulator to X");
-const TAY = new Op("TAY", "transfer accumulator to Y");
-const TSX = new Op("TSX", "transfer stack pointer to X");
-const TXA = new Op("TXA", "transfer X to accumulator");
-const TXS = new Op("TXS", "transfer X to stack pointer");
-const TYA = new Op("TYA", "transfer Y to accumulator");
+const ADC = new Op("ADD", "add with carry", MATH);
+const AND = new Op("AND", "and (with accumulator)", LG);
+const ASL = new Op("ASL", "arithmetic shift left", MATH);
+const BCC = new Op("BCC", "branch on carry clear", BRA);
+const BCS = new Op("BCS", "branch on carry set", BRA);
+const BEQ = new Op("BEQ", "branch on equal (zero set)", BRA);
+const BIT = new Op("BIT", "bit test", LG);
+const BMI = new Op("BMI", "branch on minus (negative set)", BRA);
+const BNE = new Op("BNE", "branch on not equal (zero clear)", BRA);
+const BPL = new Op("BPL", "branch on plus (negative clear)", BRA);
+const BRK = new Op("BRK", "break / interrupt", FL);
+const BVC = new Op("BVC", "branch on overflow clear", BRA);
+const BVS = new Op("BVS", "branch on overflow set", BRA);
+const CLC = new Op("CLC", "clear carry", MATH);
+const CLD = new Op("CLD", "clear decimal", SR);
+const CLI = new Op("CLI", "clear interrupt disable", INT);
+const CLV = new Op("CLV", "clear overflow", SR);
+const CMP = new Op("CMP", "compare (with accumulator)", LG);
+const CPX = new Op("CPX", "compare with X", LG);
+const CPY = new Op("CPY", "compare with Y", LG);
+const DEC = new Op("DEC", "decrement", MATH);
+const DEX = new Op("DEX", "decrement X", MATH);
+const DEY = new Op("DEY", "decrement Y", MATH);
+const EOR = new Op("EOR", "exclusive or (with accumulator)", LG);
+const INC = new Op("INC", "increment", MATH);
+const INX = new Op("INX", "increment X", MATH);
+const INY = new Op("INY", "increment Y", MATH);
+const JMP = new Op("JMP", "jump", BRA);
+const JSR = new Op("JSR", "jump subroutine", SUB);
+const LDA = new Op("LDA", "load accumulator", MEM);
+const LDX = new Op("LDX", "load X", MEM);
+const LDY = new Op("LDY", "load Y", MEM);
+const LSR = new Op("LSR", "logical shift right", MATH);
+const NOP = new Op("NOP", "no operation", MS);
+const ORA = new Op("ORA", "or with accumulator", LG);
+const PHA = new Op("PHA", "push accumulator", ST);
+const PHP = new Op("PHP", "push processor status (SR)", ST);
+const PLA = new Op("PLA", "pull accumulator", ST);
+const PLP = new Op("PLP", "pull processor status (SR)", ST);
+const ROL = new Op("ROL", "rotate left", MATH);
+const ROR = new Op("ROR", "rotate right", MATH);
+const RTI = new Op("RTI", "return from interrupt", INT);
+const RTS = new Op("RTS", "return from subroutine", SUB);
+const SBC = new Op("SBC", "subtract with carry", MATH);
+const SEC = new Op("SEC", "set carry", SR);
+const SED = new Op("SED", "set decimal", SR);
+const SEI = new Op("SEI", "set interrupt disable", INT);
+const STA = new Op("STA", "store accumulator", MEM);
+const STX = new Op("STX", "store X", MEM);
+const STY = new Op("STY", "store Y", MEM);
+const TAX = new Op("TAX", "transfer accumulator to X", TR);
+const TAY = new Op("TAY", "transfer accumulator to Y", TR);
+const TSX = new Op("TSX", "transfer stack pointer to X", TR);
+const TXA = new Op("TXA", "transfer X to accumulator", TR);
+const TXS = new Op("TXS", "transfer X to stack pointer", TR);
+const TYA = new Op("TYA", "transfer Y to accumulator", TR);
 
 /**
  * Representation of the number of machine cycles that an instruction takes. This is
