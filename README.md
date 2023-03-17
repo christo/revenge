@@ -91,16 +91,16 @@ it would be great to be able to synthesise macros from binaries.
 
 * multiple disassembly dialect support
 * BASIC prg support
-* data section detection
-* file type recognition
-  * manual choice of file type
-  * type possibility list with probabilities etc.
+* data section detection - probabilistic
+* manual choice of file type
+* type possibility list with probabilities etc.
 * vic 20 / c64 hardware register detection
 * build database of file content recognition.
 * fragment content hash, db etc.?
 * common data fragments identified between files
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
 natch)
+* user accounts
 * file back-end
     * store file on back-end
     * recognise already loaded files with content hash
@@ -108,8 +108,8 @@ natch)
     * store file-level notes and byte-offset / byte-range notes
     * unified back-end between bootstrap filetree and uploaded stuff
 * petscii view (views abstraction)
+  * UI: render text data in machine-original font, derived directly from the character ROM
 * binary diff two files (linear)
-* user accounts
 * sharing, permissions
 * enable multiple people to do analysis of files, to store, share and collaborate on the 
 analysis of files
