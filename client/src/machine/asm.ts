@@ -165,7 +165,7 @@ class DefaultDialect implements Dialect {
     private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
         // add the mnemonic tag and also the mnemonic category
         const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
-        const operand:Tag = [`opnd ${mi.mode}`, this.renderOperand(fil.instructionLine)];
+        const operand:Tag = [`opnd ${mi.mode.code}`, this.renderOperand(fil.instructionLine)];
         return [mnemonic, operand];
     }
 
@@ -262,7 +262,8 @@ class DefaultDialect implements Dialect {
         let operand = "";
         switch (mode) {
             case MODE_ACCUMULATOR:
-                operand = "a";
+                // operand = "a";
+                operand = ""; // implied accumulator not manifest
                 break;
             case MODE_ABSOLUTE:
                 operand = "$" + hex16(il.operand16());

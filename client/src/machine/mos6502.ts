@@ -73,7 +73,8 @@ const SR_FLAGS: ArrayLike<StatusRegisterFlag> = (() => {
     ];
 })();
 
-const MODE_ACCUMULATOR = new AddressingMode("a", "accumulator implied", "OPC A",
+/* The code for each addressing mode should be suitable to use as css classes */
+const MODE_ACCUMULATOR = new AddressingMode("acc", "accumulator implied", "OPC A",
     "operand is AC (implied single byte instruction)", 0);
 const MODE_ABSOLUTE = new AddressingMode("abs", "absolute", "OPC $LLHH",
     "operand is address $HHLL", 2);

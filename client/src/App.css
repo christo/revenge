@@ -116,16 +116,24 @@ body {
 .data {
   position: absolute;
   left: 40ch;
+  border-radius: 4px;
+  padding: 1px 6px;
+  border: #7a7373 solid;
 }
 
 .mn {
   font-weight: bold;
   position: absolute;
   left: 40ch;
-  padding: 1px 3px;
-  margin-left: 3px;
+  padding: 1px 6px;
   border-radius: 2px;
+}
+.opnd {
+  position: absolute;
+  left: 45ch;
   font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 2px;
 }
 
 /* Arithmetic */
@@ -161,8 +169,56 @@ body {
 .ms {background-color: rgba(114, 95, 121, 0.2)
 }
 
-.opnd {
-  position: absolute;
-  left: 45ch;
+.opnd.acc{ /* addressing mode accumulator implied */
+  /* there's no arg here */
 }
+
+.opnd.abs{ /* addressing mode absolute */
+  color: #a3b3d5;
+}
+
+.opnd.abs_x{ /* addressing mode absolute, X-indexed */
+  color: #23b774;
+}
+
+.opnd.abs_y{ /* addressing mode absolute, Y-indexed */
+  color: #23b2b7;
+}
+
+.opnd.imm { /* addressing mode immediate */
+  color: #87a15b;
+}
+
+.opnd.impl{ /* addressing mode implied */
+}
+
+.opnd.ind{ /* addressing mode indirect */
+}
+
+.opnd.x_ind{ /* addressing mode X-indexed, indirect */
+
+}
+
+.opnd.ind_y{ /* addressing mode indirect, Y-indexed */
+  color: #8282e0;
+}
+
+.opnd.rel{ /* addressing mode relative */
+  color: orange;
+}
+
+.opnd.zpg{ /* addressing mode zeropage */
+  color: #ce91c4;
+}
+
+.opnd.zpg_x{ /* addressing mode zeropage, X-indexed */
+  color: #c7ae92;
+}
+
+.opnd.zpg_y{ /* addressing mode zeropage, Y-indexed */
+  color: #92b1c7;
+}
+
+
+
 
