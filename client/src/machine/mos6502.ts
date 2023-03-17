@@ -77,28 +77,28 @@ const MODE_ACCUMULATOR = new AddressingMode("a", "accumulator implied", "OPC A",
     "operand is AC (implied single byte instruction)", 0);
 const MODE_ABSOLUTE = new AddressingMode("abs", "absolute", "OPC $LLHH",
     "operand is address $HHLL", 2);
-const MODE_ABSOLUTE_X = new AddressingMode("abs,X", "absolute, X-indexed",
+const MODE_ABSOLUTE_X = new AddressingMode("abs_x", "absolute, X-indexed",
     "OPC $LLHH,X", "operand is address; effective address is address incremented by X with carry", 2);
-const MODE_ABSOLUTE_Y = new AddressingMode("abs,Y", "absolute, Y-indexed", "OPC $LLHH,Y",
+const MODE_ABSOLUTE_Y = new AddressingMode("abs_y", "absolute, Y-indexed", "OPC $LLHH,Y",
     "operand is address; effective address is address incremented by Y with carry", 2);
-const MODE_IMMEDIATE = new AddressingMode("    #", "immediate", "OPC #$BB",
+const MODE_IMMEDIATE = new AddressingMode("imm", "immediate", "OPC #$BB",
     "operand is byte BB", 1);
 const MODE_IMPLIED = new AddressingMode("impl", "implied", "OPC", "operand implied", 0);
 const MODE_INDIRECT = new AddressingMode("ind", "indirect",
     "OPC ($LLHH)", "operand is address; effective address is contents of word at address: C.w($HHLL)", 2);
-const MODE_INDIRECT_X = new AddressingMode("X,ind", "X-indexed, indirect",
+const MODE_INDIRECT_X = new AddressingMode("x_ind", "X-indexed, indirect",
     "OPC ($LL,X)",
     "operand is zeropage address; effective address is word in (LL + X, LL + X + 1), inc. without carry: C.w($00LL + X)", 1);
-const MODE_INDIRECT_Y = new AddressingMode("ind,Y", "indirect, Y-indexed",
+const MODE_INDIRECT_Y = new AddressingMode("ind_y", "indirect, Y-indexed",
     "OPC ($LL),Y",
     "operand is zeropage address; effective address is word in (LL, LL + 1) incremented by Y with carry: C.w($00LL) + Y", 1);
 const MODE_RELATIVE = new AddressingMode("rel", "relative", "OPC $BB",
     "branch target is PC + signed offset BB ***", 1);
 const MODE_ZEROPAGE = new AddressingMode("zpg", "zeropage", "OPC $LL",
     "operand is zeropage address (hi-byte is zero, address = $00LL)", 1);
-const MODE_ZEROPAGE_X = new AddressingMode("zpg,X", "zeropage, X-indexed", "OPC $LL,X",
+const MODE_ZEROPAGE_X = new AddressingMode("zpg_x", "zeropage, X-indexed", "OPC $LL,X",
     "operand is zeropage address; effective address is address incremented by X without carry", 1);
-const MODE_ZEROPAGE_Y = new AddressingMode("zpg,Y", "zeropage, Y-indexed", "OPC $LL,Y",
+const MODE_ZEROPAGE_Y = new AddressingMode("zpg_y", "zeropage, Y-indexed", "OPC $LL,Y",
     "operand is zeropage address; effective address is address incremented by Y without carry", 1);
 
 /** Arithmetic */
