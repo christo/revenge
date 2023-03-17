@@ -88,9 +88,9 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
     /**
      * Carts images have a fixed, magic signature of bytes at a known offset.
      *
-     * @param name
-     * @param desc
-     * @param note
+     * @param name name of the file type
+     * @param desc description
+     * @param tags hashtags
      * @param magic the magic sequence.
      * @param offset where the magic happens.
      * @param baseAddressOffset
