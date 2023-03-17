@@ -705,5 +705,5 @@ class BlobType implements BlobSniffer {
 }
 const UNKNOWN = new BlobType("unknown", "type not detected", []);
 
-export {BlobType};
+export {BlobType, UNKNOWN};
 export type {BlobSniffer};

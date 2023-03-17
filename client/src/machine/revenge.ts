@@ -1,8 +1,8 @@
 // application-level stuff to tie user interface and domain model
 
-import {FileBlob, UNKNOWN} from "./FileBlob";
+import {FileBlob} from "./FileBlob";
 import {BASIC_PRG, disassemble, printBasic} from "./cbm";
-import {BlobSniffer, hexDumper} from "./asm";
+import {BlobSniffer, hexDumper, UNKNOWN} from "./asm";
 import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
 import {COMMON_MLPS, VIC20_CART} from "./vic20";
 
