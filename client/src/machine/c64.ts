@@ -1,7 +1,7 @@
 // C64 specific details
 
-import {BlobType, FileBlob} from "./FileBlob";
-import {hexDumper} from "./asm";
+import {FileBlob} from "./FileBlob";
+import {BlobType, DisassemblyMetaImpl, hexDumper} from "./asm";
 import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer} from "./cbm";
 
@@ -52,7 +52,7 @@ const C64_8K_CART = new CartSniffer(
     "ROM dump from C64",
     ["cart", "c64"],
     CBM80, 6,
-    C64_8K_BASE_ADDRESS, C64_COLD_VECTOR_OFFSET, C64_WARM_VECTOR_OFFSET
+    new DisassemblyMetaImpl(C64_8K_BASE_ADDRESS, C64_COLD_VECTOR_OFFSET, C64_WARM_VECTOR_OFFSET, 2)
 );
 
 export {crt64Actions, C64_CRT, C64_8K_CART};

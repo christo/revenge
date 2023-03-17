@@ -1,7 +1,7 @@
 // assembler / disassembler stuff
 
 import {assertByte, hex16, hex8} from "../misc/BinUtils";
-import {DisassemblyMeta, FileBlob} from "./FileBlob";
+import {FileBlob} from "./FileBlob";
 import {
     Instruction,
     InstructionLike,
@@ -22,7 +22,7 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {UserAction} from "./revenge";
+import {Detail, UserAction} from "./revenge";
 import {spacecat, stringcat} from "../misc/fp";
 
 export {}
@@ -73,11 +73,22 @@ interface Dialect {
      * @param label the label to check for syntactic validity.
      */
     validateLabel(label: String): BooBoo[];
+
+    /**
+     * Return the characters that go before a line comment.
+     */
+    commentPrefix(): string;
+
+    /**
+     * Format the given string as a label. For example adding a trailing colon that must be present but which
+     * is not part of the label name.
+     * @param s
+     */
+    labelFormat(s: string): string;
 }
 
 /**
  * Error class, all the sensible names have been domain squatted by typescript/javascript.
- *
  */
 class BooBoo {
     private mesg: string;
@@ -143,6 +154,7 @@ class DefaultDialect implements Dialect {
         if (index >= input.length || index < 0) {
             throw Error("index out of range")
         }
+        throw Error("not implemented");
         // parsing can fail if wrong or not enough bytes
 
         // return Instruction + 0-2 bytes operand + new index (this may be beyond input which means finished)
@@ -151,8 +163,10 @@ class DefaultDialect implements Dialect {
     }
 
     private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
+        // add the mnemonic tag and also the mnemonic category
         const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
-        const operand:Tag = ["opnd", this.renderOperand(fil.instructionLine)];
+        // TODO tag the addressing mode using some convenient small string
+        const operand:Tag = [`opnd`, this.renderOperand(fil.instructionLine)];
         return [mnemonic, operand];
     }
 
@@ -170,11 +184,11 @@ class DefaultDialect implements Dialect {
         return fil.comments.map(c => this.commentPrefix() + c.replaceAll(le, le + this.commentPrefix())).reduce(stringcat, "");
     }
 
-    private commentPrefix() {
+    commentPrefix() {
         return "; ";
     }
 
-    private labelFormat(s: string) {
+    labelFormat(s: string) {
         return s + ": ";
     }
 
@@ -366,6 +380,122 @@ class Environment {
     }
 }
 
+/** Will have different types of data later (petscii, sid music, character) */
+enum SegmentType {
+    CODE, DATA
+}
+
+class Segment {
+    segmentType: SegmentType;
+    startOffset: number;
+    length: number;
+
+    constructor(segmentType: SegmentType, startOffset: number, length: number) {
+        this.segmentType = segmentType;
+        this.startOffset = startOffset;
+        this.length = length;
+    }
+}
+
+/**
+ * Metadata valuable for disassembling a FileBlob.
+ * TODO move to asm.ts
+ */
+interface DisassemblyMeta {
+    /**
+     * The address the file should be loaded into. Some images may have multiple segments loaded into
+     * different addresses and some file formats accommodate this.
+     * @param fb the file to get the vector from
+     */
+    baseAddress(fb: FileBlob): number;
+
+    /**
+     * Address of start of code for a cold boot.
+     * @param fb the file to get the vector from
+     */
+    coldResetVector(fb: FileBlob): number;
+
+    /**
+     * Address of start of code for a warm boot.
+     * @param fb the file to get the vector from
+     */
+    warmResetVector(fb: FileBlob): number;
+
+    /**
+     * temporary until we implemnet segments
+     * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
+     * @param fileBlob
+     */
+    disassemblyStartIndex(fb: FileBlob): number;
+
+    contentStartIndex(fb: FileBlob): number;
+}
+
+export class NullDisassemblyMeta implements DisassemblyMeta {
+
+    static INSTANCE = new NullDisassemblyMeta();
+
+    private constructor() {
+        // intentionally left blank
+    }
+
+    baseAddress(fb: FileBlob): number {
+        return 0;
+    }
+
+    coldResetVector(fb: FileBlob): number {
+        return 0;
+    }
+
+    contentStartIndex(fb: FileBlob): number {
+        return 0;
+    }
+
+    disassemblyStartIndex(fb: FileBlob): number {
+        return 0;
+    }
+
+    warmResetVector(fb: FileBlob): number {
+        return 0;
+    }
+
+}
+
+class DisassemblyMetaImpl implements DisassemblyMeta {
+    private readonly _baseAddressOffset: number;
+    private readonly _resetVectorOffset: number;
+    private readonly _nmiVectorOffset: number;
+    private readonly _contentStartOffset: number;
+
+    constructor(baseAddressOffset:number, resetVectorOffset:number, nmiVectorOffset:number, contentStartOffset:number) {
+        this._baseAddressOffset = baseAddressOffset;
+        this._resetVectorOffset = resetVectorOffset;
+        this._nmiVectorOffset = nmiVectorOffset;
+        this._contentStartOffset = contentStartOffset;
+    }
+
+    baseAddress(fb: FileBlob): number {
+        return fb.readVector(this._baseAddressOffset);
+    }
+
+    coldResetVector(fb: FileBlob): number {
+        return fb.readVector(this._resetVectorOffset);
+    }
+
+    contentStartIndex(fb: FileBlob): number {
+        return this._contentStartOffset;
+    }
+
+    disassemblyStartIndex(fb: FileBlob): number {
+        return this.coldResetVector(fb) - this.baseAddress(fb)
+    }
+
+    warmResetVector(fb: FileBlob): number {
+        return fb.readVector(this._nmiVectorOffset);
+    }
+
+}
+
 /** Stateful translator of bytes to their parsed instruction line */
 class Disassembler {
 
@@ -507,10 +637,75 @@ class Disassembler {
 const hexDumper: UserAction = {
     label: "Hex Dump",
     f: () => {
-        // TODO rewrite hexdump to work with this structure; may need to add outer className to ActionResult
-        return [[["hexbyte", "ff"]]];
+        // TODO get hold of the bytes so the following can replace the special case of hexdumping
+        return new Detail(["hexbyte"], [[["hex", "ff"]]]);
     }
 };
 
-export {hexDumper, BooBoo, tagText}
-export type {Tag, TagSeq}
+export {hexDumper, BooBoo, tagText, DisassemblyMetaImpl}
+export type {Tag, TagSeq, DisassemblyMeta}
+
+/**
+ * Abstraction for scoring relative confidence in file content categorisation.
+ */
+interface BlobSniffer {
+    /**
+     * Produces a score for the given FileBlob, higher numbers indicate a corresponding higher confidence of
+     * a match. Values should be coefficients so that an aggregate score is achieved by multiplication. A
+     * value of 1 signifies no indication of a match, less than 1 signifies unlikeliness and greater than 1
+     * signifies increasing confidence. Zero is absolute certainty. Negative values must not be returned.
+     * @param fb the file contents to sniff
+     */
+    sniff(fb: FileBlob): number;
+
+    getDisassemblyMeta(): DisassemblyMeta;
+
+    name: string;
+    desc: string;
+    tags: string[];
+}
+
+/**
+ * Represents a file type where file type detection heuristics such as
+ * file name extension, magic number prefixes detect file contents.
+ */
+class BlobType implements BlobSniffer {
+
+    name: string;
+    desc: string;
+    exts: string[];
+    tags: string[];
+    prefix: Uint8Array;
+    dm: DisassemblyMeta;
+
+    constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
+        this.desc = desc;
+        this.name = name;
+        this.dm = dm ? dm : NullDisassemblyMeta.INSTANCE;
+        this.exts = ext ? [ext] : [];
+        this.tags = tags;
+        this.prefix = prefix ? new Uint8Array(prefix) : new Uint8Array(0);
+    }
+
+    extensionMatch(fb: FileBlob) {
+        const filename = fb.name;
+        return this.exts.reduce((a, n) => a || filename.toLowerCase().endsWith("." + n), false);
+    }
+
+    getDisassemblyMeta(): DisassemblyMeta {
+        return this.dm;
+    }
+
+    dataMatch(fileBlob: FileBlob) {
+        return fileBlob.submatch(this.prefix, 0);
+    }
+
+    sniff(fb: FileBlob): number {
+        return (this.dataMatch(fb) ? 2 : 0.5) * (this.extensionMatch(fb) ? 1.5 : 0.9);
+    }
+
+}
+const UNKNOWN = new BlobType("unknown", "type not detected", []);
+
+export {BlobType};
+export type {BlobSniffer};

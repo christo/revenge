@@ -37,7 +37,7 @@ class Op {
     }
 }
 
-// TODO fix this, very awkward. Need fromByte(b) and per flag methods
+// awkward impl needs to be fixed
 class StatusRegisterFlag {
     name: string;
     description: string;

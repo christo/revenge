@@ -1,12 +1,12 @@
 // application-level stuff to tie user interface and domain model
 
-import {BlobSniffer, FileBlob, UNKNOWN} from "./FileBlob";
+import {FileBlob, UNKNOWN} from "./FileBlob";
 import {BASIC_PRG, disassemble, printBasic} from "./cbm";
-import {hexDumper} from "./asm";
+import {BlobSniffer, hexDumper} from "./asm";
 import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
 import {COMMON_MLPS, VIC20_CART} from "./vic20";
 
-type ActionExecutor = () => ActionResult;
+type ActionExecutor = () => Detail;
 
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
@@ -15,6 +15,19 @@ type ActionExecutor = () => ActionResult;
  * the name as a className and the value as the text content of a span element.
  */
 type ActionResult = [string, string][][]; // 2d array of tuples
+
+/**
+ * Datastructure for all data interpretation output.
+ */
+class Detail {
+    tags:string[];
+    tfield: ActionResult;
+
+    constructor(tags: string[], tfield: ActionResult) {
+        this.tags = tags;
+        this.tfield = tfield;
+    }
+}
 
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo: ActionExecutor) => void;
@@ -62,5 +75,5 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     return {t: UNKNOWN, actions: [hexDumper]};
 }
 
-export {sniff};
+export {sniff, Detail};
 export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor}

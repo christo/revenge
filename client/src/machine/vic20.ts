@@ -1,6 +1,7 @@
 // VIC-20 specific details
 
 import {CartSniffer, prg} from "./cbm";
+import {DisassemblyMetaImpl} from "./asm";
 
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
@@ -22,7 +23,7 @@ const VIC20_CART = new CartSniffer(
     "ROM dump from VIC-20",
     ["cart", "vic20"],
     A0CBM, MAGIC_OFFSET,
-    VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET
+    new DisassemblyMetaImpl(VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET, 2)
 );
 
 /** Common load addresses for machine language programs. */

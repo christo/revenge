@@ -46,9 +46,10 @@ function HexDump(props: {fb: FileBlob}) {
 }
 
 function DetailRenderer(props: {ae: ActionExecutor}) {
+    const detail = props.ae();
     return <div className="actionResult">
 
-        {props.ae().map((tl, i) => {
+        {detail.tfield.map((tl, i) => {
             return <div className="line" key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;

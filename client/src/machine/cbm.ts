@@ -1,10 +1,10 @@
 // Commodore 8-bit machine stuff
 
-import {BlobSniffer, BlobType, DisassemblyMeta, FileBlob} from "./FileBlob";
-import {DefaultDialect, Disassembler, Environment} from "./asm";
+import {FileBlob} from "./FileBlob";
+import {BlobSniffer, BlobType, DefaultDialect, Disassembler, DisassemblyMeta, Environment} from "./asm";
 import {Mos6502} from "./mos6502";
 import {hex16, hex8} from "../misc/BinUtils";
-import {ActionExecutor, ActionFunction, ActionResult, UserAction} from "./revenge";
+import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
 
 
 // May need to add more but these seem initially sufficient
@@ -18,11 +18,11 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
         label: "disassemble",
         f: () => {
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
-            let disassemblyResult: ActionResult = [];
+            let detail = new Detail([], [])
 
             // start with assembler directive for setting the base address.
             const base = "$" + hex16(t.getDisassemblyMeta().baseAddress(fb));
-            disassemblyResult.push([["pct", "*"], ["assign", "="], ["hloc", base]]);
+            detail.tfield.push([["pct", "*"], ["assign", "="], ["hloc", base]]);
 
             while (dis.hasNext()) {
                 const addr = dis.currentAddress;
@@ -32,9 +32,10 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
                 const items = [hexAddr, hex];
                 const disasm = dialect.tagged(full);
                 disasm.forEach(i=>items.push(i));
-                disassemblyResult.push(items);
+                detail.tfield.push(items);
             }
-            return disassemblyResult;
+            // TODO return Detail instead
+            return detail;
         }
     }];
     return {
@@ -45,10 +46,10 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
 /** User action that prints the file as a basic program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     let ar: ActionResult = [[["debug", 'print ya basic \n ']]];
-
+    let d = new Detail([], ar);
     let ae: ActionExecutor = () => {
         // TODO basic decoder action
-        return ar;
+        return d;
     };
     return {
         t: t,
@@ -74,16 +75,14 @@ function prg(prefix: ArrayLike<number>) {
  * Cart ROM dumps without any emulator metadata file format stuff.
  * Currently very VIC-20-biased.
  */
-class CartSniffer implements BlobSniffer, DisassemblyMeta {
+class CartSniffer implements BlobSniffer {
 
     readonly name: string;
     readonly desc: string;
     readonly tags: string[];
     private readonly magic: Uint8Array;
     private readonly magicOffset: number;
-    private baseAddressOffset: number;
-    private coldVectorOffset: number;
-    private warmVectorOffset: number;
+    private readonly disassemblyMeta: DisassemblyMeta;
 
     /**
      * Carts images have a fixed, magic signature of bytes at a known offset.
@@ -93,19 +92,14 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
      * @param tags hashtags
      * @param magic the magic sequence.
      * @param offset where the magic happens.
-     * @param baseAddressOffset
-     * @param coldVectorOffset
-     * @param warmVectorOffset
      */
-    constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, baseAddressOffset: number, coldVectorOffset: number, warmVectorOffset: number) {
+    constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, dm:DisassemblyMeta) {
         this.name = name;
         this.desc = desc;
         this.tags = tags;
-        this.baseAddressOffset = baseAddressOffset;
-        this.coldVectorOffset = coldVectorOffset;
-        this.warmVectorOffset = warmVectorOffset;
         this.magic = new Uint8Array(magic);
         this.magicOffset = offset;
+        this.disassemblyMeta = dm;
     }
 
     sniff(fb: FileBlob): number {
@@ -115,40 +109,7 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
-        return this;
-    }
-
-    /**
-     * The address the file should be loaded into. Real images have multiple segments loaded into
-     * different addresses and some file formats accommodate this.
-     * @param fileBlob
-     */
-    baseAddress(fb: FileBlob) {
-        return fb.readVector(this.baseAddressOffset);
-    }
-
-    /**
-     * Address of start of code for a cold boot.
-     * @param fileBlob
-     */
-    coldResetVector(fb: FileBlob) {
-        return fb.readVector(this.coldVectorOffset);
-    }
-
-    /**
-     * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
-     * @param fileBlob
-     */
-    warmResetVector(fb: FileBlob) {
-        return fb.readVector(this.warmVectorOffset);
-    }
-
-    disassemblyStartIndex(fb: FileBlob): number {
-        return this.coldResetVector(fb) - this.baseAddress(fb); // HACK bad!
-    }
-
-    contentStartIndex(fb: FileBlob): number {
-        return 2; // TODO fix
+        return this.disassemblyMeta;
     }
 
 }
