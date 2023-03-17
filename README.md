@@ -123,3 +123,7 @@ content hashes for file identification. archive.org software entries have multip
 * https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
 * https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+* Look into the following from a message in TypeScript discord: 
+  > AsyncResult, Task, AsyncEither AsyncHTTPRequest are some names for 
+  > implementations that exist in the community. Look up daggy.js which
+  > is old, but gives you the idea. crocks.js, idk, sanctuary js
