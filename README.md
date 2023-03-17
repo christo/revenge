@@ -54,6 +54,28 @@ Assembler dialects being considered:
 * xa65 
 * ca65 - part of [cc65](https://www.cc65.org/)
 
+### Common Dialect Variations
+
+Assemblers may accept a lot of syntax beyond the minimum required
+for generating disassembly, for example macros and includes. Ultimately 
+it would be great to be able to synthesise macros from binaries.
+
+* line comment prefix character
+* block comments (kick-ass does this)
+* legal label rules, e.g.: 
+  * no mnemonic prefix allowed
+  * must start on column 0 and mnemonics must be indented
+  * must end in a colon (or not)
+* program counter assignment:
+  * `ORG $8000` or
+  * `* = $8000` 
+* hex/bin/oct/dec literals syntax/support
+* data declaration
+  * individual bytes
+  * word support etc.
+  * strings
+
+
 ## Done 
 
 * drag and drop file loading

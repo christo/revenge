@@ -57,6 +57,11 @@ export class ByteDeclaration implements InstructionLike {
     }
 }
 
+/**
+ * Abstraction for holding syntactic specifications and implementing textual renditions of
+ * assembly language.
+ *
+ */
 interface Dialect {
     readonly name: string;
     readonly env: Environment;
