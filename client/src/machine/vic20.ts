@@ -20,7 +20,7 @@ const VIC20_WARM_VECTOR_OFFSET = 4;
 const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
     "ROM dump from VIC-20",
-    "contains A0CBM signature",
+    ["cart", "vic20"],
     A0CBM, MAGIC_OFFSET,
     VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET
 );

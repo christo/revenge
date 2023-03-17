@@ -14,7 +14,7 @@ function crt64Actions(fileBlob: FileBlob) {
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = stringToArray("C64 CARTRIDGE   ");
-const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", "crt", prefix);
+const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
 
 /** C64 reset vector is stored at this offset. */
 const C64_RESET_VECTOR_OFFSET = 4;
@@ -50,7 +50,7 @@ const CBM80 = [0xC3, 0xC2, 0xCD, 0x38, 0x30];
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
-    "contains CBM80 signature",
+    ["cart", "c64"],
     CBM80, 6,
     C64_8K_BASE_ADDRESS, C64_COLD_VECTOR_OFFSET, C64_WARM_VECTOR_OFFSET
 );

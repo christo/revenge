@@ -16,7 +16,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {ActionExecutor, sniff, TypeActions, UserAction} from "./machine/revenge";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
-import {Button, CircularProgress, Stack} from "@mui/material";
+import {Button, Chip, CircularProgress, Paper, Stack} from "@mui/material";
 import axios from "axios";
 
 const darkTheme = createTheme({
@@ -32,7 +32,7 @@ const darkTheme = createTheme({
  */
 const MAX_SIZE_MB = 1;
 
-interface FileContents {
+interface FileCoantents {
     fb: FileBlob,
     loading: boolean
 }
@@ -47,6 +47,7 @@ function HexDump(props: {fb: FileBlob}) {
 
 function DetailRenderer(props: {ae: ActionExecutor}) {
     return <div className="actionResult">
+
         {props.ae().map((tl, i) => {
             return <div className="line" key={`fb_${i}`}>
                 {tl.map((tup, j) => {
@@ -55,10 +56,6 @@ function DetailRenderer(props: {ae: ActionExecutor}) {
             </div>;
         })}
     </div>;
-}
-
-function FileContents(props: { fb: FileBlob, action: UserAction | null}) {
-    return props.action == null ? <HexDump fb={props.fb}/> : <DetailRenderer ae={props.action.f}/>;
 }
 
 function FileDetail(props: { fb: FileBlob }) {
@@ -75,7 +72,11 @@ function FileDetail(props: { fb: FileBlob }) {
                 <span className="smell">Smells like</span>
                 <span className="name">{t.name}</span>
                 <span className="desc">{t.desc}</span>
-                <span className="note">{t.note}</span>
+
+                {t.tags.map((tag, i) => {
+                    return <Chip label={tag} size="small" id={`tag_${i}`} sx={{marginRight: 1}} variant="outlined" color="info"/>
+                })}
+
             </div>
 
             <div className="typeActions">
@@ -87,12 +88,12 @@ function FileDetail(props: { fb: FileBlob }) {
             </div>
 
         </div>
-        <FileContents fb={props.fb} action={action}/>
+        {action == null ? <HexDump fb={props.fb}/> : <DetailRenderer ae={action.f}/>}
     </div>;
 }
 
 function CurrentFileSummary(props: { file: File | FileLike }) {
-    const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
+    const [rendered, setRendered] = useState<FileCoantents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
     useEffect(() => {
         FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
     }, [props.file]);

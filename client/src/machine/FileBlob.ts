@@ -98,7 +98,7 @@ interface BlobSniffer {
 
     name: string;
     desc: string;
-    note: string;
+    tags: string[];
 }
 
 /**
@@ -110,16 +110,16 @@ class BlobType implements BlobSniffer {
     name: string;
     desc: string;
     exts: string[];
-    note: string;
+    tags: string[];
     prefix: Uint8Array;
     dm: DisassemblyMeta;
 
-    constructor(name: string, desc: string, ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
+    constructor(name: string, desc: string, tags:string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
         this.desc = desc;
         this.name = name;
         this.dm = dm ? dm : NullDisassemblyMeta.INSTANCE;
         this.exts = ext ? [ext] : [];
-        this.note = "";
+        this.tags = tags;
         this.prefix = prefix ? new Uint8Array(prefix) : new Uint8Array(0);
     }
 
@@ -140,8 +140,8 @@ class BlobType implements BlobSniffer {
         return (this.dataMatch(fb) ? 2 : 0.5) * (this.extensionMatch(fb) ? 1.5 : 0.9);
     }
 
-    setNote(note: string) {
-        this.note = note;
+    addTag(tag: string) {
+        this.tags.push(tag);
     }
 }
 
@@ -222,7 +222,7 @@ class NullDisassemblyMeta implements DisassemblyMeta {
 }
 
 
-const UNKNOWN = new BlobType("unknown", "type not detected",)
+const UNKNOWN = new BlobType("unknown", "type not detected", []);
 export {FileBlob, FileLike, UNKNOWN, BlobType};
 export type {BlobSniffer, DisassemblyMeta};
 

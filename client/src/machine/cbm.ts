@@ -60,14 +60,13 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 };
 
 
-const BASIC_PRG = new BlobType("basic prg", "BASIC program", "prg", [0x01, 0x08]);
-BASIC_PRG.setNote('BASIC prg files have an expected address prefix and ought to have valid basic token syntax.');
+const BASIC_PRG = new BlobType("basic prg", "BASIC program",["basic"], "prg", [0x01, 0x08]);
 
 function prg(prefix: ArrayLike<number>) {
     // we assume a prefix of at least 2 bytes
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
     // consider moving the start address calculation into the BlobByte implementation
-    return new BlobType("prg@" + addr, "program binary to load at $" + addr, "prg", prefix);
+    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"],"prg", prefix);
 }
 
 
@@ -79,7 +78,7 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
 
     readonly name: string;
     readonly desc: string;
-    readonly note: string;
+    readonly tags: string[];
     private readonly magic: Uint8Array;
     private readonly magicOffset: number;
     private baseAddressOffset: number;
@@ -98,10 +97,10 @@ class CartSniffer implements BlobSniffer, DisassemblyMeta {
      * @param coldVectorOffset
      * @param warmVectorOffset
      */
-    constructor(name: string, desc: string, note: string, magic: ArrayLike<number>, offset: number, baseAddressOffset: number, coldVectorOffset: number, warmVectorOffset: number) {
+    constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, baseAddressOffset: number, coldVectorOffset: number, warmVectorOffset: number) {
         this.name = name;
         this.desc = desc;
-        this.note = note;
+        this.tags = tags;
         this.baseAddressOffset = baseAddressOffset;
         this.coldVectorOffset = coldVectorOffset;
         this.warmVectorOffset = warmVectorOffset;
