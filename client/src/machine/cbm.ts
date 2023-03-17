@@ -34,7 +34,6 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
                 disasm.forEach(i=>items.push(i));
                 detail.tfield.push(items);
             }
-            // TODO return Detail instead
             return detail;
         }
     }];
