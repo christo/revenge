@@ -557,7 +557,7 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 // have instruction set variants for the chip variants but also whether to allow illegal opcodes
 I.fillIllegals();
 
-class InstructionWithOperands {
+class FullInstruction {
     readonly instruction: InstructionLike;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
@@ -602,7 +602,7 @@ class Mos6502 {
 export {
     Mos6502,
     Instruction,
-    InstructionWithOperands,
+    FullInstruction,
     InstructionSet,
     MODE_ABSOLUTE,
     MODE_IMPLIED,

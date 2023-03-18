@@ -6,7 +6,7 @@ import {
     Instruction,
     InstructionLike,
     InstructionSet,
-    InstructionWithOperands,
+    FullInstruction,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
     MODE_ABSOLUTE_Y,
@@ -163,9 +163,11 @@ class DefaultDialect implements Dialect {
     }
 
     private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
+        // TODO split assembler pseudo-ops, assembly code and data
         // add the mnemonic tag and also the mnemonic category
         const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
-        const operand:Tag = [`opnd ${mi.mode.code}`, this.renderOperand(fil.instructionLine)];
+        const il = fil.fullInstruction;
+        const operand:Tag = [`opnd ${mi.mode.code}`, this.renderOperand(il)];
         return [mnemonic, operand];
     }
 
@@ -218,7 +220,7 @@ class DefaultDialect implements Dialect {
         let comments = this.renderComments(fil);
         // in this dialect, labels have their own line and end with colon
         let labels = this.renderLabels(fil);
-        let i: InstructionLike = fil.instructionLine.instruction;
+        let i: InstructionLike = fil.fullInstruction.instruction;
 
         let codeOrData = "";
         // NOTE: trying out weird extreme avoidance of casting:
@@ -237,7 +239,7 @@ class DefaultDialect implements Dialect {
     tagged(fil: FullInstructionLine):TagSeq {
         const comments:Tag = ["comment", this.renderComments(fil)];
         const labels:Tag = ["label", this.renderLabels(fil)];
-        let i: InstructionLike = fil.instructionLine.instruction
+        let i: InstructionLike = fil.fullInstruction.instruction
 
         let tagged:TagSeq = [comments, labels];
         i.handleCode(mi => {
@@ -255,52 +257,54 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: InstructionWithOperands) {
+    private renderOperand(il: FullInstruction) {
+        // TODO make a tagged version of the operand
         const i = il.instruction as Instruction;    // TODO get rid of cast
-        const mode = i.mode;
+        const hw = () => "$" + hex16(il.operand16());
+        const hb = () => "$" + hex8(il.firstByte);
 
         let operand = "";
-        switch (mode) {
+        switch (i.mode) {
             case MODE_ACCUMULATOR:
                 // operand = "a";
                 operand = ""; // implied accumulator not manifest
                 break;
             case MODE_ABSOLUTE:
-                operand = "$" + hex16(il.operand16());
+                operand = hw();
                 break;
             case MODE_ABSOLUTE_X:
-                operand = "$" + hex16(il.operand16()) + ", x";
+                operand = hw() + ", x";
                 break;
             case MODE_ABSOLUTE_Y:
-                operand = "$" + hex16(il.operand16()) + ", y";
+                operand = hw() + ", y";
                 break;
             case MODE_IMMEDIATE:
-                operand = "#$" + hex8(il.firstByte);
+                operand = "#"+hb();
                 break;
             case MODE_IMPLIED:
                 operand = "";
                 break;
             case MODE_INDIRECT:
-                operand = "($" + hex16(il.operand16()) + ")";
+                operand = "("+ hw() + ")";
                 break;
             case MODE_INDIRECT_X:
-                operand = "($" + hex8(il.firstByte) + ", x)";
+                operand = "(" + hb() + ", x)";
                 break;
             case MODE_INDIRECT_Y:
-                operand = "($" + hex8(il.firstByte) + "), y";
+                operand = "("+ hb() + "), y";
                 break;
             case MODE_RELATIVE:
                 // TODO can be negative byte, maybe render decimal
-                operand = "$" + hex8(il.firstByte);
+                operand = hb();
                 break;
             case MODE_ZEROPAGE:
-                operand = "$" + hex8(il.firstByte);
+                operand = hb();
                 break;
             case MODE_ZEROPAGE_X:
-                operand = "$" + hex8(il.firstByte) + ", x"
+                operand = hb() + ", x"
                 break;
             case MODE_ZEROPAGE_Y:
-                operand = "$" + hex8(il.firstByte) + ", y"
+                operand = hb() + ", y"
                 break;
         }
         return operand;
@@ -311,15 +315,16 @@ class DefaultDialect implements Dialect {
 /**
  * A representation of a specific instruction on a line in a source file with its
  * operands, potential labels, potential comments etc.
+ * TODO use type parameter for machine instruction, data, and pseudo-ops
  */
 class FullInstructionLine {
     private readonly _labels: Array<string>;
-    private readonly _instructionLine: InstructionWithOperands;
+    private readonly _fullInstruction: FullInstruction;
     private readonly _comments: Array<string>;
 
-    constructor(labels: Array<string>, instructionLine: InstructionWithOperands, comments: Array<string>) {
+    constructor(labels: Array<string>, fullInstruction: FullInstruction, comments: Array<string>) {
         this._labels = labels;
-        this._instructionLine = instructionLine;
+        this._fullInstruction = fullInstruction;
         this._comments = comments;
     }
 
@@ -327,8 +332,8 @@ class FullInstructionLine {
         return this._labels;
     }
 
-    get instructionLine(): InstructionWithOperands {
-        return this._instructionLine;
+    get fullInstruction(): FullInstruction {
+        return this._fullInstruction;
     }
 
     get comments(): Array<string> {
@@ -336,20 +341,20 @@ class FullInstructionLine {
     }
 
     asHex() {
-        const hInst = hex8(this._instructionLine.instruction.rawBytes[0]);
+        const i = this._fullInstruction.instruction;
+        const hInst = hex8(i.rawBytes[0]);
 
-        if (this._instructionLine.instruction.numBytes === 1) {
+        if (i.numBytes === 1) {
             return hInst;
         }
-        if (this._instructionLine.instruction.numBytes === 2) {
-            return `${hInst} ${hex8(this._instructionLine.firstByte)}`
+        if (i.numBytes === 2) {
+            return `${hInst} ${hex8(this._fullInstruction.firstByte)}`
         }
-        if (this._instructionLine.instruction.numBytes === 3) {
-            return `${hInst} ${hex8(this._instructionLine.firstByte)} ${hex8(this._instructionLine.secondByte)}`;
+        if (i.numBytes === 3) {
+            return `${hInst} ${hex8(this._fullInstruction.firstByte)} ${hex8(this._fullInstruction.secondByte)}`;
         }
         // must be a data declaration because it takes more than 3 bytes
-        return this._instructionLine.instruction.rawBytes.map(hex8).reduce((p, c) => (`${p} ${c}`));
-
+        return i.rawBytes.map(hex8).reduce(spacecat);
     }
 }
 
@@ -381,17 +386,15 @@ class Environment {
 }
 
 /** Will have different types of data later (petscii, sid music, character) */
-enum SegmentType {
+enum SectionType {
     CODE, DATA
 }
 
-class Segment {
-    segmentType: SegmentType;
+class Section<T extends SectionType> {
     startOffset: number;
     length: number;
 
-    constructor(segmentType: SegmentType, startOffset: number, length: number) {
-        this.segmentType = segmentType;
+    constructor(startOffset: number, length: number) {
         this.startOffset = startOffset;
         this.length = length;
     }
@@ -562,22 +565,22 @@ class Disassembler {
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["cartBase"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["cartBase"], new FullInstruction(bd, 0, 0), []);
         }
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["resetVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["resetVector"], new FullInstruction(bd, 0, 0), []);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
             const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["nmiVector"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["nmiVector"], new FullInstruction(bd, 0, 0), []);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");
             const bd = new ByteDeclaration(this.eatBytes(5));
-            return new FullInstructionLine(["cartSig"], new InstructionWithOperands(bd, 0, 0), []);
+            return new FullInstructionLine(["cartSig"], new FullInstruction(bd, 0, 0), []);
         }
         if (this.currentIndex < 11) {
             throw Error("well this is unexpected!");
@@ -597,7 +600,7 @@ class Disassembler {
                 bytes.push(this.currentIndex++);
             }
             const bd = new ByteDeclaration(bytes);
-            return new FullInstructionLine(labels, new InstructionWithOperands(bd, 0, 0), comments);
+            return new FullInstructionLine(labels, new FullInstruction(bd, 0, 0), comments);
         } else {
             let firstOperandByte = 0;
             let secondOperandByte = 0;
@@ -608,7 +611,7 @@ class Disassembler {
                 secondOperandByte = this.eatByteOrDie();
             }
 
-            const il = new InstructionWithOperands(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+            const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
             return new FullInstructionLine(labels, il, comments);
         }
     }
