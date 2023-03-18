@@ -48,9 +48,11 @@ use-case-specific essence.
 Assembler dialects being considered:
 
 * "oldstyle" as one of the supported dialects in vasm, Ben Eater's choice
-* 64tass
-* Easy6502 http://skilldrick.github.io/easy6502/ [GitHub](https://github.com/skilldrick/easy6502)
 * [Kick Assembler](http://theweb.dk/KickAssembler/Main.html) closed source
+* 64tass
+* Acme
+* DASM
+* Easy6502 http://skilldrick.github.io/easy6502/ [GitHub](https://github.com/skilldrick/easy6502)
 * xa65 
 * ca65 - part of [cc65](https://www.cc65.org/)
 
