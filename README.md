@@ -159,11 +159,14 @@ minimum necessary syntax may be supported.
   * basics - can recognise at least two types and offer to disassemble if it knows how
   * vic20 raw cartridge image recognition
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
+* assembly syntax highlighting
+* Test suite
 
 ## TODO
 
 * multiple disassembly dialect support
 * BASIC prg support
+* Good test suite (in terms of coverage)
 * data section detection - probabilistic
 * manual choice of file type
 * type possibility list with probabilities etc.
