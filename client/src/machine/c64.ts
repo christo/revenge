@@ -4,12 +4,10 @@ import {FileBlob} from "./FileBlob";
 import {BlobType, DisassemblyMetaImpl, hexDumper} from "./asm";
 import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer} from "./cbm";
+import {TypeActions, UserAction} from "./revenge";
 
-function crt64Actions(fileBlob: FileBlob) {
-    // future: the cart header metadata is defined here:
-    // https://codebase64.org/doku.php?id=base:crt_file_format
-    return {t: C64_CRT, actions: [hexDumper]};
-}
+type BlobToActions = (fileBlob:FileBlob) => TypeActions;
+const crt64Actions:BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = stringToArray("C64 CARTRIDGE   ");

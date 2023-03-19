@@ -72,7 +72,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     // on some features. For example a 'prg' extension suggests the file is in original commodore format with the
     // load address as the first two little endian bytes.
 
-    return {t: UNKNOWN, actions: [hexDumper]};
+    return {t: UNKNOWN, actions: [hexDumper(fileBlob)]};
 }
 
 export {sniff, Detail};

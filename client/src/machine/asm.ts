@@ -639,13 +639,18 @@ class Disassembler {
     }
 }
 
-const hexDumper: UserAction = {
+const hexDumper = (fb:FileBlob) => ({
     label: "Hex Dump",
     f: () => {
         // TODO get hold of the bytes so the following can replace the special case of hexdumping
-        return new Detail(["hexbyte"], [[["hex", "ff"]]]);
+        let elements: [string,string][] = [];
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for (const [_index, entry] of fb.bytes.entries()) {
+            elements.push(["hex", hex8(entry)]);
+        }
+        return new Detail(["hexbyte"], [elements]);
     }
-};
+});
 
 export {hexDumper, BooBoo, tagText, DisassemblyMetaImpl}
 export type {Tag, TagSeq, DisassemblyMeta}
