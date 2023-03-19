@@ -1,12 +1,12 @@
 // assembler / disassembler stuff
 
-import {assertByte, hex16, hex8} from "../misc/BinUtils";
+import {assertByte, hex16, hex8, unsignedToSigned} from "../misc/BinUtils";
 import {FileBlob} from "./FileBlob";
 import {
+    FullInstruction,
     Instruction,
     InstructionLike,
     InstructionSet,
-    FullInstruction,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
     MODE_ABSOLUTE_Y,
@@ -23,7 +23,6 @@ import {
     Mos6502
 } from "./mos6502";
 import {Detail, UserAction} from "./revenge";
-import {spacecat, stringcat} from "../misc/fp";
 
 export {}
 export {Disassembler};
@@ -105,7 +104,7 @@ type TagSeq = Tag[]
  * Turns a tagSeq into plain text, discarding the tags.
  * @param ts
  */
-const tagText = (ts:TagSeq) => ts.map(t=>t[1]).reduce(spacecat, "");
+const tagText = (ts:TagSeq) => ts.map(t=>t[1]).join(" ");
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -163,7 +162,6 @@ class DefaultDialect implements Dialect {
     }
 
     private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
-        // TODO split assembler pseudo-ops, assembly code and data
         // add the mnemonic tag and also the mnemonic category
         const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
         const il = fil.fullInstruction;
@@ -177,12 +175,13 @@ class DefaultDialect implements Dialect {
 
     private renderLabels(fil: FullInstructionLine) {
         const le = this._env.targetLineEndings();
-        return fil.labels.map(s => this.labelFormat(s) + le).reduce(stringcat, "");
+        return fil.labels.map(s => this.labelFormat(s) + le).join("");
     }
 
     private renderComments(fil: FullInstructionLine) {
         const le = this._env.targetLineEndings();
-        return fil.comments.map(c => this.commentPrefix() + c.replaceAll(le, le + this.commentPrefix())).reduce(stringcat, "");
+        const cp = this.commentPrefix();
+        return fil.comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
     }
 
     commentPrefix() {
@@ -215,8 +214,6 @@ class DefaultDialect implements Dialect {
      */
     text(fil: FullInstructionLine) {
         // treating comments as prefix full-lines is simpler than end of line comments
-        const le = this._env.targetLineEndings();
-        // concat strings / flatten whatever
         let comments = this.renderComments(fil);
         // in this dialect, labels have their own line and end with colon
         let labels = this.renderLabels(fil);
@@ -224,7 +221,7 @@ class DefaultDialect implements Dialect {
 
         let codeOrData = "";
         // NOTE: trying out weird extreme avoidance of casting:
-        // TODO stop the madness, this experiment failed
+        // TODO remove this shit when FullInstructionLine has type param
         i.handleCode(mi => {
             codeOrData = this._env.indent() + tagText(this.taggedCode(mi, fil));
         });
@@ -261,7 +258,7 @@ class DefaultDialect implements Dialect {
         // TODO make a tagged version of the operand
         const i = il.instruction as Instruction;    // TODO get rid of cast
         const hw = () => "$" + hex16(il.operand16());
-        const hb = () => "$" + hex8(il.firstByte);
+        const hb = () => this.hexByteText(il.firstByte);
 
         let operand = "";
         switch (i.mode) {
@@ -294,8 +291,8 @@ class DefaultDialect implements Dialect {
                 operand = "("+ hb() + "), y";
                 break;
             case MODE_RELATIVE:
-                // TODO can be negative byte, maybe render decimal
-                operand = hb();
+                // render decimal two's complement 8-bit
+                operand = unsignedToSigned(il.firstByte).toString(10);
                 break;
             case MODE_ZEROPAGE:
                 operand = hb();
@@ -354,7 +351,7 @@ class FullInstructionLine {
             return `${hInst} ${hex8(this._fullInstruction.firstByte)} ${hex8(this._fullInstruction.secondByte)}`;
         }
         // must be a data declaration because it takes more than 3 bytes
-        return i.rawBytes.map(hex8).reduce(spacecat);
+        return i.rawBytes.map(hex8).join(" ");
     }
 }
 
