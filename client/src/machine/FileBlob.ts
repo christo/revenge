@@ -1,3 +1,5 @@
+import {hex8} from "../misc/BinUtils";
+
 class FileBlob {
     public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, new Uint8Array(0));
 
@@ -20,11 +22,12 @@ class FileBlob {
         }
     }
 
+    /** @deprecated use the hexdumper */
     toHexBytes(): string[] {
         let elements: string[] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of this.bytes.entries()) {
-            elements.push((entry & 0xFF).toString(16).padStart(2, '0'));
+            elements.push(hex8(entry));
         }
         return elements;
     }
