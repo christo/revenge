@@ -401,7 +401,7 @@ class Section<T extends SectionType> {
 }
 
 /**
- * Metadata valuable for disassembling a FileBlob.
+ * Metadata valuable for disassembling a {@link FileBlob}.
  */
 interface DisassemblyMeta {
     /**
@@ -426,13 +426,19 @@ interface DisassemblyMeta {
     /**
      * temporary until we implemnet segments
      * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
-     * @param fileBlob
+     * @param fileBlob the fileblob.
      */
     disassemblyStartIndex(fb: FileBlob): number;
 
+    /**
+     * The offset from the start of the fileblob at which the base address is to be located. This skips any header data
+     * that isn't real file content.
+     * @param fb the fileblob.
+     */
     contentStartIndex(fb: FileBlob): number;
 }
 
+/** Null object implementation of {@link DisassemblyMeta}. */
 export class NullDisassemblyMeta implements DisassemblyMeta {
 
     static INSTANCE = new NullDisassemblyMeta();
