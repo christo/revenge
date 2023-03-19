@@ -6,8 +6,9 @@ import {Mos6502} from "./mos6502";
 import {hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
 
-
-// May need to add more but these seem initially sufficient
+/**
+ * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
+ */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
 /** User action that disassembles the file. */
