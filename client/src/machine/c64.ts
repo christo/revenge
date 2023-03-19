@@ -5,9 +5,8 @@ import {BlobType, DisassemblyMetaImpl, hexDumper} from "./asm";
 import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer} from "./cbm";
 
-
 function crt64Actions(fileBlob: FileBlob) {
-    // TODO flesh out the desc from the cart header metadata as defined here:
+    // future: the cart header metadata is defined here:
     // https://codebase64.org/doku.php?id=base:crt_file_format
     return {t: C64_CRT, actions: [hexDumper]};
 }
