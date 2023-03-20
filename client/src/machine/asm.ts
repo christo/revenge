@@ -646,9 +646,9 @@ const hexDumper = (fb:FileBlob) => ({
         let elements: [string,string][] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of fb.bytes.entries()) {
-            elements.push(["hex", hex8(entry)]);
+            elements.push(["hexbyte", hex8(entry)]);
         }
-        return new Detail(["hexbyte"], [elements]);
+        return new Detail(["hexbytes"], [elements]);
     }
 });
 

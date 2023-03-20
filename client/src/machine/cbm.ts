@@ -31,7 +31,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
                 let full = dis.nextInstructionLine();
                 let hex: [string, string] = ["hex", full.asHex()];
                 const items = [hexAddr, hex];
-                dialect.tagged(full).forEach(i=>items.push(i));
+                dialect.tagged(full).forEach(i => items.push(i));
                 detail.tfield.push(items);
             }
             return detail;
@@ -60,13 +60,13 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     };
 };
 
-const BASIC_PRG = new BlobType("basic prg", "BASIC program",["basic"], "prg", [0x01, 0x08]);
+const BASIC_PRG = new BlobType("basic prg", "BASIC program", ["basic"], "prg", [0x01, 0x08]);
 
 function prg(prefix: ArrayLike<number>) {
     // prg has a two byte load address
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
     // TODO ensure that the file will fit in RAM if loaded at the load address
-    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"],"prg", prefix);
+    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", prefix);
 }
 
 /**
@@ -91,7 +91,7 @@ class CartSniffer implements BlobSniffer {
      * @param magic the magic sequence.
      * @param offset where the magic happens.
      */
-    constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, dm:DisassemblyMeta) {
+    constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, dm: DisassemblyMeta) {
         this.name = name;
         this.desc = desc;
         this.tags = tags;

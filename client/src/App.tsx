@@ -13,7 +13,7 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, sniff, TypeActions, UserAction} from "./machine/revenge";
+import {ActionExecutor, Detail, sniff, TypeActions, UserAction} from "./machine/revenge";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, Chip, CircularProgress, Paper, Stack} from "@mui/material";
@@ -37,20 +37,11 @@ interface FileCoantents {
     loading: boolean
 }
 
-function HexDump(props: {fb: FileBlob}) {
-    return <div className="hexbytes">
-        {props.fb.toHexBytes().map((x, i) => {
-            return <span className="hexbyte" key={`hb_${i}`}>{x}</span>;
-        })}
-    </div>
-}
-
 function DetailRenderer(props: {ae: ActionExecutor}) {
-    const detail = props.ae();
+    const detail:Detail = props.ae();
     return <div className="actionResult">
-
         {detail.tfield.map((tl, i) => {
-            return <div className="line" key={`fb_${i}`}>
+            return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
                 })}
@@ -89,7 +80,7 @@ function FileDetail(props: { fb: FileBlob }) {
             </div>
 
         </div>
-        {action == null ? <HexDump fb={props.fb}/> : <DetailRenderer ae={action.f}/>}
+        {action == null ? null : <DetailRenderer ae={action.f}/>}
     </div>;
 }
 
