@@ -2,13 +2,13 @@
 
 Reverse Engineering Environment
 
-The idea of this project is a web-based reverse engineering environment with very small initial goals.
-
-Starting with simple disassembly of the 6502 for the Vic-20 an C64.
+The idea of this project is a web-based reverse engineering environment with very small 
+initial goals: binary file type detection and simple disassembly of 6502 machine code 
+for the Vic-20 and C64.
 
 Implemented in TypeScript as a first project for learning the language.
 
-6502 info from https://www.masswerk.at/6502/6502_instruction_set.html
+Much 6502 info from [masswerk](https://www.masswerk.at/6502/6502_instruction_set.html)
 
 ## Design Notes
 
@@ -17,7 +17,9 @@ low compression format. Higher radix formats can be used as strings, rem comment
 some other transport format and the encoding of the instruction data can be a custom,
 variable-length compression format. 
 
-Peep-hole optimiser
+Peep-hole optimiser. 
+See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
+
 
 Patchy comprehensions - in a given disassembly, is the byte literal treated as a 
 zero-page address? If so, or if it is a 16-bit address for, say, a load or store,
