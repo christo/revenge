@@ -20,7 +20,7 @@ type ActionResult = [string, string][][]; // 2d array of tuples
  * Datastructure for all data interpretation output.
  */
 class Detail {
-    tags:string[];
+    tags: string[];
     tfield: ActionResult;
 
     constructor(tags: string[], tfield: ActionResult) {

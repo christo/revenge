@@ -22,7 +22,7 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {Detail, UserAction} from "./revenge";
+import {Detail} from "./revenge";
 
 export {}
 export {Disassembler};
@@ -97,14 +97,14 @@ class BooBoo {
     }
 }
 
-type Tag = [string,string]
+type Tag = [string, string]
 type TagSeq = Tag[]
 
 /**
  * Turns a tagSeq into plain text, discarding the tags.
  * @param ts
  */
-const tagText = (ts:TagSeq) => ts.map(t=>t[1]).join(" ");
+const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -161,11 +161,11 @@ class DefaultDialect implements Dialect {
         // return value could also contain input offset, length, maybe metadata for comment etc.
     }
 
-    private taggedCode(mi: Instruction, fil: FullInstructionLine):TagSeq {
+    private taggedCode(mi: Instruction, fil: FullInstructionLine): TagSeq {
         // add the mnemonic tag and also the mnemonic category
-        const mnemonic:Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
+        const mnemonic: Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
         const il = fil.fullInstruction;
-        const operand:Tag = [`opnd ${mi.mode.code}`, this.renderOperand(il)];
+        const operand: Tag = [`opnd ${mi.mode.code}`, this.renderOperand(il)];
         return [mnemonic, operand];
     }
 
@@ -192,8 +192,8 @@ class DefaultDialect implements Dialect {
         return s + ": ";
     }
 
-    private byteDeclaration(il: InstructionLike):TagSeq {
-        let kw:Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
+    private byteDeclaration(il: InstructionLike): TagSeq {
+        let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
         let s2 = "";
         il.rawBytes.forEach((b, i) => {
             if (i !== 0) {
@@ -233,12 +233,12 @@ class DefaultDialect implements Dialect {
     }
 
     /** Returns the given instruction as TagSeq elements in lexical order */
-    tagged(fil: FullInstructionLine):TagSeq {
-        const comments:Tag = ["comment", this.renderComments(fil)];
-        const labels:Tag = ["label", this.renderLabels(fil)];
+    tagged(fil: FullInstructionLine): TagSeq {
+        const comments: Tag = ["comment", this.renderComments(fil)];
+        const labels: Tag = ["label", this.renderLabels(fil)];
         let i: InstructionLike = fil.fullInstruction.instruction
 
-        let tagged:TagSeq = [comments, labels];
+        let tagged: TagSeq = [comments, labels];
         i.handleCode(mi => {
             tagged = tagged.concat(this.taggedCode(mi, fil));
         });
@@ -276,19 +276,19 @@ class DefaultDialect implements Dialect {
                 operand = hw() + ", y";
                 break;
             case MODE_IMMEDIATE:
-                operand = "#"+hb();
+                operand = "#" + hb();
                 break;
             case MODE_IMPLIED:
                 operand = "";
                 break;
             case MODE_INDIRECT:
-                operand = "("+ hw() + ")";
+                operand = "(" + hw() + ")";
                 break;
             case MODE_INDIRECT_X:
                 operand = "(" + hb() + ", x)";
                 break;
             case MODE_INDIRECT_Y:
-                operand = "("+ hb() + "), y";
+                operand = "(" + hb() + "), y";
                 break;
             case MODE_RELATIVE:
                 // render decimal two's complement 8-bit
@@ -472,7 +472,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
 
-    constructor(baseAddressOffset:number, resetVectorOffset:number, nmiVectorOffset:number, contentStartOffset:number) {
+    constructor(baseAddressOffset: number, resetVectorOffset: number, nmiVectorOffset: number, contentStartOffset: number) {
         this._baseAddressOffset = baseAddressOffset;
         this._resetVectorOffset = resetVectorOffset;
         this._nmiVectorOffset = nmiVectorOffset;
@@ -639,11 +639,11 @@ class Disassembler {
     }
 }
 
-const hexDumper = (fb:FileBlob) => ({
+const hexDumper = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
         // TODO get hold of the bytes so the following can replace the special case of hexdumping
-        let elements: [string,string][] = [];
+        let elements: [string, string][] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of fb.bytes.entries()) {
             elements.push(["hexbyte", hex8(entry)]);
@@ -715,6 +715,7 @@ class BlobType implements BlobSniffer {
     }
 
 }
+
 const UNKNOWN = new BlobType("unknown", "type not detected", []);
 
 export {BlobType, UNKNOWN};
