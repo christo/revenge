@@ -50,28 +50,38 @@ type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
  * @param fileBlob
  */
 const sniff = (fileBlob: FileBlob): TypeActions => {
+    // run through various detection matchers, falling through to unknown
+
     if (VIC20_CART.sniff(fileBlob) > 1) {
         const t: BlobSniffer = VIC20_CART;
-        return disassemble(t, fileBlob);
+        const ta = disassemble(t, fileBlob);
+        ta.actions.push(hexDumper(fileBlob));
+        return ta;
     }
     if (C64_8K_CART.sniff(fileBlob) > 1) {
         const t: BlobSniffer = C64_8K_CART;
-        return disassemble(t, fileBlob);
+        const ta = disassemble(t, fileBlob);
+        ta.actions.push(hexDumper(fileBlob));
+        return ta;
     }
-    // run through various detection matchers, falling through to unknown
     if (C64_CRT.dataMatch(fileBlob)) {
-        return crt64Actions(fileBlob);
+        const typeActions = crt64Actions(fileBlob);
+        typeActions.actions.push(hexDumper(fileBlob));
+        return typeActions;
     }
-    if (BASIC_PRG.extensionMatch(fileBlob) && BASIC_PRG.dataMatch(fileBlob)) return printBasic(BASIC_PRG, fileBlob);
+    if (BASIC_PRG.extensionMatch(fileBlob) && BASIC_PRG.dataMatch(fileBlob)) {
+        const ta = printBasic(BASIC_PRG, fileBlob);
+        ta.actions.push(hexDumper(fileBlob));
+        return ta;
+    }
     for (let i = 0; i < COMMON_MLPS.length; i++) {
         const prg = COMMON_MLPS[i];
-        if (prg.dataMatch(fileBlob)) return disassemble(prg, fileBlob);
+        if (prg.dataMatch(fileBlob)) {
+            const ta = disassemble(prg, fileBlob);
+            ta.actions.push(hexDumper(fileBlob));
+            return ta;
+        }
     }
-
-    // consider collecting partial matchers which give a scored collection of hints - what the file could be based
-    // on some features. For example a 'prg' extension suggests the file is in original commodore format with the
-    // load address as the first two little endian bytes.
-
     return {t: UNKNOWN, actions: [hexDumper(fileBlob)]};
 }
 

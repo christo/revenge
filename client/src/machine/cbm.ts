@@ -1,7 +1,7 @@
 // Commodore 8-bit machine stuff
 
 import {FileBlob} from "./FileBlob";
-import {BlobSniffer, BlobType, DefaultDialect, Disassembler, DisassemblyMeta, Environment} from "./asm";
+import {BlobSniffer, BlobType, DefaultDialect, Disassembler, DisassemblyMeta, Environment, hexDumper} from "./asm";
 import {Mos6502} from "./mos6502";
 import {hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";

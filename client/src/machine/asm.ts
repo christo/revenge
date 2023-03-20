@@ -564,7 +564,6 @@ class Disassembler {
             comments = this.generateComments(this.currentAddress);
         }
 
-        // TODO somehow move the driving details into the BlobSniffer:
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
             const bd = new ByteDeclaration(this.eatBytes(2));
