@@ -256,7 +256,7 @@ class DefaultDialect implements Dialect {
      */
     private renderOperand(il: FullInstruction) {
         // TODO make a tagged version of the operand
-        const i = il.instruction as Instruction;    // TODO get rid of cast
+        const i = il.instruction as Instruction;    // TODO get rid of cast when FullInstruction is generified
         const hw = () => "$" + hex16(il.operand16());
         const hb = () => this.hexByteText(il.firstByte);
 
@@ -641,7 +641,6 @@ class Disassembler {
 const hexDumper = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        // TODO get hold of the bytes so the following can replace the special case of hexdumping
         let elements: [string, string][] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of fb.bytes.entries()) {
