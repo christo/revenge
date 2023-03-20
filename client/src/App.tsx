@@ -73,9 +73,7 @@ function FileDetail(props: { fb: FileBlob }) {
 
             <div className="typeActions">
                 {typeAction.actions.map((a, i) => {
-                    return <div className="typeAction" key={`ac_${i}`}>
-                        <Button onClick={()=>setAction(a)}>{a.label}</Button>
-                    </div>;
+                    return <Button key={`ac_${i}`} onClick={()=>setAction(a)}>{a.label}</Button>;
                 })}
             </div>
 

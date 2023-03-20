@@ -19,7 +19,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
         label: "disassemble",
         f: () => {
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
-            let detail = new Detail([], [])
+            let detail = new Detail(["line"], [])
 
             // start with assembler directive for setting the base address.
             const base = "$" + hex16(t.getDisassemblyMeta().baseAddress(fb));
