@@ -31,8 +31,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
                 let full = dis.nextInstructionLine();
                 let hex: [string, string] = ["hex", full.asHex()];
                 const items = [hexAddr, hex];
-                const disasm = dialect.tagged(full);
-                disasm.forEach(i=>items.push(i));
+                dialect.tagged(full).forEach(i=>items.push(i));
                 detail.tfield.push(items);
             }
             return detail;
@@ -43,7 +42,8 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
         actions: userActions
     };
 };
-/** User action that prints the file as a basic program. */
+
+/** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     let ar: ActionResult = [[["debug", 'print ya basic \n ']]];
     let d = new Detail([], ar);
@@ -60,16 +60,14 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     };
 };
 
-
 const BASIC_PRG = new BlobType("basic prg", "BASIC program",["basic"], "prg", [0x01, 0x08]);
 
 function prg(prefix: ArrayLike<number>) {
-    // we assume a prefix of at least 2 bytes
+    // prg has a two byte load address
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
-    // consider moving the start address calculation into the BlobByte implementation
+    // TODO ensure that the file will fit in RAM if loaded at the load address
     return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"],"prg", prefix);
 }
-
 
 /**
  * Cart ROM dumps without any emulator metadata file format stuff.
@@ -111,7 +109,6 @@ class CartSniffer implements BlobSniffer {
     getDisassemblyMeta(): DisassemblyMeta {
         return this.disassemblyMeta;
     }
-
 }
 
 export {CartSniffer, prg, printBasic, fileTypes, BASIC_PRG};
