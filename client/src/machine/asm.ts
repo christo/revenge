@@ -362,7 +362,6 @@ class DefaultDialect implements Dialect {
 /**
  * A representation of a specific instruction on a line in a source file with its
  * operands, potential labels, potential comments etc.
- * TODO use type parameter for machine instruction, data, and pseudo-ops
  */
 class FullInstructionLine {
     private readonly _labels: Array<string>;

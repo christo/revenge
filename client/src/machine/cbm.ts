@@ -45,10 +45,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
 /** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
-    let ar: ActionResult = [[["debug", 'print ya basic \n ']]];
+    let ar: ActionResult = [[["debug", 'not implemented \n ']]];
     let d = new Detail([], ar);
     let ae: ActionExecutor = () => {
-        // TODO basic decoder action
         return d;
     };
     return {
