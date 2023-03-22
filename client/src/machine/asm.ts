@@ -412,6 +412,10 @@ class Section<T extends SectionType> {
         this.startOffset = startOffset;
         this.length = length;
     }
+
+    get endOffset() {
+        return this.startOffset + this.length;
+    }
 }
 
 /**
