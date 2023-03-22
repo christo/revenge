@@ -174,11 +174,20 @@ minimum necessary syntax may be supported.
 
 ## TODO
 
-* multiple disassembly dialect support
-* BASIC prg support
-* Test suite coverage measurement / build script
 * data section detection - probabilistic
+  * human-designated
+  * detected score
 * manual choice of file type
+* introduce user abstraction well before multiple user accounts or permissions
+* dialect options - layout handles for indenting
+* database persistence (psql)
+* interactive choice of data/code regions
+* BASIC prg support
+  * BASIC data statement embedded machine code detection/designation
+* bulk back-end corpus
+  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
+* multiple disassembly dialect support
+* Test suite coverage measurement / build script
 * type possibility list with probabilities etc.
 * vic 20 / c64 hardware register detection
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
