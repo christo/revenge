@@ -22,8 +22,7 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {Detail} from "./revenge";
-
+import {BlobToActions, Detail, UserAction} from "./revenge";
 
 /** Assembler pseudo-op that reserves literal bytes. */
 class ByteDeclaration implements InstructionLike<SectionType.DATA> {
@@ -519,6 +518,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     get nmiVectorOffset(): number {
         return this._nmiVectorOffset;
     }
+
     contentStartIndex(fb: FileBlob): number {
         return this._contentStartOffset;
     }
@@ -533,11 +533,12 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
             return resetAddr - fb.readVector(this._baseAddressOffset);
         } else {
             // reset vector is outside binary, so start disassembly at content start?
+            console.warn(`reset vector is outside binary ($${hex16(resetAddr)})`);
             return this.contentStartIndex(fb);
         }
     }
 
-    private inBinary(addr: number, fb:FileBlob) {
+    private inBinary(addr: number, fb: FileBlob) {
         const base = this.baseAddress(fb);
         return addr >= base && addr <= base + fb.size;
     }
@@ -561,7 +562,6 @@ class Disassembler {
     constructor(iset: InstructionSet, fb: FileBlob, typ: DisassemblyMeta) {
         this.iset = iset;
         let index = typ.contentStartIndex(fb);
-        console.log(`starting disassembly at index ${index}`);
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
             throw Error("index out of range");
@@ -679,7 +679,7 @@ class Disassembler {
 
     private iset: InstructionSet;
 
-    generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`) ;
+    generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
     /**
      * TODO implement branchTargets
@@ -694,7 +694,7 @@ class Disassembler {
     }
 }
 
-const hexDumper = (fb: FileBlob) => ({
+const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
         let elements: [string, string][] = [];
@@ -783,4 +783,4 @@ export {
     tagText,
     UNKNOWN,
 };
-export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta};
+export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions};

@@ -12,7 +12,7 @@ import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
 /** User action that disassembles the file. */
-export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
+export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
 
     let userActions: Array<UserAction> = [{
@@ -36,7 +36,7 @@ export const disassemble = (t: BlobSniffer, fb: FileBlob) => {
             }
             return detail;
         }
-    }];
+    }, hexDumper(fb)];
     return {
         t: t,
         actions: userActions
@@ -90,6 +90,7 @@ class CartSniffer implements BlobSniffer {
      * @param tags hashtags
      * @param magic the magic sequence.
      * @param offset where the magic happens.
+     * @param dm describes the disassembly stuff
      */
     constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, dm: DisassemblyMeta) {
         this.name = name;

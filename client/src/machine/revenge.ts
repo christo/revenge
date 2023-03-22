@@ -6,8 +6,6 @@ import {BlobSniffer, hexDumper, UNKNOWN} from "./asm";
 import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
 import {COMMON_MLPS, VIC20_CART} from "./vic20";
 
-type ActionExecutor = () => Detail;
-
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
  * A generic displayable structure with a sequence of entries. Each entry is a sequence of
@@ -29,6 +27,8 @@ class Detail {
     }
 }
 
+type ActionExecutor = () => Detail;
+
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo: ActionExecutor) => void;
 
@@ -44,6 +44,9 @@ type TypeActions = { t: BlobSniffer, actions: Array<UserAction> };
  */
 type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
 
+/** Function that produces TypeActions with only a {@link FileBlob}. */
+type BlobToActions = (fileBlob: FileBlob) => TypeActions;
+
 /**
  * Returns a best-guess file type and user actions that can be done on it.
  *
@@ -51,39 +54,32 @@ type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
  */
 const sniff = (fileBlob: FileBlob): TypeActions => {
     // run through various detection matchers, falling through to unknown
-
-    if (VIC20_CART.sniff(fileBlob) > 1) {
-        const t: BlobSniffer = VIC20_CART;
-        const ta = disassemble(t, fileBlob);
-        ta.actions.push(hexDumper(fileBlob));
-        return ta;
+    const carts = [VIC20_CART, C64_8K_CART];
+    for (let i = 0; i < carts.length; i++) {
+        const cart = carts[i];
+        if (cart.sniff(fileBlob) > 1) {
+            return disassemble(cart, fileBlob);
+        }
     }
-    if (C64_8K_CART.sniff(fileBlob) > 1) {
-        const t: BlobSniffer = C64_8K_CART;
-        const ta = disassemble(t, fileBlob);
-        ta.actions.push(hexDumper(fileBlob));
-        return ta;
-    }
-    if (C64_CRT.dataMatch(fileBlob)) {
+    const hd = hexDumper(fileBlob);
+    if (C64_CRT.sniff(fileBlob) > 1) {
         const typeActions = crt64Actions(fileBlob);
-        typeActions.actions.push(hexDumper(fileBlob));
+        typeActions.actions.push(hd);
         return typeActions;
     }
-    if (BASIC_PRG.extensionMatch(fileBlob) && BASIC_PRG.dataMatch(fileBlob)) {
+    if (BASIC_PRG.sniff(fileBlob) > 1) {
         const ta = printBasic(BASIC_PRG, fileBlob);
-        ta.actions.push(hexDumper(fileBlob));
+        ta.actions.push(hd);
         return ta;
     }
     for (let i = 0; i < COMMON_MLPS.length; i++) {
         const prg = COMMON_MLPS[i];
-        if (prg.dataMatch(fileBlob)) {
-            const ta = disassemble(prg, fileBlob);
-            ta.actions.push(hexDumper(fileBlob));
-            return ta;
+        if (prg.sniff(fileBlob) > 1) {
+            return disassemble(prg, fileBlob);
         }
     }
-    return {t: UNKNOWN, actions: [hexDumper(fileBlob)]};
+    return {t: UNKNOWN, actions: [hd]};
 }
 
 export {sniff, Detail};
-export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor}
+export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor, BlobToActions}

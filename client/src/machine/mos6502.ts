@@ -6,7 +6,7 @@
 
  */
 
-import {assertByte, hex16} from "../misc/BinUtils";
+import {assertByte} from "../misc/BinUtils";
 import {SectionType} from "./asm";
 
 class AddressingMode {
@@ -551,6 +551,7 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 // have instruction set variants for the chip variants but also whether to allow illegal opcodes
 I.fillIllegals();
 
+/** An instruction with operands. */
 class FullInstruction<T extends SectionType> {
     readonly instruction: InstructionLike<T>;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
