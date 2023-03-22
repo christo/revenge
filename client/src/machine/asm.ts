@@ -24,14 +24,9 @@ import {
 } from "./mos6502";
 import {Detail} from "./revenge";
 
-export {}
-export {Disassembler};
-export {Environment};
-export {FullInstructionLine};
-export {DefaultDialect};
 
 /** Assembler pseudo-op that reserves literal bytes. */
-export class ByteDeclaration implements InstructionLike<SectionType.DATA> {
+class ByteDeclaration implements InstructionLike<SectionType.DATA> {
 
     private readonly _rawBytes: Array<number>;
 
@@ -67,7 +62,7 @@ interface Dialect {
      *
      * @param label the label to check for syntactic validity.
      */
-    validateLabel(label: String): BooBoo[];
+    checkLabel(label: String): BooBoo[];
 
     /**
      * Return the characters that go before a line comment.
@@ -79,7 +74,7 @@ interface Dialect {
      * is not part of the label name.
      * @param s
      */
-    labelFormat(s: string): string;
+    formatLabel(s: string): string;
 }
 
 /**
@@ -137,7 +132,7 @@ class Section {
         this.startOffset = startOffset;
         this.length = length;
         this.writeable = writeable;
-        this.sType = typeof sType === "undefined" ? Section.DEFAULT_TYPE : sType;
+        this.sType = (typeof sType === "undefined") ? Section.DEFAULT_TYPE : sType;
     }
 
     get endOffset() {
@@ -205,7 +200,7 @@ class DefaultDialect implements Dialect {
         this._env = env;
     }
 
-    validateLabel(l: String): BooBoo[] {
+    checkLabel(l: String): BooBoo[] {
         // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
         const regExpMatchArrays = l.matchAll(/(^\d|\s)/g);
         if (regExpMatchArrays) {
@@ -255,7 +250,7 @@ class DefaultDialect implements Dialect {
 
     private renderLabels(fil: FullInstructionLine) {
         const le = this._env.targetLineEndings();
-        return fil.labels.map(s => this.labelFormat(s)).join(le);
+        return fil.labels.map(s => this.formatLabel(s)).join(le);
     }
 
     private renderComments(fil: FullInstructionLine) {
@@ -268,7 +263,7 @@ class DefaultDialect implements Dialect {
         return "; ";
     }
 
-    labelFormat(s: string) {
+    formatLabel(s: string) {
         return s + ": ";
     }
 
@@ -471,7 +466,7 @@ interface DisassemblyMeta {
 }
 
 /** Null object implementation of {@link DisassemblyMeta}. */
-export class NullDisassemblyMeta implements DisassemblyMeta {
+class NullDisassemblyMeta implements DisassemblyMeta {
 
     static INSTANCE = new NullDisassemblyMeta();
 
@@ -711,9 +706,6 @@ const hexDumper = (fb: FileBlob) => ({
     }
 });
 
-export {hexDumper, BooBoo, tagText, DisassemblyMetaImpl}
-export type {Tag, TagSeq, DisassemblyMeta}
-
 /**
  * Abstraction for scoring relative confidence in file content categorisation.
  */
@@ -772,10 +764,23 @@ class BlobType implements BlobSniffer {
     sniff(fb: FileBlob): number {
         return (this.dataMatch(fb) ? 2 : 0.5) * (this.extensionMatch(fb) ? 1.5 : 0.9);
     }
-
 }
 
 const UNKNOWN = new BlobType("unknown", "type not detected", []);
 
-export {BlobType, UNKNOWN, Section, SectionType};
-export type {BlobSniffer};
+export {
+    BlobType,
+    BooBoo,
+    DefaultDialect,
+    Disassembler,
+    DisassemblyMetaImpl,
+    Environment,
+    FullInstructionLine,
+    hexDumper,
+    NullDisassemblyMeta,
+    Section,
+    SectionType,
+    tagText,
+    UNKNOWN,
+};
+export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta};
