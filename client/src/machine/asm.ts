@@ -384,10 +384,13 @@ class Environment {
 
 /** Will have different types of data later (petscii, sid music, character) */
 enum SectionType {
-    CODE, DATA
+    BYTES,CODE
 }
 
 class Section<T extends SectionType> {
+
+    static DEFAULT_TYPE = SectionType.BYTES;
+
     startOffset: number;
     length: number;
 
@@ -398,7 +401,7 @@ class Section<T extends SectionType> {
 }
 
 /**
- * Metadata valuable for disassembling a {@link FileBlob}.
+ * Metadata valuable for disassembling a {@link FileBlob}. Expect this interface to evolve dramatically.
  */
 interface DisassemblyMeta {
     /**
@@ -408,20 +411,14 @@ interface DisassemblyMeta {
      */
     baseAddress(fb: FileBlob): number;
 
-    /**
-     * Address of start of code for a cold boot.
-     * @param fb the file to get the vector from
-     */
-    coldResetVector(fb: FileBlob): number;
+    /** The byte offset at which the cold reset vector resides. */
+    get resetVectorOffset(): number;
+
+    /** The byte offset at which the nmi reset vector resides. */
+    get nmiVectorOffset(): number;
 
     /**
-     * Address of start of code for a warm boot.
-     * @param fb the file to get the vector from
-     */
-    warmResetVector(fb: FileBlob): number;
-
-    /**
-     * temporary until we implemnet segments
+     * temporary until we implement sections
      * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
      * @param fileBlob the fileblob.
      */
@@ -448,7 +445,11 @@ export class NullDisassemblyMeta implements DisassemblyMeta {
         return 0;
     }
 
-    coldResetVector(fb: FileBlob): number {
+    get nmiVectorOffset(): number {
+        return 0;
+    }
+
+    get resetVectorOffset(): number {
         return 0;
     }
 
@@ -459,11 +460,6 @@ export class NullDisassemblyMeta implements DisassemblyMeta {
     disassemblyStartIndex(fb: FileBlob): number {
         return 0;
     }
-
-    warmResetVector(fb: FileBlob): number {
-        return 0;
-    }
-
 }
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
@@ -483,22 +479,35 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return fb.readVector(this._baseAddressOffset);
     }
 
-    coldResetVector(fb: FileBlob): number {
-        return fb.readVector(this._resetVectorOffset);
+    get resetVectorOffset(): number {
+        return this._resetVectorOffset;
     }
 
+    get nmiVectorOffset(): number {
+        return this._nmiVectorOffset;
+    }
     contentStartIndex(fb: FileBlob): number {
         return this._contentStartOffset;
     }
 
     disassemblyStartIndex(fb: FileBlob): number {
-        return this.coldResetVector(fb) - this.baseAddress(fb)
+        // currently a crude guess
+        const resetAddr = fb.readVector(this._resetVectorOffset);
+        // two bytes make an address
+        const resetMsb = resetAddr + 1;
+        const resetVectorIsInBinary = this.inBinary(resetMsb, fb);
+        if (resetVectorIsInBinary) {
+            return resetAddr - fb.readVector(this._baseAddressOffset);
+        } else {
+            // reset vector is outside binary, so start disassembly at content start?
+            return this.contentStartIndex(fb);
+        }
     }
 
-    warmResetVector(fb: FileBlob): number {
-        return fb.readVector(this._nmiVectorOffset);
+    private inBinary(addr: number, fb:FileBlob) {
+        const base = this.baseAddress(fb);
+        return addr >= base && addr <= base + fb.size;
     }
-
 }
 
 /** Stateful translator of bytes to their parsed instruction line */
@@ -513,9 +522,9 @@ class Disassembler {
 
     private disMeta: DisassemblyMeta;
 
-    constructor(iset: InstructionSet, fb: FileBlob, type: DisassemblyMeta) {
+    constructor(iset: InstructionSet, fb: FileBlob, typ: DisassemblyMeta) {
         this.iset = iset;
-        let index = type.contentStartIndex(fb);
+        let index = typ.contentStartIndex(fb);
         console.log(`starting disassembly at index ${index}`);
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
@@ -524,9 +533,9 @@ class Disassembler {
         this.originalIndex = index;
         this.currentIndex = index;
         this.fb = fb;
-        this._currentAddress = type.baseAddress(fb);
-        this.labels = [["handleReset", type.coldResetVector(fb)], ["handleNmi", type.warmResetVector(fb)]];
-        this.disMeta = type;
+        this._currentAddress = typ.baseAddress(fb);
+        this.labels = [["handleReset", fb.readVector(typ.resetVectorOffset)], ["handleNmi", fb.readVector(typ.nmiVectorOffset)]];
+        this.disMeta = typ;
     }
 
     private eatBytes(count: number): number[] {
@@ -564,6 +573,7 @@ class Disassembler {
             comments = this.generateComments(this.currentAddress);
         }
 
+        // TODO interpret as data up until the disassembly start address
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
             const bd = new ByteDeclaration(this.eatBytes(2));
