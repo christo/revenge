@@ -41,6 +41,8 @@ body {
 .fileSummary .filename {
   padding-right: 1em;
   font-weight: bold;
+  font-size: 150%;
+  line-height: 1.8;
   color: #a3b3d5;
 }
 
@@ -51,6 +53,11 @@ body {
 
 .dataDetail > span {
   margin-right: 1em;
+}
+
+.smell {
+  font-style: italic;
+  opacity: 0.6;
 }
 
 .hexbytes {

@@ -305,8 +305,7 @@ class DefaultDialect implements Dialect {
      * @private
      */
     private renderOperand(il: FullInstruction<SectionType.CODE>) {
-        // TODO make a tagged version of the operand
-        const i = il.instruction as Instruction;    // TODO get rid of cast when FullInstruction is generified
+        const i:Instruction = il.instruction as Instruction;
         const hw = () => "$" + hex16(il.operand16());
         const hb = () => this.hexByteText(il.firstByte);
 
