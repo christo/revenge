@@ -145,7 +145,7 @@ class DefaultDialect implements Dialect {
      * whichever's first but the index must be inside the range of the string's chars.
      * Interpret mnemonic syntax of our assembly dialect and return a datastructure
      * of properties for that machine instruction, including operands and expected
-     * runtime in clock cycles. TODO : what datastructure, smartypants?
+     * runtime in clock cycles.
      * @param input
      * @param index
      */
