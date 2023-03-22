@@ -23,6 +23,8 @@ const PRELOADS: FileLike[] = fs.readdirSync(PLDIR).map(fname => {
     return fl;
 });
 
+console.log(`loaded ${PRELOADS.length} blobs`);
+
 router.get('/', async (req, res) => {
     res.json(PRELOADS);
 });
