@@ -16,7 +16,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {ActionExecutor, Detail, sniff, TypeActions, UserAction} from "./machine/revenge";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
-import {Button, Chip, CircularProgress, Paper, Stack} from "@mui/material";
+import {Button, Chip, CircularProgress, Stack} from "@mui/material";
 import axios from "axios";
 
 const darkTheme = createTheme({
@@ -32,7 +32,7 @@ const darkTheme = createTheme({
  */
 const MAX_SIZE_MB = 1;
 
-interface FileCoantents {
+interface FileContents {
     fb: FileBlob,
     loading: boolean
 }
@@ -66,7 +66,9 @@ function FileDetail(props: { fb: FileBlob }) {
                 <span className="desc">{t.desc}</span>
 
                 {t.tags.map((tag, i) => {
-                    return <Chip label={tag} size="small" id={`tag_${i}`} sx={{marginRight: 1}} variant="outlined" color="info"/>
+                    return <Chip label={tag} size="small"
+                        key={`tag_${i}`} sx={{marginRight: 1}}
+                        variant="outlined" color="info"/>
                 })}
 
             </div>
@@ -83,7 +85,7 @@ function FileDetail(props: { fb: FileBlob }) {
 }
 
 function CurrentFileSummary(props: { file: File | FileLike }) {
-    const [rendered, setRendered] = useState<FileCoantents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
+    const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
     useEffect(() => {
         FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
     }, [props.file]);

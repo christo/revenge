@@ -31,20 +31,12 @@ export {FullInstructionLine};
 export {DefaultDialect};
 
 /** Assembler pseudo-op that reserves literal bytes. */
-export class ByteDeclaration implements InstructionLike {
+export class ByteDeclaration implements InstructionLike<SectionType.DATA> {
 
     private readonly _rawBytes: Array<number>;
 
     constructor(rawBytes: Array<number>) {
         this._rawBytes = rawBytes.map(b => assertByte(b));
-    }
-
-    handleCode(fn: (i: Instruction) => void) {
-        // do not run the function
-    }
-
-    handleData(fn: (il: InstructionLike) => void) {
-        fn(this);
     }
 
     get rawBytes(): Array<number> {
@@ -53,6 +45,10 @@ export class ByteDeclaration implements InstructionLike {
 
     get numBytes(): number {
         return this._rawBytes.length;
+    }
+
+    get type(): SectionType.DATA {
+        return SectionType.DATA;
     }
 }
 
@@ -114,6 +110,76 @@ type TagSeq = Tag[]
  * @param ts
  */
 const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
+
+/** Will have different types of data later (petscii, sid music, character) */
+enum SectionType {
+    /** Non-executable data. */
+    DATA,
+    /** Executable machine code. */
+    CODE,
+    /** Self-modifiable code. May not always look like valid code, but will be when executed. */
+    SELF_MOD,
+    /** Type is not known. */
+    UNKNOWN
+}
+
+/** Designates the dynamic meaning of a sequence of bytes in the binary. */
+class Section {
+
+    static DEFAULT_TYPE = SectionType.DATA;
+
+    startOffset: number;
+    length: number;
+    writeable: boolean;
+    private sType: SectionType;
+
+    constructor(startOffset: number, length: number, writeable: boolean, sType?: SectionType) {
+        this.startOffset = startOffset;
+        this.length = length;
+        this.writeable = writeable;
+        this.sType = typeof sType === "undefined" ? Section.DEFAULT_TYPE : sType;
+    }
+
+    get endOffset() {
+        return this.startOffset + this.length;
+    }
+}
+
+enum SourceType {
+    /** Machine code instruction */
+    MACHINE,
+    /** Data declaration */
+    DATA,
+    /** Assembly directive or pseudo-op, including symbol definitions. */
+    PSEUDO,
+    /** Label definition */
+    LABEL,
+    /** Something for the humans */
+    COMMENT,
+    /** Forced space. */
+    BLANK
+}
+
+/**
+ * Represents a logical element of the source code.
+ *
+ * Source listings have a many-to-many positional relationship with assembled bytes. Source items correspond
+ * to logical source elements, sometimes lines, sometimes multiple lines, sometimes one of many Source items
+ * on the same line. For example a label and comment can be on the same source line and yet also correspond
+ * to no output bytes. Macros and other such pseudo-ops can produce multiple bytes output.
+ *
+ * Note that this is independent of the assembly dialect which decides how such source lines are rendered
+ * into plain text or structured output.
+ */
+class Source {
+    type: SourceType;
+    value: string;
+
+    constructor(type: SourceType, value: string) {
+        this.type = type;
+        this.value = value;
+    }
+}
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -183,13 +249,13 @@ class DefaultDialect implements Dialect {
         }
     }
 
-    private renderData(il: InstructionLike) {
+    private renderData(il: InstructionLike<SectionType.DATA>) {
         return this._env.indent() + tagText(this.byteDeclaration(il));
     }
 
     private renderLabels(fil: FullInstructionLine) {
         const le = this._env.targetLineEndings();
-        return fil.labels.map(s => this.labelFormat(s) + le).join("");
+        return fil.labels.map(s => this.labelFormat(s)).join(le);
     }
 
     private renderComments(fil: FullInstructionLine) {
@@ -206,7 +272,7 @@ class DefaultDialect implements Dialect {
         return s + ": ";
     }
 
-    private byteDeclaration(il: InstructionLike): TagSeq {
+    private byteDeclaration(il: InstructionLike<SectionType.DATA>): TagSeq {
         let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
         let s2 = "";
         il.rawBytes.forEach((b, i) => {
@@ -222,43 +288,19 @@ class DefaultDialect implements Dialect {
         return "$" + hex8(b);
     }
 
-    /**
-     * Returns the given instruction as text.
-     * @param fil
-     */
-    text(fil: FullInstructionLine) {
-        // treating comments as prefix full-lines is simpler than end of line comments
-        let comments = this.renderComments(fil);
-        // in this dialect, labels have their own line and end with colon
-        let labels = this.renderLabels(fil);
-        let i: InstructionLike = fil.fullInstruction.instruction;
-
-        let codeOrData = "";
-        // NOTE: trying out weird extreme avoidance of casting:
-        // TODO remove this shit when FullInstructionLine has type param
-        i.handleCode(mi => {
-            codeOrData = this._env.indent() + tagText(this.taggedCode(mi, fil));
-        });
-        i.handleData(il => {
-            codeOrData = this.renderData(il);
-        });
-
-        return comments + labels + codeOrData;
-    }
-
     /** Returns the given instruction as TagSeq elements in lexical order */
     tagged(fil: FullInstructionLine): TagSeq {
         const comments: Tag = ["comment", this.renderComments(fil)];
         const labels: Tag = ["label", this.renderLabels(fil)];
-        let i: InstructionLike = fil.fullInstruction.instruction
+        let i: InstructionLike<any> = fil.fullInstruction.instruction
 
         let tagged: TagSeq = [comments, labels];
-        i.handleCode(mi => {
-            tagged = tagged.concat(this.taggedCode(mi, fil));
-        });
-        i.handleData(il => {
-            tagged.push(["data", this.renderData(il)]);
-        });
+
+        if (i.type === SectionType.DATA) {
+            tagged.push(["data", this.renderData(i)]);
+        } else if (i.type === SectionType.CODE) {
+            tagged = tagged.concat(this.taggedCode(fil.fullInstruction.instruction as Instruction, fil));
+        }
         return tagged;
     }
 
@@ -268,7 +310,7 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: FullInstruction) {
+    private renderOperand(il: FullInstruction<SectionType.CODE>) {
         // TODO make a tagged version of the operand
         const i = il.instruction as Instruction;    // TODO get rid of cast when FullInstruction is generified
         const hw = () => "$" + hex16(il.operand16());
@@ -330,10 +372,10 @@ class DefaultDialect implements Dialect {
  */
 class FullInstructionLine {
     private readonly _labels: Array<string>;
-    private readonly _fullInstruction: FullInstruction;
+    private readonly _fullInstruction: FullInstruction<any>;
     private readonly _comments: Array<string>;
 
-    constructor(labels: Array<string>, fullInstruction: FullInstruction, comments: Array<string>) {
+    constructor(labels: Array<string>, fullInstruction: FullInstruction<any>, comments: Array<string>) {
         this._labels = labels;
         this._fullInstruction = fullInstruction;
         this._comments = comments;
@@ -343,7 +385,7 @@ class FullInstructionLine {
         return this._labels;
     }
 
-    get fullInstruction(): FullInstruction {
+    get fullInstruction(): FullInstruction<any> {
         return this._fullInstruction;
     }
 
@@ -393,28 +435,6 @@ class Environment {
 
     indent() {
         return "    ";
-    }
-}
-
-/** Will have different types of data later (petscii, sid music, character) */
-enum SectionType {
-    BYTES,CODE
-}
-
-class Section<T extends SectionType> {
-
-    static DEFAULT_TYPE = SectionType.BYTES;
-
-    startOffset: number;
-    length: number;
-
-    constructor(startOffset: number, length: number) {
-        this.startOffset = startOffset;
-        this.length = length;
-    }
-
-    get endOffset() {
-        return this.startOffset + this.length;
     }
 }
 
@@ -757,5 +777,5 @@ class BlobType implements BlobSniffer {
 
 const UNKNOWN = new BlobType("unknown", "type not detected", []);
 
-export {BlobType, UNKNOWN};
+export {BlobType, UNKNOWN, Section, SectionType};
 export type {BlobSniffer};

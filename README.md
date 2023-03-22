@@ -174,6 +174,7 @@ minimum necessary syntax may be supported.
 
 ## TODO
 
+* fix bug - reset vector should force byte-precise assembly designation
 * data section detection - probabilistic
   * human-designated
   * detected score

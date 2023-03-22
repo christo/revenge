@@ -7,6 +7,7 @@
  */
 
 import {assertByte, hex16} from "../misc/BinUtils";
+import {SectionType} from "./asm";
 
 class AddressingMode {
     code: string;
@@ -216,7 +217,7 @@ class Cycles {
     }
 }
 
-class Instruction implements InstructionLike {
+class Instruction implements InstructionLike<SectionType.CODE> {
     private readonly _op: Op;
     private readonly _numBytes: number;
     private readonly _mode: AddressingMode;
@@ -233,6 +234,10 @@ class Instruction implements InstructionLike {
         this.illegal = illegal;
     }
 
+    get type(): SectionType.CODE {
+        return SectionType.CODE;
+    }
+
     get op(): Op {
         return this._op;
     }
@@ -245,25 +250,15 @@ class Instruction implements InstructionLike {
         return this._mode;
     }
 
-    handleCode(fn: (i: Instruction) => void) {
-        fn(this);
-    }
-
-    handleData(fn: (il: InstructionLike) => void): void {
-        // do nothing, we are a machine instruction
-    }
-
     get rawBytes(): Array<number> {
         return [this.opcode];
     }
 }
 
-interface InstructionLike {
+interface InstructionLike<T extends SectionType> {
     get rawBytes(): Array<number>;
 
-    handleCode(fn: (i: Instruction) => void): void;
-
-    handleData(fn: (il: InstructionLike) => void): void;
+    get type(): T;
 
     get numBytes(): number;
 }
@@ -277,8 +272,9 @@ class InstructionSet {
     private modes: Array<AddressingMode> = [];
     /** The number of bytes in the instruction with the given opcode */
     private bytes: Array<number> = [];
+    // noinspection JSMismatchedCollectionQueryUpdate
     private cycles: Array<Cycles> = [];
-    private instructions: Array<InstructionLike> = [];
+    private instructions: Array<InstructionLike<any>> = [];
 
     add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
         const o = assertByte(opcode);
@@ -300,6 +296,7 @@ class InstructionSet {
         return this.ops[assertByte(opcode)];
     }
 
+    // noinspection JSUnusedGlobalSymbols
     mode(opcode: number) {
         return this.modes[assertByte(opcode)];
     }
@@ -324,18 +321,11 @@ class InstructionSet {
     }
 }
 
-class IllegalOpcode implements InstructionLike {
+class IllegalOpcode implements InstructionLike<SectionType.DATA> {
     private readonly _bytes: number[];
 
     constructor(bytes: number[]) {
         this._bytes = bytes;
-    }
-
-    handleCode(fn: (i: Instruction) => void): void {
-    }
-
-    handleData(fn: (il: InstructionLike) => void) {
-        fn(this);
     }
 
     get numBytes(): number {
@@ -344,6 +334,10 @@ class IllegalOpcode implements InstructionLike {
 
     get rawBytes(): Array<number> {
         return this._bytes;
+    }
+
+    get type(): SectionType.DATA {
+        return SectionType.DATA;
     }
 
 }
@@ -557,27 +551,19 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 // have instruction set variants for the chip variants but also whether to allow illegal opcodes
 I.fillIllegals();
 
-class FullInstruction {
-    readonly instruction: InstructionLike;    // contains operand byte size
+class FullInstruction<T extends SectionType> {
+    readonly instruction: InstructionLike<T>;    // contains operand byte size
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
 
-    constructor(instruction: InstructionLike, lobyte: number, hibyte: number) {
+    constructor(instruction: InstructionLike<T>, lobyte: number, hibyte: number) {
         this.instruction = instruction;
         this.firstByte = assertByte(lobyte);
         this.secondByte = assertByte(hibyte);
     }
 
-    /** Gives the operand as a 16-bit number value. */
-    operand16 = () => {
-        let operand = (this.secondByte << 8) + this.firstByte;
-        if (operand !== 0) {
-            console.log(`operand16 ${hex16(operand)}`)
-        } else {
-            // debugger;
-        }
-        return operand;
-    }
+    /** Gives the operand as a 16-bit little-endian number value. */
+    operand16 = () => (this.secondByte << 8) + this.firstByte;
 }
 
 class Mos6502 {
