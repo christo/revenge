@@ -34,6 +34,14 @@ separation between code and data).
 Try to make this multipronged analysis somewhat automatic so the user can just 
 confirm simple hunches or heuristic interpretations.
 
+### Pattern Recogniser and Macro Synthesiser
+
+* The long conditional branch, [64tass supports it](https://tass64.sourceforge.net/#branch-long)
+* Register stack save, restore
+* Infinite unconditional loop
+* Block of zeroes
+* Block of pattern repeat
+
 ### Canonicalisation
 
 The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
@@ -168,14 +176,11 @@ minimum necessary syntax may be supported.
 
 * multiple disassembly dialect support
 * BASIC prg support
-* Good test suite (in terms of coverage)
+* Test suite coverage measurement / build script
 * data section detection - probabilistic
 * manual choice of file type
 * type possibility list with probabilities etc.
 * vic 20 / c64 hardware register detection
-* build database of file content recognition.
-* fragment content hash, db etc.?
-* common data fragments identified between files
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
 natch)
 * user accounts
@@ -187,21 +192,38 @@ natch)
     * unified back-end between bootstrap filetree and uploaded stuff
 * petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
-* binary diff two files (linear)
+* content recognition:
+  * common data fragments identified between files
+  * build database of file content recognition.
+  * fragment content hash, db etc.?
+  * binary diff two files (linear)
+  * automate the similarity detection of files - need an indexing system, maybe use common sub-sequence - ask/research.
 * sharing, permissions
-* enable multiple people to do analysis of files, to store, share and collaborate on the 
-analysis of files
-* search GitHub and elsewhere for existing databases of software. Maybe model database sources? Try for md5 or sha
-content hashes for file identification. archive.org software entries have multiple stored in xml files, e.g.
- see https://archive.org/download/BoloMacintosh which is part of https://archive.org/details/softwarelibrary_mac
-
+* enable multiple people to do analysis of files, to store, share and collaborate on the analysis of files
+* Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will 
+  assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy or hard.
 
 ## Reading List
 
-* https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/
-* https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/
+* [C64 cross-dev links](https://codebase64.org/doku.php?id=base:crossdev)
+* [TypeScript async techniques](https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/)
+* FP utopia [Fantasyland](https://github.com/fantasyland/fantasy-land) and related 
+  [StaticLand](https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/)
 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-* Look into the following from a message in TypeScript discord: 
+* Check out the following libs (via TypeScript discord): 
   > AsyncResult, Task, AsyncEither AsyncHTTPRequest are some names for 
   > implementations that exist in the community. Look up daggy.js which
   > is old, but gives you the idea. crocks.js, idk, sanctuary js
+* https://www.nesdev.org/wiki/Tools assemblers and disassemblers with a focus on NES
+* https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and examples
+* ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
+* [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
+
+## Related Work
+
+* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and command-line toolset
+* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA
+* [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
+* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to support 6502 (I couldn't
+  make it work) see my GH issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
+* [IDA Pro](https://hex-rays.com/ida-pro/) proprietary, native
