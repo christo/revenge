@@ -47,7 +47,7 @@ class FileBlob {
         }
     }
 
-    /** Read a little-endian vector at the given offset. */
+    /** Read a little-endian 16 bit vector at the given offset. */
     readVector(offset: number) {
         if (offset < 0 || offset > this.bytes.length - 1) {
             throw Error("offset out of range for vector read");
