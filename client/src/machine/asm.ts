@@ -97,7 +97,16 @@ class BooBoo {
     }
 }
 
+/**
+ * Abstraction for representing data with a tag. This makes transformation to html and also text
+ * straightforward without any web dependencies, although the tag names must conform to the rules
+ * for css classes (e.g. space-separated).
+ */
 type Tag = [string, string]
+
+/**
+ * Abstraction that corresponds to a logical line of listing output.
+ */
 type TagSeq = Tag[]
 
 /**
@@ -140,6 +149,7 @@ class DefaultDialect implements Dialect {
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     /**
      * Parse input from index offset characters in until end of line or end of input,
      * whichever's first but the index must be inside the range of the string's chars.
@@ -165,8 +175,12 @@ class DefaultDialect implements Dialect {
         // add the mnemonic tag and also the mnemonic category
         const mnemonic: Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
         const il = fil.fullInstruction;
-        const operand: Tag = [`opnd ${mi.mode.code}`, this.renderOperand(il)];
-        return [mnemonic, operand];
+        const operandText = this.renderOperand(il).trim();
+        if (operandText.length > 0) {
+            return [mnemonic, [`opnd ${mi.mode.code}`, operandText]]
+        } else {
+            return [mnemonic];
+        }
     }
 
     private renderData(il: InstructionLike) {
@@ -420,7 +434,7 @@ interface DisassemblyMeta {
     /**
      * temporary until we implement sections
      * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
-     * @param fileBlob the fileblob.
+     * @param fb the fileblob.
      */
     disassemblyStartIndex(fb: FileBlob): number;
 
@@ -518,6 +532,9 @@ class Disassembler {
     fb: FileBlob;
     private _currentAddress: number;
 
+    /**
+     * Tuple: label, address
+     */
     labels: [string, number][];
 
     private disMeta: DisassemblyMeta;
@@ -534,7 +551,10 @@ class Disassembler {
         this.currentIndex = index;
         this.fb = fb;
         this._currentAddress = typ.baseAddress(fb);
-        this.labels = [["handleReset", fb.readVector(typ.resetVectorOffset)], ["handleNmi", fb.readVector(typ.nmiVectorOffset)]];
+        const resetVector = fb.readVector(typ.resetVectorOffset);
+        const nmiVector = fb.readVector(typ.nmiVectorOffset);
+        this.labels = [["handleReset", resetVector], ["handleNmi", nmiVector]];
+        // TODO derive rest of labels from DisassemblyMeta?
         this.disMeta = typ;
     }
 
@@ -573,7 +593,7 @@ class Disassembler {
             comments = this.generateComments(this.currentAddress);
         }
 
-        // TODO interpret as data up until the disassembly start address
+        // TODO convert the following to use sections
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
             const bd = new ByteDeclaration(this.eatBytes(2));
@@ -638,9 +658,16 @@ class Disassembler {
 
     generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t => t[0]);
 
-    needsComment = (addr: number) => false;
     private iset: InstructionSet;
-    generateComments = (addr: number) => [];
+
+    generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`) ;
+
+    /**
+     * TODO implement branchTargets
+     */
+    private branchTargets = (): number[] => [];
+
+    needsComment = (addr: number) => this.generateComments(addr).length === 0;
 
     get currentAddress(): number {
         // may not always be this because it can be assigned by assembler directive in source

@@ -121,7 +121,7 @@ body {
   border: #7a7373 solid;
 }
 
-.mn {
+.mn,.code {
   font-weight: bold;
   position: absolute;
   left: 40ch;
