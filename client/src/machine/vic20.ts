@@ -2,7 +2,6 @@
 
 import {CartSniffer, prg} from "./cbm";
 import {BlobSniffer, DisassemblyMeta, DisassemblyMetaImpl} from "./asm";
-import {BasicDecoder} from "./basic";
 import {FileBlob} from "./FileBlob";
 
 /**

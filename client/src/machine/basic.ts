@@ -39,7 +39,7 @@ class BasicDecoder {
                 i += 2
                 lineNumber = fb.readVector(i)
                 i += 2
-                line = lineNumber.toString(10);
+                line = lineNumber.toString(10) + " ";
             }
             let b = fb.bytes.at(i++);
             const eol = b === 0;
@@ -94,7 +94,7 @@ tok(149, "VERIFY");
 tok(150, "DEF");
 tok(151, "POKE");
 tok(152, "PRINT#");
-tok(153, "PRINT?");
+tok(153, "PRINT");
 tok(154, "CONT");
 tok(155, "LIST");
 tok(156, "CLR");

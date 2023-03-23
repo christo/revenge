@@ -79,7 +79,7 @@ body {
   color: #e3d5c9;
 }
 
-.actionResult > .line {
+.actionResult  .line {
   font-family: "JetBrains Mono", monospace;
   margin-top: 3px;
 }
@@ -99,6 +99,21 @@ body {
 .addr {
   margin-right: 1em;
   opacity: 60%;
+}
+
+.basic > .line {
+  margin-left: 7ch;
+}
+
+.basic > .addr {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: bold;
+  font-size: medium;
+  color: #e3d5c9;
+}
+
+.basic > .addr::before {
+  content: "$";
 }
 
 .line {
