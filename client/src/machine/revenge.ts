@@ -2,9 +2,9 @@
 
 import {FileBlob} from "./FileBlob";
 import {BASIC_PRG, disassemble, printBasic} from "./cbm";
-import {BlobSniffer, hexDumper, UNKNOWN} from "./asm";
+import {BlobSniffer, hexDumper, TagSeq, UNKNOWN} from "./asm";
 import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
-import {COMMON_MLPS, VIC20_CART} from "./vic20";
+import {COMMON_MLPS, UNEXPANDED_VIC_BASIC, VIC20_CART} from "./vic20";
 
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
@@ -12,7 +12,7 @@ import {COMMON_MLPS, VIC20_CART} from "./vic20";
  * string tuples. The string tuple represents a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  */
-type ActionResult = [string, string][][]; // 2d array of tuples
+type ActionResult = TagSeq[]; // 2d array of tuples
 
 /**
  * Datastructure for all data interpretation output.
@@ -66,6 +66,11 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         const typeActions = crt64Actions(fileBlob);
         typeActions.actions.push(hd);
         return typeActions;
+    }
+    if (UNEXPANDED_VIC_BASIC.sniff(fileBlob) > 1) {
+        const ta = printBasic(UNEXPANDED_VIC_BASIC, fileBlob);
+        ta.actions.push(hd);
+        return ta;
     }
     if (BASIC_PRG.sniff(fileBlob) > 1) {
         const ta = printBasic(BASIC_PRG, fileBlob);

@@ -15,6 +15,7 @@ import {
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
+import {BasicDecoder, CBM_BASIC_2_0} from "./basic";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
@@ -56,7 +57,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
 /** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
-    let ar: ActionResult = [[["debug", 'not implemented \n ']]];
+    let ar: ActionResult = CBM_BASIC_2_0.decode(fb);
     let d = new Detail([], ar);
     let ae: ActionExecutor = () => {
         return d;
@@ -70,6 +71,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     };
 };
 
+// TODO look up where c64 basic programs typically live
 const BASIC_PRG = new BlobType("basic prg", "BASIC program", ["basic"], "prg", [0x01, 0x08]);
 
 function prg(prefix: ArrayLike<number>) {

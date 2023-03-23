@@ -548,37 +548,10 @@ interface DisassemblyMeta {
     contentStartIndex(fb: FileBlob): number;
 }
 
-/** Null object implementation of {@link DisassemblyMeta}. */
-class NullDisassemblyMeta implements DisassemblyMeta {
-
-    static INSTANCE = new NullDisassemblyMeta();
-
-    private constructor() {
-        // intentionally left blank
-    }
-
-    baseAddress(fb: FileBlob): number {
-        return 0;
-    }
-
-    get nmiVectorOffset(): number {
-        return 0;
-    }
-
-    get resetVectorOffset(): number {
-        return 0;
-    }
-
-    contentStartIndex(fb: FileBlob): number {
-        return 0;
-    }
-
-    disassemblyStartIndex(fb: FileBlob): number {
-        return 0;
-    }
-}
-
 class DisassemblyMetaImpl implements DisassemblyMeta {
+
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0,0,0,0);
+
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
     private readonly _nmiVectorOffset: number;
@@ -825,7 +798,7 @@ class BlobType implements BlobSniffer {
     constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
         this.desc = desc;
         this.name = name;
-        this.dm = dm ? dm : NullDisassemblyMeta.INSTANCE;
+        this.dm = dm ? dm : DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
         this.exts = ext ? [ext] : [];
         this.tags = tags;
         this.prefix = prefix ? new Uint8Array(prefix) : new Uint8Array(0);
@@ -860,7 +833,6 @@ export {
     Environment,
     FullInstructionLine,
     hexDumper,
-    NullDisassemblyMeta,
     Section,
     SectionType,
     tagText,

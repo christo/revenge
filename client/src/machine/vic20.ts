@@ -1,7 +1,9 @@
 // VIC-20 specific details
 
 import {CartSniffer, prg} from "./cbm";
-import {DisassemblyMetaImpl} from "./asm";
+import {BlobSniffer, DisassemblyMeta, DisassemblyMetaImpl} from "./asm";
+import {BasicDecoder} from "./basic";
+import {FileBlob} from "./FileBlob";
 
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
@@ -35,4 +37,27 @@ const COMMON_MLPS = [
     prg([0x00, 0xc0]),  // 0xc000
 ];
 
-export {COMMON_MLPS, VIC20_CART}
+class UnexpandedVicBasic implements BlobSniffer {
+    desc: string;
+    name: string;
+    tags: string[];
+
+    constructor() {
+        this.desc = "Unexpanded VIC";
+        this.name = "BASIC prg";
+        this.tags=["basic", "vic20"];
+    }
+
+    getDisassemblyMeta(): DisassemblyMeta {
+        return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
+    }
+
+    sniff(fb: FileBlob): number {
+        return fb.submatch(new Uint8Array([0x01, 0x10]), 0) ? 1.2 : 0.8;
+    }
+
+}
+
+const UNEXPANDED_VIC_BASIC = new UnexpandedVicBasic();
+
+export {COMMON_MLPS, VIC20_CART, UNEXPANDED_VIC_BASIC}
