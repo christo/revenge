@@ -5,7 +5,6 @@ import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
     Instruction,
-    InstructionLike,
     InstructionSet,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
@@ -25,25 +24,43 @@ import {
 import {BlobToActions, Detail, UserAction} from "./revenge";
 
 /** Assembler pseudo-op that reserves literal bytes. */
-class ByteDeclaration implements InstructionLike<SectionType.DATA> {
+class ByteDeclaration implements Directive {
 
     private readonly _rawBytes: Array<number>;
+    private readonly _comments: string[];
+    private readonly _labels: string[];
 
-    constructor(rawBytes: Array<number>) {
+    constructor(rawBytes: Array<number>, comments: string[], labels: string[]) {
+        this._comments = comments;
+        this._labels = labels;
         this._rawBytes = rawBytes.map(b => assertByte(b));
     }
 
-    get rawBytes(): Array<number> {
+    getBytes(): number[] {
         return this._rawBytes;
     }
 
-    get numBytes(): number {
+    getLength(): number {
         return this._rawBytes.length;
     }
 
-    get type(): SectionType.DATA {
-        return SectionType.DATA;
+    assemble(dialect: Dialect, ass: Assembler): FileBlob {
+        return FileBlob.NULL_FILE_BLOB; // TODO unimplemented
     }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.bytes(this, dis);
+    }
+
+    get comments(): string[] {
+        return this._comments;
+    }
+
+    get labels(): string[] {
+        return this._labels;
+    }
+
+
 }
 
 /**
@@ -74,6 +91,30 @@ interface Dialect {
      * @param s
      */
     formatLabel(s: string): string;
+
+    /**
+     * Render tagged code disassembly for this dialect for the given line.
+     *
+     * @param fullInstructionLine one logical line of disassembly.
+     * @param dis the disassembly state.
+     */
+    code(fullInstructionLine:FullInstructionLine, dis: Disassembler): TagSeq;
+
+    /**
+     * Render tagged byte declaration.
+     *
+     * @param byteable supplies the bytes to be declared as bytes.
+     * @param dis the disassembly state.
+     */
+    bytes(byteable:Directive | FullInstructionLine, dis: Disassembler): TagSeq;
+
+    /**
+     * Render tagged directive.
+     *
+     * @param directive the assembler directive
+     * @param dis the disassembly state.
+     */
+    directive(directive: Directive, dis: Disassembler): TagSeq;
 }
 
 /**
@@ -105,6 +146,7 @@ type TagSeq = Tag[]
  */
 const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
 
+// noinspection JSUnusedGlobalSymbols
 /** Will have different types of data later (petscii, sid music, character) */
 enum SectionType {
     /** Non-executable data. */
@@ -117,6 +159,7 @@ enum SectionType {
     UNKNOWN
 }
 
+// noinspection JSUnusedGlobalSymbols
 /** Designates the dynamic meaning of a sequence of bytes in the binary. */
 class Section {
 
@@ -139,6 +182,7 @@ class Section {
     }
 }
 
+// noinspection JSUnusedGlobalSymbols
 enum SourceType {
     /** Machine code instruction */
     MACHINE,
@@ -154,6 +198,7 @@ enum SourceType {
     BLANK
 }
 
+// noinspection JSUnusedLocalSymbols
 /**
  * Represents a logical element of the source code.
  *
@@ -179,7 +224,7 @@ class Source {
  * Need to support options, possibly at specific memory locations.
  * Global option may be lowercase opcodes.
  * Location-specific option might be arbitrary label, decimal operand, lo-byte selector "<" etc.
- * Some assembler dialects have other ways of rendering addressing modes (e.g suffix on mnemonic).
+ * Some assembler dialects have other ways of rendering addressing modes (e.g. suffix on mnemonic).
  * Can support use of symbols instead of numbers - user may prefer to autolabel kernal addresses.
  */
 class DefaultDialect implements Dialect {
@@ -243,19 +288,15 @@ class DefaultDialect implements Dialect {
         }
     }
 
-    private renderData(il: InstructionLike<SectionType.DATA>) {
-        return this._env.indent() + tagText(this.byteDeclaration(il));
-    }
-
-    private renderLabels(fil: FullInstructionLine) {
+    private renderLabels(labels: string[]) {
         const le = this._env.targetLineEndings();
-        return fil.labels.map(s => this.formatLabel(s)).join(le);
+        return labels.map(s => this.formatLabel(s)).join(le);
     }
 
-    private renderComments(fil: FullInstructionLine) {
+    private renderComments(comments:string[]) {
         const le = this._env.targetLineEndings();
         const cp = this.commentPrefix();
-        return fil.comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
+        return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
     }
 
     commentPrefix() {
@@ -266,36 +307,14 @@ class DefaultDialect implements Dialect {
         return s + ": ";
     }
 
-    private byteDeclaration(il: InstructionLike<SectionType.DATA>): TagSeq {
+    private byteDeclaration(b: Byteable): TagSeq {
+        // what if there's no bytes?
         let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
-        let s2 = "";
-        il.rawBytes.forEach((b, i) => {
-            if (i !== 0) {
-                s2 += ", ";
-            }
-            s2 += this.hexByteText(b);
-        });
-        return [kw, ["hexarray", s2]];
+        return [kw, ["hexarray", b.getBytes().map(this.hexByteText).join(", ")]];
     }
 
     private hexByteText(b: number) {
         return "$" + hex8(b);
-    }
-
-    /** Returns the given instruction as TagSeq elements in lexical order */
-    tagged(fil: FullInstructionLine): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(fil)];
-        const labels: Tag = ["label", this.renderLabels(fil)];
-        let i: InstructionLike<any> = fil.fullInstruction.instruction
-
-        let tagged: TagSeq = [comments, labels];
-
-        if (i.type === SectionType.DATA) {
-            tagged.push(["data", this.renderData(i)]);
-        } else if (i.type === SectionType.CODE) {
-            tagged = tagged.concat(this.taggedCode(fil.fullInstruction.instruction as Instruction, fil));
-        }
-        return tagged;
     }
 
     /**
@@ -304,7 +323,7 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: FullInstruction<SectionType.CODE>) {
+    private renderOperand(il: FullInstruction):string {
         const i:Instruction = il.instruction as Instruction;
         const hw = () => "$" + hex16(il.operand16());
         const hb = () => this.hexByteText(il.firstByte);
@@ -356,18 +375,84 @@ class DefaultDialect implements Dialect {
         return operand;
     }
 
+    bytes(x: Directive | FullInstructionLine, dis: Disassembler): TagSeq {
+        // future: context may give us rules about grouping, pattern detection etc.
+        const comments: Tag = ["comment", this.renderComments(x.comments)];
+        const labels: Tag = ["label", this.renderLabels(x.labels)];
+
+        let tagged: TagSeq = [comments, labels];
+
+        const data = this._env.indent() + tagText(this.byteDeclaration(x));
+        tagged.push(["data", data]);
+        return tagged;
+    }
+
+    code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
+        const comments: Tag = ["comment", this.renderComments(fil.comments)];
+        const labels: Tag = ["label", this.renderLabels(fil.labels)];
+        const instruction = fil.fullInstruction.instruction as Instruction;
+        return [comments, labels].concat(this.taggedCode(instruction, fil));
+    }
+
+    directive(directive: Directive, dis: Disassembler): TagSeq {
+        // TODO first make pc assignment work
+        return [];
+    }
+
+}
+
+/** Has a byte correspondence */
+interface Byteable {
+    /** The possibly empty array of byte values. */
+    getBytes(): number[];
+    /** Length in bytes, must not be negative. */
+    getLength(): number;
+}
+
+/**
+ * Assembler directive. Has a source form, may produce bytes during assembly and may be synthesised during
+ * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
+ */
+interface Directive extends Instructionish {
+    get labels(): Array<string>;
+
+    get comments(): Array<string>;
+
+    // TODO other properties expected to emerge when trying to synthesise stuff like symbol assignment
+}
+
+class Assembler {
+    // TODO implement dialect-independent assembler
+}
+
+interface Instructionish extends Byteable {
+    /**
+     * Disassembles the implementation's instruction with the given stateful disassembler, in the given dialect.
+     *
+     * @param dialect the syntax-specifics for disassembly.
+     * @param dis the stateful disassembler.
+     */
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq
+
+    /**
+     * Assemble this instruction in the given dialect with the given assembler.
+     *
+     * @param dialect syntax to use
+     * @param ass stateful assembler
+     */
+    assemble(dialect: Dialect, ass: Assembler): FileBlob
 }
 
 /**
  * A representation of a specific instruction on a line in a source file with its
  * operands, potential labels, potential comments etc.
  */
-class FullInstructionLine {
-    private readonly _labels: Array<string>;
-    private readonly _fullInstruction: FullInstruction<any>;
-    private readonly _comments: Array<string>;
+class FullInstructionLine implements Instructionish {
+    private readonly _labels: string[];
+    private readonly _fullInstruction: FullInstruction;
+    private readonly _comments: string[];
 
-    constructor(labels: Array<string>, fullInstruction: FullInstruction<any>, comments: Array<string>) {
+    constructor(labels: string[], fullInstruction: FullInstruction, comments: string[]) {
         this._labels = labels;
         this._fullInstruction = fullInstruction;
         this._comments = comments;
@@ -377,29 +462,30 @@ class FullInstructionLine {
         return this._labels;
     }
 
-    get fullInstruction(): FullInstruction<any> {
-        return this._fullInstruction;
-    }
-
     get comments(): Array<string> {
         return this._comments;
     }
 
-    asHex() {
-        const i = this._fullInstruction.instruction;
-        const hInst = hex8(i.rawBytes[0]);
+    get fullInstruction(): FullInstruction {
+        return this._fullInstruction;
+    }
 
-        if (i.numBytes === 1) {
-            return hInst;
-        }
-        if (i.numBytes === 2) {
-            return `${hInst} ${hex8(this._fullInstruction.firstByte)}`
-        }
-        if (i.numBytes === 3) {
-            return `${hInst} ${hex8(this._fullInstruction.firstByte)} ${hex8(this._fullInstruction.secondByte)}`;
-        }
-        // must be a data declaration because it takes more than 3 bytes
-        return i.rawBytes.map(hex8).join(" ");
+    getBytes(): number[] {
+        return this._fullInstruction.getBytes();
+    }
+
+    getLength(): number {
+        return this._fullInstruction.getLength();
+    }
+
+
+    assemble(dialect: Dialect, ass: Assembler): FileBlob {
+        // TODO implement assembler
+        return FileBlob.NULL_FILE_BLOB;
+    }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.code(this, dis);
     }
 }
 
@@ -544,7 +630,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
 /** Stateful translator of bytes to their parsed instruction line */
 class Disassembler {
-
+    private iset: InstructionSet;
     originalIndex: number;
     currentIndex: number;
     fb: FileBlob;
@@ -599,7 +685,11 @@ class Disassembler {
         }
     }
 
-    nextInstructionLine() {
+    /**
+     * This is not how it should work...
+     * @deprecated should call {@link Instructionish.disassemble()}
+     */
+    nextInstructionLine():Instructionish {
         let labels: Array<string> = [];
         // need to allow multiple labels
         if (this.needsLabel(this.currentAddress)) {
@@ -610,35 +700,32 @@ class Disassembler {
             comments = this.generateComments(this.currentAddress);
         }
 
-        // TODO convert the following to use sections
         if (this.currentIndex === 0) {
             console.log("manually handling base address");
-            const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["cartBase"], new FullInstruction(bd, 0, 0), []);
+            return new ByteDeclaration(this.eatBytes(2),[],["cartBase"]);
         }
         if (this.currentIndex === 2) {
             console.log("manually handling reset vector");
-            const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["resetVector"], new FullInstruction(bd, 0, 0), []);
+            return new ByteDeclaration(this.eatBytes(2), [],["resetVector"]);
         }
         if (this.currentIndex === 4) {
             console.log("manually handling nmi vector");
-            const bd = new ByteDeclaration(this.eatBytes(2));
-            return new FullInstructionLine(["nmiVector"], new FullInstruction(bd, 0, 0), []);
+            return new ByteDeclaration(this.eatBytes(2), [],["nmiVector"]);
         }
         if (this.currentIndex === 6) {
             console.log("manually handling cart magic");
-            const bd = new ByteDeclaration(this.eatBytes(5));
-            return new FullInstructionLine(["cartSig"], new FullInstruction(bd, 0, 0), []);
+            return new ByteDeclaration(this.eatBytes(5),[],["cartSig"]);
         }
         if (this.currentIndex < 11) {
             throw Error("well this is unexpected!");
         }
 
         const opcode = this.eatByteOrDie();
-        const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
 
-        // if the instruction doesn't define an operand byte, its value is not guaranteed to be defined
+        const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
+        if (Mos6502.INSTRUCTIONS.op(opcode) === undefined) {
+            return new ByteDeclaration([opcode], ["illegal opcode"], []);
+        }
 
         // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
         let remainingBytes = this.fb.bytes.length - this.currentIndex;
@@ -648,8 +735,7 @@ class Disassembler {
             for (let i = 0; i < remainingBytes; i++) {
                 bytes.push(this.currentIndex++);
             }
-            const bd = new ByteDeclaration(bytes);
-            return new FullInstructionLine(labels, new FullInstruction(bd, 0, 0), comments);
+            return new ByteDeclaration(bytes, [],[]);
         } else {
             let firstOperandByte = 0;
             let secondOperandByte = 0;
@@ -675,7 +761,6 @@ class Disassembler {
 
     generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t => t[0]);
 
-    private iset: InstructionSet;
 
     generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
@@ -781,4 +866,4 @@ export {
     tagText,
     UNKNOWN,
 };
-export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions};
+export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions, Byteable, Instructionish, Dialect};

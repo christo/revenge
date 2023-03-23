@@ -175,6 +175,7 @@ minimum necessary syntax may be supported.
 ## TODO
 
 * fix bug - reset vector should force byte-precise assembly designation
+* use ts-md5 for server-side md5 hash generation
 * data section detection - probabilistic
   * human-designated
   * detected score

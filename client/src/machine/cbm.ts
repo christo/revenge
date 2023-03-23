@@ -1,9 +1,19 @@
 // Commodore 8-bit machine stuff
 
 import {FileBlob} from "./FileBlob";
-import {BlobSniffer, BlobType, DefaultDialect, Disassembler, DisassemblyMeta, Environment, hexDumper} from "./asm";
+import {
+    BlobSniffer,
+    BlobType,
+    DefaultDialect,
+    Disassembler,
+    DisassemblyMeta,
+    Environment,
+    hexDumper,
+    Instructionish,
+    Tag
+} from "./asm";
 import {Mos6502} from "./mos6502";
-import {hex16, hex8} from "../misc/BinUtils";
+import {asHex, hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
 
 /**
@@ -27,11 +37,12 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             detail.tfield.push([["addr", "_  "], ["code", "* ="], ["abs opnd", base]]);
             while (dis.hasNext()) {
                 const addr = dis.currentAddress;
-                let hexAddr: [string, string] = ["addr", hex16(addr)];
-                let full = dis.nextInstructionLine();
-                let hex: [string, string] = ["hex", full.asHex()];
+                let hexAddr: Tag = ["addr", hex16(addr)];
+                let full:Instructionish = dis.nextInstructionLine();
+                let hex: Tag = ["hex", asHex(full)];
                 const items = [hexAddr, hex];
-                dialect.tagged(full).forEach(i => items.push(i));
+
+                full.disassemble(dialect, dis).forEach(i => items.push(i));
                 detail.tfield.push(items);
             }
             return detail;

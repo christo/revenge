@@ -7,7 +7,7 @@
  */
 
 import {assertByte} from "../misc/BinUtils";
-import {SectionType} from "./asm";
+import {Byteable, SectionType} from "./asm";
 
 class AddressingMode {
     code: string;
@@ -217,7 +217,7 @@ class Cycles {
     }
 }
 
-class Instruction implements InstructionLike<SectionType.CODE> {
+class Instruction {
     private readonly _op: Op;
     private readonly _numBytes: number;
     private readonly _mode: AddressingMode;
@@ -234,33 +234,26 @@ class Instruction implements InstructionLike<SectionType.CODE> {
         this.illegal = illegal;
     }
 
-    get type(): SectionType.CODE {
-        return SectionType.CODE;
-    }
-
     get op(): Op {
         return this._op;
     }
 
-    get numBytes(): number {
+    getBytes(): number[] {
+        return [this.opcode];
+    }
+
+    getLength(): number {
         return this._numBytes;
     }
 
     get mode(): AddressingMode {
         return this._mode;
     }
-
-    get rawBytes(): Array<number> {
-        return [this.opcode];
-    }
 }
 
-interface InstructionLike<T extends SectionType> {
-    get rawBytes(): Array<number>;
-
-    get type(): T;
-
-    get numBytes(): number;
+/** @deprecated die! */
+interface InstructionLike {
+    get type(): SectionType;
 }
 
 /** Represents the whole set of machine instructions. */
@@ -274,7 +267,7 @@ class InstructionSet {
     private bytes: Array<number> = [];
     // noinspection JSMismatchedCollectionQueryUpdate
     private cycles: Array<Cycles> = [];
-    private instructions: Array<InstructionLike<any>> = [];
+    private instructions: Array<Instruction> = [];
 
     add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
         const o = assertByte(opcode);
@@ -305,40 +298,10 @@ class InstructionSet {
         return this.bytes[assertByte(opcode)];
     }
 
-    instruction(opcode: number) {
+    instruction(opcode: number): Instruction {
         return this.instructions[assertByte(opcode)];
     }
 
-    /**
-     * Add illegal opcodes as byte declarations for missing bytes. Bit hacky but ok for now.
-     */
-    fillIllegals() {
-        for (let i = 0; i < 256; i++) {
-            if (!this.instructions[i]) {
-                this.instructions[i] = new IllegalOpcode([i]);
-            }
-        }
-    }
-}
-
-class IllegalOpcode implements InstructionLike<SectionType.DATA> {
-    private readonly _bytes: number[];
-
-    constructor(bytes: number[]) {
-        this._bytes = bytes;
-    }
-
-    get numBytes(): number {
-        return this._bytes.length;
-    }
-
-    get rawBytes(): Array<number> {
-        return this._bytes;
-    }
-
-    get type(): SectionType.DATA {
-        return SectionType.DATA;
-    }
 
 }
 
@@ -548,16 +511,15 @@ I.add(0x8a, TXA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x9a, TXS, MODE_IMPLIED, 1, Cycles.FIXED(2));
 I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 
-// have instruction set variants for the chip variants but also whether to allow illegal opcodes
-I.fillIllegals();
 
 /** An instruction with operands. */
-class FullInstruction<T extends SectionType> {
-    readonly instruction: InstructionLike<T>;    // contains operand byte size
+class FullInstruction implements Byteable {
+    readonly instruction: Instruction;    // contains operand byte size
+
     readonly firstByte: number;              // literal if defined by instruction
     readonly secondByte: number;              // literal if defined by instruction
 
-    constructor(instruction: InstructionLike<T>, lobyte: number, hibyte: number) {
+    constructor(instruction: Instruction, lobyte: number, hibyte: number) {
         this.instruction = instruction;
         this.firstByte = assertByte(lobyte);
         this.secondByte = assertByte(hibyte);
@@ -565,8 +527,29 @@ class FullInstruction<T extends SectionType> {
 
     /** Gives the operand as a 16-bit little-endian number value. */
     operand16 = () => (this.secondByte << 8) + this.firstByte;
+
+    getBytes(): number[] {
+        const i = this.instruction;
+        const opcode = i.getBytes()[0]
+        if (i.getLength() === 1) {
+            return [opcode];
+        }
+        if (i.getLength() === 2) {
+            return [opcode, this.firstByte];
+        }
+        if (i.getLength() === 3) {
+            return [opcode, this.firstByte, this.secondByte];
+        } else {
+            throw Error("more than 3 byte instruction?");
+        }
+    }
+
+    getLength(): number {
+        return this.instruction.getLength();
+    }
 }
 
+// noinspection JSUnusedGlobalSymbols
 class Mos6502 {
     static readonly INSTRUCTIONS = I;
 
@@ -606,7 +589,3 @@ export {
     MODE_ZEROPAGE_Y,
     AddressingMode,
 };
-export type {
-    InstructionLike,
-
-}

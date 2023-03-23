@@ -1,3 +1,4 @@
+import {Byteable} from "../machine/asm";
 
 const hex16 = (x: number):string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number):string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
@@ -27,4 +28,8 @@ const assertByte = (value: number):number => {
  */
 const unsignedToSigned = (x:number):number => -(x & 0x80) + (x & 0x7f)
 
-export {unsignedToSigned, assertByte, stringToArray, hex16, hex8}
+const asHex = (b: Byteable) => {
+    return b.getBytes().map(hex8).join(" ");
+}
+
+export {unsignedToSigned, assertByte, stringToArray, hex16, hex8, asHex}

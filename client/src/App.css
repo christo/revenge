@@ -143,6 +143,10 @@ body {
   border-radius: 2px;
 }
 
+.comment {
+  display: inline-block;
+}
+
 /* Arithmetic */
 .arith {background-color: rgba(75, 204, 227, 0.2)
 }
