@@ -23,6 +23,10 @@ import {
 } from "./mos6502";
 import {BlobToActions, Detail, UserAction} from "./revenge";
 
+const TODO = (mesg = "") => {
+    throw Error(`Not Implemented ${mesg}`)
+};
+
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
  * assembly language.
@@ -120,9 +124,9 @@ abstract class InstructionBase implements Instructionish {
         return this._comments;
     }
 
-    /** TODO implement assembler, then make this abstract. */
     assemble(dialect: Dialect, ass: Assembler): FileBlob {
-        return FileBlob.NULL_FILE_BLOB; // unimplemented
+        TODO("assembler");
+        return FileBlob.NULL_FILE_BLOB;
     }
 
     abstract disassemble(dialect: Dialect, dis: Disassembler): TagSeq;
@@ -306,7 +310,7 @@ class DefaultDialect implements Dialect {
         if (index >= input.length || index < 0) {
             throw Error("index out of range")
         }
-        throw Error("not implemented");
+        TODO("assemble");
         // parsing can fail if wrong or not enough bytes
 
         // return Instruction + 0-2 bytes operand + new index (this may be beyond input which means finished)
@@ -437,7 +441,7 @@ class DefaultDialect implements Dialect {
     }
 
     directive(directive: Directive, dis: Disassembler): TagSeq {
-        // TODO first make pc assignment work
+        TODO();
         return [];
     }
 
