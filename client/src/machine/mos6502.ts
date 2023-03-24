@@ -217,6 +217,7 @@ class Cycles {
     }
 }
 
+/** Machine instruction definition. */
 class Instruction {
     private readonly _op: Op;
     private readonly _numBytes: number;
