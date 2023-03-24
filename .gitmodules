@@ -1,0 +1,3 @@
+[submodule "submodules/c64ref"]
+	path = submodules/c64ref
+	url = git@github.com:mist64/c64ref.git
