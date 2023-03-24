@@ -171,11 +171,24 @@ minimum necessary syntax may be supported.
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
 * assembly syntax highlighting
 * Test suite
+* Decode BASIC programs
+* High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated 
+by [Michael Steil](https://pagetable.com/) of
+[The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame. 
 
 ## TODO
 
-* fix bug - reset vector should force byte-precise assembly designation
-* use ts-md5 for server-side md5 hash generation
+* indicate which view is current - switch from buttons to tab nav
+* make sure monospaced font does not use ligatures
+* use c64ref submodule for petscii rendering
+  * build-time petscii mapping
+  * test coverage
+  * charset
+  * rewrite BASIC decoder using c64ref data
+* better styling for BASIC decoder
+* default to best view (maybe use sniff score)
+* bug - reset vector should force byte-precise assembly designation
+* use ts-md5 for md5 hash generation
 * data section detection - probabilistic
   * human-designated
   * detected score
@@ -184,8 +197,8 @@ minimum necessary syntax may be supported.
 * dialect options - layout handles for indenting
 * database persistence (psql)
 * interactive choice of data/code regions
-* BASIC prg support
-  * BASIC data statement embedded machine code detection/designation
+* Test C64 and VIC-20 BASIC decoding
+* BASIC data statement embedded machine code detection/designation
 * bulk back-end corpus
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
 * multiple disassembly dialect support
