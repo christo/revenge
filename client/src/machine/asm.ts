@@ -80,6 +80,13 @@ interface Dialect {
      */
     directive(directive: Directive, dis: Disassembler): TagSeq;
 
+    /**
+     * PC Assignment directive. Typical variations include:
+     * ORG $abcd
+     * * = $abcd
+     * @param pcAssign
+     * @param dis
+     */
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq;
 }
 
