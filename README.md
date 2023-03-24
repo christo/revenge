@@ -179,7 +179,7 @@ by [Michael Steil](https://pagetable.com/) of
 ## TODO
 
 * indicate which view is current - switch from buttons to tab nav
-* make sure monospaced font does not use ligatures
+* audit inter-module dependency graph, remove cycles, untangle
 * use c64ref submodule for petscii rendering
   * build-time petscii mapping
   * test coverage

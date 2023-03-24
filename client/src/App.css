@@ -5,9 +5,9 @@
 }
 
 @font-face {
-   font-family: "JetBrains Mono";
-   src: local("JetBrains_Mono"),
-    url("./fonts/JetBrains_Mono/static/JetBrainsMono-SemiBold.ttf") format("truetype");
+  font-family: "Martian Mono";
+  src: local("Martian_Mono"),
+  url("./fonts/Martian_Mono/static/MartianMono/MartianMono-SemiBold.ttf") format("truetype");
 }
 
 body {
@@ -48,7 +48,7 @@ body {
 
 .fileSummary .filesize {
   padding-right: 1em;
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Martian Mono", monospace;
 }
 
 .dataDetail > span {
@@ -73,14 +73,14 @@ body {
 }
 
 .hexbyte {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Martian Mono", monospace;
   font-weight: bold;
   font-size: medium;
   color: #e3d5c9;
 }
 
 .actionResult  .line {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Martian Mono", monospace;
   margin-top: 3px;
 }
 
@@ -106,7 +106,7 @@ body {
 }
 
 .basic > .addr {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Martian Mono", monospace;
   font-weight: bold;
   font-size: medium;
   color: #e3d5c9;
