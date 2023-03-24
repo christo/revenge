@@ -45,7 +45,7 @@ class ByteDeclaration implements Directive {
     }
 
     assemble(dialect: Dialect, ass: Assembler): FileBlob {
-        return FileBlob.NULL_FILE_BLOB; // TODO unimplemented
+        return FileBlob.NULL_FILE_BLOB; // unimplemented
     }
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
@@ -418,7 +418,7 @@ interface Directive extends Instructionish {
 
     get comments(): Array<string>;
 
-    // TODO other properties expected to emerge when trying to synthesise stuff like symbol assignment
+    // other properties expected to emerge when trying to synthesise stuff like symbol assignment
 }
 
 class Assembler {
@@ -660,7 +660,7 @@ class Disassembler {
 
     /**
      * This is not how it should work...
-     * @deprecated should call {@link Instructionish.disassemble()}
+     * @deprecated figure out how to construct the Instructionish instances
      */
     nextInstructionLine():Instructionish {
         let labels: Array<string> = [];
@@ -732,9 +732,13 @@ class Disassembler {
         return typeof this.labels.find(t => t[1] === addr) !== "undefined";
     };
 
+    /** Returns zero or more labels that belong at the given addres. */
     generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t => t[0]);
 
-
+    /**
+     * Returns zero or more comments that belong at the given addres.
+     *
+     */
     generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
     /**
