@@ -5,17 +5,18 @@ import {
     BlobSniffer,
     BlobType,
     DefaultDialect,
+    Directive,
     Disassembler,
     DisassemblyMeta,
     Environment,
     hexDumper,
-    Instructionish,
+    Instructionish, PcAssign,
     Tag
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "../misc/BinUtils";
 import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
-import {BasicDecoder, CBM_BASIC_2_0} from "./basic";
+import {CBM_BASIC_2_0} from "./basic";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
@@ -32,10 +33,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
             let detail = new Detail(["line"], [])
 
-            // start with assembler directive for setting the base address.
-            const base = "$" + hex16(t.getDisassemblyMeta().baseAddress(fb));
-
-            detail.tfield.push([["addr", "_  "], ["code", "* ="], ["abs opnd", base]]);
+            // set the base address
+            const assignPc:Directive = new PcAssign(dis.currentAddress, ["entry"], []);
+            detail.tfield.push(assignPc.disassemble(dialect, dis));
             while (dis.hasNext()) {
                 const addr = dis.currentAddress;
                 let hexAddr: Tag = ["addr", hex16(addr)];

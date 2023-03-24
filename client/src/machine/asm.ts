@@ -23,46 +23,6 @@ import {
 } from "./mos6502";
 import {BlobToActions, Detail, UserAction} from "./revenge";
 
-/** Assembler pseudo-op that reserves literal bytes. */
-class ByteDeclaration implements Directive {
-
-    private readonly _rawBytes: Array<number>;
-    private readonly _comments: string[];
-    private readonly _labels: string[];
-
-    constructor(rawBytes: Array<number>, comments: string[], labels: string[]) {
-        this._comments = comments;
-        this._labels = labels;
-        this._rawBytes = rawBytes.map(b => assertByte(b));
-    }
-
-    getBytes(): number[] {
-        return this._rawBytes;
-    }
-
-    getLength(): number {
-        return this._rawBytes.length;
-    }
-
-    assemble(dialect: Dialect, ass: Assembler): FileBlob {
-        return FileBlob.NULL_FILE_BLOB; // unimplemented
-    }
-
-    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
-        return dialect.bytes(this, dis);
-    }
-
-    get comments(): string[] {
-        return this._comments;
-    }
-
-    get labels(): string[] {
-        return this._labels;
-    }
-
-
-}
-
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
  * assembly language.
@@ -115,6 +75,8 @@ interface Dialect {
      * @param dis the disassembly state.
      */
     directive(directive: Directive, dis: Disassembler): TagSeq;
+
+    pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq;
 }
 
 /**
@@ -140,13 +102,87 @@ type Tag = [string, string]
  */
 type TagSeq = Tag[]
 
+/** Convenience base class implementing comment and label properties and no bytes. */
+abstract class InstructionBase implements Instructionish {
+    protected readonly _labels: string[];
+    protected readonly _comments: string[];
+
+    protected constructor(labels: string[], comments: string[]) {
+        this._labels = labels;
+        this._comments = comments;
+    }
+
+    get labels(): Array<string> {
+        return this._labels;
+    }
+
+    get comments(): Array<string> {
+        return this._comments;
+    }
+
+    /** TODO implement assembler, then make this abstract. */
+    assemble(dialect: Dialect, ass: Assembler): FileBlob {
+        return FileBlob.NULL_FILE_BLOB; // unimplemented
+    }
+
+    abstract disassemble(dialect: Dialect, dis: Disassembler): TagSeq;
+
+    getBytes(): number[] {
+        return [];
+    }
+
+    getLength(): number {
+        return 0;
+    }
+}
+
+class PcAssign extends InstructionBase implements Directive {
+    private _address: number;
+
+    constructor(address: number, labels:string[] = [], comments:string[] = []) {
+        super(labels, comments);
+        this._address = address;
+    }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.pcAssign(this, dis);
+    }
+
+    get address(): number {
+        return this._address;
+    }
+}
+
+/** Assembler pseudo-op that reserves literal bytes. */
+class ByteDeclaration extends InstructionBase implements Directive {
+
+    private readonly _rawBytes: Array<number>;
+
+    constructor(rawBytes: Array<number>, comments: string[], labels: string[]) {
+        super(labels, comments);
+        this._rawBytes = rawBytes.map(b => assertByte(b));
+    }
+
+    getBytes(): number[] {
+        return this._rawBytes;
+    }
+
+    getLength(): number {
+        return this._rawBytes.length;
+    }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.bytes(this, dis);
+    }
+}
+
 /**
  * Turns a tagSeq into plain text, discarding the tags.
  * @param ts
  */
 const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
-
 // noinspection JSUnusedGlobalSymbols
+
 /** Will have different types of data later (petscii, sid music, character) */
 enum SectionType {
     /** Non-executable data. */
@@ -158,8 +194,8 @@ enum SectionType {
     /** Type is not known. */
     UNKNOWN
 }
-
 // noinspection JSUnusedGlobalSymbols
+
 /** Designates the dynamic meaning of a sequence of bytes in the binary. */
 class Section {
 
@@ -181,8 +217,8 @@ class Section {
         return this.startOffset + this.length;
     }
 }
-
 // noinspection JSUnusedGlobalSymbols
+
 enum SourceType {
     /** Machine code instruction */
     MACHINE,
@@ -198,7 +234,7 @@ enum SourceType {
     BLANK
 }
 
-// noinspection JSUnusedLocalSymbols
+
 /**
  * Represents a logical element of the source code.
  *
@@ -210,6 +246,8 @@ enum SourceType {
  * Note that this is independent of the assembly dialect which decides how such source lines are rendered
  * into plain text or structured output.
  */
+// noinspection JSUnusedLocalSymbols
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class Source {
     type: SourceType;
     value: string;
@@ -317,6 +355,10 @@ class DefaultDialect implements Dialect {
         return "$" + hex8(b);
     }
 
+    private hexWordText(x:number) {
+        return "$" + hex16(x);
+    }
+
     /**
      * Returns only the operand portion, trimmed.
      * Currently, only supports hex literals for operand values;
@@ -399,6 +441,13 @@ class DefaultDialect implements Dialect {
         return [];
     }
 
+    pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
+        const comments: Tag = ["comment", this.renderComments(pcAssign.comments)];
+        const labels: Tag = ["label", this.renderLabels(pcAssign.labels)];
+        const base = this.hexWordText(pcAssign.address);
+        return [comments, labels, ["addr", "_  "], ["code", "* ="], ["abs opnd", base]];
+    }
+
 }
 
 /** Has a byte correspondence */
@@ -414,9 +463,6 @@ interface Byteable {
  * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
  */
 interface Directive extends Instructionish {
-    get labels(): Array<string>;
-
-    get comments(): Array<string>;
 
     // other properties expected to emerge when trying to synthesise stuff like symbol assignment
 }
@@ -425,7 +471,17 @@ class Assembler {
     // TODO implement dialect-independent assembler
 }
 
+/**
+ * Syntax-independent form for any assemblable and disassemblable element, implementations include machine instructions
+ * and assembler directives. The {@link Assembler} and {@link Disassembler} hold state for a sequence of such items
+ * during the assembly or disassembly and the {@link Dialect} performs syntax-specific source text parsing and
+ * unparsing. This decomposition supports program transformation workflows such as syntax translation and peephole
+ * optimisation.
+ */
 interface Instructionish extends Byteable {
+    labels: Array<string>;
+    comments: Array<string>;
+
     /**
      * Disassembles the implementation's instruction with the given stateful disassembler, in the given dialect.
      *
@@ -447,23 +503,12 @@ interface Instructionish extends Byteable {
  * A representation of a specific instruction on a line in a source file with its
  * operands, potential labels, potential comments etc.
  */
-class FullInstructionLine implements Instructionish {
-    private readonly _labels: string[];
+class FullInstructionLine extends InstructionBase {
     private readonly _fullInstruction: FullInstruction;
-    private readonly _comments: string[];
 
     constructor(labels: string[], fullInstruction: FullInstruction, comments: string[]) {
-        this._labels = labels;
+        super(labels, comments);
         this._fullInstruction = fullInstruction;
-        this._comments = comments;
-    }
-
-    get labels(): Array<string> {
-        return this._labels;
-    }
-
-    get comments(): Array<string> {
-        return this._comments;
     }
 
     get fullInstruction(): FullInstruction {
@@ -476,12 +521,6 @@ class FullInstructionLine implements Instructionish {
 
     getLength(): number {
         return this._fullInstruction.getLength();
-    }
-
-
-    assemble(dialect: Dialect, ass: Assembler): FileBlob {
-        // TODO implement assembler
-        return FileBlob.NULL_FILE_BLOB;
     }
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
@@ -607,7 +646,7 @@ class Disassembler {
     originalIndex: number;
     currentIndex: number;
     fb: FileBlob;
-    private _currentAddress: number;
+    private segmentBaseAddress: number;
 
     /**
      * Tuple: label, address
@@ -626,7 +665,7 @@ class Disassembler {
         this.originalIndex = index;
         this.currentIndex = index;
         this.fb = fb;
-        this._currentAddress = typ.baseAddress(fb);
+        this.segmentBaseAddress = typ.baseAddress(fb);
         const resetVector = fb.readVector(typ.resetVectorOffset);
         const nmiVector = fb.readVector(typ.nmiVectorOffset);
         this.labels = [["handleReset", resetVector], ["handleNmi", nmiVector]];
@@ -749,8 +788,7 @@ class Disassembler {
     needsComment = (addr: number) => this.generateComments(addr).length === 0;
 
     get currentAddress(): number {
-        // may not always be this because it can be assigned by assembler directive in source
-        return this._currentAddress + this.currentIndex - this.originalIndex;
+        return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
     }
 }
 
@@ -837,9 +875,10 @@ export {
     Environment,
     FullInstructionLine,
     hexDumper,
+    PcAssign,
     Section,
     SectionType,
     tagText,
     UNKNOWN,
 };
-export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions, Byteable, Instructionish, Dialect};
+export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions, Byteable, Instructionish, Dialect, Directive};
