@@ -14,6 +14,8 @@ import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer} from "./cbm";
 import {BlobToActions} from "./revenge";
 
+const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", [0x01, 0x08]);
+
 const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
@@ -46,8 +48,6 @@ const C64_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const C64_WARM_VECTOR_OFFSET = 4;
 
-
-
 /**
  * The C64 magic cartridge signature CBM80 in petscii.
  */
@@ -75,4 +75,4 @@ const C64_8K_CART = new CartSniffer(
     ])
 );
 
-export {crt64Actions, C64_CRT, C64_8K_CART};
+export {crt64Actions, C64_CRT, C64_8K_CART, C64_BASIC_PRG};

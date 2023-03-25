@@ -1,9 +1,9 @@
 // application-level stuff to tie user interface and domain model
 
 import {FileBlob} from "./FileBlob";
-import {BASIC_PRG, disassemble, printBasic} from "./cbm";
+import {disassemble, printBasic} from "./cbm";
 import {BlobSniffer, hexDumper, TagSeq, UNKNOWN_BLOB} from "./asm";
-import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
+import {C64_8K_CART, C64_CRT, crt64Actions, C64_BASIC_PRG} from "./c64";
 import {COMMON_MLPS, UNEXPANDED_VIC_BASIC, VIC20_CART} from "./vic20";
 
 /**
@@ -72,8 +72,8 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         ta.actions.push(hd);
         return ta;
     }
-    if (BASIC_PRG.sniff(fileBlob) > 1) {
-        const ta = printBasic(BASIC_PRG, fileBlob);
+    if (C64_BASIC_PRG.sniff(fileBlob) > 1) {
+        const ta = printBasic(C64_BASIC_PRG, fileBlob);
         ta.actions.push(hd);
         return ta;
     }

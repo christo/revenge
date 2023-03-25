@@ -59,6 +59,9 @@ const COMMON_MLPS = [
     prg([0x00, 0xc0]),  // 0xc000
 ];
 
+/**
+ * Vic-20 BASIC
+ */
 class UnexpandedVicBasic implements BlobSniffer {
     desc: string;
     name: string;

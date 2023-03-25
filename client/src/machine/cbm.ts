@@ -71,9 +71,6 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     };
 };
 
-// TODO look up where c64 basic programs typically live
-const BASIC_PRG = new BlobType("basic prg", "BASIC program", ["basic"], "prg", [0x01, 0x08]);
-
 function prg(prefix: ArrayLike<number>) {
     // prg has a two byte load address
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
@@ -124,4 +121,4 @@ class CartSniffer implements BlobSniffer {
     }
 }
 
-export {CartSniffer, prg, printBasic, fileTypes, BASIC_PRG};
+export {CartSniffer, prg, printBasic, fileTypes};
