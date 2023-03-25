@@ -73,6 +73,16 @@ interface Dialect {
     bytes(byteable:Directive | FullInstructionLine, dis: Disassembler): TagSeq;
 
     /**
+     * Render the given values as 16 bit words. If there is an odd number of bytes, the last will be forced to be
+     * a byte definition.
+     *
+     * @param words array of word values, weighing two bytes each.
+     * @param lc labels and comments
+     * @param dis the disassembly context.
+     */
+    words(words:number[], lc:LabelsComments, dis: Disassembler): TagSeq;
+
+    /**
      * Render tagged directive.
      *
      * @param directive the assembler directive
@@ -115,7 +125,7 @@ type TagSeq = Tag[]
 
 /** Convenience base class implementing comment and label properties and no bytes. */
 abstract class InstructionBase implements Instructionish {
-    private _lc: LabelsComments;
+    protected _lc: LabelsComments;
 
     protected constructor(lc:LabelsComments) {
         this._lc = lc;
@@ -182,6 +192,29 @@ class ByteDeclaration extends InstructionBase implements Directive {
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
         return dialect.bytes(this, dis);
+    }
+}
+
+/**
+ * 16-bit word definition in architecture endianness. Currently only little-endian architectures supported.
+ */
+class WordDefinition extends InstructionBase implements Directive {
+    private readonly value:number;
+
+    /**
+     * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
+     *
+     * @param firstByte first byte in the stream.
+     * @param secondByte second byte in the stream.
+     * @param lc for the humans.
+     */
+    constructor(firstByte:number, secondByte:number, lc: LabelsComments) {
+        super(lc);
+        this.value = (secondByte << 8) | firstByte; // currently hard-coded to little-endian
+    }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.words([this.value], this._lc, dis);
     }
 }
 
@@ -278,6 +311,7 @@ class DefaultDialect implements Dialect {
     private readonly _env: Environment;
 
     private static readonly KW_BYTE_DECLARATION: string = '.byte';
+    private static readonly KW_WORD_DECLARATION: string = '.word';
 
     get name(): string {
         return "Default Dialect";
@@ -354,10 +388,18 @@ class DefaultDialect implements Dialect {
         return s + ": ";
     }
 
+
     private byteDeclaration(b: Byteable): TagSeq {
-        // what if there's no bytes?
+        if (b.getLength() == 0) {
+            throw Error("not entirely sure how to declare zero bytes");
+        }
         let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
         return [kw, ["hexarray", b.getBytes().map(this.hexByteText).join(", ")]];
+    }
+
+    private wordDeclaration(words: number[]): TagSeq {
+        let kw: Tag = ['kw', DefaultDialect.KW_WORD_DECLARATION];
+        return [kw, ["hexarray", words.map(this.hexWordText).join(", ")]];
     }
 
     private hexByteText(b: number) {
@@ -430,12 +472,16 @@ class DefaultDialect implements Dialect {
         // future: context may give us rules about grouping, pattern detection etc.
         const comments: Tag = ["comment", this.renderComments(x.comments)];
         const labels: Tag = ["label", this.renderLabels(x.labels)];
+        const data:Tag = ["data", this._env.indent() + tagText(this.byteDeclaration(x))];
+        return [comments, labels, data];
+    }
 
-        let tagged: TagSeq = [comments, labels];
-
-        const data = this._env.indent() + tagText(this.byteDeclaration(x));
-        tagged.push(["data", data]);
-        return tagged;
+    words(words:number[], lc:LabelsComments, dis: Disassembler): TagSeq {
+        const comments: Tag = ["comment", this.renderComments(lc.comments)];
+        const labels: Tag = ["label", this.renderLabels(lc.labels)];
+        const tags:TagSeq = this.wordDeclaration(words)
+        const data:Tag = ["data", this._env.indent() + tagText(tags)];
+        return [comments, labels, data];
     }
 
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
@@ -518,8 +564,8 @@ interface Instructionish extends Byteable {
 class FullInstructionLine extends InstructionBase {
     private readonly _fullInstruction: FullInstruction;
 
-    constructor(labels: string[], fullInstruction: FullInstruction, comments: string[]) {
-        super(new LabelsComments(labels, comments));
+    constructor(fullInstruction: FullInstruction, lc:LabelsComments) {
+        super(lc);
         this._fullInstruction = fullInstruction;
     }
 
@@ -640,20 +686,24 @@ class ByteDefinitionPrecept implements Precept {
 class VectorDefinitionPrecept extends ByteDefinitionPrecept {
 
     constructor(offset: number, lc: LabelsComments) {
-        super(offset, 2, lc);
+        super(offset, 2, lc); // 2 bytes in a word
     }
 
     create(fb: FileBlob): Instructionish {
-        const bytes = fb.bytes.slice(this.offset, this.offset + this.length);
-        // TODO introduce AddressDefinition
-        return new ByteDeclaration(Array.from(bytes), this.lc);
+        const firstByte = fb.bytes.at(this.offset);
+        const secondByte = fb.bytes.at(this.offset+1);
+        if (firstByte !== undefined && secondByte !== undefined) {
+            return new WordDefinition(firstByte, secondByte, this.lc);
+        } else {
+            throw Error(`Can't read word from FileBlob ${fb.name} at offset ${this.offset} `);
+        }
     }
 }
 
 const mkLabels = (labels:string[] | string) => new LabelsComments(labels);
 const mkComments = (comments:string[] | string) => new LabelsComments([], comments);
 
-class LabelsComments {
+export class LabelsComments {
     private readonly _labels: string[];
     private readonly _comments: string[];
 
@@ -833,9 +883,6 @@ class Disassembler {
             this.currentIndex += precept.length;
             return precept.create(this.fb);
         }
-        if (this.currentIndex < 11) {
-            throw Error("Expected Precepts to handle these cases!");
-        }
 
         const opcode = this.eatByteOrDie();
 
@@ -877,7 +924,7 @@ class Disassembler {
             }
 
             const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-            return new FullInstructionLine(labels, il, comments);
+            return new FullInstructionLine(il, new LabelsComments(labels, comments));
         }
     }
 
