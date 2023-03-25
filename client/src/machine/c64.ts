@@ -2,7 +2,14 @@
 // noinspection JSUnusedLocalSymbols
 
 import {FileBlob} from "./FileBlob";
-import {BlobType, DisassemblyMetaImpl, hexDumper} from "./asm";
+import {
+    BlobType,
+    ByteDefinitionPrecept,
+    DisassemblyMetaImpl,
+    hexDumper,
+    mkLabels,
+    VectorDefinitionPrecept
+} from "./asm";
 import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer} from "./cbm";
 import {BlobToActions} from "./revenge";
@@ -39,17 +46,33 @@ const C64_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const C64_WARM_VECTOR_OFFSET = 4;
 
+
+
 /**
  * The C64 magic cartridge signature CBM80 in petscii.
  */
 const CBM80 = [0xC3, 0xC2, 0xCD, 0x38, 0x30];
 
+const MAGIC_OFFSET = 6;
+
+const C64_CART_MAGIC = new ByteDefinitionPrecept(MAGIC_OFFSET, CBM80.length, mkLabels("cartSig"));
+const C64_CART_NMI_VECTOR = new VectorDefinitionPrecept(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
+const C64_CART_RESET_VECTOR = new VectorDefinitionPrecept(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
+
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
     ["cart", "c64"],
-    CBM80, 6,
-    new DisassemblyMetaImpl(C64_8K_BASE_ADDRESS, C64_COLD_VECTOR_OFFSET, C64_WARM_VECTOR_OFFSET, 2)
+    CBM80, MAGIC_OFFSET,
+    new DisassemblyMetaImpl(
+        C64_8K_BASE_ADDRESS,
+        C64_COLD_VECTOR_OFFSET,
+        C64_WARM_VECTOR_OFFSET,
+        2, [
+            C64_CART_MAGIC,
+            C64_CART_RESET_VECTOR,
+            C64_CART_NMI_VECTOR
+    ])
 );
 
 export {crt64Actions, C64_CRT, C64_8K_CART};

@@ -580,13 +580,11 @@ interface DisassemblyMeta {
 
     /**
      * The byte offset at which the cold reset vector resides.
-     * @deprecated migrate to Precept
      */
     get resetVectorOffset(): number;
 
     /**
      * The byte offset at which the nmi reset vector resides.
-     * @deprecated migrate to Precept
      */
     get nmiVectorOffset(): number;
 
@@ -611,23 +609,24 @@ interface DisassemblyMeta {
     getPrecept(offset:number):Precept | undefined;
 }
 
-class AddressDefinitionPrecept implements Precept {
+class ByteDefinitionPrecept implements Precept {
     private readonly _offset: number;
-    private readonly lc: LabelsComments;
+    private readonly numBytes: number;
+    protected readonly lc: LabelsComments;
 
-    constructor(offset: number, lc:LabelsComments) {
+    constructor(offset: number, length: number, lc:LabelsComments) {
         this._offset = offset;
+        this.numBytes = length;
         this.lc = lc;
     }
 
     create(fb: FileBlob): Instructionish {
         const bytes = fb.bytes.slice(this.offset, this.offset + this.length);
-        // TODO introduce AddressDefinition
         return new ByteDeclaration(Array.from(bytes), this.lc);
     }
 
     get length(): number {
-        return 2;
+        return this.numBytes;
     }
 
     get offset(): number {
@@ -635,8 +634,24 @@ class AddressDefinitionPrecept implements Precept {
     }
 }
 
-const mkLabels = (labels:string[]) => new LabelsComments(labels);
-const mkComments = (comments:string[]) => new LabelsComments([], comments);
+/**
+ * Declares an address definition using the bytes at the offset.
+ */
+class VectorDefinitionPrecept extends ByteDefinitionPrecept {
+
+    constructor(offset: number, lc: LabelsComments) {
+        super(offset, 2, lc);
+    }
+
+    create(fb: FileBlob): Instructionish {
+        const bytes = fb.bytes.slice(this.offset, this.offset + this.length);
+        // TODO introduce AddressDefinition
+        return new ByteDeclaration(Array.from(bytes), this.lc);
+    }
+}
+
+const mkLabels = (labels:string[] | string) => new LabelsComments(labels);
+const mkComments = (comments:string[] | string) => new LabelsComments([], comments);
 
 class LabelsComments {
     private readonly _labels: string[];
@@ -644,9 +659,9 @@ class LabelsComments {
 
     static EMPTY = new LabelsComments();
 
-    constructor(labels:string[] = [], comments: string[] = []) {
-        this._labels = labels;
-        this._comments = comments;
+    constructor(labels:string[] | string = [], comments: string[] | string = []) {
+        this._labels = ((typeof labels === "string") ? [labels] : labels).filter(s => s.length > 0);
+        this._comments = ((typeof comments === "string") ? [comments] : comments).filter(s => s.length > 0);
     }
 
     get labels() {
@@ -655,12 +670,11 @@ class LabelsComments {
     get comments() {
         return this._comments;
     }
-
 }
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0,0,0,0);
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, []);
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
@@ -668,19 +682,17 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     private readonly _contentStartOffset: number;
     private precepts: { [id: number] : Precept; };
 
-    constructor(baseAddressOffset: number, resetVectorOffset: number, nmiVectorOffset: number, contentStartOffset: number) {
+    constructor(baseAddressOffset: number, resetVectorOffset: number, nmiVectorOffset: number, contentStartOffset: number, precepts: Precept[]) {
         this._baseAddressOffset = baseAddressOffset;
         this._contentStartOffset = contentStartOffset;
 
         // keep the offsets
         this._resetVectorOffset = resetVectorOffset;
         this._nmiVectorOffset = nmiVectorOffset;
-        // TODO replace the manual special cases in nextInstruction()
-        this.precepts = {
-            [baseAddressOffset]: new AddressDefinitionPrecept(resetVectorOffset, new LabelsComments(["cartBase"], [])),
-            [resetVectorOffset]: new AddressDefinitionPrecept(resetVectorOffset, new LabelsComments(["resetVector"], [])),
-            [nmiVectorOffset]: new AddressDefinitionPrecept(nmiVectorOffset, new LabelsComments(["nmiVector"])),
-
+        this.precepts = {};
+        for (let i = 0; i < precepts.length; i++) {
+            const precept = precepts[i];
+            this.precepts[precept.offset] = precept;
         }
     }
 
@@ -731,7 +743,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
  */
 interface Precept {
 
-    // TODO decide if it's better to specify an address or a binary offset
     get offset(): number;
 
     /**
@@ -804,10 +815,8 @@ class Disassembler {
     }
 
     /**
-     * This is not how it should work...
      * Currently responsible for deciding which Instructionish should be constructed at the current index point
      * and advances the index by the correct number of bytes.
-     * @deprecated figure out how to construct the Instructionish instances and their byte count
      */
     nextInstructionLine():Instructionish {
         let labels: Array<string> = [];
@@ -819,41 +828,45 @@ class Disassembler {
         if (this.needsComment(this.currentAddress)) {
             comments = this.generateComments(this.currentAddress);
         }
-
-        // TODO decide where these special cases belong:
         const precept = this.disMeta.getPrecept(this.currentIndex);
         if (precept !== undefined) {
             this.currentIndex += precept.length;
             return precept.create(this.fb);
         }
-        if (this.currentIndex <= 5 && this.currentIndex >= 2) {
-            throw Error("should have skipped this")
-        }
-        if (this.currentIndex === 6) {
-            console.log("manually handling cart magic");
-            return new ByteDeclaration(this.eatBytes(5), mkLabels(["cartSig"]));
-        }
         if (this.currentIndex < 11) {
-            throw Error("well this is unexpected!");
+            throw Error("Expected Precepts to handle these cases!");
         }
 
         const opcode = this.eatByteOrDie();
 
         const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
         if (Mos6502.INSTRUCTIONS.op(opcode) === undefined) {
-            return new ByteDeclaration([opcode], mkComments(["illegal opcode"]));
+            return new ByteDeclaration([opcode], mkComments("illegal opcode"));
         }
-
-        // if there are not enough bytes, return a ByteDeclaration for the remaining bytes
+        // if there are not enough bytes for this whole instruction, return a ByteDeclaration for the remaining bytes
         let remainingBytes = this.fb.bytes.length - this.currentIndex;
 
-        if (remainingBytes <= 0) {
-            let bytes = [opcode]
-            for (let i = 0; i < remainingBytes; i++) {
-                bytes.push(this.currentIndex++);
-            }
-            return new ByteDeclaration(bytes, LabelsComments.EMPTY);
+        if (remainingBytes < numInstructionBytes) {
+            let bytes = [opcode].concat(this.eatBytes(remainingBytes))
+            return new ByteDeclaration(bytes, mkComments("must be data?"));
         } else {
+            const preceptAhead = (n:number) => this.disMeta.getPrecept(this.currentIndex + n) !== undefined;
+            // current index is the byte following the opcode which we've already checked for a precept
+            // check there is no precept inside the bytes this instruction would need
+            if (numInstructionBytes === 2 && preceptAhead(1)){
+                return new ByteDeclaration([opcode], mkComments("inferred via precept+1"));
+            } else if (numInstructionBytes === 3) {
+              if (preceptAhead(2)) {
+                  const bytes = [opcode, this.eatByte()];
+                  return new ByteDeclaration(bytes, mkComments("inferred via precept+2"));
+              } else if (preceptAhead(3)) {
+                  const bytes = [opcode, this.eatByte(), this.eatByte()];
+                  return new ByteDeclaration(bytes, mkComments("inferred via precept+3"));
+              }
+            }
+
+
+            // interpret as instruction
             let firstOperandByte = 0;
             let secondOperandByte = 0;
             if (numInstructionBytes > 1) {
@@ -969,7 +982,7 @@ class BlobType implements BlobSniffer {
     }
 }
 
-const UNKNOWN = new BlobType("unknown", "type not detected", []);
+const UNKNOWN_BLOB = new BlobType("unknown", "type not detected", []);
 
 export {
     BlobType,
@@ -984,6 +997,21 @@ export {
     Section,
     SectionType,
     tagText,
-    UNKNOWN,
+    UNKNOWN_BLOB,
+    ByteDefinitionPrecept,
+    VectorDefinitionPrecept,
+    mkLabels,
+    mkComments,
 };
-export type {BlobSniffer, Tag, TagSeq, DisassemblyMeta, BlobToActions, Byteable, Instructionish, Dialect, Directive};
+export type {
+    BlobSniffer,
+    Tag,
+    TagSeq,
+    DisassemblyMeta,
+    BlobToActions,
+    Byteable,
+    Instructionish,
+    Dialect,
+    Directive,
+    Precept,
+};

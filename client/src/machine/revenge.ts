@@ -2,7 +2,7 @@
 
 import {FileBlob} from "./FileBlob";
 import {BASIC_PRG, disassemble, printBasic} from "./cbm";
-import {BlobSniffer, hexDumper, TagSeq, UNKNOWN} from "./asm";
+import {BlobSniffer, hexDumper, TagSeq, UNKNOWN_BLOB} from "./asm";
 import {C64_8K_CART, C64_CRT, crt64Actions} from "./c64";
 import {COMMON_MLPS, UNEXPANDED_VIC_BASIC, VIC20_CART} from "./vic20";
 
@@ -83,7 +83,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
             return disassemble(prg, fileBlob);
         }
     }
-    return {t: UNKNOWN, actions: [hd]};
+    return {t: UNKNOWN_BLOB, actions: [hd]};
 }
 
 export {sniff, Detail};

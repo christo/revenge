@@ -1,7 +1,14 @@
 // VIC-20 specific details
 
 import {CartSniffer, prg} from "./cbm";
-import {BlobSniffer, DisassemblyMeta, DisassemblyMetaImpl} from "./asm";
+import {
+    VectorDefinitionPrecept,
+    BlobSniffer,
+    ByteDefinitionPrecept,
+    DisassemblyMeta,
+    DisassemblyMetaImpl,
+    mkLabels
+} from "./asm";
 import {FileBlob} from "./FileBlob";
 
 /**
@@ -18,13 +25,29 @@ const VIC20_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const VIC20_WARM_VECTOR_OFFSET = 4;
 
+const VIC20_CART_MAGIC = new ByteDefinitionPrecept(MAGIC_OFFSET, A0CBM.length, mkLabels("cartSig"));
+const VIC20_CART_BASE = new VectorDefinitionPrecept(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase"));
+const VIC20_CART_NMI_VECTOR = new VectorDefinitionPrecept(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
+const VIC20_CART_RESET_VECTOR = new VectorDefinitionPrecept(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
+
 /** VIC-20 cart image sniffer. */
 const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
     "ROM dump from VIC-20",
     ["cart", "vic20"],
     A0CBM, MAGIC_OFFSET,
-    new DisassemblyMetaImpl(VIC20_BASE_ADDRESS_OFFSET, VIC20_COLD_VECTOR_OFFSET, VIC20_WARM_VECTOR_OFFSET, 2)
+    new DisassemblyMetaImpl(
+        VIC20_BASE_ADDRESS_OFFSET,
+        VIC20_COLD_VECTOR_OFFSET,
+        VIC20_WARM_VECTOR_OFFSET,
+        2,
+        [
+            VIC20_CART_MAGIC,
+            VIC20_CART_BASE,
+            VIC20_CART_NMI_VECTOR,
+            VIC20_CART_RESET_VECTOR
+        ]
+    )
 );
 
 /** Common load addresses for machine language programs. */
