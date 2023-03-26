@@ -1,5 +1,4 @@
 import {FileBlob} from "./FileBlob";
-import {TagSeq} from "./asm";
 import {Petscii} from "./petscii";
 import {hex16} from "../misc/BinUtils";
 import {ActionResult} from "./revenge";
