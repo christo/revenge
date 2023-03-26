@@ -943,12 +943,17 @@ class Disassembler {
      * Returns zero or more comments that belong at the given addres.
      *
      */
-    generateComments = (a: number) => this.branchTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
+    generateComments = (a: number) => this.jumpTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
     /**
      * TODO implement branchTargets
      */
-    private branchTargets = (): number[] => [];
+    private jumpTargets = (): number[] => {
+        // collect reset vector and nmi vector as jump targets
+        // for all jump instructions, collect the destination address
+        // for all such addresses, filter those in range of the loaded binary
+        return []
+    };
 
     needsComment = (addr: number) => this.generateComments(addr).length === 0;
 
@@ -960,6 +965,7 @@ class Disassembler {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
+        // TODO check Array.from as alternative
         let elements: [string, string][] = [];
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_index, entry] of fb.bytes.entries()) {
