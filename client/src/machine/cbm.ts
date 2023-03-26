@@ -10,7 +10,8 @@ import {
     DisassemblyMeta,
     Environment,
     hexDumper,
-    Instructionish, PcAssign,
+    Instructionish,
+    PcAssign,
     Tag
 } from "./asm";
 import {Mos6502} from "./mos6502";
@@ -121,4 +122,33 @@ class CartSniffer implements BlobSniffer {
     }
 }
 
-export {CartSniffer, prg, printBasic, fileTypes};
+/**
+ * Translate a 16 bit value into a Uint8Array in the correct endianness.
+ * Future: migrate to a little endian encapsulation
+ *
+ * @param word the 16 bit value
+ */
+function wordToEndianBytes(word: number) {
+    return new Uint8Array([word & 0xff, (word & 0xff00) >> 8]);
+}
+
+/**
+ * Available memory, basic load addres etc.
+ */
+class MemoryConfiguration {
+    name: string;
+    basicStart: number;
+
+    /**
+     * Create a memory configuration.
+     *
+     * @param name for display
+     * @param basicStart 16 bit address where BASIC programs are loaded
+     */
+    constructor(name: string, basicStart: number) {
+        this.name = name;
+        this.basicStart = basicStart;
+    }
+}
+
+export {CartSniffer, prg, printBasic, fileTypes, MemoryConfiguration};

@@ -11,7 +11,7 @@ import {
     VectorDefinitionPrecept
 } from "./asm";
 import {stringToArray} from "../misc/BinUtils";
-import {CartSniffer} from "./cbm";
+import {CartSniffer, MemoryConfiguration} from "./cbm";
 import {BlobToActions} from "./revenge";
 
 const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", [0x01, 0x08]);
@@ -74,5 +74,7 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_NMI_VECTOR
     ])
 );
+
+const C64_MEMORY = new MemoryConfiguration("c64 memory", 0x801);
 
 export {crt64Actions, C64_CRT, C64_8K_CART, C64_BASIC_PRG};

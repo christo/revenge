@@ -3,8 +3,16 @@
 import {FileBlob} from "./FileBlob";
 import {disassemble, printBasic} from "./cbm";
 import {BlobSniffer, hexDumper, TagSeq, UNKNOWN_BLOB} from "./asm";
-import {C64_8K_CART, C64_CRT, crt64Actions, C64_BASIC_PRG} from "./c64";
-import {COMMON_MLPS, UNEXPANDED_VIC_BASIC, VIC20_CART} from "./vic20";
+import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./c64";
+import {
+    COMMON_MLPS,
+    EXP03K_VIC_BASIC,
+    EXP08K_VIC_BASIC,
+    EXP16K_VIC_BASIC,
+    EXP24K_VIC_BASIC,
+    UNEXPANDED_VIC_BASIC,
+    VIC20_CART
+} from "./vic20";
 
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
@@ -67,16 +75,16 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         typeActions.actions.push(hd);
         return typeActions;
     }
-    if (UNEXPANDED_VIC_BASIC.sniff(fileBlob) > 1) {
-        const ta = printBasic(UNEXPANDED_VIC_BASIC, fileBlob);
-        ta.actions.push(hd);
-        return ta;
+
+    for (let i = 0; i < BASICS.length; i++) {
+        if (BASICS[i].sniff(fileBlob) > 1) {
+            const ta = printBasic(BASICS[i], fileBlob);
+            ta.actions.push(hd);
+            return ta;
+        }
     }
-    if (C64_BASIC_PRG.sniff(fileBlob) > 1) {
-        const ta = printBasic(C64_BASIC_PRG, fileBlob);
-        ta.actions.push(hd);
-        return ta;
-    }
+
+    // common cartridge prg loads
     for (let i = 0; i < COMMON_MLPS.length; i++) {
         const prg = COMMON_MLPS[i];
         if (prg.sniff(fileBlob) > 1) {
@@ -85,6 +93,16 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
     return {t: UNKNOWN_BLOB, actions: [hd]};
 }
+
+const BASICS = [
+    UNEXPANDED_VIC_BASIC,
+    EXP03K_VIC_BASIC,
+    EXP08K_VIC_BASIC,
+    EXP16K_VIC_BASIC,
+    EXP24K_VIC_BASIC,
+    C64_BASIC_PRG,
+]
+
 
 export {sniff, Detail};
 export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor, BlobToActions}

@@ -1,6 +1,6 @@
 // VIC-20 specific details
 
-import {CartSniffer, prg} from "./cbm";
+import {CartSniffer, MemoryConfiguration, prg} from "./cbm";
 import {
     BlobSniffer,
     ByteDefinitionPrecept,
@@ -55,15 +55,24 @@ const COMMON_MLPS = [
     prg([0x00, 0xc0]),  // 0xc000
 ];
 
+const VIC20_UNEX = new MemoryConfiguration("vic unexpanded", 0x1001);
+const VIC20_EXP03K = new MemoryConfiguration("vic 3k expansion", 0x401);
+const VIC20_EXP08K = new MemoryConfiguration("vic 8k expansion", 0x1201);
+const VIC20_EXP16K = new MemoryConfiguration("vic 16k expansion", 0x1201);
+const VIC20_EXP24K = new MemoryConfiguration("vic 24k expansion", 0x1201);
+
 /**
  * Vic-20 BASIC
  */
-class UnexpandedVicBasic implements BlobSniffer {
+class Vic20Basic implements BlobSniffer {
+
     desc: string;
     name: string;
     tags: string[];
+    private memory: MemoryConfiguration;
 
-    constructor() {
+    constructor(memory: MemoryConfiguration) {
+        this.memory = memory;
         this.desc = "Unexpanded VIC";
         this.name = "BASIC prg";
         this.tags=["basic", "vic20"];
@@ -74,11 +83,26 @@ class UnexpandedVicBasic implements BlobSniffer {
     }
 
     sniff(fb: FileBlob): number {
-        return fb.submatch(new Uint8Array([0x01, 0x10]), 0) ? 1.2 : 0.8;
-    }
+        // check if the start address bytes match the basic load address for our MemoryConfiguration
+        const byte0 = fb.bytes.at(0) === (this.memory.basicStart & 0xff);
+        const byte1 = fb.bytes.at(1) === ((this.memory.basicStart & 0xff00) >> 8);
 
+        return (byte0 && byte1) ? 1.2 : 0.8;
+    }
 }
 
-const UNEXPANDED_VIC_BASIC = new UnexpandedVicBasic();
+const UNEXPANDED_VIC_BASIC = new Vic20Basic(VIC20_UNEX);
+const EXP03K_VIC_BASIC = new Vic20Basic(VIC20_EXP03K);
+const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
+const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
+const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
-export {COMMON_MLPS, VIC20_CART, UNEXPANDED_VIC_BASIC}
+export {
+    COMMON_MLPS,
+    VIC20_CART,
+    UNEXPANDED_VIC_BASIC,
+    EXP03K_VIC_BASIC,
+    EXP08K_VIC_BASIC,
+    EXP16K_VIC_BASIC,
+    EXP24K_VIC_BASIC
+}
