@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  MOS Technology 6502-family of 8-bit microprocessors.
 
@@ -30,11 +31,17 @@ class Op {
     description: string;
     /** mnemonic category */
     cat: string;
+    private _isJump: boolean;
 
-    constructor(mnemonic: string, description: string, cat: string) {
+    constructor(mnemonic: string, description: string, cat: string, isJump = false) {
         this.mnemonic = mnemonic;
         this.description = description;
         this.cat = cat;
+        this._isJump = isJump;
+    }
+
+    get isJump(): boolean {
+        return this._isJump;
     }
 }
 
@@ -55,11 +62,13 @@ class StatusRegisterFlag {
         this.mask = 0x01 << bit;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     isSet(sr: number) {
         return sr & this.mask;
     }
 }
 
+// noinspection JSUnusedLocalSymbols
 const SR_FLAGS: ArrayLike<StatusRegisterFlag> = (() => {
     let b = 0;
     return [
@@ -129,16 +138,16 @@ const MS = "ms";
 const ADC = new Op("ADD", "add with carry", MATH);
 const AND = new Op("AND", "and (with accumulator)", LG);
 const ASL = new Op("ASL", "arithmetic shift left", MATH);
-const BCC = new Op("BCC", "branch on carry clear", BRA);
-const BCS = new Op("BCS", "branch on carry set", BRA);
-const BEQ = new Op("BEQ", "branch on equal (zero set)", BRA);
+const BCC = new Op("BCC", "branch on carry clear", BRA, true);
+const BCS = new Op("BCS", "branch on carry set", BRA, true);
+const BEQ = new Op("BEQ", "branch on equal (zero set)", BRA, true);
 const BIT = new Op("BIT", "bit test", LG);
-const BMI = new Op("BMI", "branch on minus (negative set)", BRA);
-const BNE = new Op("BNE", "branch on not equal (zero clear)", BRA);
-const BPL = new Op("BPL", "branch on plus (negative clear)", BRA);
+const BMI = new Op("BMI", "branch on minus (negative set)", BRA, true);
+const BNE = new Op("BNE", "branch on not equal (zero clear)", BRA, true);
+const BPL = new Op("BPL", "branch on plus (negative clear)", BRA, true);
 const BRK = new Op("BRK", "break / interrupt", FL);
-const BVC = new Op("BVC", "branch on overflow clear", BRA);
-const BVS = new Op("BVS", "branch on overflow set", BRA);
+const BVC = new Op("BVC", "branch on overflow clear", BRA, true);
+const BVS = new Op("BVS", "branch on overflow set", BRA, true);
 const CLC = new Op("CLC", "clear carry", MATH);
 const CLD = new Op("CLD", "clear decimal", SR);
 const CLI = new Op("CLI", "clear interrupt disable", INT);
@@ -153,8 +162,8 @@ const EOR = new Op("EOR", "exclusive or (with accumulator)", LG);
 const INC = new Op("INC", "increment", MATH);
 const INX = new Op("INX", "increment X", MATH);
 const INY = new Op("INY", "increment Y", MATH);
-const JMP = new Op("JMP", "jump", BRA);
-const JSR = new Op("JSR", "jump subroutine", SUB);
+const JMP = new Op("JMP", "jump", BRA, true);
+const JSR = new Op("JSR", "jump subroutine", SUB, true);
 const LDA = new Op("LDA", "load accumulator", MEM);
 const LDX = new Op("LDX", "load X", MEM);
 const LDY = new Op("LDY", "load Y", MEM);
@@ -250,11 +259,6 @@ class Instruction {
     get mode(): AddressingMode {
         return this._mode;
     }
-}
-
-/** @deprecated die! */
-interface InstructionLike {
-    get type(): SectionType;
 }
 
 /** Represents the whole set of machine instructions. */

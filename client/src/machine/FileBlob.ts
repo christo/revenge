@@ -22,16 +22,6 @@ class FileBlob {
         }
     }
 
-    /** @deprecated use the hexdumper */
-    toHexBytes(): string[] {
-        let elements: string[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [_index, entry] of this.bytes.entries()) {
-            elements.push(hex8(entry));
-        }
-        return elements;
-    }
-
     submatch(seq: Uint8Array, atOffset: number) {
         if (seq.length + atOffset <= this.size && seq.length > 0) {
             for (let i = 0; i < seq.length; i++) {
@@ -53,6 +43,17 @@ class FileBlob {
             throw Error("offset out of range for vector read");
         }
         return (this.bytes[offset + 1] << 8) + this.bytes[offset]
+    }
+
+    /**
+     * Returns true iff our filename has the given extension.
+     *
+     * @param ext the part after that last dot in the filename.
+     * @param caseInsensitive whether to compare case insensitively.
+     */
+    hasExt(ext: string, caseInsensitive:boolean = true) {
+        const f = caseInsensitive ? (x:string) => x.toLowerCase() : (x:string) => x;
+        return f(this.name).endsWith("." + f(ext));
     }
 }
 

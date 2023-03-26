@@ -75,7 +75,6 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 function prg(prefix: ArrayLike<number>) {
     // prg has a two byte load address
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
-    // TODO ensure that the file will fit in RAM if loaded at the load address
     return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", prefix);
 }
 

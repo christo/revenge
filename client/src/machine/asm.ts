@@ -123,7 +123,7 @@ type Tag = [string, string]
  */
 type TagSeq = Tag[]
 
-/** Convenience base class implementing comment and label properties and no bytes. */
+/** Convenience base class implementing comment and label properties. */
 abstract class InstructionBase implements Instructionish {
     protected _lc: LabelsComments;
 
@@ -131,12 +131,8 @@ abstract class InstructionBase implements Instructionish {
         this._lc = lc;
     }
 
-    get labels(): Array<string> {
-        return this._lc.labels;
-    }
-
-    get comments(): Array<string> {
-        return this._lc.comments;
+    get labelsComments(): LabelsComments {
+        return this._lc;
     }
 
     assemble(dialect: Dialect, ass: Assembler): FileBlob {
@@ -146,17 +142,25 @@ abstract class InstructionBase implements Instructionish {
 
     abstract disassemble(dialect: Dialect, dis: Disassembler): TagSeq;
 
+    abstract get sourceType(): SourceType;
+
+    /**
+     * Default zero byte implementation.
+     */
     getBytes(): number[] {
         return [];
     }
 
+    /**
+     * Default zero byte implementation.
+     */
     getLength(): number {
         return 0;
     }
 }
 
 class PcAssign extends InstructionBase implements Directive {
-    private _address: number;
+    private readonly _address: number;
 
     constructor(address: number, labels:string[] = [], comments:string[] = []) {
         super(new LabelsComments(labels, comments));
@@ -169,6 +173,10 @@ class PcAssign extends InstructionBase implements Directive {
 
     get address(): number {
         return this._address;
+    }
+
+    get sourceType(): SourceType {
+        return SourceType.PSEUDO;
     }
 }
 
@@ -193,6 +201,10 @@ class ByteDeclaration extends InstructionBase implements Directive {
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
         return dialect.bytes(this, dis);
     }
+
+    get sourceType(): SourceType {
+        return SourceType.DATA;
+    }
 }
 
 /**
@@ -215,6 +227,10 @@ class WordDefinition extends InstructionBase implements Directive {
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
         return dialect.words([this.value], this._lc, dis);
+    }
+
+    get sourceType(): SourceType {
+        return SourceType.DATA;
     }
 }
 
@@ -259,7 +275,6 @@ class Section {
         return this.startOffset + this.length;
     }
 }
-// noinspection JSUnusedGlobalSymbols
 
 enum SourceType {
     /** Machine code instruction */
@@ -274,30 +289,6 @@ enum SourceType {
     COMMENT,
     /** Forced space. */
     BLANK
-}
-
-
-/**
- * Represents a logical element of the source code.
- *
- * Source listings have a many-to-many positional relationship with assembled bytes. Source items correspond
- * to logical source elements, sometimes lines, sometimes multiple lines, sometimes one of many Source items
- * on the same line. For example a label and comment can be on the same source line and yet also correspond
- * to no output bytes. Macros and other such pseudo-ops can produce multiple bytes output.
- *
- * Note that this is independent of the assembly dialect which decides how such source lines are rendered
- * into plain text or structured output.
- */
-// noinspection JSUnusedLocalSymbols
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-class Source {
-    type: SourceType;
-    value: string;
-
-    constructor(type: SourceType, value: string) {
-        this.type = type;
-        this.value = value;
-    }
 }
 
 /**
@@ -390,7 +381,7 @@ class DefaultDialect implements Dialect {
 
 
     private byteDeclaration(b: Byteable): TagSeq {
-        if (b.getLength() == 0) {
+        if (b.getLength() === 0) {
             throw Error("not entirely sure how to declare zero bytes");
         }
         let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
@@ -470,8 +461,8 @@ class DefaultDialect implements Dialect {
 
     bytes(x: Directive | FullInstructionLine, dis: Disassembler): TagSeq {
         // future: context may give us rules about grouping, pattern detection etc.
-        const comments: Tag = ["comment", this.renderComments(x.comments)];
-        const labels: Tag = ["label", this.renderLabels(x.labels)];
+        const comments: Tag = ["comment", this.renderComments(x.labelsComments.comments)];
+        const labels: Tag = ["label", this.renderLabels(x.labelsComments.labels)];
         const data:Tag = ["data", this._env.indent() + tagText(this.byteDeclaration(x))];
         return [comments, labels, data];
     }
@@ -485,8 +476,8 @@ class DefaultDialect implements Dialect {
     }
 
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(fil.comments)];
-        const labels: Tag = ["label", this.renderLabels(fil.labels)];
+        const comments: Tag = ["comment", this.renderComments(fil.labelsComments.comments)];
+        const labels: Tag = ["label", this.renderLabels(fil.labelsComments.labels)];
         const instruction = fil.fullInstruction.instruction as Instruction;
         return [comments, labels].concat(this.taggedCode(instruction, fil));
     }
@@ -497,8 +488,8 @@ class DefaultDialect implements Dialect {
     }
 
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(pcAssign.comments)];
-        const labels: Tag = ["label", this.renderLabels(pcAssign.labels)];
+        const comments: Tag = ["comment", this.renderComments(pcAssign.labelsComments.comments)];
+        const labels: Tag = ["label", this.renderLabels(pcAssign.labelsComments.labels)];
         const base = this.hexWordText(pcAssign.address);
         return [comments, labels, ["addr", "_  "], ["code", "* ="], ["abs opnd", base]];
     }
@@ -520,6 +511,7 @@ interface Byteable {
 interface Directive extends Instructionish {
 
     // other properties expected to emerge when trying to synthesise stuff like symbol assignment
+
 }
 
 /** syntax-independent assembler */
@@ -537,8 +529,8 @@ class Assembler {
  * optimisation.
  */
 interface Instructionish extends Byteable {
-    labels: Array<string>;
-    comments: Array<string>;
+
+    get labelsComments(): LabelsComments;
 
     /**
      * Disassembles the implementation's instruction with the given stateful disassembler, in the given dialect.
@@ -555,6 +547,11 @@ interface Instructionish extends Byteable {
      * @param ass stateful assembler
      */
     assemble(dialect: Dialect, ass: Assembler): FileBlob
+
+    /**
+     * Return the {@link SourceType} for the generated code (regardless of comments).
+     */
+    get sourceType():SourceType;
 }
 
 /**
@@ -583,6 +580,10 @@ class FullInstructionLine extends InstructionBase {
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
         return dialect.code(this, dis);
+    }
+
+    get sourceType(): SourceType {
+        return SourceType.MACHINE;
     }
 }
 
@@ -643,9 +644,8 @@ interface DisassemblyMeta {
     /**
      * The offset from the start of the fileblob at which the base address is to be located. This skips any header data
      * that isn't real file content.
-     * @param fb the fileblob.
      */
-    contentStartOffset(fb: FileBlob): number;
+    contentStartOffset(): number;
 
     /**
      * Gets the precept defined for the given offset if one is defined.
@@ -653,6 +653,11 @@ interface DisassemblyMeta {
      * @param offset
      */
     getPrecept(offset:number):Precept | undefined;
+
+    /**
+     * Return a list of address + comment
+     */
+    get jumpTargets(): [number, string][];
 }
 
 class ByteDefinitionPrecept implements Precept {
@@ -724,15 +729,25 @@ export class LabelsComments {
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, []);
+    /** A bit stinky - should never be used and probably not exist. */
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, [], []);
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
     private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
-    private precepts: { [id: number] : Precept; };
+    private readonly precepts: { [id: number] : Precept; };
+    private readonly _jumpTargets: [number, string][];
 
-    constructor(baseAddressOffset: number, resetVectorOffset: number, nmiVectorOffset: number, contentStartOffset: number, precepts: Precept[]) {
+    constructor(
+        baseAddressOffset: number,
+        resetVectorOffset: number,
+        nmiVectorOffset: number,
+        contentStartOffset: number,
+        precepts: Precept[],
+        jumpTargets: [number, string][] = [],
+        ) {
+
         this._baseAddressOffset = baseAddressOffset;
         this._contentStartOffset = contentStartOffset;
 
@@ -744,6 +759,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
             const precept = precepts[i];
             this.precepts[precept.offset] = precept;
         }
+        this._jumpTargets = jumpTargets;
     }
 
     baseAddress(fb: FileBlob): number {
@@ -758,7 +774,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this._nmiVectorOffset;
     }
 
-    contentStartOffset(fb: FileBlob): number {
+    contentStartOffset(): number {
         return this._contentStartOffset;
     }
 
@@ -773,7 +789,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         } else {
             // reset vector is outside binary, so start disassembly at content start?
             console.warn(`reset vector is outside binary ($${hex16(resetAddr)})`);
-            return this.contentStartOffset(fb);
+            return this.contentStartOffset();
         }
     }
 
@@ -784,6 +800,10 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
     getPrecept(address: number): Precept | undefined {
         return this.precepts[address];
+    }
+
+    get jumpTargets(): [number, string][] {
+        return this._jumpTargets;
     }
 }
 
@@ -814,7 +834,7 @@ class Disassembler {
     originalIndex: number;
     currentIndex: number;
     fb: FileBlob;
-    private segmentBaseAddress: number;
+    private readonly segmentBaseAddress: number;
 
     /**
      * Tuple: label, address
@@ -825,7 +845,7 @@ class Disassembler {
 
     constructor(iset: InstructionSet, fb: FileBlob, typ: DisassemblyMeta) {
         this.iset = iset;
-        let index = typ.contentStartOffset(fb);
+        let index = typ.contentStartOffset();
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
             throw Error("index out of range");
@@ -912,7 +932,6 @@ class Disassembler {
               }
             }
 
-
             // interpret as instruction
             let firstOperandByte = 0;
             let secondOperandByte = 0;
@@ -940,19 +959,29 @@ class Disassembler {
     generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t => t[0]);
 
     /**
-     * Returns zero or more comments that belong at the given addres.
-     *
+     * Returns zero or more comments that belong at the given address.
      */
     generateComments = (a: number) => this.jumpTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
     /**
-     * TODO implement branchTargets
+     * Determine all jump targets both statically defined and implied by the given sequence of instructions. Only
+     * those targets that lie within our address range are returned.
      */
-    private jumpTargets = (): number[] => {
+    private jumpTargets = (instructions:FullInstruction[] = []): number[] => {
         // collect reset vector and nmi vector as jump targets
+        const nmi = this.fb.readVector(this.disMeta.nmiVectorOffset);
+        const reset = this.fb.readVector(this.disMeta.resetVectorOffset);
+        const jumps = instructions.filter(inst => inst.instruction.op.isJump).map(fi => fi.operand16());
         // for all jump instructions, collect the destination address
+        const allJumpTargets = [nmi, reset, ...jumps];
         // for all such addresses, filter those in range of the loaded binary
-        return []
+        return allJumpTargets.filter(this.addressInRange);
+    };
+
+    private addressInRange = (addr:number): boolean => {
+        const notTooLow = addr >= this.segmentBaseAddress;
+        const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.disMeta.contentStartOffset();
+        return notTooLow && notTooHigh;
     };
 
     needsComment = (addr: number) => this.generateComments(addr).length === 0;
@@ -965,12 +994,7 @@ class Disassembler {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        // TODO check Array.from as alternative
-        let elements: [string, string][] = [];
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [_index, entry] of fb.bytes.entries()) {
-            elements.push(["hexbyte", hex8(entry)]);
-        }
+        const elements:TagSeq = Array.from(fb.bytes).map(x=> ["hexbyte", hex8(x)]);
         return new Detail(["hexbytes"], [elements]);
     }
 });
@@ -1018,8 +1042,7 @@ class BlobType implements BlobSniffer {
     }
 
     extensionMatch(fb: FileBlob) {
-        const filename = fb.name;
-        return this.exts.reduce((a, n) => a || filename.toLowerCase().endsWith("." + n), false);
+        return this.exts.reduce((a, n) => a || fb.hasExt(n), false);
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
