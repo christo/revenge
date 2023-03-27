@@ -38,13 +38,12 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             const assignPc:Directive = new PcAssign(dis.currentAddress, ["entry"], []);
             detail.tfield.push(assignPc.disassemble(dialect, dis));
             while (dis.hasNext()) {
-                const addr = dis.currentAddress;
-                let hexAddr: Tag = ["addr", hex16(addr)];
-                let full:Instructionish = dis.nextInstructionLine();
-                let hex: Tag = ["hex", asHex(full)];
-                const items = [hexAddr, hex];
+                let addr: Tag = ["addr", hex16(dis.currentAddress)];
+                let inst:Instructionish = dis.nextInstructionLine();
+                let hex: Tag = ["hex", asHex(inst)];
+                const items = [addr, hex, ];
 
-                full.disassemble(dialect, dis).forEach(i => items.push(i));
+                inst.disassemble(dialect, dis).forEach(i => items.push(i));
                 detail.tfield.push(items);
             }
             return detail;
