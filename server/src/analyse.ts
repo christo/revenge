@@ -65,9 +65,9 @@ abstract class BaseMarkov implements Markov {
 
 /** More efficient storage of sparse frequency distributions. */
 class MapMarkov extends BaseMarkov implements Markov {
-    private starts: Map<number, number>;
-    private stops: Map<number, number>;
-    private pairs: Map<BytePair, number>;
+    private readonly starts: Map<number, number>;
+    private readonly stops: Map<number, number>;
+    private readonly pairs: Map<BytePair, number>;
     constructor() {
         super();
         this.starts = new Map<number, number>();
@@ -100,6 +100,7 @@ class MapMarkov extends BaseMarkov implements Markov {
 
 }
 
+// noinspection JSUnusedLocalSymbols
 /**
  * Implementation using big, mostly empty arrays
  */
