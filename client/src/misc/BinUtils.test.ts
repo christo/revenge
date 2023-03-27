@@ -1,4 +1,4 @@
-import {unsignedToSigned} from "./BinUtils";
+import {unToSigned} from "./BinUtils";
 
 
 /** Data-driven test of two's complement: input, expected output */
@@ -15,7 +15,7 @@ const TC_DATA:[number,number][] = [
 ];
 
 test('twos complement', () => {
-    TC_DATA.forEach(x => expect(unsignedToSigned(x[0])).toBe(x[1]));
+    TC_DATA.forEach(x => expect(unToSigned(x[0])).toBe(x[1]));
 });
 
 

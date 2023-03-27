@@ -1,6 +1,6 @@
 // assembler / disassembler stuff
 
-import {assertByte, hex16, hex8, unsignedToSigned} from "../misc/BinUtils";
+import {assertByte, hex16, hex8, unToSigned} from "../misc/BinUtils";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -451,7 +451,7 @@ class DefaultDialect implements Dialect {
                 break;
             case MODE_RELATIVE:
                 // render decimal two's complement 8-bit
-                operand = unsignedToSigned(il.firstByte).toString(10);
+                operand = unToSigned(il.firstByte).toString(10);
                 break;
             case MODE_ZEROPAGE:
                 operand = hb();

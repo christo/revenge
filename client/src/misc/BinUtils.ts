@@ -26,10 +26,10 @@ const assertByte = (value: number):number => {
  *
   * @param x 8 bit signed byte value
  */
-const unsignedToSigned = (x:number):number => -(x & 0x80) + (x & 0x7f)
+const unToSigned = (x:number):number => -(x & 0x80) + (x & 0x7f)
 
 const asHex = (b: Byteable) => {
     return b.getBytes().map(hex8).join(" ");
 }
 
-export {unsignedToSigned, assertByte, stringToArray, hex16, hex8, asHex}
+export {unToSigned, assertByte, stringToArray, hex16, hex8, asHex}
