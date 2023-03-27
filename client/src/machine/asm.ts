@@ -131,7 +131,7 @@ type Tag = [string, string]
 type TagSeq = Tag[]
 
 /** Defines a category for any source line. */
-enum SourceType {
+const enum SourceType {
     /** Machine code instruction */
     MACHINE,
     /** Data declaration */
@@ -242,7 +242,7 @@ const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
 // noinspection JSUnusedGlobalSymbols
 
 /** Will have different types of data later (petscii, sid music, character) */
-enum SectionType {
+const enum SectionType {
     /** Non-executable data. */
     DATA,
     /** Executable machine code. */
