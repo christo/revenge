@@ -72,7 +72,7 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_MAGIC,
             C64_CART_RESET_VECTOR,
             C64_CART_NMI_VECTOR
-    ])
+        ])
 );
 
 const C64_MEMORY = new MemoryConfiguration("c64 memory", 0x801);

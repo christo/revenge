@@ -75,7 +75,7 @@ class Vic20Basic implements BlobSniffer {
         this.memory = memory;
         this.desc = "Unexpanded VIC";
         this.name = "BASIC prg";
-        this.tags=["basic", "vic20"];
+        this.tags = ["basic", "vic20"];
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
