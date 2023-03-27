@@ -8,7 +8,7 @@
  */
 
 import {assertByte} from "../misc/BinUtils";
-import {Byteable, SectionType} from "./asm";
+import {Byteable} from "./asm";
 
 class AddressingMode {
     code: string;
