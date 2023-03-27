@@ -130,6 +130,12 @@ type Tag = [string, string]
  */
 type TagSeq = Tag[]
 
+/**
+ * Turns a tagSeq into plain text, discarding the tags.
+ * @param ts
+ */
+const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
+
 /** Defines a category for any source line. */
 const enum SourceType {
     /** Machine code instruction */
@@ -232,12 +238,6 @@ class WordDefinition extends InstructionBase implements Directive {
     getBytes = (): number[] => this.bytes;
     getLength = (): number => 2;
 }
-
-/**
- * Turns a tagSeq into plain text, discarding the tags.
- * @param ts
- */
-const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
 
 // noinspection JSUnusedGlobalSymbols
 
