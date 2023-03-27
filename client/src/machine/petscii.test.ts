@@ -3,7 +3,7 @@ import {Petscii} from "../machine/petscii";
 
 test("petscii sanity test", () => {
     let bad = [];
-    Petscii.C64_MAPPING.forEach((t:[number, string], i:number, a:[number, string][]) => {
+    Petscii.C64_MAPPING.forEach((t: [number, string], i: number, a: [number, string][]) => {
         if (t[0] !== i) {
             console.log(`[${t[0]},${t[1]}] -> ${i}`);
             bad.push(t);
