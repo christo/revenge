@@ -28,6 +28,13 @@ const TODO = (mesg = "") => {
 };
 
 /**
+ * Should be a 16-bit unsigned number.
+ * TODO decide whether to use some kind of TypeScript foo to constrain the values...
+ * ...can't use recursive tail-call type trick because max depth is 1000
+ */
+type Address = number;
+
+/**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
  * assembly language.
  *
@@ -655,9 +662,9 @@ interface DisassemblyMeta {
     getPrecept(offset:number):Precept | undefined;
 
     /**
-     * Return a list of address + comment
+     * Return a list of address + LabelsComments
      */
-    get jumpTargets(): [number, string][];
+    get jumpTargets(): [Address, LabelsComments][];
 }
 
 class ByteDefinitionPrecept implements Precept {
@@ -737,7 +744,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
     private readonly precepts: { [id: number] : Precept; };
-    private readonly _jumpTargets: [number, string][];
+    private readonly _jumpTargets: [Address, LabelsComments][];
 
     constructor(
         baseAddressOffset: number,
@@ -745,7 +752,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         nmiVectorOffset: number,
         contentStartOffset: number,
         precepts: Precept[],
-        jumpTargets: [number, string][] = [],
+        jumpTargets: [Address, LabelsComments][] = [],
         ) {
 
         this._baseAddressOffset = baseAddressOffset;
@@ -802,7 +809,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this.precepts[address];
     }
 
-    get jumpTargets(): [number, string][] {
+    get jumpTargets(): [Address, LabelsComments][] {
         return this._jumpTargets;
     }
 }
@@ -839,13 +846,13 @@ class Disassembler {
     /**
      * Tuple: label, address
      */
-    labels: [string, number][];
+    private labels: [string, number][];
 
     private disMeta: DisassemblyMeta;
 
-    constructor(iset: InstructionSet, fb: FileBlob, typ: DisassemblyMeta) {
+    constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
         this.iset = iset;
-        let index = typ.contentStartOffset();
+        let index = dm.contentStartOffset();
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
             throw Error("index out of range");
@@ -853,11 +860,14 @@ class Disassembler {
         this.originalIndex = index;
         this.currentIndex = index;
         this.fb = fb;
-        this.segmentBaseAddress = typ.baseAddress(fb);
-        const resetVector = fb.readVector(typ.resetVectorOffset);
-        const nmiVector = fb.readVector(typ.nmiVectorOffset);
+        this.segmentBaseAddress = dm.baseAddress(fb);
+
+        // TODO put these in the cart definition?
+        const resetVector = fb.readVector(dm.resetVectorOffset);
+        const nmiVector = fb.readVector(dm.nmiVectorOffset);
         this.labels = [["handleReset", resetVector], ["handleNmi", nmiVector]];
-        this.disMeta = typ;
+
+        this.disMeta = dm;
     }
 
     private eatBytes(count: number): number[] {
@@ -1090,4 +1100,5 @@ export type {
     Dialect,
     Directive,
     Precept,
+    Address
 };
