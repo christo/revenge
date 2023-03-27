@@ -130,12 +130,30 @@ type Tag = [string, string]
  */
 type TagSeq = Tag[]
 
+/** Defines a category for any source line. */
+enum SourceType {
+    /** Machine code instruction */
+    MACHINE,
+    /** Data declaration */
+    DATA,
+    /** Assembly directive or pseudo-op, including symbol definitions. */
+    PSEUDO,
+    /** Label definition */
+    LABEL,
+    /** Something for the humans */
+    COMMENT,
+    /** Forced space. */
+    BLANK
+}
+
 /** Convenience base class implementing comment and label properties. */
 abstract class InstructionBase implements Instructionish {
     protected _lc: LabelsComments;
+    private readonly _sourceType: SourceType;
 
-    protected constructor(lc:LabelsComments) {
+    protected constructor(lc:LabelsComments, st:SourceType) {
         this._lc = lc;
+        this._sourceType = st;
     }
 
     get labelsComments(): LabelsComments {
@@ -147,44 +165,34 @@ abstract class InstructionBase implements Instructionish {
         return FileBlob.NULL_FILE_BLOB;
     }
 
+    get sourceType(): SourceType {
+        return this._sourceType;
+    }
+
     abstract disassemble(dialect: Dialect, dis: Disassembler): TagSeq;
 
-    abstract get sourceType(): SourceType;
+    abstract getBytes(): number[];
 
-    /**
-     * Default zero byte implementation.
-     */
-    getBytes(): number[] {
-        return [];
-    }
-
-    /**
-     * Default zero byte implementation.
-     */
-    getLength(): number {
-        return 0;
-    }
+    abstract getLength(): number;
 }
 
 class PcAssign extends InstructionBase implements Directive {
     private readonly _address: number;
 
     constructor(address: number, labels:string[] = [], comments:string[] = []) {
-        super(new LabelsComments(labels, comments));
+        super(new LabelsComments(labels, comments), SourceType.PSEUDO);
         this._address = address;
     }
 
-    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
-        return dialect.pcAssign(this, dis);
-    }
+    disassemble = (dialect: Dialect, dis: Disassembler): TagSeq => dialect.pcAssign(this, dis);
 
     get address(): number {
         return this._address;
     }
 
-    get sourceType(): SourceType {
-        return SourceType.PSEUDO;
-    }
+    getBytes = (): number[] => [];
+
+    getLength = (): number => 0;
 }
 
 /** Assembler pseudo-op that reserves literal bytes. */
@@ -193,25 +201,13 @@ class ByteDeclaration extends InstructionBase implements Directive {
     private readonly _rawBytes: Array<number>;
 
     constructor(rawBytes: Array<number>, lc: LabelsComments) {
-        super(lc);
+        super(lc, SourceType.DATA);
         this._rawBytes = rawBytes.map(b => assertByte(b));
     }
 
-    getBytes(): number[] {
-        return this._rawBytes;
-    }
-
-    getLength(): number {
-        return this._rawBytes.length;
-    }
-
-    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
-        return dialect.bytes(this, dis);
-    }
-
-    get sourceType(): SourceType {
-        return SourceType.DATA;
-    }
+    getBytes = (): number[] => this._rawBytes;
+    getLength = (): number => this._rawBytes.length;
+    disassemble = (dialect: Dialect, dis: Disassembler): TagSeq => dialect.bytes(this, dis);
 }
 
 /**
@@ -219,6 +215,7 @@ class ByteDeclaration extends InstructionBase implements Directive {
  */
 class WordDefinition extends InstructionBase implements Directive {
     private readonly value:number;
+    private readonly bytes:number[];
 
     /**
      * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
@@ -228,17 +225,14 @@ class WordDefinition extends InstructionBase implements Directive {
      * @param lc for the humans.
      */
     constructor(firstByte:number, secondByte:number, lc: LabelsComments) {
-        super(lc);
-        this.value = (secondByte << 8) | firstByte; // currently hard-coded to little-endian
+        super(lc, SourceType.DATA);
+        this.value = (secondByte << 8) | firstByte;
+        this.bytes = [firstByte, secondByte];
     }
 
-    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
-        return dialect.words([this.value], this._lc, dis);
-    }
-
-    get sourceType(): SourceType {
-        return SourceType.DATA;
-    }
+    disassemble = (dialect: Dialect, dis: Disassembler): TagSeq => dialect.words([this.value], this._lc, dis);
+    getBytes = (): number[] => this.bytes;
+    getLength = (): number => 2;
 }
 
 /**
@@ -281,21 +275,6 @@ class Section {
     get endOffset() {
         return this.startOffset + this.length;
     }
-}
-
-enum SourceType {
-    /** Machine code instruction */
-    MACHINE,
-    /** Data declaration */
-    DATA,
-    /** Assembly directive or pseudo-op, including symbol definitions. */
-    PSEUDO,
-    /** Label definition */
-    LABEL,
-    /** Something for the humans */
-    COMMENT,
-    /** Forced space. */
-    BLANK
 }
 
 /**
@@ -385,7 +364,6 @@ class DefaultDialect implements Dialect {
     formatLabel(s: string) {
         return s + ": ";
     }
-
 
     private byteDeclaration(b: Byteable): TagSeq {
         if (b.getLength() === 0) {
@@ -569,7 +547,7 @@ class FullInstructionLine extends InstructionBase {
     private readonly _fullInstruction: FullInstruction;
 
     constructor(fullInstruction: FullInstruction, lc:LabelsComments) {
-        super(lc);
+        super(lc, SourceType.MACHINE);
         this._fullInstruction = fullInstruction;
     }
 
@@ -587,10 +565,6 @@ class FullInstructionLine extends InstructionBase {
 
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
         return dialect.code(this, dis);
-    }
-
-    get sourceType(): SourceType {
-        return SourceType.MACHINE;
     }
 }
 
@@ -786,7 +760,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     }
 
     disassemblyStartOffset(fb: FileBlob): number {
-        // currently a crude guess
         const resetAddr = fb.readVector(this._resetVectorOffset);
         // two bytes make an address
         const resetMsb = resetAddr + 1;
@@ -795,7 +768,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
             return resetAddr - fb.readVector(this._baseAddressOffset);
         } else {
             // reset vector is outside binary, so start disassembly at content start?
-            console.warn(`reset vector is outside binary ($${hex16(resetAddr)})`);
+            console.log(`reset vector is outside binary ($${hex16(resetAddr)})`);
             return this.contentStartOffset();
         }
     }
