@@ -8,7 +8,7 @@ for the Vic-20 and C64.
 
 Implemented in TypeScript as a first project for learning the language.
 
-Much 6502 info from [masswerk](https://www.masswerk.at/6502/6502_instruction_set.html)
+Much 6502 info from 
 
 ## Design Notes
 
@@ -195,9 +195,9 @@ by [Michael Steil](https://pagetable.com/) of
 * manual choice of file type
 * introduce user abstraction well before multiple user accounts or permissions
 * dialect options - layout handles for indenting
-* database persistence (psql)
+* database persistence
 * interactive choice of data/code regions
-* Test C64 and VIC-20 BASIC decoding
+* Unit tests for C64 and VIC-20 BASIC decoding
 * BASIC data statement embedded machine code detection/designation
 * bulk back-end corpus
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
@@ -227,27 +227,20 @@ natch)
 * Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will 
   assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy or hard.
 
-## Reading List
+## Reverse Engineering Tools
+
+* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and command-line toolset
+* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA (supports 6502 and dozens of more contemporary 
+  architectures)
+* [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
+* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to support 6502 (I couldn't
+  make it work) see my GH issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
+* [IDA Pro](https://hex-rays.com/ida-pro/) classic, proprietary, native
+
+## Useful Resources
 
 * [C64 cross-dev links](https://codebase64.org/doku.php?id=base:crossdev)
-* [TypeScript async techniques](https://blog.logrocket.com/promise-chaining-is-dead-long-live-async-await-445897870abc/)
-* FP utopia [Fantasyland](https://github.com/fantasyland/fantasy-land) and related 
-  [StaticLand](https://jrsinclair.com/articles/2020/whats-more-fantastic-than-fantasy-land-static-land/)
-* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-* Check out the following libs (via TypeScript discord): 
-  > AsyncResult, Task, AsyncEither AsyncHTTPRequest are some names for 
-  > implementations that exist in the community. Look up daggy.js which
-  > is old, but gives you the idea. crocks.js, idk, sanctuary js
 * https://www.nesdev.org/wiki/Tools assemblers and disassemblers with a focus on NES
 * https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and examples
 * ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
 * [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
-
-## Related Work
-
-* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and command-line toolset
-* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA
-* [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
-* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to support 6502 (I couldn't
-  make it work) see my GH issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
-* [IDA Pro](https://hex-rays.com/ida-pro/) proprietary, native
