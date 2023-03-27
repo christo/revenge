@@ -8,7 +8,7 @@ for the Vic-20 and C64.
 
 Implemented in TypeScript as a first project for learning the language.
 
-Much 6502 info from 
+Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ## Design Notes
 
@@ -129,7 +129,7 @@ scripting-language-like assembler directives and macros.
 * very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be hand-coded 
   rather than generated.
 
-Others: 
+### Others: 
 
 * [64tass](https://tass64.sourceforge.net/)
 * [Acme](https://sourceforge.net/projects/acme-crossass/)
@@ -145,19 +145,18 @@ and includes. Ultimately it would be great to be able to synthesise macros from 
 minimum necessary syntax may be supported.
 
 * line comment prefix character
-* block comments (kick-ass does this)
 * legal label rules, e.g.: 
   * no mnemonic prefix allowed
   * must start on column 0 and mnemonics must be indented
   * must end in a colon (or not)
 * program counter assignment:
   * `ORG $8000` or
-  * `* = $8000` 
-* hex/bin/oct/dec literals syntax/support
+  * `* = $8000`
+* hex/bin/oct/dec/ascii/petscii literals syntax/support
 * data declaration
   * individual bytes
   * word support etc.
-  * strings
+  * block fill
 
 ## Features 
 
@@ -179,13 +178,13 @@ by [Michael Steil](https://pagetable.com/) of
 ## TODO
 
 * indicate which view is current - switch from buttons to tab nav
+* better styling for BASIC decoder
 * audit inter-module dependency graph, remove cycles, untangle
 * use c64ref submodule for petscii rendering
   * build-time petscii mapping
   * test coverage
   * charset
   * rewrite BASIC decoder using c64ref data
-* better styling for BASIC decoder
 * default to best view (maybe use sniff score)
 * bug - reset vector should force byte-precise assembly designation
 * use ts-md5 for md5 hash generation
