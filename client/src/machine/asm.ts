@@ -69,7 +69,7 @@ interface Dialect {
      * @param fullInstructionLine one logical line of disassembly.
      * @param dis the disassembly state.
      */
-    code(fullInstructionLine:FullInstructionLine, dis: Disassembler): TagSeq;
+    code(fullInstructionLine: FullInstructionLine, dis: Disassembler): TagSeq;
 
     /**
      * Render tagged byte declaration.
@@ -77,7 +77,7 @@ interface Dialect {
      * @param byteable supplies the bytes to be declared as bytes.
      * @param dis the disassembly state.
      */
-    bytes(byteable:Directive | FullInstructionLine, dis: Disassembler): TagSeq;
+    bytes(byteable: Directive | FullInstructionLine, dis: Disassembler): TagSeq;
 
     /**
      * Render the given values as 16 bit words. If there is an odd number of bytes, the last will be forced to be
@@ -87,7 +87,7 @@ interface Dialect {
      * @param lc labels and comments
      * @param dis the disassembly context.
      */
-    words(words:number[], lc:LabelsComments, dis: Disassembler): TagSeq;
+    words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq;
 
     /**
      * Render tagged directive.
@@ -151,7 +151,7 @@ abstract class InstructionBase implements Instructionish {
     protected _lc: LabelsComments;
     private readonly _sourceType: SourceType;
 
-    protected constructor(lc:LabelsComments, st:SourceType) {
+    protected constructor(lc: LabelsComments, st: SourceType) {
         this._lc = lc;
         this._sourceType = st;
     }
@@ -179,20 +179,18 @@ abstract class InstructionBase implements Instructionish {
 class PcAssign extends InstructionBase implements Directive {
     private readonly _address: number;
 
-    constructor(address: number, labels:string[] = [], comments:string[] = []) {
+    constructor(address: number, labels: string[] = [], comments: string[] = []) {
         super(new LabelsComments(labels, comments), SourceType.PSEUDO);
         this._address = address;
     }
 
     disassemble = (dialect: Dialect, dis: Disassembler): TagSeq => dialect.pcAssign(this, dis);
+    getBytes = (): number[] => [];
+    getLength = (): number => 0;
 
     get address(): number {
         return this._address;
     }
-
-    getBytes = (): number[] => [];
-
-    getLength = (): number => 0;
 }
 
 /** Assembler pseudo-op that reserves literal bytes. */
@@ -214,8 +212,8 @@ class ByteDeclaration extends InstructionBase implements Directive {
  * 16-bit word definition in architecture endianness. Currently only little-endian architectures supported.
  */
 class WordDefinition extends InstructionBase implements Directive {
-    private readonly value:number;
-    private readonly bytes:number[];
+    private readonly value: number;
+    private readonly bytes: number[];
 
     /**
      * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
@@ -224,7 +222,7 @@ class WordDefinition extends InstructionBase implements Directive {
      * @param secondByte second byte in the stream.
      * @param lc for the humans.
      */
-    constructor(firstByte:number, secondByte:number, lc: LabelsComments) {
+    constructor(firstByte: number, secondByte: number, lc: LabelsComments) {
         super(lc, SourceType.DATA);
         this.value = (secondByte << 8) | firstByte;
         this.bytes = [firstByte, secondByte];
@@ -240,6 +238,7 @@ class WordDefinition extends InstructionBase implements Directive {
  * @param ts
  */
 const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
+
 // noinspection JSUnusedGlobalSymbols
 
 /** Will have different types of data later (petscii, sid music, character) */
@@ -253,6 +252,7 @@ enum SectionType {
     /** Type is not known. */
     UNKNOWN
 }
+
 // noinspection JSUnusedGlobalSymbols
 
 /** Designates the dynamic meaning of a sequence of bytes in the binary. */
@@ -351,7 +351,7 @@ class DefaultDialect implements Dialect {
         return labels.map(s => this.formatLabel(s)).join(le);
     }
 
-    private renderComments(comments:string[]) {
+    private renderComments(comments: string[]) {
         const le = this._env.targetLineEndings();
         const cp = this.commentPrefix();
         return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
@@ -382,7 +382,7 @@ class DefaultDialect implements Dialect {
         return "$" + hex8(b);
     }
 
-    private hexWordText(x:number) {
+    private hexWordText(x: number) {
         return "$" + hex16(x);
     }
 
@@ -392,8 +392,8 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: FullInstruction):string {
-        const i:Instruction = il.instruction as Instruction;
+    private renderOperand(il: FullInstruction): string {
+        const i: Instruction = il.instruction as Instruction;
         const hw = () => "$" + hex16(il.operand16());
         const hb = () => this.hexByteText(il.firstByte);
 
@@ -448,15 +448,15 @@ class DefaultDialect implements Dialect {
         // future: context may give us rules about grouping, pattern detection etc.
         const comments: Tag = ["comment", this.renderComments(x.labelsComments.comments)];
         const labels: Tag = ["label", this.renderLabels(x.labelsComments.labels)];
-        const data:Tag = ["data", this._env.indent() + tagText(this.byteDeclaration(x))];
+        const data: Tag = ["data", this._env.indent() + tagText(this.byteDeclaration(x))];
         return [comments, labels, data];
     }
 
-    words(words:number[], lc:LabelsComments, dis: Disassembler): TagSeq {
+    words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
         const comments: Tag = ["comment", this.renderComments(lc.comments)];
         const labels: Tag = ["label", this.renderLabels(lc.labels)];
-        const tags:TagSeq = this.wordDeclaration(words)
-        const data:Tag = ["data", this._env.indent() + tagText(tags)];
+        const tags: TagSeq = this.wordDeclaration(words)
+        const data: Tag = ["data", this._env.indent() + tagText(tags)];
         return [comments, labels, data];
     }
 
@@ -485,6 +485,7 @@ class DefaultDialect implements Dialect {
 interface Byteable {
     /** The possibly empty array of byte values. */
     getBytes(): number[];
+
     /** Length in bytes, must not be negative. */
     getLength(): number;
 }
@@ -536,7 +537,7 @@ interface Instructionish extends Byteable {
     /**
      * Return the {@link SourceType} for the generated code (regardless of comments).
      */
-    get sourceType():SourceType;
+    get sourceType(): SourceType;
 }
 
 /**
@@ -546,7 +547,7 @@ interface Instructionish extends Byteable {
 class FullInstructionLine extends InstructionBase {
     private readonly _fullInstruction: FullInstruction;
 
-    constructor(fullInstruction: FullInstruction, lc:LabelsComments) {
+    constructor(fullInstruction: FullInstruction, lc: LabelsComments) {
         super(lc, SourceType.MACHINE);
         this._fullInstruction = fullInstruction;
     }
@@ -633,7 +634,7 @@ interface DisassemblyMeta {
      *
      * @param offset
      */
-    getPrecept(offset:number):Precept | undefined;
+    getPrecept(offset: number): Precept | undefined;
 
     /**
      * Return a list of address + LabelsComments
@@ -646,7 +647,7 @@ class ByteDefinitionPrecept implements Precept {
     private readonly numBytes: number;
     protected readonly lc: LabelsComments;
 
-    constructor(offset: number, length: number, lc:LabelsComments) {
+    constructor(offset: number, length: number, lc: LabelsComments) {
         this._offset = offset;
         this.numBytes = length;
         this.lc = lc;
@@ -677,7 +678,7 @@ class VectorDefinitionPrecept extends ByteDefinitionPrecept {
 
     create(fb: FileBlob): Instructionish {
         const firstByte = fb.bytes.at(this.offset);
-        const secondByte = fb.bytes.at(this.offset+1);
+        const secondByte = fb.bytes.at(this.offset + 1);
         if (firstByte !== undefined && secondByte !== undefined) {
             return new WordDefinition(firstByte, secondByte, this.lc);
         } else {
@@ -686,8 +687,8 @@ class VectorDefinitionPrecept extends ByteDefinitionPrecept {
     }
 }
 
-const mkLabels = (labels:string[] | string) => new LabelsComments(labels);
-const mkComments = (comments:string[] | string) => new LabelsComments([], comments);
+const mkLabels = (labels: string[] | string) => new LabelsComments(labels);
+const mkComments = (comments: string[] | string) => new LabelsComments([], comments);
 
 export class LabelsComments {
     private readonly _labels: string[];
@@ -695,7 +696,7 @@ export class LabelsComments {
 
     static EMPTY = new LabelsComments();
 
-    constructor(labels:string[] | string = [], comments: string[] | string = []) {
+    constructor(labels: string[] | string = [], comments: string[] | string = []) {
         this._labels = ((typeof labels === "string") ? [labels] : labels).filter(s => s.length > 0);
         this._comments = ((typeof comments === "string") ? [comments] : comments).filter(s => s.length > 0);
     }
@@ -703,6 +704,7 @@ export class LabelsComments {
     get labels() {
         return this._labels
     }
+
     get comments() {
         return this._comments;
     }
@@ -717,7 +719,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     private readonly _resetVectorOffset: number;
     private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
-    private readonly precepts: { [id: number] : Precept; };
+    private readonly precepts: { [id: number]: Precept; };
     private readonly _jumpTargets: [Address, LabelsComments][];
 
     constructor(
@@ -727,7 +729,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         contentStartOffset: number,
         precepts: Precept[],
         jumpTargets: [Address, LabelsComments][] = [],
-        ) {
+    ) {
 
         this._baseAddressOffset = baseAddressOffset;
         this._contentStartOffset = contentStartOffset;
@@ -805,7 +807,7 @@ interface Precept {
      * @param fb the binary.
      * @return the instance.
      */
-    create(fb:FileBlob): Instructionish;
+    create(fb: FileBlob): Instructionish;
 }
 
 /** Stateful translator of bytes to their parsed instruction line */
@@ -871,7 +873,7 @@ class Disassembler {
      * Currently responsible for deciding which Instructionish should be constructed at the current index point
      * and advances the index by the correct number of bytes.
      */
-    nextInstructionLine():Instructionish {
+    nextInstructionLine(): Instructionish {
         let labels: Array<string> = [];
         // need to allow multiple labels
         if (this.needsLabel(this.currentAddress)) {
@@ -900,19 +902,19 @@ class Disassembler {
             let bytes = [opcode].concat(this.eatBytes(remainingBytes))
             return new ByteDeclaration(bytes, mkComments("must be data?"));
         } else {
-            const preceptAhead = (n:number) => this.disMeta.getPrecept(this.currentIndex + n) !== undefined;
+            const preceptAhead = (n: number) => this.disMeta.getPrecept(this.currentIndex + n) !== undefined;
             // current index is the byte following the opcode which we've already checked for a precept
             // check there is no precept inside the bytes this instruction would need
-            if (numInstructionBytes === 2 && preceptAhead(1)){
+            if (numInstructionBytes === 2 && preceptAhead(1)) {
                 return new ByteDeclaration([opcode], mkComments("inferred via precept+1"));
             } else if (numInstructionBytes === 3) {
-              if (preceptAhead(2)) {
-                  const bytes = [opcode, this.eatByte()];
-                  return new ByteDeclaration(bytes, mkComments("inferred via precept+2"));
-              } else if (preceptAhead(3)) {
-                  const bytes = [opcode, this.eatByte(), this.eatByte()];
-                  return new ByteDeclaration(bytes, mkComments("inferred via precept+3"));
-              }
+                if (preceptAhead(2)) {
+                    const bytes = [opcode, this.eatByte()];
+                    return new ByteDeclaration(bytes, mkComments("inferred via precept+2"));
+                } else if (preceptAhead(3)) {
+                    const bytes = [opcode, this.eatByte(), this.eatByte()];
+                    return new ByteDeclaration(bytes, mkComments("inferred via precept+3"));
+                }
             }
 
             // interpret as instruction
@@ -950,7 +952,7 @@ class Disassembler {
      * Determine all jump targets both statically defined and implied by the given sequence of instructions. Only
      * those targets that lie within our address range are returned.
      */
-    private jumpTargets = (instructions:FullInstruction[] = []): number[] => {
+    private jumpTargets = (instructions: FullInstruction[] = []): number[] => {
         // collect reset vector and nmi vector as jump targets
         const nmi = this.fb.readVector(this.disMeta.nmiVectorOffset);
         const reset = this.fb.readVector(this.disMeta.resetVectorOffset);
@@ -961,7 +963,7 @@ class Disassembler {
         return allJumpTargets.filter(this.addressInRange);
     };
 
-    private addressInRange = (addr:number): boolean => {
+    private addressInRange = (addr: number): boolean => {
         const notTooLow = addr >= this.segmentBaseAddress;
         const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.disMeta.contentStartOffset();
         return notTooLow && notTooHigh;
@@ -977,7 +979,7 @@ class Disassembler {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements:TagSeq = Array.from(fb.bytes).map(x=> ["hexbyte", hex8(x)]);
+        const elements: TagSeq = Array.from(fb.bytes).map(x => ["hexbyte", hex8(x)]);
         return new Detail(["hexbytes"], [elements]);
     }
 });
