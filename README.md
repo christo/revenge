@@ -227,6 +227,30 @@ natch)
 * Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will 
   assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy or hard.
 
+## System Support Status
+
+The design aims to reduce the effort of supporting multiple different systems, however at this stage only VIC-20 and C64
+carts, prg files and BASIC files have been tested and there is no comprehensive test suite yet. Also, I'm not sure
+how feasible it would be to support some systems. Within the communities of each system, different assembler tool 
+chains are more prevalent.
+
+In general, project scope includes support for 6502-based and Z80-based 80s Microcomputers and a generous subset of the 
+more common assembler syntax dialects. The following table shows estimations, not promises.
+
+
+| Machines                | Status      | CPU Family |
+|-------------------------|-------------|------------|
+| VIC-20, C64             | In Progress | 6502       |
+| Apple II, BBC B         | Planned     | 6502       |
+| NES                     | Probable    | 6502       |
+| ZX Spectrum             | Planned     | Z80        |
+| SNES                    | ?           | 6502       |
+| Microbee, TRS-80        | ?           | Z80        |
+| Oric, Atari 8-bit       | ?           | 6502       | 
+| Gameboy series          | ?           | Z80*       |
+| VZ-200 / VZ-300 / Laser | ?           | Z80        |
+
+
 ## Reverse Engineering Tools
 
 * [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and command-line toolset
