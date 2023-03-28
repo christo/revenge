@@ -5,6 +5,8 @@ import {ActionResult} from "./revenge";
 
 type Token = [number, string];
 
+const isZilch = (x:number|undefined) => (x === undefined || x === 0);
+
 /** Decodes a BASIC {@link FileBlob} into its program structure */
 class BasicDecoder {
     private name: string;
@@ -61,10 +63,8 @@ class BasicDecoder {
                 }
                 line += token;
             }
-            // TODO we should look for EOF as a two-zero-byte sequence, not one
-            const peek = fb.bytes.at(i + 2);
-            // zero terminator marks the end, if we are out of bytes, same thing.
-            const eof = peek === undefined || peek === 0;
+            // two zero bytes mark the end, if we are out of bytes, same thing.
+            const eof = isZilch(fb.bytes.at(i + 2)) && isZilch(fb.bytes.at(i + 3));
             finished = finished || (eol && eof);
         }
         return lines;
