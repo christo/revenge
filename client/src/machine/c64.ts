@@ -15,15 +15,13 @@ import {stringToArray} from "../misc/BinUtils";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
 import {BlobToActions} from "./revenge";
 
-const C64_MEMORY = new MemoryConfiguration("c64 memory", 0x801);
-
+const C64_MEMORY = new MemoryConfiguration("c64 memory", 0x0801);
 const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", wordToEndianBytes(C64_MEMORY.basicStart));
-
-const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = stringToArray("C64 CARTRIDGE   ");
 const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
+const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
 /**
  * The base address for all 8kb C64 carts.
@@ -61,13 +59,10 @@ const C64_CART_MAGIC = new ByteDefinitionPrecept(MAGIC_OFFSET, CBM80.length, new
 const C64_CART_NMI_VECTOR = new VectorDefinitionPrecept(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
 const C64_CART_RESET_VECTOR = new VectorDefinitionPrecept(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
-const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => {
-    console.log("fetching jump targets");
-    return [
-        [fb.readVector(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
-        [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
-    ]
-}
+const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => [
+    [fb.readVector(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
+    [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
+]
 
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",

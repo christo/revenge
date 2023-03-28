@@ -26,13 +26,10 @@ const VIC20_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const VIC20_WARM_VECTOR_OFFSET = 4;
 
-const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => {
-    console.log("fetching jump targets");
-    return [
-        [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
-        [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
-    ]
-};
+const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => [
+    [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
+    [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
+];
 
 /** VIC-20 cart image sniffer. */
 const VIC20_CART = new CartSniffer(

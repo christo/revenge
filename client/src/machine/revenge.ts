@@ -43,8 +43,10 @@ type Continuation = (fo: ActionExecutor) => void;
 /** Holds the UI button label and function to call when the button is clicked */
 type UserAction = { label: string, f: ActionExecutor };
 
-/** The list of actions for a single BlobType, minimum of one action */
-type TypeActions = { t: BlobSniffer, actions: [UserAction, ...UserAction[]] };
+/**
+ * Holds the sniffer and the set of actions that can be taken for this type. At least one action required.
+ */
+type TypeActions = { t: BlobSniffer, actions: [UserAction, ...UserAction[]]};
 
 /**
  * Encapsulation of the function for determining the set of actions that can be taken

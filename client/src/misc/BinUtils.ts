@@ -28,8 +28,8 @@ const assertByte = (value: number): number => {
  */
 const unToSigned = (x: number): number => -(x & 0x80) + (x & 0x7f)
 
-const asHex = (b: Byteable) => {
-    return b.getBytes().map(hex8).join(" ");
+const asHex = (b: number[]) => {
+    return b.map(hex8).join(" ");
 }
 
 export {unToSigned, assertByte, stringToArray, hex16, hex8, asHex}

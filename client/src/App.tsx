@@ -13,10 +13,10 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, Detail, sniff, TypeActions, UserAction} from "./machine/revenge";
+import {ActionExecutor, Detail, sniff, TypeActions} from "./machine/revenge";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
-import {Button, Chip, CircularProgress, Stack} from "@mui/material";
+import {Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import axios from "axios";
 
 const darkTheme = createTheme({
@@ -52,37 +52,45 @@ function DetailRenderer(props: {ae: ActionExecutor}) {
     </div>;
 }
 
+function TabPanel(props: { children:React.ReactNode, value:number, item:number }) {
+    const {children, value, item} = props;
+    return (
+        <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
+            {value === item && (<Box sx={{ pt: 3 }}>{children}</Box>)}
+        </div>
+    );
+}
+
 function FileDetail(props: { fb: FileBlob }) {
-    const [action, setAction] = useState<UserAction | null>(null);
-    const typeAction: TypeActions = sniff(props.fb);
-    const t = typeAction.t;
-    useEffect(() => {
-        setAction(null);
-    },[props.fb]);
+    const typeActions: TypeActions = sniff(props.fb);
+    const [action, setAction] = useState(0);
+    const t = typeActions.t;
+
     return <div>
         <div className="dataMeta">
-
             <div className="dataDetail">
                 <span className="smell">Smells like</span>
                 <span className="name">{t.name}</span>
                 <span className="desc">{t.desc}</span>
-
                 {t.tags.map((tag, i) => {
                     return <Chip label={tag} size="small"
                         key={`tag_${i}`} sx={{marginRight: 1}}
                         variant="outlined" color="info"/>
                 })}
-
             </div>
-
-            <div className="typeActions">
-                {typeAction.actions.map((a, i) => {
-                    return <Button key={`ac_${i}`} onClick={()=>setAction(a)}>{a.label}</Button>;
-                })}
-            </div>
-
         </div>
-        {action == null ? null : <DetailRenderer ae={action.f}/>}
+        <Tabs value={action} onChange={(event: React.SyntheticEvent, newValue: number) => {
+            setAction(newValue);
+        }} >
+            {typeActions.actions.map((a, i) => {
+                return <Tab label={a.label} key={`tac_${i}`} />
+            })}
+        </Tabs>
+        {typeActions.actions.map((a, i) => (
+            <TabPanel item={i} value={action} key={`tap_${i}`}>
+                <DetailRenderer ae={a.f}/>
+            </TabPanel>
+        ))}
     </div>;
 }
 

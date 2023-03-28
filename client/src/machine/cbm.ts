@@ -16,7 +16,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "../misc/BinUtils";
-import {ActionExecutor, ActionFunction, ActionResult, Detail, UserAction} from "./revenge";
+import {ActionFunction, Detail, UserAction} from "./revenge";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -28,8 +28,8 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
 
-    let userActions: Array<UserAction> = [{
-        label: "disassemble",
+    let userActions: [UserAction, ...UserAction[]] = [{
+        label: "disassembly",
         f: () => {
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
             let detail = new Detail(["line"], [])
@@ -40,7 +40,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             while (dis.hasNext()) {
                 let addr: Tag = ["addr", hex16(dis.currentAddress)];
                 let inst: Instructionish = dis.nextInstructionLine();
-                let hex: Tag = ["hex", asHex(inst)];
+                let hex: Tag = ["hex", asHex(inst.getBytes())];
                 const items = [addr, hex,];
 
                 inst.disassemble(dialect, dis).forEach(i => items.push(i));
@@ -57,16 +57,11 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
 /** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
-    let ar: ActionResult = CBM_BASIC_2_0.decode(fb);
-    let d = new Detail(["basic"], ar);
-    let ae: ActionExecutor = () => {
-        return d;
-    };
     return {
         t: t,
         actions: [{
-            label: "decode basic",
-            f: ae
+            label: "basic",
+            f: () => new Detail(["basic"], CBM_BASIC_2_0.decode(fb))
         }]
     };
 };
