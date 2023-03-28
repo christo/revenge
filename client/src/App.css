@@ -92,6 +92,7 @@ body {
   border-radius: 2px;
   font-weight: bold;
 }
+/* Program counter token */
 .pct {
   font-weight: bold;
 }
@@ -102,18 +103,11 @@ body {
 }
 
 .basic > .line {
-  margin-left: 7ch;
+  margin-left: 0ch;
 }
 
 .basic > .addr {
-  font-family: "Martian Mono", monospace;
-  font-weight: bold;
-  font-size: medium;
-  color: #e3d5c9;
-}
-
-.basic > .addr::before {
-  content: "$";
+  display: none;
 }
 
 .line {
