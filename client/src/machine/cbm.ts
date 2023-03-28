@@ -115,9 +115,7 @@ class CartSniffer implements BlobSniffer {
     }
 
     sniff(fb: FileBlob): number {
-        const magicMatch = fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
-        // TODO look at the warm and cold jump vectors to see if they land in-range and at probable code.
-        return magicMatch;
+        return fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
@@ -154,4 +152,4 @@ class MemoryConfiguration {
     }
 }
 
-export {CartSniffer, prg, printBasic, fileTypes, MemoryConfiguration};
+export {CartSniffer, prg, printBasic, fileTypes, MemoryConfiguration, wordToEndianBytes};

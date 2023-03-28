@@ -179,6 +179,7 @@ by [Michael Steil](https://pagetable.com/) of
 
 * indicate which view is current - switch from buttons to tab nav
 * better styling for BASIC decoder
+* improve cart sniffers: look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 * audit inter-module dependency graph, remove cycles, untangle
 * use c64ref submodule for petscii rendering
   * build-time petscii mapping
