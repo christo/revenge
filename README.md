@@ -186,6 +186,7 @@ by [Michael Steil](https://pagetable.com/) of
   * charset
   * rewrite BASIC decoder using c64ref data
 * default to best view (maybe use sniff score)
+* Make entire disassembly asynchronous (rather than n-pass)
 * bug - reset vector should force byte-precise assembly designation
 * use ts-md5 for md5 hash generation
 * data section detection - probabilistic
