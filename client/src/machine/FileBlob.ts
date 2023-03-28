@@ -1,5 +1,7 @@
-import {hex8} from "../misc/BinUtils";
-
+/**
+ * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
+ * like a byte array.
+ */
 class FileBlob {
     public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, new Uint8Array(0));
 
@@ -51,8 +53,8 @@ class FileBlob {
      * @param ext the part after that last dot in the filename.
      * @param caseInsensitive whether to compare case insensitively.
      */
-    hasExt(ext: string, caseInsensitive:boolean = true) {
-        const f = caseInsensitive ? (x:string) => x.toLowerCase() : (x:string) => x;
+    hasExt(ext: string, caseInsensitive: boolean = true) {
+        const f = caseInsensitive ? (x: string) => x.toLowerCase() : (x: string) => x;
         return f(this.name).endsWith("." + f(ext));
     }
 }
