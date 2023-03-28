@@ -25,9 +25,6 @@ const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, action
 const prefix = stringToArray("C64 CARTRIDGE   ");
 const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
 
-/** C64 reset vector is stored at this offset. */
-const C64_RESET_VECTOR_OFFSET = 4;
-
 /**
  * The base address for all 8kb C64 carts.
  */
@@ -37,12 +34,14 @@ const C64_8K_BASE_ADDRESS = 0x8000;
  * 16kb carts load two 8k blocks, ROML at the normal base address
  * and ROMH at this address.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const C64_ROMH_BASE_ADDRESS = 0xa000;
 
 /**
  * Ultimax carts (for the pre-64 Japanese CBM Max machine) load two
  * 8kb images, ROML at the normal base address and ROMH at this one.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const C64_ULTIMAX_ROMH_BASE_ADDRESS = 0xa000;
 
 /** The cold reset vector is stored at this offset. */
