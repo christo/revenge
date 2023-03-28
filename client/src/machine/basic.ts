@@ -3,12 +3,19 @@ import {Petscii} from "./petscii";
 import {hex16} from "../misc/BinUtils";
 import {ActionResult} from "./revenge";
 
+type Token = [number, string];
+
 /** Decodes a BASIC {@link FileBlob} into its program structure */
 class BasicDecoder {
     private name: string;
     private minor: number;
     private major: number;
     private tokens: string[];
+
+    private static readonly LOAD_ADDRESS_OFFSET = 0;
+    private static readonly CONTENT_START_OFFSET = 2;
+    private static readonly END_OF_LINE_BYTE = 0;
+    private static readonly END_OF_PROGRAM_WORD = 0;
 
     constructor(name: string, minor: number, major: number) {
         this.name = name;
@@ -17,27 +24,27 @@ class BasicDecoder {
         this.tokens = [];
     }
 
-    reg(value: number, tok: string) {
-        this.tokens[value] = tok;
+    reg(tok: Token) {
+        this.tokens[tok[0]] = tok[1];
     }
 
-    decode(fb:FileBlob):ActionResult {
-        const offset = 2;
+    decode(fb: FileBlob): ActionResult {
+        const offset = BasicDecoder.CONTENT_START_OFFSET;
         // assuming the load address is the first two bytes.
-        const baseAddress = fb.readVector(0);
+        const baseAddress = fb.readVector(BasicDecoder.LOAD_ADDRESS_OFFSET);
         let i = offset;
-        // read address of next BASIC line (may not exist)
+        // read address of next BASIC line (may be the 0x0000 end marker)
         let nextLineAddr = baseAddress;
         let lineNumber = 0;
         let finished = false;
-        let lines:ActionResult = []
+        let lines: ActionResult = []
         let line = "";
-        while(!finished) {
+        while (!finished) {
             if (i - offset + baseAddress === nextLineAddr) {
                 nextLineAddr = fb.readVector(i);
-                i += 2
-                lineNumber = fb.readVector(i)
-                i += 2
+                i += 2;
+                lineNumber = fb.readVector(i); // not really a vector but a 16 bit value
+                i += 2;
                 line = lineNumber.toString(10) + " ";
             }
             let b = fb.bytes.at(i++);
@@ -48,13 +55,14 @@ class BasicDecoder {
             } else if (eol) {
                 lines.push([["addr", hex16(nextLineAddr)], ["line", line]]);
             } else {
-                    let token = this.tokens[b];
-                        if (token === undefined) {
-                        token = Petscii.PETSCII_C64[b];
-                    }
-                    line += token;
+                let token = this.tokens[b];
+                if (token === undefined) {
+                    token = Petscii.PETSCII_C64[b];
+                }
+                line += token;
             }
-            const peek = fb.bytes.at(i+2 );
+            // TODO we should look for EOF as a two-zero-byte sequence, not one
+            const peek = fb.bytes.at(i + 2);
             // zero terminator marks the end, if we are out of bytes, same thing.
             const eof = peek === undefined || peek === 0;
             finished = finished || (eol && eof);
@@ -64,86 +72,85 @@ class BasicDecoder {
 }
 
 const CBM_BASIC_2_0 = new BasicDecoder("Commodore BASIC", 2, 0);
-const tok = (value: number, token: string) => {
-    CBM_BASIC_2_0.reg(value, token);
-}
 
-tok(128, "END");
-tok(129, "FOR");
-tok(130, "NEXT");
-tok(131, "DATA");
-tok(132, "INPUT#");
-tok(133, "INPUT");
-tok(134, "DIM");
-tok(135, "READ");
-tok(136, "LET");
-tok(137, "GOTO");
-tok(138, "RUN");
-tok(139, "IF");
-tok(140, "RESTORE");
-tok(141, "GOSUB");
-tok(142, "RETURN");
-tok(143, "REM");
-tok(144, "STOP");
-tok(145, "ON");
-tok(146, "WAIT");
-tok(147, "LOAD");
-tok(148, "SAVE");
-tok(149, "VERIFY");
-tok(150, "DEF");
-tok(151, "POKE");
-tok(152, "PRINT#");
-tok(153, "PRINT");
-tok(154, "CONT");
-tok(155, "LIST");
-tok(156, "CLR");
-tok(157, "CMD");
-tok(158, "SYS");
-tok(159, "OPEN");
-tok(160, "CLOSE");
-tok(161, "GET");
-tok(162, "NEW");
-tok(163, "TAB(");
-tok(164, "TO");
-tok(165, "FN");
-tok(166, "SPC(");
-tok(167, "THEN");
-tok(168, "NOT");
-tok(169, "STEP");
-tok(170, "+");
-tok(171, "-");
-tok(172, "*");
-tok(173, "/");
-tok(174, "^");
-tok(175, "AND");
-tok(176, "OR");
-tok(177, ">");
-tok(178, "=");
-tok(179, "<");
-tok(180, "SGN");
-tok(181, "INT");
-tok(182, "ABS");
-tok(183, "USR");
-tok(184, "FRE");
-tok(185, "POS");
-tok(186, "SQR");
-tok(187, "RND");
-tok(188, "LOG");
-tok(189, "EXP");
-tok(190, "COS");
-tok(191, "SIN");
-tok(192, "TAN");
-tok(193, "ATN");
-tok(194, "PEEK");
-tok(195, "LEN");
-tok(196, "STR$");
-tok(197, "VAL");
-tok(198, "ASC");
-tok(199, "CHR$");
-tok(200, "LEFT$");
-tok(201, "RIGHT$");
-tok(202, "MID$");
-tok(203, "GO");
-tok(255, "π");
+const TOKENS: Token[] = [
+    [128, "END"],
+    [129, "FOR"],
+    [130, "NEXT"],
+    [131, "DATA"],
+    [132, "INPUT#"],
+    [133, "INPUT"],
+    [134, "DIM"],
+    [135, "READ"],
+    [136, "LET"],
+    [137, "GOTO"],
+    [138, "RUN"],
+    [139, "IF"],
+    [140, "RESTORE"],
+    [141, "GOSUB"],
+    [142, "RETURN"],
+    [143, "REM"],
+    [144, "STOP"],
+    [145, "ON"],
+    [146, "WAIT"],
+    [147, "LOAD"],
+    [148, "SAVE"],
+    [149, "VERIFY"],
+    [150, "DEF"],
+    [151, "POKE"],
+    [152, "PRINT#"],
+    [153, "PRINT"],
+    [154, "CONT"],
+    [155, "LIST"],
+    [156, "CLR"],
+    [157, "CMD"],
+    [158, "SYS"],
+    [159, "OPEN"],
+    [160, "CLOSE"],
+    [161, "GET"],
+    [162, "NEW"],
+    [163, "TAB("],
+    [164, "TO"],
+    [165, "FN"],
+    [166, "SPC("],
+    [167, "THEN"],
+    [168, "NOT"],
+    [169, "STEP"],
+    [170, "+"],
+    [171, "-"],
+    [172, "*"],
+    [173, "/"],
+    [174, "^"],
+    [175, "AND"],
+    [176, "OR"],
+    [177, ">"],
+    [178, "="],
+    [179, "<"],
+    [180, "SGN"],
+    [181, "INT"],
+    [182, "ABS"],
+    [183, "USR"],
+    [184, "FRE"],
+    [185, "POS"],
+    [186, "SQR"],
+    [187, "RND"],
+    [188, "LOG"],
+    [189, "EXP"],
+    [190, "COS"],
+    [191, "SIN"],
+    [192, "TAN"],
+    [193, "ATN"],
+    [194, "PEEK"],
+    [195, "LEN"],
+    [196, "STR$"],
+    [197, "VAL"],
+    [198, "ASC"],
+    [199, "CHR$"],
+    [200, "LEFT$"],
+    [201, "RIGHT$"],
+    [202, "MID$"],
+    [203, "GO"],
+    [255, "π"]];
+TOKENS.forEach(t => CBM_BASIC_2_0.reg(t));
 
 export {CBM_BASIC_2_0, BasicDecoder}
