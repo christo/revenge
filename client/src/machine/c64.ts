@@ -7,6 +7,7 @@ import {
     ByteDefinitionPrecept,
     DisassemblyMetaImpl,
     hexDumper,
+    JumpTargetFetcher,
     mkLabels,
     VectorDefinitionPrecept
 } from "./asm";
@@ -59,6 +60,14 @@ const C64_CART_MAGIC = new ByteDefinitionPrecept(MAGIC_OFFSET, CBM80.length, mkL
 const C64_CART_NMI_VECTOR = new VectorDefinitionPrecept(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
 const C64_CART_RESET_VECTOR = new VectorDefinitionPrecept(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
+const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => {
+    console.log("fetching jump targets");
+    return [
+        [fb.readVector(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
+        [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
+    ]
+}
+
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
@@ -72,7 +81,8 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_MAGIC,
             C64_CART_RESET_VECTOR,
             C64_CART_NMI_VECTOR
-        ])
+        ],
+        jumpTargetFetcher)
 );
 
 const C64_MEMORY = new MemoryConfiguration("c64 memory", 0x801);

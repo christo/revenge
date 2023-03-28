@@ -65,12 +65,17 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     return {
         t: t,
         actions: [{
-            label: "print basic program",
+            label: "decode basic",
             f: ae
         }]
     };
 };
 
+/**
+ * PRG refers to the Commodore program binary file format which merely prefixes the content with the load address.
+ *
+ * @param prefix
+ */
 function prg(prefix: ArrayLike<number>) {
     // prg has a two byte load address
     const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition

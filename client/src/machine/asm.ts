@@ -28,9 +28,7 @@ const TODO = (mesg = "") => {
 };
 
 /**
- * Should be a 16-bit unsigned number.
- * TODO decide whether to use some kind of TypeScript foo to constrain the values...
- * ...can't use recursive tail-call type trick because max depth is 1000
+ * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
  */
 type Address = number;
 
@@ -639,7 +637,7 @@ interface DisassemblyMeta {
     /**
      * Return a list of address + LabelsComments
      */
-    get jumpTargets(): [Address, LabelsComments][];
+    getJumpTargets(fb:FileBlob): [Address, LabelsComments][];
 }
 
 class ByteDefinitionPrecept implements Precept {
@@ -710,17 +708,19 @@ export class LabelsComments {
     }
 }
 
+type JumpTargetFetcher = (fb:FileBlob) => [Address, LabelsComments][];
+
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
     /** A bit stinky - should never be used and probably not exist. */
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, [], []);
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, [], (fb) => []);
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
     private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
     private readonly precepts: { [id: number]: Precept; };
-    private readonly _jumpTargets: [Address, LabelsComments][];
+    private readonly jumpTargetFetcher: JumpTargetFetcher;
 
     constructor(
         baseAddressOffset: number,
@@ -728,7 +728,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         nmiVectorOffset: number,
         contentStartOffset: number,
         precepts: Precept[],
-        jumpTargets: [Address, LabelsComments][] = [],
+        getJumpTargets: JumpTargetFetcher,
     ) {
 
         this._baseAddressOffset = baseAddressOffset;
@@ -742,7 +742,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
             const precept = precepts[i];
             this.precepts[precept.offset] = precept;
         }
-        this._jumpTargets = jumpTargets;
+        this.jumpTargetFetcher = getJumpTargets;
     }
 
     baseAddress(fb: FileBlob): number {
@@ -784,8 +784,8 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this.precepts[address];
     }
 
-    get jumpTargets(): [Address, LabelsComments][] {
-        return this._jumpTargets;
+    getJumpTargets(fb:FileBlob): [Address, LabelsComments][] {
+        return this.jumpTargetFetcher(fb);
     }
 }
 
@@ -818,10 +818,7 @@ class Disassembler {
     fb: FileBlob;
     private readonly segmentBaseAddress: number;
 
-    /**
-     * Tuple: label, address
-     */
-    private labels: [string, number][];
+    private predefLc: [Address, LabelsComments][];
 
     private disMeta: DisassemblyMeta;
 
@@ -837,10 +834,7 @@ class Disassembler {
         this.fb = fb;
         this.segmentBaseAddress = dm.baseAddress(fb);
 
-        // TODO put these in the cart definition?
-        const resetVector = fb.readVector(dm.resetVectorOffset);
-        const nmiVector = fb.readVector(dm.nmiVectorOffset);
-        this.labels = [["handleReset", resetVector], ["handleNmi", nmiVector]];
+        this.predefLc = dm.getJumpTargets(fb);
 
         this.disMeta = dm;
     }
@@ -876,8 +870,8 @@ class Disassembler {
     nextInstructionLine(): Instructionish {
         let labels: Array<string> = [];
         // need to allow multiple labels
-        if (this.needsLabel(this.currentAddress)) {
-            labels = this.generateLabels(this.currentAddress)
+        if (this.hasPredefLabel(this.currentAddress)) {
+            labels = this.generateLabels(this.currentAddress);
         }
         let comments: Array<string> = [];
         if (this.needsComment(this.currentAddress)) {
@@ -906,14 +900,14 @@ class Disassembler {
             // current index is the byte following the opcode which we've already checked for a precept
             // check there is no precept inside the bytes this instruction would need
             if (numInstructionBytes === 2 && preceptAhead(1)) {
-                return new ByteDeclaration([opcode], mkComments("inferred via precept+1"));
+                return new ByteDeclaration([opcode], mkComments("inferred via precept@+1"));
             } else if (numInstructionBytes === 3) {
                 if (preceptAhead(2)) {
                     const bytes = [opcode, this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via precept+2"));
+                    return new ByteDeclaration(bytes, mkComments("inferred via precept@+2"));
                 } else if (preceptAhead(3)) {
                     const bytes = [opcode, this.eatByte(), this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via precept+3"));
+                    return new ByteDeclaration(bytes, mkComments("inferred via precept@+3"));
                 }
             }
 
@@ -936,42 +930,48 @@ class Disassembler {
         return this.currentIndex < this.fb.bytes.length;
     }
 
-    needsLabel = (addr: number) => {
-        return typeof this.labels.find(t => t[1] === addr) !== "undefined";
+    hasPredefLabel = (addr: Address) => {
+        return typeof this.predefLc.find(t => t[0] === addr) !== "undefined";
     };
 
     /** Returns zero or more labels that belong at the given addres. */
-    generateLabels = (addr: number) => this.labels.filter(t => t[1] === addr).map(t => t[0]);
+    generateLabels(addr:Address):string[] {
+        return this.predefLc.filter(t => t[0] === addr).map(t => t[1].labels).reduce((p, c) => p.concat(c));
+    }
 
     /**
      * Returns zero or more comments that belong at the given address.
      */
-    generateComments = (a: number) => this.jumpTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
+    generateComments = (a: Address) => this.jumpTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
 
     /**
      * Determine all jump targets both statically defined and implied by the given sequence of instructions. Only
      * those targets that lie within our address range are returned.
      */
-    private jumpTargets = (instructions: FullInstruction[] = []): number[] => {
+    private jumpTargets = (instructions: FullInstruction[] = []): Address[] => {
         // collect reset vector and nmi vector as jump targets
-        const nmi = this.fb.readVector(this.disMeta.nmiVectorOffset);
-        const reset = this.fb.readVector(this.disMeta.resetVectorOffset);
+        const fromDm = this.disMeta.getJumpTargets(this.fb).map(t => t[0]);
         const jumps = instructions.filter(inst => inst.instruction.op.isJump).map(fi => fi.operand16());
         // for all jump instructions, collect the destination address
-        const allJumpTargets = [nmi, reset, ...jumps];
+        const allJumpTargets = fromDm.concat(jumps);
         // for all such addresses, filter those in range of the loaded binary
         return allJumpTargets.filter(this.addressInRange);
     };
 
-    private addressInRange = (addr: number): boolean => {
+    /**
+     * Returns true iff the given address is within the memory range of the currently loaded file.
+     *
+     * @param addr the address to query.
+     */
+    private addressInRange = (addr: Address): boolean => {
         const notTooLow = addr >= this.segmentBaseAddress;
         const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.disMeta.contentStartOffset();
         return notTooLow && notTooHigh;
     };
 
-    needsComment = (addr: number) => this.generateComments(addr).length === 0;
+    needsComment = (addr: Address) => this.generateComments(addr).length === 0;
 
-    get currentAddress(): number {
+    get currentAddress(): Address {
         return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
     }
 }
@@ -1075,5 +1075,6 @@ export type {
     Dialect,
     Directive,
     Precept,
-    Address
+    Address,
+    JumpTargetFetcher
 };
