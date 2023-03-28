@@ -43,7 +43,9 @@ function DetailRenderer(props: {ae: ActionExecutor}) {
         {detail.tfield.map((tl, i) => {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
-                    return <span className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
+                    // add id if this is an address
+                    let extra = (tup[0].indexOf("addr") === -1) ? {} : {id:"M_" + tup[1]};
+                    return <span {...extra} className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
                 })}
             </div>;
         })}
