@@ -6,7 +6,7 @@ import {
     ByteDefinitionPrecept,
     DisassemblyMeta,
     DisassemblyMetaImpl,
-    JumpTargetFetcher,
+    JumpTargetFetcher, LabelsComments,
     mkLabels,
     VectorDefinitionPrecept,
 } from "./asm";
@@ -32,8 +32,7 @@ const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => {
         [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
         [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
     ]
-}
-
+};
 
 /** VIC-20 cart image sniffer. */
 const VIC20_CART = new CartSniffer(
@@ -44,10 +43,9 @@ const VIC20_CART = new CartSniffer(
     new DisassemblyMetaImpl(
         VIC20_BASE_ADDRESS_OFFSET,
         VIC20_COLD_VECTOR_OFFSET,
-        VIC20_WARM_VECTOR_OFFSET,
         2,
         [
-            new ByteDefinitionPrecept(MAGIC_OFFSET, A0CBM.length, mkLabels("cartSig")),
+            new ByteDefinitionPrecept(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
             new VectorDefinitionPrecept(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
             new VectorDefinitionPrecept(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
             new VectorDefinitionPrecept(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),

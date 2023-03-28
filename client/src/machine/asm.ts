@@ -606,16 +606,6 @@ interface DisassemblyMeta {
     baseAddress(fb: FileBlob): number;
 
     /**
-     * The byte offset at which the cold reset vector resides.
-     */
-    get resetVectorOffset(): number;
-
-    /**
-     * The byte offset at which the nmi reset vector resides.
-     */
-    get nmiVectorOffset(): number;
-
-    /**
      * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
      * @param fb the fileblob.
      */
@@ -713,11 +703,10 @@ type JumpTargetFetcher = (fb:FileBlob) => [Address, LabelsComments][];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
     /** A bit stinky - should never be used and probably not exist. */
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, 0, [], (fb) => []);
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => []);
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
-    private readonly _nmiVectorOffset: number;
     private readonly _contentStartOffset: number;
     private readonly precepts: { [id: number]: Precept; };
     private readonly jumpTargetFetcher: JumpTargetFetcher;
@@ -725,7 +714,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     constructor(
         baseAddressOffset: number,
         resetVectorOffset: number,
-        nmiVectorOffset: number,
         contentStartOffset: number,
         precepts: Precept[],
         getJumpTargets: JumpTargetFetcher,
@@ -736,7 +724,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
         // keep the offsets
         this._resetVectorOffset = resetVectorOffset;
-        this._nmiVectorOffset = nmiVectorOffset;
         this.precepts = {};
         for (let i = 0; i < precepts.length; i++) {
             const precept = precepts[i];
@@ -747,14 +734,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
     baseAddress(fb: FileBlob): number {
         return fb.readVector(this._baseAddressOffset);
-    }
-
-    get resetVectorOffset(): number {
-        return this._resetVectorOffset;
-    }
-
-    get nmiVectorOffset(): number {
-        return this._nmiVectorOffset;
     }
 
     contentStartOffset(): number {

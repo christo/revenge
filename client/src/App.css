@@ -161,7 +161,7 @@ body {
 .comment {
   display: inline-block;
   position: absolute;
-  left: 60ch;
+  left: 80ch;
   font-weight: normal;
   color: #a29a7a;
 }
