@@ -2,6 +2,8 @@
 
 Reverse Engineering Environment
 
+**Project Status**: _pre alpha_ (it might just work sometimes)
+
 The idea of this project is a web-based reverse engineering environment with very small 
 initial goals: binary file type detection and simple disassembly of 6502 machine code 
 for the Vic-20 and C64.
@@ -9,154 +11,6 @@ for the Vic-20 and C64.
 Implemented in TypeScript as a first project for learning the language.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
-
-## Design Notes
-
-Machine language basic loaders often use base 10 data sequences of bytes. This is a
-low compression format. Higher radix formats can be used as strings, rem comments or
-some other transport format and the encoding of the instruction data can be a custom,
-variable-length compression format. 
-
-Peep-hole optimiser. 
-See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
-
-
-Patchy comprehensions - in a given disassembly, is the byte literal treated as a 
-zero-page address? If so, or if it is a 16-bit address for, say, a load or store,
-is there some kernal symbol for that address or is it a JSR destination?
-
-Run small trial executions in the background to score various areas as code or data.
-Detect code sequences that modify code (self-modifying code is harder to understand, 
-although if the only change during simulation is to a memory address that is read from,
-and not thereafter jumped to or used as an index for a branch, signs point to likely
-separation between code and data).
-
-Try to make this multipronged analysis somewhat automatic so the user can just 
-confirm simple hunches or heuristic interpretations.
-
-### Pattern Recogniser and Macro Synthesiser
-
-* The long conditional branch, [64tass supports it](https://tass64.sourceforge.net/#branch-long)
-* Register stack save, restore
-* Infinite unconditional loop
-* Block of zeroes
-* Block of pattern repeat
-
-### Canonicalisation
-
-The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
-forms to be recognised. In the case of character data, the canonical form might make the reverse 
-form equivalent. In the case of code, the canonical form will have equivalences that, for example
-use the y register instead of the x register, all else being equal. Canonical forms for code may
-execute in a different number of cycles or use a different number of bytes or have instructions
-in a different order (some design is required to analyse alternate orderings with preservation
-of semantics). Canonicalisation is a form of program transformation where the goal is to identify 
-use-case-specific essence. 
-
-## Interactive Disassembly
-
-While as much detection as possible is ideal, detection cannot be perfect and all designation
-options should be selectable by the user.
-
-* Mark self-modifying code
-* Mark block or line
-* Macro extraction
-* Expression synthesis
-* Symbol definition
-* Comments, labels, alternate literal forms including escape characters
-
-## Assembly Dialects
-
-Dialects should define equivalent alternative generation options for particular parts and the user can choose which  
-suits the given part. Also, guesses should be smart. 
-
-A command line required to assemble the file in a given assembler should be provided in a comment at the top of the 
-generated output (this implies the filename must also be specified). CPU designation and, system symbol imports etc. 
-can only be specified on the command line or by environment variables on some assemblers as opposed to having 
-assembler  directives for them. While trying not to get into OS-specifics, command-lines are necessarily going to be 
-OS-specific.
-
-Within a dialect, different options may be selectable in a config form, so preferred output
-styling can be tweaked.
-
-The disassembly of the C64 Kernal and friends 
-
-Assembler dialects being considered:
-
-### Vasm "Oldstyle"
-
-[Oldstyle](http://sun.hasenbraten.de/vasm/release/vasm_6.html) is one of the supported dialects in vasm, Ben Eater's choice. 
-
-* Top of docs: http://sun.hasenbraten.de/vasm/release/vasm.html
-* Very simple syntax, like ancient 6502 source code
-* strict-columnar syntax compared to its _Standard Syntax_
-* Within this style, various syntax options are available, as per
-  [the documentation](http://sun.hasenbraten.de/vasm/release/vasm_6.html)
-which permit some deviations from the default oldstyle syntax. Of the
-options that affect correct parsing, most vary the syntax towards
-common assembly syntax found in the most popular assemblers such as Kick.
-
-Some noteworthy features of Vasm "oldstyle":
-
-* Supports Z80 but there are a few constraints on certain directives
-* Many directives have several variants and aliases
-* labels must begin in the first column and the trailing `:` is optional, 
-however in Vasm's `Standard` syntax, labels do not have to start on the first 
-column but **must** have a trailing `:`, therefore conform to both by 
-generating labels at column 0 and always adding the `:`
-* Anonymous labels, which can be more legible for local refs
-* Section protection - most useful for read-only for carts and roms
-* operands must be separated from the mnemonic by whitespace
-* line comment prefix is `;`
-* hex literals are denoted by a `$` prefix
-* PC assignment on 6502 can be done as `* = $12af` (Z80 uses `$`), matching 
-general symbol assignment (also `org` form) 
-* `.addr $1234` is a 16 bit data declaration that respects target endianness
-* `.blk $01,$ff` fills 256 bytes with the value $01
-* String and word literals
-* Binary includes (useful for designated or detected binary blocks like `.sid` 
-chunks) or common graphics formats.
-* Macro definition and invocation
-* `repeat expr` and `endrepeat` will repeat a given block of code `expr` times
-
-### Kick Assembler
-
-[Kick Assembler](http://theweb.dk/KickAssembler/Main.html) by Mads Nielsen is free, although closed source, it
-is free to use and it one of the most popular assemblers in the C64 community mostly for its rich 
-scripting-language-like assembler directives and macros.
-  
-* closed source
-* very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be hand-coded 
-  rather than generated.
-
-### Others: 
-
-* [64tass](https://tass64.sourceforge.net/)
-* [Acme](https://sourceforge.net/projects/acme-crossass/)
-* [DASM](https://dasm-assembler.github.io/)
-* [Easy6502](http://skilldrick.github.io/easy6502/) [GitHub](https://github.com/skilldrick/easy6502)
-* [xa65](http://www.floodgap.com/retrotech/xa/)
-* [ca65](https://cc65.github.io/doc/ca65.html) (part of [cc65](https://www.cc65.org/))
-
-### Common Dialect Variations
-
-Assemblers may accept a lot of syntax beyond the minimum required for generating disassembly, for example, macros 
-and includes. Ultimately it would be great to be able to synthesise macros from binaries, but at first, only the
-minimum necessary syntax may be supported.
-
-* line comment prefix character
-* legal label rules, e.g.: 
-  * no mnemonic prefix allowed
-  * must start on column 0 and mnemonics must be indented
-  * must end in a colon (or not)
-* program counter assignment:
-  * `ORG $8000` or
-  * `* = $8000`
-* hex/bin/oct/dec/ascii/petscii literals syntax/support
-* data declaration
-  * individual bytes
-  * word support etc.
-  * block fill
 
 ## Features 
 
@@ -170,10 +24,10 @@ minimum necessary syntax may be supported.
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
 * assembly syntax highlighting
 * Test suite
-* Decode BASIC programs
+* Decode BASIC programs on VIC-20 and C64 (poorly)
 * High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated 
 by [Michael Steil](https://pagetable.com/) of
-[The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame. 
+[The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
 
 ## TODO
 
@@ -250,6 +104,154 @@ more common assembler syntax dialects. The following table shows estimations, no
 | Oric, Atari 8-bit       | ?           | 6502       | 
 | Gameboy series          | ?           | Z80*       |
 | VZ-200 / VZ-300 / Laser | ?           | Z80        |
+
+## Design Notes
+
+Machine language basic loaders often use base 10 data sequences of bytes. This is a
+low compression format. Higher radix formats can be used as strings, rem comments or
+some other transport format and the encoding of the instruction data can be a custom,
+variable-length compression format.
+
+Peep-hole optimiser.
+See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
+
+
+Patchy comprehensions - in a given disassembly, is the byte literal treated as a
+zero-page address? If so, or if it is a 16-bit address for, say, a load or store,
+is there some kernal symbol for that address or is it a JSR destination?
+
+Run small trial executions in the background to score various areas as code or data.
+Detect code sequences that modify code (self-modifying code is harder to understand,
+although if the only change during simulation is to a memory address that is read from,
+and not thereafter jumped to or used as an index for a branch, signs point to likely
+separation between code and data).
+
+Try to make this multipronged analysis somewhat automatic so the user can just
+confirm simple hunches or heuristic interpretations.
+
+### Pattern Recogniser and Macro Synthesiser
+
+* The long conditional branch, [64tass supports it](https://tass64.sourceforge.net/#branch-long)
+* Register stack save, restore
+* Infinite unconditional loop
+* Block of zeroes
+* Block of pattern repeat
+
+### Canonicalisation
+
+The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
+forms to be recognised. In the case of character data, the canonical form might make the reverse
+form equivalent. In the case of code, the canonical form will have equivalences that, for example
+use the y register instead of the x register, all else being equal. Canonical forms for code may
+execute in a different number of cycles or use a different number of bytes or have instructions
+in a different order (some design is required to analyse alternate orderings with preservation
+of semantics). Canonicalisation is a form of program transformation where the goal is to identify
+use-case-specific essence.
+
+## Interactive Disassembly
+
+While as much detection as possible is ideal, detection cannot be perfect and all designation
+options should be selectable by the user.
+
+* Mark self-modifying code
+* Mark block or line
+* Macro extraction
+* Expression synthesis
+* Symbol definition
+* Comments, labels, alternate literal forms including escape characters
+
+## Assembly Dialects
+
+Dialects should define equivalent alternative generation options for particular parts and the user can choose which  
+suits the given part. Also, guesses should be smart.
+
+A command line required to assemble the file in a given assembler should be provided in a comment at the top of the
+generated output (this implies the filename must also be specified). CPU designation and, system symbol imports etc.
+can only be specified on the command line or by environment variables on some assemblers as opposed to having
+assembler  directives for them. While trying not to get into OS-specifics, command-lines are necessarily going to be
+OS-specific.
+
+Within a dialect, different options may be selectable in a config form, so preferred output
+styling can be tweaked.
+
+The disassembly of the C64 Kernal and friends
+
+Assembler dialects being considered:
+
+### Vasm "Oldstyle"
+
+[Oldstyle](http://sun.hasenbraten.de/vasm/release/vasm_6.html) is one of the supported dialects in vasm, Ben Eater's choice.
+
+* Top of docs: http://sun.hasenbraten.de/vasm/release/vasm.html
+* Very simple syntax, like ancient 6502 source code
+* strict-columnar syntax compared to its _Standard Syntax_
+* Within this style, various syntax options are available, as per
+  [the documentation](http://sun.hasenbraten.de/vasm/release/vasm_6.html)
+  which permit some deviations from the default oldstyle syntax. Of the
+  options that affect correct parsing, most vary the syntax towards
+  common assembly syntax found in the most popular assemblers such as Kick.
+
+Some noteworthy features of Vasm "oldstyle":
+
+* Supports Z80 but there are a few constraints on certain directives
+* Many directives have several variants and aliases
+* labels must begin in the first column and the trailing `:` is optional,
+  however in Vasm's `Standard` syntax, labels do not have to start on the first
+  column but **must** have a trailing `:`, therefore conform to both by
+  generating labels at column 0 and always adding the `:`
+* Anonymous labels, which can be more legible for local refs
+* Section protection - most useful for read-only for carts and roms
+* operands must be separated from the mnemonic by whitespace
+* line comment prefix is `;`
+* hex literals are denoted by a `$` prefix
+* PC assignment on 6502 can be done as `* = $12af` (Z80 uses `$`), matching
+  general symbol assignment (also `org` form)
+* `.addr $1234` is a 16 bit data declaration that respects target endianness
+* `.blk $01,$ff` fills 256 bytes with the value $01
+* String and word literals
+* Binary includes (useful for designated or detected binary blocks like `.sid`
+  chunks) or common graphics formats.
+* Macro definition and invocation
+* `repeat expr` and `endrepeat` will repeat a given block of code `expr` times
+
+### Kick Assembler
+
+[Kick Assembler](http://theweb.dk/KickAssembler/Main.html) by Mads Nielsen is free, although closed source, it
+is free to use and it one of the most popular assemblers in the C64 community mostly for its rich
+scripting-language-like assembler directives and macros.
+
+* closed source
+* very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be hand-coded
+  rather than generated.
+
+### Others:
+
+* [64tass](https://tass64.sourceforge.net/)
+* [Acme](https://sourceforge.net/projects/acme-crossass/)
+* [DASM](https://dasm-assembler.github.io/)
+* [Easy6502](http://skilldrick.github.io/easy6502/) [GitHub](https://github.com/skilldrick/easy6502)
+* [xa65](http://www.floodgap.com/retrotech/xa/)
+* [ca65](https://cc65.github.io/doc/ca65.html) (part of [cc65](https://www.cc65.org/))
+
+### Common Dialect Variations
+
+Assemblers may accept a lot of syntax beyond the minimum required for generating disassembly, for example, macros
+and includes. Ultimately it would be great to be able to synthesise macros from binaries, but at first, only the
+minimum necessary syntax may be supported.
+
+* line comment prefix character
+* legal label rules, e.g.:
+  * no mnemonic prefix allowed
+  * must start on column 0 and mnemonics must be indented
+  * must end in a colon (or not)
+* program counter assignment:
+  * `ORG $8000` or
+  * `* = $8000`
+* hex/bin/oct/dec/ascii/petscii literals syntax/support
+* data declaration
+  * individual bytes
+  * word support etc.
+  * block fill
 
 
 ## Reverse Engineering Tools
