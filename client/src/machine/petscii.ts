@@ -23,7 +23,7 @@ class Petscii {
      * @param unicode the unicode equivalent character (approximates graphics), defaults to vice.
      * @param description explanation of the meaning of the character, defaults to unicode.
      */
-    private reg(byte:number, vice:string, unicode?:string, description?:string) {
+    private reg(byte: number, vice: string, unicode?: string, description?: string) {
         // paranoia = on
         if (byte < 0 || byte > 255) {
             throw Error(`not a byte: ${byte}`);
@@ -305,7 +305,8 @@ class Petscii {
         C64.reg(255, "~", "pi", "pi");
         return C64;
     }
-    static C64:Petscii = Petscii.makeC64();
+
+    static C64: Petscii = Petscii.makeC64();
 
 }
 
