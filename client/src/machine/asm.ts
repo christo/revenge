@@ -671,8 +671,6 @@ export class LabelsComments {
     private readonly _labels: string[];
     private readonly _comments: string[];
 
-    static EMPTY = new LabelsComments();
-
     constructor(labels: string[] | string = [], comments: string[] | string = []) {
         this._labels = ((typeof labels === "string") ? [labels] : labels).filter(s => s.length > 0);
         this._comments = ((typeof comments === "string") ? [comments] : comments).filter(s => s.length > 0);
