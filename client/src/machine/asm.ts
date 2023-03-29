@@ -391,12 +391,11 @@ class DefaultDialect implements Dialect {
      * @private
      */
     private renderOperand(il: FullInstruction): string {
-        const i: Instruction = il.instruction as Instruction;
         const hw = () => "$" + hex16(il.operand16());
         const hb = () => this.hexByteText(il.firstByte);
 
         let operand = "";
-        switch (i.mode) {
+        switch (il.instruction.mode) {
             case MODE_ACCUMULATOR:
                 // operand = "a";
                 operand = ""; // implied accumulator not manifest
