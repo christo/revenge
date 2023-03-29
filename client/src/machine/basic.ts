@@ -12,12 +12,10 @@ class BasicDecoder {
     private name: string;
     private minor: number;
     private major: number;
-    private tokens: string[];
+    private readonly tokens: string[];
 
     private static readonly LOAD_ADDRESS_OFFSET = 0;
     private static readonly CONTENT_START_OFFSET = 2;
-    private static readonly END_OF_LINE_BYTE = 0;
-    private static readonly END_OF_PROGRAM_WORD = 0;
 
     constructor(name: string, minor: number, major: number) {
         this.name = name;
@@ -44,6 +42,9 @@ class BasicDecoder {
         while (!finished) {
             if (i - offset + baseAddress === nextLineAddr) {
                 nextLineAddr = fb.readVector(i);
+                if (nextLineAddr === 0) {
+                    throw Error("tripped end of program unexpectedly"); // shouldn't happen
+                }
                 i += 2;
                 lineNumber = fb.readVector(i); // not really a vector but a 16 bit value
                 i += 2;
@@ -57,6 +58,7 @@ class BasicDecoder {
             } else if (eol) {
                 lines.push([["addr", hex16(nextLineAddr)], ["line", line]]);
             } else {
+                // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
                 if (token === undefined) {
                     token = Petscii.PETSCII_C64[b];
