@@ -588,8 +588,10 @@ class Environment {
  */
 interface DisassemblyMeta {
     /**
-     * The address the file should be loaded into. Some images may have multiple segments loaded into
-     * different addresses and some file formats accommodate this.
+     * The address the file should be loaded into.
+     * In the future, we need to support multiple segments loaded into
+     * different addresses; some file formats accommodate this.
+     *
      * @param fb the file to get the vector from
      */
     baseAddress(fb: FileBlob): number;
@@ -931,7 +933,7 @@ class Disassembler {
      */
     private addressInRange = (addr: Address): boolean => {
         const notTooLow = addr >= this.segmentBaseAddress;
-        const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.disMeta.contentStartOffset();
+        const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.originalIndex;
         return notTooLow && notTooHigh;
     };
 
