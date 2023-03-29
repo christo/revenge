@@ -335,8 +335,7 @@ class DefaultDialect implements Dialect {
     private taggedCode(mi: Instruction, fil: FullInstructionLine): TagSeq {
         // add the mnemonic tag and also the mnemonic category
         const mnemonic: Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
-        const il = fil.fullInstruction;
-        const operandText = this.renderOperand(il).trim();
+        const operandText = this.renderOperand(fil.fullInstruction).trim();
         if (operandText.length > 0) {
             return [mnemonic, [`opnd ${mi.mode.code}`, operandText]]
         } else {
