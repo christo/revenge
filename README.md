@@ -4,11 +4,11 @@ Reverse Engineering Environment
 
 **Project Status**: _pre alpha_ (it might just work sometimes)
 
-The idea of this project is a web-based reverse engineering environment with very small 
+The idea is a web-based reverse engineering environment with very small 
 initial goals: binary file type detection and simple disassembly of 6502 machine code 
 for the Vic-20 and C64.
 
-Implemented in TypeScript as a first project for learning the language.
+It's implemented in TypeScript as a first project for learning the language.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
