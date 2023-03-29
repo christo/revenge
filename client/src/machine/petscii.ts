@@ -34,7 +34,7 @@ class Petscii {
         if (unicode && unicode.length === 0) {
             throw Error("unicode was empty");
         }
-        if (description && description.length == 0) {
+        if (description && description.length === 0) {
             throw Error("description was empty");
         }
         unicode = unicode || vice;
