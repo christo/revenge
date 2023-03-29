@@ -39,8 +39,11 @@ class BasicDecoder {
         let finished = false;
         let lines: ActionResult = []
         let line = "";
+        let quoteMode = false;
         while (!finished) {
-            if (i - offset + baseAddress === nextLineAddr) {
+            const newLine = i - offset + baseAddress === nextLineAddr;
+            if (newLine) {
+                quoteMode = false;
                 nextLineAddr = fb.readVector(i);
                 if (nextLineAddr === 0) {
                     throw Error("tripped end of program unexpectedly"); // shouldn't happen
@@ -60,8 +63,12 @@ class BasicDecoder {
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
-                if (token === undefined) {
-                    token = Petscii.PETSCII_C64[b];
+                if (quoteMode || token === undefined) {
+                    // in quotemode we never want the basic keyword to appear
+                    token = Petscii.C64.vice[b];
+                }
+                if (token === '"') {
+                    quoteMode = !quoteMode;
                 }
                 line += token;
             }
