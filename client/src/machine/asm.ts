@@ -461,8 +461,7 @@ class DefaultDialect implements Dialect {
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         const comments: Tag = ["comment", this.renderComments(fil.labelsComments.comments)];
         const labels: Tag = ["label", this.renderLabels(fil.labelsComments.labels)];
-        const instruction = fil.fullInstruction.instruction as Instruction;
-        return [comments, labels].concat(this.taggedCode(instruction, fil));
+        return [comments, labels, ...this.taggedCode(fil.fullInstruction.instruction, fil)];
     }
 
     directive(directive: Directive, dis: Disassembler): TagSeq {
@@ -554,17 +553,9 @@ class FullInstructionLine extends InstructionBase {
         return this._fullInstruction;
     }
 
-    getBytes(): number[] {
-        return this._fullInstruction.getBytes();
-    }
-
-    getLength(): number {
-        return this._fullInstruction.getLength();
-    }
-
-    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
-        return dialect.code(this, dis);
-    }
+    getBytes = (): number[] => this._fullInstruction.getBytes();
+    getLength = (): number => this._fullInstruction.getLength();
+    disassemble = (dialect: Dialect, dis: Disassembler): TagSeq => dialect.code(this, dis);
 }
 
 /**
