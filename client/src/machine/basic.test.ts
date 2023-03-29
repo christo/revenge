@@ -1,5 +1,5 @@
-import {FileBlob, FileLike} from "./FileBlob";
-import {BasicDecoder, CBM_BASIC_2_0} from "./basic";
+import {FileBlob} from "./FileBlob";
+import {CBM_BASIC_2_0} from "./basic";
 import * as fs from "fs";
 
 test("basic load", () => {

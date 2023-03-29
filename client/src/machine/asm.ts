@@ -1,6 +1,6 @@
 // assembler / disassembler stuff
 
-import {assertByte, hex16, hex8, unToSigned} from "../misc/BinUtils";
+import {assertByte, hex16, hex8, unToSigned,Byteable, Address, TODO} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -22,15 +22,6 @@ import {
     Mos6502
 } from "./mos6502";
 import {BlobToActions, Detail, UserAction} from "./revenge";
-
-const TODO = (mesg = "") => {
-    throw Error(`Not Implemented ${mesg}`)
-};
-
-/**
- * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
- */
-type Address = number;
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -476,15 +467,6 @@ class DefaultDialect implements Dialect {
 
 }
 
-/** Has a byte correspondence */
-interface Byteable {
-    /** The possibly empty array of byte values. */
-    getBytes(): number[];
-
-    /** Length in bytes, must not be negative. */
-    getLength(): number;
-}
-
 /**
  * Assembler directive. Has a source form, may produce bytes during assembly and may be synthesised during
  * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
@@ -842,9 +824,6 @@ class Disassembler {
             labels = this.generateLabels(this.currentAddress);
         }
         let comments: Array<string> = [];
-        if (this.needsComment(this.currentAddress)) {
-            comments = this.generateComments(this.currentAddress);
-        }
         const precept = this.disMeta.getPrecept(this.currentIndex);
         if (precept !== undefined) {
             this.currentIndex += precept.length;
@@ -908,20 +887,17 @@ class Disassembler {
     }
 
     /**
-     * Returns zero or more comments that belong at the given address.
-     */
-    generateComments = (a: Address) => this.jumpTargets().filter(x => x === a).map(x => `called from ${hex16(x)}`);
-
-    /**
      * Determine all jump targets both statically defined and implied by the given sequence of instructions. Only
-     * those targets that lie within our address range are returned.
+     * those targets that lie within the address range of our loaded binary are returned.
      */
-    private jumpTargets = (instructions: FullInstruction[] = []): Address[] => {
-        // collect reset vector and nmi vector as jump targets
-        const fromDm = this.disMeta.getJumpTargets(this.fb).map(t => t[0]);
-        const jumps = instructions.filter(inst => inst.instruction.op.isJump).map(fi => fi.operand16());
+    private jumpTargets = (instructions: [Address, FullInstruction][]): Address[] => {
+        // collect predefined jump targets
+        const fromDm = this.predefLc.map(t => t[0]);
+        // collect targets of all current jump instructions
+        // TODO fix bug, branches have an 8 bit signed relative jump
+        const dests:Address[] = instructions.filter(addrInst => addrInst[1].instruction.op.isJump).map(j => j[1].resolveOperandAddress(j[0]));
         // for all jump instructions, collect the destination address
-        const allJumpTargets = fromDm.concat(jumps);
+        const allJumpTargets = fromDm.concat(dests);
         // for all such addresses, filter those in range of the loaded binary
         return allJumpTargets.filter(this.addressInRange);
     };
@@ -936,8 +912,6 @@ class Disassembler {
         const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.originalIndex;
         return notTooLow && notTooHigh;
     };
-
-    needsComment = (addr: Address) => this.generateComments(addr).length === 0;
 
     get currentAddress(): Address {
         return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
@@ -1030,7 +1004,7 @@ export {
     ByteDefinitionPrecept,
     VectorDefinitionPrecept,
     mkLabels,
-    mkComments,
+    mkComments
 };
 export type {
     BlobSniffer,
@@ -1038,11 +1012,9 @@ export type {
     TagSeq,
     DisassemblyMeta,
     BlobToActions,
-    Byteable,
     Instructionish,
     Dialect,
     Directive,
     Precept,
-    Address,
     JumpTargetFetcher
 };

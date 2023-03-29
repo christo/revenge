@@ -1,6 +1,6 @@
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
-import {hex16} from "../misc/BinUtils";
+import {hex16} from "./core";
 import {ActionResult} from "./revenge";
 
 type Token = [number, string];

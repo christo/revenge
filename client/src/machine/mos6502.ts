@@ -7,8 +7,7 @@
 
  */
 
-import {assertByte} from "../misc/BinUtils";
-import {Byteable} from "./asm";
+import {Address, Byteable, TODO, assertByte} from "./core";
 
 class AddressingMode {
     code: string;
@@ -31,7 +30,7 @@ class Op {
     description: string;
     /** mnemonic category */
     cat: string;
-    private _isJump: boolean;
+    private readonly _isJump: boolean;
 
     constructor(mnemonic: string, description: string, cat: string, isJump = false) {
         this.mnemonic = mnemonic;
@@ -551,6 +550,16 @@ class FullInstruction implements Byteable {
 
     getLength(): number {
         return this.instruction.getLength();
+    }
+
+    /**
+     * Resolve the operand as an address, if relevant, relative to the given program counter.
+     *
+     * @param pc address to resolve to if this addressing mode is pc-relative
+     */
+    resolveOperandAddress(pc:Address) {
+        TODO()
+        return 0;
     }
 }
 

@@ -15,7 +15,7 @@ import {
     Tag
 } from "./asm";
 import {Mos6502} from "./mos6502";
-import {asHex, hex16, hex8} from "../misc/BinUtils";
+import {asHex, hex16, hex8} from "./core";
 import {ActionFunction, Detail, UserAction} from "./revenge";
 import {CBM_BASIC_2_0} from "./basic";
 

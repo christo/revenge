@@ -11,7 +11,7 @@ import {
     mkLabels,
     VectorDefinitionPrecept
 } from "./asm";
-import {stringToArray} from "../misc/BinUtils";
+import {stringToArray} from "./core";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
 import {BlobToActions} from "./revenge";
 
