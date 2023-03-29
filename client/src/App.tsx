@@ -202,9 +202,9 @@ function QuickLoads(props: {setFile: (f: FileLike) => void}) {
     };
 
     if (error) {
-        return (<div>
-            Error: {error.message}
-        </div>);
+        // no server, no quickloads, no big deal
+        console.log(`error getting a response from the server: ${error}`);
+        return null;
     } else if (!isLoaded) {
         return <CircularProgress />;
     } else {
