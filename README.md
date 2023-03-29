@@ -33,8 +33,10 @@ by [Michael Steil](https://pagetable.com/) of
 
 * better styling for BASIC decoder
 * improve cart sniffers: look at the warm and cold jump vectors to see if they land in-range and at _probable code_
-* audit inter-module dependency graph, remove cycles, untangle
+* make random access and modification to disassembled instruction list
+  * need to be able to replace a sequence of instructions into a byte declaration
 * use ts-md5 for md5 hash generation
+* audit inter-module dependency graph, remove cycles, untangle
 * handle file uploads in the background 
   * only bother with files that have an unseen hash
 * use c64ref submodule for petscii rendering
@@ -42,9 +44,7 @@ by [Michael Steil](https://pagetable.com/) of
   * test coverage
   * charset
   * rewrite BASIC decoder using c64ref data
-* default to best view (maybe use sniff score)
 * Make entire disassembly asynchronous (rather than n-pass)
-* bug - reset vector should force byte-precise assembly designation
 * data section detection - probabilistic
   * human-designated
   * detected score
