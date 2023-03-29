@@ -24,7 +24,7 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
 * assembly syntax highlighting
 * Test suite
-* Decode BASIC programs on VIC-20 and C64 (poorly)
+* Decode BASIC programs on VIC-20 and C64
 * High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated 
 by [Michael Steil](https://pagetable.com/) of
 [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
