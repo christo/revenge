@@ -119,9 +119,16 @@ body {
 }
 
 /* lines with a branch instruction and an absolute operand */
-.line:has(.mn.br):has(.opnd.abs) {
-  border: red dotted medium;
+.line:has(.mn.br):has(.opnd.abs) > .opnd.abs:hover {
+  text-decoration-line: underline;
+  cursor: pointer;
 }
+
+.line:has(.mn.br):has(.opnd.rel) > .opnd.rel:hover {
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
 
 .opnd.abs:hover:hover {
   text-decoration-line: underline;
