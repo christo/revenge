@@ -89,6 +89,7 @@ body {
   margin-top: 3px;
 }
 
+/* hexadecimal location */
 .hloc {
   background-color: #a3b3d5;
   color: #313131;
@@ -97,6 +98,7 @@ body {
   border-radius: 2px;
   font-weight: bold;
 }
+
 /* Program counter token */
 .pct {
   font-weight: bold;
@@ -113,7 +115,7 @@ body {
 }
 
 .basic > .addr {
-  display: none;
+  display: none; /* Don't want to display line addresses in BASIC */
 }
 
 .line {
