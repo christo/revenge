@@ -7,10 +7,11 @@ import {
     DisassemblyMeta,
     DisassemblyMetaImpl,
     JumpTargetFetcher, LabelsComments,
-    mkLabels,
+    mkLabels, TagSeq,
     VectorDefinitionPrecept,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
+import {BasicDecoder, CBM_BASIC_2_0} from "./basic";
 
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
@@ -77,7 +78,7 @@ class Vic20Basic implements BlobSniffer {
 
     constructor(memory: MemoryConfiguration) {
         this.memory = memory;
-        this.desc = "Unexpanded VIC";
+        this.desc = "Unexpanded VIC-20";
         this.name = "BASIC prg";
         this.tags = ["basic", "vic20"];
     }
@@ -91,7 +92,33 @@ class Vic20Basic implements BlobSniffer {
         const byte0 = fb.bytes.at(0) === (this.memory.basicStart & 0xff);
         const byte1 = fb.bytes.at(1) === ((this.memory.basicStart & 0xff00) >> 8);
 
-        return (byte0 && byte1) ? 1.2 : 0.8;
+        let isBasic = (byte0 && byte1) ? 1.2 : 0.8;
+
+        // try decoding it as basic
+        const decoded = CBM_BASIC_2_0.decode(fb);
+        let lastNum = -1;
+        let lastAddr = -1;
+        decoded.forEach((i:TagSeq) => {
+            const lnumStr = i.find(t => t[0] === "lnum");
+            let addrStr = i.find(t => t[0] === "addr");
+            if (lnumStr !== undefined && addrStr !== undefined) {
+                let thisNum = parseInt(lnumStr[1]);
+                if (lastNum !== -1 && lastNum >= thisNum) {
+                    // decrease in basic line numbers
+                    isBasic *= 0.5;
+                }
+
+                if (lastAddr !== -1 && lastAddr >= parseInt(addrStr[1],16)) {
+                    // next line address is allegedly lower? This ain't basic
+                    isBasic *= 0.3;
+                }
+                lastNum = thisNum;
+            } else {
+                throw Error("line number or line addr missing!");
+            }
+
+        })
+        return isBasic;
     }
 }
 

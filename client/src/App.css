@@ -79,6 +79,11 @@ body {
   color: #e3d5c9;
 }
 
+.actionResult  .lnum {
+  font-family: "Martian Mono", monospace;
+  margin-top: 3px;
+}
+
 .actionResult  .line {
   font-family: "Martian Mono", monospace;
   margin-top: 3px;

@@ -51,7 +51,7 @@ class BasicDecoder {
                 i += 2;
                 lineNumber = fb.readVector(i); // not really a vector but a 16 bit value
                 i += 2;
-                line = lineNumber.toString(10) + " ";
+                line = " "; // the space after the line number
             }
             let b = fb.bytes.at(i++);
             const eol = b === 0;
@@ -59,7 +59,7 @@ class BasicDecoder {
                 console.error("byte no existo");
                 finished = true;
             } else if (eol) {
-                lines.push([["addr", hex16(nextLineAddr)], ["line", line]]);
+                lines.push([["addr", hex16(nextLineAddr)], ["lnum", lineNumber.toString(10)], ["line", line]]);
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
@@ -83,6 +83,7 @@ class BasicDecoder {
 const CBM_BASIC_2_0 = new BasicDecoder("Commodore BASIC", 2, 0);
 
 const TOKENS: Token[] = [
+    [32, " "],
     [128, "END"],
     [129, "FOR"],
     [130, "NEXT"],

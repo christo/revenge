@@ -79,7 +79,8 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
 
     for (let i = 0; i < BASICS.length; i++) {
-        if (BASICS[i].sniff(fileBlob) > 1) {
+        const basicSmell = BASICS[i].sniff(fileBlob);
+        if (basicSmell > 1) {
             const ta = printBasic(BASICS[i], fileBlob);
             ta.actions.push(hd);
             return ta;
@@ -96,6 +97,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     return {t: UNKNOWN_BLOB, actions: [hd]};
 }
 
+// Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
 const BASICS = [
     UNEXPANDED_VIC_BASIC,
     EXP03K_VIC_BASIC,
