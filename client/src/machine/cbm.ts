@@ -134,16 +134,28 @@ function wordToEndianBytes(word: number) {
 class MemoryConfiguration {
     name: string;
     basicStart: number;
+    private _shortName: string;
 
     /**
      * Create a memory configuration.
      *
      * @param name for display
      * @param basicStart 16 bit address where BASIC programs are loaded
+     * @param shortName short designation for UI
      */
-    constructor(name: string, basicStart: number) {
+    constructor(name: string, basicStart: number, shortName:string = "") {
+        // future: various independent block configurations, now: simple!
         this.name = name;
         this.basicStart = basicStart;
+        this._shortName = shortName;
+    }
+
+    /**
+     * Return a short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
+     * configuration, this can be empty. Does not need to include any machine identifier.
+     */
+    shortName():string {
+        return this._shortName;
     }
 }
 

@@ -60,11 +60,11 @@ const COMMON_MLPS = [
     prg([0x00, 0xc0]),  // 0xc000
 ];
 
-const VIC20_UNEX = new MemoryConfiguration("vic unexpanded", 0x1001);
-const VIC20_EXP03K = new MemoryConfiguration("vic 3k expansion", 0x401);
-const VIC20_EXP08K = new MemoryConfiguration("vic 8k expansion", 0x1201);
-const VIC20_EXP16K = new MemoryConfiguration("vic 16k expansion", 0x1201);
-const VIC20_EXP24K = new MemoryConfiguration("vic 24k expansion", 0x1201);
+const VIC20_UNEX = new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded");
+const VIC20_EXP03K = new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k");
+const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k");
+const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
+const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
 
 /**
  * Vic-20 BASIC
@@ -78,9 +78,9 @@ class Vic20Basic implements BlobSniffer {
 
     constructor(memory: MemoryConfiguration) {
         this.memory = memory;
-        this.desc = "Unexpanded VIC-20";
+        this.desc = `VIC-20 BASIC (${memory.shortName()})`;
         this.name = "BASIC prg";
-        this.tags = ["basic", "vic20"];
+        this.tags = ["basic", "vic20", memory.shortName()];
     }
 
     getDisassemblyMeta(): DisassemblyMeta {
