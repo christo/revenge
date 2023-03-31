@@ -33,9 +33,12 @@ by [Michael Steil](https://pagetable.com/) of
 
 * better styling for BASIC decoder
 * improve cart sniffers: look at the warm and cold jump vectors to see if they land in-range and at _probable code_
-* make random access and modification to disassembled instruction list
+* functional data structure for byte interpretation
+  * make random access and modification to disassembled instruction list (lenses?)
   * need to be able to replace a sequence of instructions into a byte declaration
-* use ts-md5 for md5 hash generation
+  * Make entire disassembly asynchronous (rather than n-pass)
+* use ts-md5 for md5 hash generation? unless there's an easy way to support SHA1 also?
+  * what do online software databases prefer? Probably md5 or sha1
 * audit inter-module dependency graph, remove cycles, untangle
 * handle file uploads in the background 
   * only bother with files that have an unseen hash
@@ -44,7 +47,6 @@ by [Michael Steil](https://pagetable.com/) of
   * test coverage
   * charset
   * rewrite BASIC decoder using c64ref data
-* Make entire disassembly asynchronous (rather than n-pass)
 * data section detection - probabilistic
   * human-designated
   * detected score
