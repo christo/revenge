@@ -37,6 +37,9 @@ by [Michael Steil](https://pagetable.com/) of
   * make random access and modification to disassembled instruction list (lenses?)
   * need to be able to replace a sequence of instructions into a byte declaration
   * Make entire disassembly asynchronous (rather than n-pass)
+* data section detection - probabilistic
+  * human-designated
+  * detected score
 * use ts-md5 for md5 hash generation? unless there's an easy way to support SHA1 also?
   * what do online software databases prefer? Probably md5 or sha1
 * handle file uploads in the background 
@@ -46,9 +49,6 @@ by [Michael Steil](https://pagetable.com/) of
   * test coverage
   * charset
   * rewrite BASIC decoder using c64ref data
-* data section detection - probabilistic
-  * human-designated
-  * detected score
 * manual choice of file type
 * introduce user abstraction well before multiple user accounts or permissions
 * dialect options - layout handles for indenting
