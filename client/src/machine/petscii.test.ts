@@ -1,4 +1,4 @@
-import {Petscii} from "../machine/petscii";
+import {Petscii} from "./petscii";
 
 test("petscii sanity test", () => {
     expect(Petscii.C64.vice.length).toBe(256);

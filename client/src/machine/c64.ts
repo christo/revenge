@@ -6,14 +6,13 @@ import {
     BlobType,
     ByteDefinitionPrecept,
     DisassemblyMetaImpl,
-    hexDumper,
     JumpTargetFetcher, LabelsComments,
     mkLabels,
     VectorDefinitionPrecept
 } from "./asm";
 import {stringToArray} from "./core";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
-import {BlobToActions} from "./revenge";
+import {BlobToActions, hexDumper} from "./api";
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
 const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", wordToEndianBytes(C64_MEMORY.basicStart));

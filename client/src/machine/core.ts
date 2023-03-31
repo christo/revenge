@@ -2,11 +2,6 @@
     Reusable components with the broadest usage domain and no dependencies.
  */
 
-/**
- * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
- */
-type Address = number;
-
 const TODO = (mesg = "") => {
     throw Error(`Not Implemented ${mesg}`)
 };
@@ -19,6 +14,11 @@ interface Byteable {
     /** Length in bytes, must not be negative. */
     getLength(): number;
 }
+
+/**
+ * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
+ */
+type Address = number;
 
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
@@ -54,4 +54,4 @@ const asHex = (b: number[]) => {
 
 export {unToSigned, assertByte, stringToArray, hex16, hex8, asHex, TODO}
 
-export type {Address, Byteable};
+export type {Byteable, Address};

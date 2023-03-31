@@ -2,7 +2,7 @@
 
 import {FileBlob} from "./FileBlob";
 import {disassemble, printBasic} from "./cbm";
-import {BlobSniffer, hexDumper, TagSeq, UNKNOWN_BLOB} from "./asm";
+import {UNKNOWN_BLOB} from "./asm";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./c64";
 import {
     COMMON_MLPS,
@@ -13,49 +13,7 @@ import {
     UNEXPANDED_VIC_BASIC,
     VIC20_CART
 } from "./vic20";
-
-/**
- * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
- * A generic displayable structure with a sequence of entries. Each entry is a sequence of
- * string tuples. The string tuple represents a name-value pair that will be rendered with
- * the name as a className and the value as the text content of a span element.
- */
-type ActionResult = TagSeq[]; // 2d array of tuples
-
-/**
- * Datastructure for all data interpretation output.
- */
-class Detail {
-    tags: string[];
-    tfield: ActionResult;
-
-    constructor(tags: string[], tfield: ActionResult) {
-        this.tags = tags;
-        this.tfield = tfield;
-    }
-}
-
-type ActionExecutor = () => Detail;
-
-/** A type for handling the result of a UserAction execution */
-type Continuation = (fo: ActionExecutor) => void;
-
-/** Holds the UI button label and function to call when the button is clicked */
-type UserAction = { label: string, f: ActionExecutor };
-
-/**
- * Holds the sniffer and the set of actions that can be taken for this type. At least one action required.
- */
-type TypeActions = { t: BlobSniffer, actions: [UserAction, ...UserAction[]]};
-
-/**
- * Encapsulation of the function for determining the set of actions that can be taken
- * given knowledge of the type and contents of a file.
- */
-type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
-
-/** Function that produces TypeActions with only a {@link FileBlob}. */
-type BlobToActions = (fileBlob: FileBlob) => TypeActions;
+import {hexDumper, TypeActions} from "./api";
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.
@@ -107,6 +65,4 @@ const BASICS = [
     C64_BASIC_PRG,
 ]
 
-
-export {sniff, Detail};
-export type {ActionFunction, TypeActions, Continuation, ActionResult, UserAction, ActionExecutor, BlobToActions}
+export {sniff};

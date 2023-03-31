@@ -39,7 +39,6 @@ by [Michael Steil](https://pagetable.com/) of
   * Make entire disassembly asynchronous (rather than n-pass)
 * use ts-md5 for md5 hash generation? unless there's an easy way to support SHA1 also?
   * what do online software databases prefer? Probably md5 or sha1
-* audit inter-module dependency graph, remove cycles, untangle
 * handle file uploads in the background 
   * only bother with files that have an unseen hash
 * use c64ref submodule for petscii rendering

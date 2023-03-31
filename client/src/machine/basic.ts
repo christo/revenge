@@ -1,7 +1,11 @@
+/*
+ Commodore BASIC
+ */
+
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
-import {ActionResult} from "./revenge";
+import {DataView} from "./api";
 
 type Token = [number, string];
 
@@ -12,6 +16,11 @@ class BasicDecoder {
     private name: string;
     private minor: number;
     private major: number;
+
+    /**
+     * Byte-indexed, sparse array.
+     * @private
+     */
     private readonly tokens: string[];
 
     private static readonly LOAD_ADDRESS_OFFSET = 0;
@@ -28,7 +37,7 @@ class BasicDecoder {
         this.tokens[tok[0]] = tok[1];
     }
 
-    decode(fb: FileBlob): ActionResult {
+    decode(fb: FileBlob): DataView {
         const offset = BasicDecoder.CONTENT_START_OFFSET;
         // assuming the load address is the first two bytes.
         const baseAddress = fb.readVector(BasicDecoder.LOAD_ADDRESS_OFFSET);
@@ -37,7 +46,7 @@ class BasicDecoder {
         let nextLineAddr = baseAddress;
         let lineNumber = 0;
         let finished = false;
-        let lines: ActionResult = []
+        let lines: DataView = []
         let line = "";
         let quoteMode = false;
         while (!finished) {

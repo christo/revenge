@@ -7,7 +7,7 @@
 
  */
 
-import {Address, Byteable, TODO, assertByte} from "./core";
+import {Byteable, TODO, assertByte, Address} from "./core";
 
 class AddressingMode {
     code: string;

@@ -7,11 +7,11 @@ import {
     DisassemblyMeta,
     DisassemblyMetaImpl,
     JumpTargetFetcher, LabelsComments,
-    mkLabels, TagSeq,
-    VectorDefinitionPrecept,
+    mkLabels, VectorDefinitionPrecept,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
-import {BasicDecoder, CBM_BASIC_2_0} from "./basic";
+import {CBM_BASIC_2_0} from "./basic";
+import {TagSeq} from "./api";
 
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
@@ -78,12 +78,12 @@ class Vic20Basic implements BlobSniffer {
 
     constructor(memory: MemoryConfiguration) {
         this.memory = memory;
-        this.desc = `VIC-20 BASIC (${memory.shortName()})`;
+        this.desc = `VIC-20 BASIC (${memory.shortName})`;
         this.name = "BASIC prg";
-        this.tags = ["basic", "vic20", memory.shortName()];
+        this.tags = ["basic", "vic20", memory.shortName];
     }
 
-    getDisassemblyMeta(): DisassemblyMeta {
+    getMeta(): DisassemblyMeta {
         return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
     }
 

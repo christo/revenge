@@ -13,7 +13,8 @@ import Menu from '@mui/material/Menu';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {ActionExecutor, Detail, sniff, TypeActions} from "./machine/revenge";
+import {sniff} from "./machine/revenge";
+import {ActionExecutor, Detail, TypeActions} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
@@ -37,14 +38,14 @@ interface FileContents {
     loading: boolean
 }
 
-function DetailRenderer(props: {ae: ActionExecutor}) {
-    const detail:Detail = props.ae();
+function DetailRenderer(props: { ae: ActionExecutor }) {
+    const detail: Detail = props.ae();
     return <div className="actionResult">
         {detail.tfield.map((tl, i) => {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     // add id if this is an address
-                    let extra = (tup[0].indexOf("addr") === -1) ? {} : {id:"M_" + tup[1]};
+                    let extra = (tup[0].indexOf("addr") === -1) ? {} : {id: "M_" + tup[1]};
                     return <span {...extra} className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
                 })}
             </div>;
@@ -52,11 +53,11 @@ function DetailRenderer(props: {ae: ActionExecutor}) {
     </div>;
 }
 
-function TabPanel(props: { children:React.ReactNode, value:number, item:number }) {
+function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
     const {children, value, item} = props;
     return (
         <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
-            {value === item && (<Box sx={{ pt: 3 }}>{children}</Box>)}
+            {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
         </div>
     );
 }
@@ -74,16 +75,16 @@ function FileDetail(props: { fb: FileBlob }) {
                 <span className="desc">{t.desc}</span>
                 {t.tags.map((tag, i) => {
                     return <Chip label={tag} size="small"
-                        key={`tag_${i}`} sx={{marginRight: 1}}
-                        variant="outlined" color="info"/>
+                                 key={`tag_${i}`} sx={{marginRight: 1}}
+                                 variant="outlined" color="info"/>
                 })}
             </div>
         </div>
         <Tabs value={action} onChange={(event: React.SyntheticEvent, newValue: number) => {
             setAction(newValue);
-        }} >
+        }}>
             {typeActions.actions.map((a, i) => {
-                return <Tab label={a.label} key={`tac_${i}`} />
+                return <Tab label={a.label} key={`tac_${i}`}/>
             })}
         </Tabs>
         {typeActions.actions.map((a, i) => (
@@ -179,25 +180,26 @@ function MenuAppBar() {
     );
 }
 
-type Error = {message:String, name:String, code:String, config:String, request:Request, response:Response};
+type Error = { message: String, name: String, code: String, config: String, request: Request, response: Response };
 
-function QuickLoads(props: {setFile: (f: FileLike) => void}) {
+function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     const [items, setItems] = useState<FileLike[]>([]);
     const [error, setError] = useState<Error>();
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
         axios.get("/quickloads", {})
-            .then(r=>{
+            .then(r => {
                 setIsLoaded(true);
                 setItems(r.data);
             })
-            .catch((err:any) => {
+            .catch((err: any) => {
                 setIsLoaded(true);
                 setError(err);
-            }).finally(() => {});
+            }).finally(() => {
+        });
 
     }, []);
-    let handleFile = (item:FileLike) => {
+    let handleFile = (item: FileLike) => {
         props.setFile(item);
     };
 
@@ -206,15 +208,16 @@ function QuickLoads(props: {setFile: (f: FileLike) => void}) {
         console.log(`error getting a response from the server: ${error}`);
         return null;
     } else if (!isLoaded) {
-        return <CircularProgress />;
+        return <CircularProgress/>;
     } else {
         return <div className="quickloads">
             <Stack direction="row" spacing={2}><p>Quickload:</p>
-            <Stack direction="column" spacing={2}>
-            {items.map((item, i) => {
-                return <Button onClick={() => handleFile(item)} size="small" variant="outlined" key={`ql_${i}`}>{item.name}</Button>
-            })}
-            </Stack>
+                <Stack direction="column" spacing={2}>
+                    {items.map((item, i) => {
+                        return <Button onClick={() => handleFile(item)} size="small" variant="outlined"
+                                       key={`ql_${i}`}>{item.name}</Button>
+                    })}
+                </Stack>
             </Stack>
         </div>;
     }
@@ -228,7 +231,7 @@ function App() {
                 <MenuAppBar/>
                 <div className="mainContent">
                     <Box sx={{display: "flex", gap: 1, justifyContent: "right"}}>
-                        <QuickLoads setFile={(f)=>setFile(f)}/>
+                        <QuickLoads setFile={(f) => setFile(f)}/>
                         <div className="dropZone">
                             <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
                         </div>

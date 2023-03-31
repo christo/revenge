@@ -1,4 +1,4 @@
-// Commodore 8-bit machine stuff
+// Commodore 8-bit machine stuff, common across machines
 
 import {FileBlob} from "./FileBlob";
 import {
@@ -9,14 +9,12 @@ import {
     Disassembler,
     DisassemblyMeta,
     Environment,
-    hexDumper,
     Instructionish,
-    PcAssign,
-    Tag
+    PcAssign
 } from "./asm";
 import {Mos6502} from "./mos6502";
-import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, Detail, UserAction} from "./revenge";
+import {Address, asHex, hex16, hex8} from "./core";
+import {ActionFunction, Detail, hexDumper, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -31,7 +29,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     let userActions: [UserAction, ...UserAction[]] = [{
         label: "disassembly",
         f: () => {
-            const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getDisassemblyMeta());
+            const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
             let detail = new Detail(["line"], [])
 
             // set the base address
@@ -113,7 +111,7 @@ class CartSniffer implements BlobSniffer {
         return fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
     }
 
-    getDisassemblyMeta(): DisassemblyMeta {
+    getMeta(): DisassemblyMeta {
         return this.disassemblyMeta;
     }
 }
@@ -133,8 +131,13 @@ function wordToEndianBytes(word: number) {
  */
 class MemoryConfiguration {
     name: string;
-    basicStart: number;
-    private _shortName: string;
+    basicStart: Address;
+
+    /**
+     * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
+     * configuration, this can be empty. Does not need to include any machine identifier.
+     */
+    shortName: string;
 
     /**
      * Create a memory configuration.
@@ -143,19 +146,11 @@ class MemoryConfiguration {
      * @param basicStart 16 bit address where BASIC programs are loaded
      * @param shortName short designation for UI
      */
-    constructor(name: string, basicStart: number, shortName:string = "") {
+    constructor(name: string, basicStart: Address, shortName:string = "") {
         // future: various independent block configurations, now: simple!
         this.name = name;
         this.basicStart = basicStart;
-        this._shortName = shortName;
-    }
-
-    /**
-     * Return a short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
-     * configuration, this can be empty. Does not need to include any machine identifier.
-     */
-    shortName():string {
-        return this._shortName;
+        this.shortName = shortName;
     }
 }
 

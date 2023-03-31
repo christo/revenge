@@ -1,6 +1,6 @@
-// assembler / disassembler stuff
+// assembler / disassembler stuff - 6502-specific
 
-import {assertByte, hex16, hex8, unToSigned,Byteable, Address, TODO} from "./core";
+import {Address, assertByte, Byteable, hex16, hex8, TODO, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -21,7 +21,7 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {BlobToActions, Detail, UserAction} from "./revenge";
+import {BooBoo, Tag, TagSeq} from "./api";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -95,29 +95,6 @@ interface Dialect {
      */
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq;
 }
-
-/**
- * Error class, all the sensible names have been domain squatted by typescript/javascript.
- */
-class BooBoo {
-    private mesg: string;
-
-    constructor(mesg: string) {
-        this.mesg = mesg;
-    }
-}
-
-/**
- * Abstraction for representing data with a tag. This makes transformation to html and also text
- * straightforward without any web dependencies, although the tag names must conform to the rules
- * for css classes (e.g. space-separated).
- */
-type Tag = [string, string]
-
-/**
- * Abstraction that corresponds to a logical line of listing output.
- */
-type TagSeq = Tag[]
 
 /**
  * Turns a tagSeq into plain text, discarding the tags.
@@ -772,8 +749,9 @@ class Disassembler {
 
     private disMeta: DisassemblyMeta;
 
-    constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
+    constructor(iset: InstructionSet, fb: FileBlob, bs: BlobSniffer) {
         this.iset = iset;
+        const dm = bs.getMeta();
         let index = dm.contentStartOffset();
         let bytes = fb.bytes;
         if (index >= bytes.length || index < 0) {
@@ -918,14 +896,6 @@ class Disassembler {
     }
 }
 
-const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
-    label: "Hex Dump",
-    f: () => {
-        const elements: TagSeq = Array.from(fb.bytes).map(x => ["hexbyte", hex8(x)]);
-        return new Detail(["hexbytes"], [elements]);
-    }
-});
-
 /**
  * Abstraction for scoring relative confidence in file content categorisation.
  */
@@ -939,7 +909,14 @@ interface BlobSniffer {
      */
     sniff(fb: FileBlob): number;
 
-    getDisassemblyMeta(): DisassemblyMeta;
+    /**
+     * This smells, it's a bag of disassembly-specific detail transported from the thing that knows about the
+     * file contents and the disassembler who needs to construct the {@link DataView}. Is there a generic
+     * way to bundle this stuff? What's the common API such that ignorant intermediaries can be blissfull
+     * as they work at a non-specific altitude? Consider an inversion as I did with the Dialect API. Or
+     * use generics.
+     */
+    getMeta(): DisassemblyMeta;
 
     name: string;
     desc: string;
@@ -972,7 +949,7 @@ class BlobType implements BlobSniffer {
         return this.exts.reduce((a, n) => a || fb.hasExt(n), false);
     }
 
-    getDisassemblyMeta(): DisassemblyMeta {
+    getMeta(): DisassemblyMeta {
         return this.dm;
     }
 
@@ -989,13 +966,11 @@ const UNKNOWN_BLOB = new BlobType("unknown", "type not detected", []);
 
 export {
     BlobType,
-    BooBoo,
     DefaultDialect,
     Disassembler,
     DisassemblyMetaImpl,
     Environment,
     FullInstructionLine,
-    hexDumper,
     PcAssign,
     Section,
     SectionType,
@@ -1008,10 +983,7 @@ export {
 };
 export type {
     BlobSniffer,
-    Tag,
-    TagSeq,
     DisassemblyMeta,
-    BlobToActions,
     Instructionish,
     Dialect,
     Directive,
