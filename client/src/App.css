@@ -109,6 +109,7 @@ body {
 
 .basic > .line {
   margin-left: 0ch;
+  display: inline;
 }
 
 .basic > .addr {
