@@ -110,12 +110,31 @@ body {
 }
 
 .basic > .line {
-  margin-left: 0ch;
+  margin-left: 0;
   display: inline;
 }
 
 .basic > .addr {
   display: none; /* Don't want to display line addresses in BASIC */
+}
+
+/* lines with a branch instruction and an absolute operand */
+.line:has(.mn.br):has(.opnd.abs) {
+  border: red dotted medium;
+}
+
+.opnd.abs:hover:hover {
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+/* .op .abs with preceding .mn .br */
+.opnd.abs:hover::after {
+  content: "\27a4";
+  margin-left: 1em;
+  font-size: 150%;
+  position: absolute;
+  top: -0.2em;
 }
 
 .line {
