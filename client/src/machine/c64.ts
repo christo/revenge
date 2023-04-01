@@ -6,7 +6,8 @@ import {
     BlobType,
     ByteDefinitionPrecept,
     DisassemblyMetaImpl,
-    JumpTargetFetcher, LabelsComments,
+    JumpTargetFetcher,
+    LabelsComments,
     mkLabels,
     VectorDefinitionPrecept
 } from "./asm";
@@ -58,7 +59,7 @@ const C64_CART_MAGIC = new ByteDefinitionPrecept(MAGIC_OFFSET, CBM80.length, new
 const C64_CART_NMI_VECTOR = new VectorDefinitionPrecept(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
 const C64_CART_RESET_VECTOR = new VectorDefinitionPrecept(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
-const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => [
+const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
     [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]

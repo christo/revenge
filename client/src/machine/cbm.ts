@@ -146,7 +146,7 @@ class MemoryConfiguration {
      * @param basicStart 16 bit address where BASIC programs are loaded
      * @param shortName short designation for UI
      */
-    constructor(name: string, basicStart: Address, shortName:string = "") {
+    constructor(name: string, basicStart: Address, shortName: string = "") {
         // future: various independent block configurations, now: simple!
         this.name = name;
         this.basicStart = basicStart;

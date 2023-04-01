@@ -7,7 +7,7 @@
 
  */
 
-import {Byteable, TODO, assertByte, Address} from "./core";
+import {Address, assertByte, Byteable, TODO} from "./core";
 
 class AddressingMode {
     code: string;
@@ -557,7 +557,7 @@ class FullInstruction implements Byteable {
      *
      * @param pc address to resolve to if this addressing mode is pc-relative
      */
-    resolveOperandAddress(pc:Address) {
+    resolveOperandAddress(pc: Address) {
         TODO()
         return 0;
     }

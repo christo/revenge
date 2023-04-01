@@ -6,8 +6,10 @@ import {
     ByteDefinitionPrecept,
     DisassemblyMeta,
     DisassemblyMetaImpl,
-    JumpTargetFetcher, LabelsComments,
-    mkLabels, VectorDefinitionPrecept,
+    JumpTargetFetcher,
+    LabelsComments,
+    mkLabels,
+    VectorDefinitionPrecept,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
@@ -27,7 +29,7 @@ const VIC20_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const VIC20_WARM_VECTOR_OFFSET = 4;
 
-const jumpTargetFetcher:JumpTargetFetcher = (fb:FileBlob) => [
+const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
     [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ];
@@ -98,7 +100,7 @@ class Vic20Basic implements BlobSniffer {
         const decoded = CBM_BASIC_2_0.decode(fb);
         let lastNum = -1;
         let lastAddr = -1;
-        decoded.forEach((i:TagSeq) => {
+        decoded.forEach((i: TagSeq) => {
             const lnumStr = i.find(t => t.hasTag("lnum"));
             let addrStr = i.find(t => t.hasTag("addr"));
             if (lnumStr !== undefined && addrStr !== undefined) {
@@ -108,7 +110,7 @@ class Vic20Basic implements BlobSniffer {
                     isBasic *= 0.5;
                 }
 
-                if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value,16)) {
+                if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
                     // next line address is allegedly lower? This ain't basic
                     isBasic *= 0.3;
                 }

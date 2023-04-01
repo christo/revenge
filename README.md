@@ -32,6 +32,7 @@ by [Michael Steil](https://pagetable.com/) of
 ## TODO
 
 * view options - disassembly, basic, hex each should define their own config options
+  * dialect options - layout handles for indenting
 * better styling for BASIC decoder
 * functional data structure for byte interpretation
   * make random access and modification to disassembled instruction list (lenses?)
@@ -52,7 +53,6 @@ by [Michael Steil](https://pagetable.com/) of
   * rewrite BASIC decoder using c64ref data
 * manual choice of file type
 * introduce user abstraction well before multiple user accounts or permissions
-* dialect options - layout handles for indenting
 * database persistence
 * interactive choice of data/code regions
 * Unit tests for C64 and VIC-20 BASIC decoding
@@ -165,7 +165,7 @@ options should be selectable by the user.
 
 ## Assembly Dialects
 
-Dialects should define equivalent alternative generation options for particular parts and the user can choose which  
+Dialects should define equivalent alternative generation options for particular parts and the user can choose which 
 suits the given part. Also, guesses should be smart.
 
 A command line required to assemble the file in a given assembler should be provided in a comment at the top of the

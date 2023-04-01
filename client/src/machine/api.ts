@@ -6,19 +6,19 @@ import {hex8} from "./core";
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  */
 class Tag {
-    tags:string[];
-    id:string | undefined;
-    data:[string, string][];
-    value:string;
+    tags: string[];
+    id: string | undefined;
+    data: [string, string][];
+    value: string;
 
-    constructor(value:string, tags: string | string[], id: string | undefined = undefined, data: [string, string][] = []) {
+    constructor(value: string, tags: string | string[], id: string | undefined = undefined, data: [string, string][] = []) {
         this.tags = (typeof tags === "string") ? [tags] : tags;
         this.id = id;
         this.data = data;
         this.value = value;
     }
 
-    hasTag(s:string) {
+    hasTag(s: string) {
         return this.tags.find(x => x === s) !== undefined;
     }
 }
@@ -85,7 +85,7 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x),"hexbyte"));
+        const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x), "hexbyte"));
         return new Detail(["hexbytes"], [elements]);
     }
 });

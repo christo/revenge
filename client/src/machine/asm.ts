@@ -581,7 +581,7 @@ interface DisassemblyMeta {
     /**
      * Return a list of address + LabelsComments
      */
-    getJumpTargets(fb:FileBlob): [Address, LabelsComments][];
+    getJumpTargets(fb: FileBlob): [Address, LabelsComments][];
 }
 
 class ByteDefinitionPrecept implements Precept {
@@ -650,7 +650,7 @@ export class LabelsComments {
     }
 }
 
-type JumpTargetFetcher = (fb:FileBlob) => [Address, LabelsComments][];
+type JumpTargetFetcher = (fb: FileBlob) => [Address, LabelsComments][];
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
@@ -715,7 +715,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this.precepts[address];
     }
 
-    getJumpTargets(fb:FileBlob): [Address, LabelsComments][] {
+    getJumpTargets(fb: FileBlob): [Address, LabelsComments][] {
         return this.jumpTargetFetcher(fb);
     }
 }
@@ -864,7 +864,7 @@ class Disassembler {
     };
 
     /** Returns zero or more labels that belong at the given addres. */
-    generateLabels(addr:Address):string[] {
+    generateLabels(addr: Address): string[] {
         return this.predefLc.filter(t => t[0] === addr).map(t => t[1].labels).reduce((p, c) => p.concat(c));
     }
 
@@ -877,7 +877,7 @@ class Disassembler {
         const fromDm = this.predefLc.map(t => t[0]);
         // collect targets of all current jump instructions
         // TODO fix bug, branches have an 8 bit signed relative jump
-        const dests:Address[] = instructions.filter(addrInst => addrInst[1].instruction.op.isJump).map(j => j[1].resolveOperandAddress(j[0]));
+        const dests: Address[] = instructions.filter(addrInst => addrInst[1].instruction.op.isJump).map(j => j[1].resolveOperandAddress(j[0]));
         // for all jump instructions, collect the destination address
         const allJumpTargets = fromDm.concat(dests);
         // for all such addresses, filter those in range of the loaded binary

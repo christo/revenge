@@ -9,7 +9,7 @@ import {DataView, Tag} from "./api";
 
 type Token = [number, string];
 
-const isZilch = (x:number|undefined) => (x === undefined || x === 0);
+const isZilch = (x: number | undefined) => (x === undefined || x === 0);
 
 /** Decodes a BASIC {@link FileBlob} into its program structure */
 class BasicDecoder {
