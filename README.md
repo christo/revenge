@@ -31,12 +31,13 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
+* view options - disassembly, basic, hex each should define their own config options
 * better styling for BASIC decoder
-* improve cart sniffers: look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 * functional data structure for byte interpretation
   * make random access and modification to disassembled instruction list (lenses?)
   * need to be able to replace a sequence of instructions into a byte declaration
   * Make entire disassembly asynchronous (rather than n-pass)
+* improve cart sniffers: look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 * data section detection - probabilistic
   * human-designated
   * detected score
