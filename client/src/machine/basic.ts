@@ -5,7 +5,7 @@
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
-import {DataView} from "./api";
+import {DataView, Tag2} from "./api";
 
 type Token = [number, string];
 
@@ -68,7 +68,10 @@ class BasicDecoder {
                 console.error("byte no existo");
                 finished = true;
             } else if (eol) {
-                lines.push([["addr", hex16(nextLineAddr)], ["lnum", lineNumber.toString(10)], ["line", line]]);
+                const address = Tag2.fromTag(["addr", hex16(nextLineAddr)]);
+                const lineNum = Tag2.fromTag(["lnum", lineNumber.toString(10)]);
+                const lineText = Tag2.fromTag(["line", line]);
+                lines.push([address, lineNum, lineText]);
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];

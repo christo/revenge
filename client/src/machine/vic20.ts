@@ -99,16 +99,16 @@ class Vic20Basic implements BlobSniffer {
         let lastNum = -1;
         let lastAddr = -1;
         decoded.forEach((i:TagSeq) => {
-            const lnumStr = i.find(t => t[0] === "lnum");
-            let addrStr = i.find(t => t[0] === "addr");
+            const lnumStr = i.find(t => t.hasTag("lnum"));
+            let addrStr = i.find(t => t.hasTag("addr"));
             if (lnumStr !== undefined && addrStr !== undefined) {
-                let thisNum = parseInt(lnumStr[1]);
+                let thisNum = parseInt(lnumStr.value);
                 if (lastNum !== -1 && lastNum >= thisNum) {
                     // decrease in basic line numbers
                     isBasic *= 0.5;
                 }
 
-                if (lastAddr !== -1 && lastAddr >= parseInt(addrStr[1],16)) {
+                if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value,16)) {
                     // next line address is allegedly lower? This ain't basic
                     isBasic *= 0.3;
                 }

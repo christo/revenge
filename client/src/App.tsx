@@ -45,8 +45,9 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     // add id if this is an address
-                    let extra = (tup[0].indexOf("addr") === -1) ? {} : {id: "M_" + tup[1]};
-                    return <span {...extra} className={tup[0]} key={`fb_${i}_${j}`}>{tup[1]}</span>;
+                    let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {} : {id: "M_" + tup.value};
+                    const classes = tup.tags.join(" ");
+                    return <span {...extra} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
                 })}
             </div>;
         })}

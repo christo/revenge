@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {Address, asHex, hex16, hex8} from "./core";
-import {ActionFunction, Detail, hexDumper, Tag, UserAction} from "./api";
+import {ActionFunction, Detail, hexDumper, Tag2, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -36,9 +36,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["entry"], []);
             detail.tfield.push(assignPc.disassemble(dialect, dis));
             while (dis.hasNext()) {
-                let addr: Tag = ["addr", hex16(dis.currentAddress)];
+                let addr: Tag2 = Tag2.fromTag(["addr", hex16(dis.currentAddress)]);
                 let inst: Instructionish = dis.nextInstructionLine();
-                let hex: Tag = ["hex", asHex(inst.getBytes())];
+                let hex: Tag2 = Tag2.fromTag(["hex", asHex(inst.getBytes())]);
                 const items = [addr, hex,];
 
                 inst.disassemble(dialect, dis).forEach(i => items.push(i));

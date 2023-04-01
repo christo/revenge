@@ -21,7 +21,7 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {BooBoo, Tag, TagSeq} from "./api";
+import {BooBoo, Tag2, TagSeq} from "./api";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -100,7 +100,7 @@ interface Dialect {
  * Turns a tagSeq into plain text, discarding the tags.
  * @param ts
  */
-const tagText = (ts: TagSeq) => ts.map(t => t[1]).join(" ");
+const tagText = (ts: TagSeq) => ts.map(t => t.value).join(" ");
 
 /** Defines a category for any source line. */
 const enum SourceType {
@@ -302,10 +302,10 @@ class DefaultDialect implements Dialect {
 
     private taggedCode(mi: Instruction, fil: FullInstructionLine): TagSeq {
         // add the mnemonic tag and also the mnemonic category
-        const mnemonic: Tag = [`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()];
+        const mnemonic: Tag2 = Tag2.fromTag([`mn ${mi.op.cat}`, mi.op.mnemonic.toLowerCase()]);
         const operandText = this.renderOperand(fil.fullInstruction).trim();
         if (operandText.length > 0) {
-            return [mnemonic, [`opnd ${mi.mode.code}`, operandText]]
+            return [mnemonic, Tag2.fromTag([`opnd ${mi.mode.code}`, operandText])];
         } else {
             return [mnemonic];
         }
@@ -334,13 +334,15 @@ class DefaultDialect implements Dialect {
         if (b.getLength() === 0) {
             throw Error("not entirely sure how to declare zero bytes");
         }
-        let kw: Tag = ['kw', DefaultDialect.KW_BYTE_DECLARATION];
-        return [kw, ["hexarray", b.getBytes().map(this.hexByteText).join(", ")]];
+        let kw: Tag2 = Tag2.fromTag(['kw', DefaultDialect.KW_BYTE_DECLARATION]);
+        const hexTag = Tag2.fromTag(["hexarray", b.getBytes().map(this.hexByteText).join(", ")]);
+        return [kw, hexTag];
     }
 
     private wordDeclaration(words: number[]): TagSeq {
-        let kw: Tag = ['kw', DefaultDialect.KW_WORD_DECLARATION];
-        return [kw, ["hexarray", words.map(this.hexWordText).join(", ")]];
+        let kw: Tag2 = Tag2.fromTag(['kw', DefaultDialect.KW_WORD_DECLARATION]);
+        const values: Tag2 = Tag2.fromTag(["hexarray", words.map(this.hexWordText).join(", ")]);
+        return [kw, values];
     }
 
     private hexByteText(b: number) {
@@ -410,23 +412,23 @@ class DefaultDialect implements Dialect {
 
     bytes(x: Directive | FullInstructionLine, dis: Disassembler): TagSeq {
         // future: context may give us rules about grouping, pattern detection etc.
-        const comments: Tag = ["comment", this.renderComments(x.labelsComments.comments)];
-        const labels: Tag = ["label", this.renderLabels(x.labelsComments.labels)];
-        const data: Tag = ["data", this._env.indent() + tagText(this.byteDeclaration(x))];
+        const comments: Tag2 = Tag2.fromTag(["comment", this.renderComments(x.labelsComments.comments)]);
+        const labels: Tag2 = Tag2.fromTag(["label", this.renderLabels(x.labelsComments.labels)]);
+        const data: Tag2 = Tag2.fromTag(["data", this._env.indent() + tagText(this.byteDeclaration(x))]);
         return [comments, labels, data];
     }
 
     words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(lc.comments)];
-        const labels: Tag = ["label", this.renderLabels(lc.labels)];
+        const comments: Tag2 = Tag2.fromTag(["comment", this.renderComments(lc.comments)]);
+        const labels: Tag2 = Tag2.fromTag(["label", this.renderLabels(lc.labels)]);
         const tags: TagSeq = this.wordDeclaration(words)
-        const data: Tag = ["data", this._env.indent() + tagText(tags)];
+        const data: Tag2 = Tag2.fromTag(["data", this._env.indent() + tagText(tags)]);
         return [comments, labels, data];
     }
 
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(fil.labelsComments.comments)];
-        const labels: Tag = ["label", this.renderLabels(fil.labelsComments.labels)];
+        const comments: Tag2 = Tag2.fromTag(["comment", this.renderComments(fil.labelsComments.comments)]);
+        const labels: Tag2 = Tag2.fromTag(["label", this.renderLabels(fil.labelsComments.labels)]);
         return [comments, labels, ...this.taggedCode(fil.fullInstruction.instruction, fil)];
     }
 
@@ -436,10 +438,12 @@ class DefaultDialect implements Dialect {
     }
 
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
-        const comments: Tag = ["comment", this.renderComments(pcAssign.labelsComments.comments)];
-        const labels: Tag = ["label", this.renderLabels(pcAssign.labelsComments.labels)];
-        const base = this.hexWordText(pcAssign.address);
-        return [comments, labels, ["addr", "_  "], ["code", "* ="], ["abs opnd", base]];
+        const comments: Tag2 = Tag2.fromTag(["comment", this.renderComments(pcAssign.labelsComments.comments)]);
+        const labels: Tag2 = Tag2.fromTag(["label", this.renderLabels(pcAssign.labelsComments.labels)]);
+        const pc = new Tag2("* =", ["code"]);
+        const addr = new Tag2(this.hexWordText(pcAssign.address), ["abs", "opnd"]);
+        const dummy = new Tag2("_", ["addr"]);
+        return [comments, labels, dummy, pc, addr];
     }
 
 }
