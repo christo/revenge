@@ -3,29 +3,16 @@ import {FileBlob} from "./FileBlob";
 import {hex8} from "./core";
 
 /**
- * Abstraction for representing data with a tag. This makes transformation to html and also text
- * straightforward without any web dependencies, although the tag names must conform to the rules
- * for css classes (e.g. space-separated).
- * @deprecated migrate to Tag2
- */
-type Tag = [string, string]
-
-/**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
- * To be a replacement for {@link Tag}
  */
-class Tag2 {
+class Tag {
     tags:string[];
     id:string | undefined;
     data:[string, string][];
     value:string;
 
-    static fromTag(tag:Tag) {
-        return new Tag2(tag[1], tag[0].split(" "))
-    }
-
-    constructor(value:string, tags: string[], id: string | undefined = undefined, data: [string, string][] = []) {
-        this.tags = tags;
+    constructor(value:string, tags: string | string[], id: string | undefined = undefined, data: [string, string][] = []) {
+        this.tags = (typeof tags === "string") ? [tags] : tags;
         this.id = id;
         this.data = data;
         this.value = value;
@@ -34,13 +21,12 @@ class Tag2 {
     hasTag(s:string) {
         return this.tags.find(x => x === s) !== undefined;
     }
-
 }
 
 /**
  * Abstraction that corresponds to a logical line of listing output.
  */
-type TagSeq = Tag2[]
+type TagSeq = Tag[]
 
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
@@ -99,15 +85,14 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements: TagSeq = Array.from(fb.bytes).map(x => Tag2.fromTag(["hexbyte", hex8(x)]));
+        const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x),"hexbyte"));
         return new Detail(["hexbytes"], [elements]);
     }
 });
 
-export {BooBoo, Detail, hexDumper, Tag2};
+export {BooBoo, Detail, hexDumper, Tag};
 export type {
     TagSeq,
-    Tag,
     ActionExecutor,
     BlobToActions,
     ActionFunction,
