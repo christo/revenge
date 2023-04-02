@@ -7,7 +7,7 @@
 
  */
 
-import {Address, assertByte, Byteable, TODO} from "./core";
+import {Address, assertByte, Byteable, unToSigned} from "./core";
 
 class AddressingMode {
     code: string;
@@ -16,7 +16,19 @@ class AddressingMode {
     blurb: string
     numOperandBytes: number;
 
+    /**
+     * Make an addressing mode using all the goodies.
+     *
+     * @param code the short code used to signify this addressing mode. Must contain no spaces.
+     * @param desc human readable description.
+     * @param template a semiformal documentation format.
+     * @param blurb additional clarifying description.
+     * @param numOperandBytes number of bytes in the expected operand.
+     */
     constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: number) {
+        if (!code.match(/^\w+$/)) {
+            throw Error("Addressing mode code must contain only these chars: A-Za-z_");
+        }
         this.code = code;
         this.desc = desc;
         this.template = template;
@@ -552,14 +564,34 @@ class FullInstruction implements Byteable {
         return this.instruction.getLength();
     }
 
+    operandAddressResolvable() {
+        const m = this.instruction.mode;
+        return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
+    }
+
     /**
-     * Resolve the operand as an address, if relevant, relative to the given program counter.
+     * Resolve the operand as an address, if relevant, relative to the given program counter. This currently only
+     * supports static resolution, either relative that depends on the program counter or absolute. Indexed and indirect
+     * modes depend on the dynamic memory or register contents which is in the general case, unknowable prior to
+     * runtime.
      *
-     * @param pc address to resolve to if this addressing mode is pc-relative
+     * If there is no operand, or it is not an address then the results are undefined.
+     *
+     * @param pc address to resolve to if this addressing mode is pc-relative.
      */
-    resolveOperandAddress(pc: Address) {
-        TODO()
-        return 0;
+    resolveOperandAddress(pc: Address):Address {
+        const mode = this.instruction.mode;
+        if (mode === MODE_RELATIVE) {
+            if (mode.numOperandBytes !== 1) {
+                throw Error("assertion failure: relative mode always has single byte operand");
+            }
+            // relative operands are signed byte offset from PC
+            return pc + unToSigned(this.firstByte);
+        } else if (mode === MODE_ABSOLUTE || mode === MODE_IMMEDIATE) {
+            return this.operand16();
+        }
+        // other modes have undefined behaviour
+        throw Error("undefined operand address");
     }
 }
 
