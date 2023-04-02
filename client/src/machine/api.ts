@@ -24,9 +24,44 @@ class Tag {
 }
 
 /**
- * Abstraction that corresponds to a logical line of listing output.
+ * Abstraction that corresponds to a logical line of listing output. This may include multiple labels and comments
+ * which are rendered onto multiple physical lines in a typical (dis)assembly listing.
  */
 type TagSeq = Tag[]
+
+/**
+ * New type that holds a logical line. Need to be bidirectionally mapped to addresses and yet also we want to
+ * generate listings where there are lines that have no address but they do usually belong in a specific place
+ * in the listing. Macro definitions, for example, need to exist in the listing but they have no address location
+ * and could be reordered so long as they adhere to dialect-enforced-rules about forward references inherited from
+ * assemblers.
+ *
+ * The mapping between addresses and source lines is bijective:
+ *
+ * - every byte corresponds to some component of a source line
+ * - multiple source can be located between/before a given address (e.g. macro definitions, comments, labels)
+ * - every byte has a unique address
+ * - a source line can map to zero or more bytes
+ * - instructions have variable byte length correspondence, so alternative instructions (e.g. code vs data) will
+ * consume different numbers of bytes. Changing from an insruction to a byte definition may have a knock-on effect
+ * that forces a different interpretation of following bytes.
+ * - Edicts produce these knock on effects although they're defined at offsets rather than addresses
+ *
+ *
+ * TODO figure out how to manage the bijection between addresses and source lines
+ */
+class LogicalLine {
+
+    tags:TagSeq;
+
+    constructor(tags: TagSeq) {
+        this.tags = tags;
+    }
+
+    getTags():TagSeq {
+        return this.tags;
+    }
+}
 
 /**
  * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
@@ -49,6 +84,9 @@ class Detail {
     }
 }
 
+/**
+ * Main function for generating the file detail.
+ */
 type ActionExecutor = () => Detail;
 
 /** A type for handling the result of a UserAction execution */
@@ -90,7 +128,7 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     }
 });
 
-export {BooBoo, Detail, hexDumper, Tag};
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine};
 export type {
     TagSeq,
     ActionExecutor,

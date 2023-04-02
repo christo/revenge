@@ -572,11 +572,11 @@ interface DisassemblyMeta {
     contentStartOffset(): number;
 
     /**
-     * Gets the precept defined for the given offset if one is defined.
+     * Gets the edict defined for the given offset if one is defined.
      *
      * @param offset
      */
-    getPrecept(offset: number): Precept | undefined;
+    getEdict(offset: number): Edict<Instructionish> | undefined;
 
     /**
      * Return a list of address + LabelsComments
@@ -584,7 +584,7 @@ interface DisassemblyMeta {
     getJumpTargets(fb: FileBlob): [Address, LabelsComments][];
 }
 
-class ByteDefinitionPrecept implements Precept {
+class ByteDefinitionEdict implements Edict<Instructionish> {
     private readonly _offset: number;
     private readonly numBytes: number;
     protected readonly lc: LabelsComments;
@@ -612,7 +612,7 @@ class ByteDefinitionPrecept implements Precept {
 /**
  * Declares an address definition using the bytes at the offset.
  */
-class VectorDefinitionPrecept extends ByteDefinitionPrecept {
+class VectorDefinitionEdict extends ByteDefinitionEdict {
 
     constructor(offset: number, lc: LabelsComments) {
         super(offset, 2, lc); // 2 bytes in a word
@@ -660,14 +660,14 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
     private readonly _contentStartOffset: number;
-    private readonly precepts: { [id: number]: Precept; };
+    private readonly edicts: { [id: number]: Edict<Instructionish>; };
     private readonly jumpTargetFetcher: JumpTargetFetcher;
 
     constructor(
         baseAddressOffset: number,
         resetVectorOffset: number,
         contentStartOffset: number,
-        precepts: Precept[],
+        edicts: Edict<Instructionish>[],
         getJumpTargets: JumpTargetFetcher,
     ) {
 
@@ -676,10 +676,10 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
         // keep the offsets
         this._resetVectorOffset = resetVectorOffset;
-        this.precepts = {};
-        for (let i = 0; i < precepts.length; i++) {
-            const precept = precepts[i];
-            this.precepts[precept.offset] = precept;
+        this.edicts = {};
+        for (let i = 0; i < edicts.length; i++) {
+            const edict = edicts[i];
+            this.edicts[edict.offset] = edict;
         }
         this.jumpTargetFetcher = getJumpTargets;
     }
@@ -711,8 +711,8 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return addr >= base && addr <= base + fb.size;
     }
 
-    getPrecept(address: number): Precept | undefined {
-        return this.precepts[address];
+    getEdict(address: number): Edict<Instructionish> | undefined {
+        return this.edicts[address];
     }
 
     getJumpTargets(fb: FileBlob): [Address, LabelsComments][] {
@@ -723,8 +723,10 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 /**
  * Rule for specifying the disassembly of a sequence of bytes at a binary offset. File formats or
  * user demand can require that a location be interpreted as code or a labeled address definition etc.
+ * Examples include forced interpretation of bytes as code since the file format specifies code entry
+ * points.
  */
-interface Precept {
+interface Edict<T> {
 
     get offset(): number;
 
@@ -738,7 +740,7 @@ interface Precept {
      * @param fb the binary.
      * @return the instance.
      */
-    create(fb: FileBlob): Instructionish;
+    create(fb: FileBlob): T;
 }
 
 /** Stateful translator of bytes to their parsed instruction line */
@@ -806,10 +808,10 @@ class Disassembler {
             labels = this.generateLabels(this.currentAddress);
         }
         let comments: Array<string> = [];
-        const precept = this.disMeta.getPrecept(this.currentIndex);
-        if (precept !== undefined) {
-            this.currentIndex += precept.length;
-            return precept.create(this.fb);
+        const edict = this.disMeta.getEdict(this.currentIndex);
+        if (edict !== undefined) {
+            this.currentIndex += edict.length;
+            return edict.create(this.fb);
         }
 
         const opcode = this.eatByteOrDie();
@@ -825,18 +827,18 @@ class Disassembler {
             let bytes = [opcode].concat(this.eatBytes(remainingBytes))
             return new ByteDeclaration(bytes, mkComments("must be data?"));
         } else {
-            const preceptAhead = (n: number) => this.disMeta.getPrecept(this.currentIndex + n) !== undefined;
-            // current index is the byte following the opcode which we've already checked for a precept
-            // check there is no precept inside the bytes this instruction would need
-            if (numInstructionBytes === 2 && preceptAhead(1)) {
-                return new ByteDeclaration([opcode], mkComments("inferred via precept@+1"));
+            const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+            // current index is the byte following the opcode which we've already checked for a edict
+            // check there is no edict inside the bytes this instruction would need
+            if (numInstructionBytes === 2 && edictAhead(1)) {
+                return new ByteDeclaration([opcode], mkComments("inferred via edict@+1"));
             } else if (numInstructionBytes === 3) {
-                if (preceptAhead(2)) {
+                if (edictAhead(2)) {
                     const bytes = [opcode, this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via precept@+2"));
-                } else if (preceptAhead(3)) {
+                    return new ByteDeclaration(bytes, mkComments("inferred via edict@+2"));
+                } else if (edictAhead(3)) {
                     const bytes = [opcode, this.eatByte(), this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via precept@+3"));
+                    return new ByteDeclaration(bytes, mkComments("inferred via edict@+3"));
                 }
             }
 
@@ -982,8 +984,8 @@ export {
     SectionType,
     tagText,
     UNKNOWN_BLOB,
-    ByteDefinitionPrecept,
-    VectorDefinitionPrecept,
+    ByteDefinitionEdict,
+    VectorDefinitionEdict,
     mkLabels,
     mkComments
 };
@@ -993,6 +995,6 @@ export type {
     Instructionish,
     Dialect,
     Directive,
-    Precept,
+    Edict,
     JumpTargetFetcher
 };

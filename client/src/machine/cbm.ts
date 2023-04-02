@@ -34,7 +34,8 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
             // set the base address
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["entry"], []);
-            detail.tfield.push(assignPc.disassemble(dialect, dis));
+            const tagSeq = assignPc.disassemble(dialect, dis);
+            detail.tfield.push(tagSeq);
             while (dis.hasNext()) {
                 let addr: Tag = new Tag(hex16(dis.currentAddress), "addr");
                 let inst: Instructionish = dis.nextInstructionLine();
@@ -42,6 +43,8 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 const items = [addr, hex,];
 
                 inst.disassemble(dialect, dis).forEach(i => items.push(i));
+                // TODO link up jumptargets...
+                //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
                 detail.tfield.push(items);
             }
             return detail;

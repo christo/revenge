@@ -3,13 +3,13 @@
 import {CartSniffer, MemoryConfiguration, prg} from "./cbm";
 import {
     BlobSniffer,
-    ByteDefinitionPrecept,
+    ByteDefinitionEdict,
     DisassemblyMeta,
     DisassemblyMetaImpl,
     JumpTargetFetcher,
     LabelsComments,
     mkLabels,
-    VectorDefinitionPrecept,
+    VectorDefinitionEdict,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
@@ -45,10 +45,10 @@ const VIC20_CART = new CartSniffer(
         VIC20_COLD_VECTOR_OFFSET,
         2,
         [
-            new ByteDefinitionPrecept(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
-            new VectorDefinitionPrecept(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-            new VectorDefinitionPrecept(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-            new VectorDefinitionPrecept(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+            new ByteDefinitionEdict(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
+            new VectorDefinitionEdict(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+            new VectorDefinitionEdict(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+            new VectorDefinitionEdict(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], jumpTargetFetcher
     )
 );
