@@ -85,7 +85,8 @@ class BasicDecoder {
                 line += token;
             }
             // two zero bytes mark the end, if we are out of bytes, same thing.
-            const eof = isZilch(fb.bytes.at(i + 2)) && isZilch(fb.bytes.at(i + 3));
+            // i has already been incremented, so i and i+1 peek ahead for a zero-terminating word
+            const eof = isZilch(fb.bytes.at(i)) && isZilch(fb.bytes.at(i + 1));
             finished = finished || (eol && eof);
         }
         return lines;
