@@ -166,7 +166,7 @@ class PcAssign extends InstructionBase implements Directive {
 }
 
 /** Assembler pseudo-op that reserves literal bytes. */
-class ByteDeclaration extends InstructionBase implements Directive {
+class ByteDeclaration extends InstructionBase implements Directive, Byteable {
 
     private readonly _rawBytes: Array<number>;
 
@@ -330,6 +330,12 @@ class DefaultDialect implements Dialect {
         return s + ": ";
     }
 
+    /**
+     * Creates byte declaration source for the given byteable.
+     *
+     * @param b
+     * @private
+     */
     private byteDeclaration(b: Byteable): TagSeq {
         if (b.getLength() === 0) {
             throw Error("not entirely sure how to declare zero bytes");
@@ -410,7 +416,7 @@ class DefaultDialect implements Dialect {
         return operand;
     }
 
-    bytes(x: Directive | FullInstructionLine, dis: Disassembler): TagSeq {
+    bytes(x: FullInstructionLine, dis: Disassembler): TagSeq {
         // future: context may give us rules about grouping, pattern detection etc.
         const comments: Tag = new Tag(this.renderComments(x.labelsComments.comments), "comment");
         const labels: Tag = new Tag(this.renderLabels(x.labelsComments.labels), "label");
@@ -453,9 +459,9 @@ class DefaultDialect implements Dialect {
  * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
  */
 interface Directive extends Instructionish {
-
-    // other properties expected to emerge when trying to synthesise stuff like symbol assignment
-
+    // symbol definition
+    // macro definition
+    // cpu pragma
 }
 
 /** syntax-independent assembler */
@@ -506,6 +512,7 @@ class FullInstructionLine extends InstructionBase {
     private readonly _fullInstruction: FullInstruction;
 
     constructor(fullInstruction: FullInstruction, lc: LabelsComments) {
+        // this is not quite right because this is a composite that includes labels and comments
         super(lc, SourceType.MACHINE);
         this._fullInstruction = fullInstruction;
     }
