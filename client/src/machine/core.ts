@@ -6,12 +6,12 @@ const TODO = (mesg = "") => {
     throw Error(`Not Implemented ${mesg}`)
 };
 
-/** Has a byte correspondence */
+/** Can produce zero or more bytes of a known length. */
 interface Byteable {
-    /** The possibly empty array of byte values. */
+    /** The possibly empty array of byte values. Its length must be equal to {@link getLength} */
     getBytes(): number[];
 
-    /** Length in bytes, must not be negative. */
+    /** Length in bytes, must equal the number of bytes returned from {@link getBytes} . */
     getLength(): number;
 }
 
