@@ -885,7 +885,6 @@ class Disassembler {
         // collect predefined jump targets
         const fromDm = this.predefLc.map(t => t[0]);
         // collect targets of all current jump instructions
-        // TODO fix bug, branches have an 8 bit signed relative jump
         const dests: Address[] = instructions
             .filter(addrInst => addrInst[1].instruction.op.isJump && addrInst[1].operandAddressResolvable())
             .map(j => j[1].resolveOperandAddress(j[0]));
