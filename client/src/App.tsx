@@ -46,7 +46,6 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
         if (tup !== undefined) {
             const id = "M_" + tup[1];
             const jumpTo = document.getElementById(id);
-            // debugger;
             if (jumpTo !== null) {
                 jumpTo.scrollIntoView({ behavior: "smooth" });
             }
