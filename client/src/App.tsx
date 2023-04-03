@@ -48,11 +48,15 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {} : {id: "M_" + tup.value};
                     const classes = tup.tags.join(" ");
                     let isNote = tup.tags.find(x => x === "note") !== undefined;
+                    // TODO try to rewrite this weird shit as a reduce
+                    let data: { [k: string]: string; } = {};
+                    tup.data.forEach((kv:[string,string]) => data[`data-${kv[0]}`] = kv[1]);
+
                     if (isNote) {
-                        // doesn't look great...
-                        return <Alert severity="info" sx={{mt:2, width: "50%"}} key={`fb_${i}_${j}`}>{tup.value}</Alert>
+                        return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
+                                      key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
-                        return <span {...extra} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
+                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
                     }
                 })}
             </div>;

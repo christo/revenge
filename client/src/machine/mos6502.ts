@@ -9,6 +9,8 @@
 
 import {Address, assertByte, Byteable, unToSigned} from "./core";
 
+type OperandLength = 0 | 1 | 2;
+
 class AddressingMode {
     code: string;
     desc: string;
@@ -25,7 +27,7 @@ class AddressingMode {
      * @param blurb additional clarifying description.
      * @param numOperandBytes number of bytes in the expected operand.
      */
-    constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: number) {
+    constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: OperandLength) {
         if (!code.match(/^\w+$/)) {
             throw Error("Addressing mode code must contain only these chars: A-Za-z_");
         }
@@ -588,10 +590,23 @@ class FullInstruction implements Byteable {
             // relative operands are signed byte offset from PC
             return pc + unToSigned(this.firstByte);
         } else if (mode === MODE_ABSOLUTE || mode === MODE_IMMEDIATE) {
-            return this.operand16();
+            return this.operandValue();
         }
         // other modes have undefined behaviour
         throw Error("undefined operand address");
+    }
+
+    /**
+     * Returns the operand numeric value based solely on the number of bytes in the operand. Throws a fit if there
+     * are no operand bytes.
+     */
+    operandValue() {
+        if (this.instruction.mode.numOperandBytes === 1) {
+            return this.firstByte;
+        } else if (this.instruction.mode.numOperandBytes === 2) {
+            return this.operand16();
+        }
+        throw Error("no operand");
     }
 }
 
@@ -635,3 +650,5 @@ export {
     MODE_ZEROPAGE_Y,
     AddressingMode,
 };
+
+export type {OperandLength}

@@ -305,7 +305,12 @@ class DefaultDialect implements Dialect {
         const mnemonic: Tag = new Tag(mi.op.mnemonic.toLowerCase(), `mn ${mi.op.cat}`);
         const operandText = this.renderOperand(fil.fullInstruction).trim();
         if (operandText.length > 0) {
-            return [mnemonic, new Tag(operandText, `opnd ${mi.mode.code}`)];
+            const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
+            if (fil.fullInstruction.operandAddressResolvable()) {
+                const opnd = fil.fullInstruction.operandValue()
+                operandTag.data = [["opnd_val", hex16(opnd)]];
+            }
+            return [mnemonic, operandTag];
         } else {
             return [mnemonic];
         }
@@ -366,8 +371,6 @@ class DefaultDialect implements Dialect {
      * @private
      */
     private renderOperand(il: FullInstruction): string {
-        const hw = () => "$" + hex16(il.operand16());
-        const hb = () => this.hexByteText(il.firstByte);
 
         let operand = "";
         switch (il.instruction.mode) {
@@ -376,41 +379,41 @@ class DefaultDialect implements Dialect {
                 operand = ""; // implied accumulator not manifest
                 break;
             case MODE_ABSOLUTE:
-                operand = hw();
+                operand = this.hexWordText(il.operand16());
                 break;
             case MODE_ABSOLUTE_X:
-                operand = hw() + ", x";
+                operand = this.hexWordText(il.operand16()) + ", x";
                 break;
             case MODE_ABSOLUTE_Y:
-                operand = hw() + ", y";
+                operand = this.hexWordText(il.operand16()) + ", y";
                 break;
             case MODE_IMMEDIATE:
-                operand = "#" + hb();
+                operand = "#" + this.hexByteText(il.firstByte);
                 break;
             case MODE_IMPLIED:
                 operand = "";
                 break;
             case MODE_INDIRECT:
-                operand = "(" + hw() + ")";
+                operand = "(" + this.hexWordText(il.operand16()) + ")";
                 break;
             case MODE_INDIRECT_X:
-                operand = "(" + hb() + ", x)";
+                operand = "(" + this.hexByteText(il.firstByte) + ", x)";
                 break;
             case MODE_INDIRECT_Y:
-                operand = "(" + hb() + "), y";
+                operand = "(" + this.hexByteText(il.firstByte) + "), y";
                 break;
             case MODE_RELATIVE:
                 // render decimal two's complement 8-bit
                 operand = unToSigned(il.firstByte).toString(10);
                 break;
             case MODE_ZEROPAGE:
-                operand = hb();
+                operand = this.hexByteText(il.firstByte);
                 break;
             case MODE_ZEROPAGE_X:
-                operand = hb() + ", x"
+                operand = this.hexByteText(il.firstByte) + ", x"
                 break;
             case MODE_ZEROPAGE_Y:
-                operand = hb() + ", y"
+                operand = this.hexByteText(il.firstByte) + ", y"
                 break;
         }
         return operand;

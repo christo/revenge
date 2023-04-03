@@ -40,12 +40,12 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 let addr: Tag = new Tag(hex16(dis.currentAddress), "addr");
                 let inst: Instructionish = dis.nextInstructionLine();
                 let hex: Tag = new Tag(asHex(inst.getBytes()), "hex");
-                const items = [addr, hex,];
+                const tags = [addr, hex];
 
-                inst.disassemble(dialect, dis).forEach(i => items.push(i));
+                inst.disassemble(dialect, dis).forEach(i => tags.push(i));
                 // TODO link up jumptargets...
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
-                detail.tfield.push(items);
+                detail.tfield.push(tags);
             }
             return detail;
         }
