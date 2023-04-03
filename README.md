@@ -31,6 +31,8 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
+* Unit tests for C64 and VIC-20 BASIC decoding
+* unit tests for `core.ts`
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
@@ -64,7 +66,6 @@ by [Michael Steil](https://pagetable.com/) of
 * introduce user abstraction well before multiple user accounts or permissions
 * database persistence
 * interactive choice of data/code regions
-* Unit tests for C64 and VIC-20 BASIC decoding
 * BASIC data statement embedded machine code detection/designation
 * bulk back-end corpus
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
