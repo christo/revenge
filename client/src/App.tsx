@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useEffect, useState} from "react";
+import React, {MouseEventHandler, useEffect, useState} from "react";
 import {FileUploader} from "react-drag-drop-files";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -40,12 +40,25 @@ interface FileContents {
 
 function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
+
+    const handleClick = (data:[string, string][]) => {
+        const tup = data.find(t => t[0] === "opnd_val");
+        if (tup !== undefined) {
+            const id = "M_" + tup[1];
+            const jumpTo = document.getElementById(id);
+            // debugger;
+            if (jumpTo !== null) {
+                jumpTo.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }
+
     return <div className="actionResult">
         {detail.tfield.map((tl, i) => {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     // add id if this is an address
-                    let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {} : {id: "M_" + tup.value};
+                    let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {id: "M_" + tup.value} : {};
                     const classes = tup.tags.join(" ");
                     let isNote = tup.tags.find(x => x === "note") !== undefined;
                     // TODO try to rewrite this weird shit as a reduce
@@ -56,7 +69,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                         return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                                       key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
-                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
+                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`} onClick={()=>handleClick(tup.data)}>{tup.value}</span>;
                     }
                 })}
             </div>;
