@@ -11,12 +11,26 @@ import {
     mkLabels,
     VectorDefinitionEdict
 } from "./asm";
-import {codes} from "./core";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
 import {BlobToActions, hexDumper} from "./api";
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
-const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", wordToEndianBytes(C64_MEMORY.basicStart));
+const C64_BASIC_PRG = new BlobType(
+    "C64 basic prg",
+    "BASIC program",
+    ["basic", "c64"],
+    "prg",
+    wordToEndianBytes(C64_MEMORY.basicStart)
+);
+
+/** Returns the given string as an array of char codes */
+const codes = (s: string): number[] => {
+    const prefix = [];
+    for (let i = 0; i < s.length; i++) {
+        prefix.push(s.charCodeAt(i));
+    }
+    return prefix;
+}
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = codes("C64 CARTRIDGE   ");

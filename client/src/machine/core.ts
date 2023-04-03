@@ -24,15 +24,6 @@ const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
 const toArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
 
-/** Returns the given string as an array of char codes */
-const codes = (s: string): number[] => {
-    const prefix = [];
-    for (let i = 0; i < s.length; i++) {
-        prefix.push(s.charCodeAt(i));
-    }
-    return prefix;
-}
-
 /** Returns the given number after asserting it is in byte range. */
 const assertByte = (value: number): number => {
     if (value < 0 || value > 255) {
@@ -53,6 +44,6 @@ const asHex = (b: number[]) => {
     return b.map(hex8).join(" ");
 }
 
-export {unToSigned, assertByte, codes, hex16, hex8, asHex, TODO, toArray}
+export {unToSigned, assertByte, hex16, hex8, asHex, TODO, toArray}
 
 export type {Byteable, Address};
