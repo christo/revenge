@@ -32,7 +32,7 @@ by [Michael Steil](https://pagetable.com/) of
 ## TODO
 
 * Unit tests for C64 and VIC-20 BASIC decoding
-* unit tests for `core.ts`
+* System symbol recognition
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
