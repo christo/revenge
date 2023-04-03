@@ -11,7 +11,9 @@ type Token = [number, string];
 
 const isZilch = (x: number | undefined) => (x === undefined || x === 0);
 
-/** Decodes a BASIC {@link FileBlob} into its program structure */
+/**
+ * Decodes a BASIC {@link FileBlob} into its program structure.
+ */
 class BasicDecoder {
     private name: string;
     private minor: number;
