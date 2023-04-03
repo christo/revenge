@@ -36,6 +36,13 @@ by [Michael Steil](https://pagetable.com/) of
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
   * Sniffer / hybrid disassembler/basic decoder
 * better styling for BASIC decoder
+* hovertools: 
+  * dynamically decorate
+  * single instruction or selection
+  * selection can be expanded using tools (drag extend up or down)
+  * extra info
+  * edit options
+  * branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
 * functional data structure for byte interpretation
   * make random access and modification to disassembled instruction list (lenses?)
   * need to be able to replace a sequence of instructions into a byte declaration
