@@ -68,6 +68,10 @@ const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k"
 const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
 
+const TAG_ADDRESS = "addr";
+
+const TAG_LINE_NUMBER = "lnum";
+
 /**
  * Vic-20 BASIC
  */
@@ -101,8 +105,8 @@ class Vic20Basic implements BlobSniffer {
         let lastNum = -1;
         let lastAddr = -1;
         decoded.forEach((i: TagSeq) => {
-            const lnumStr = i.find(t => t.hasTag("lnum"));
-            let addrStr = i.find(t => t.hasTag("addr"));
+            const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
+            let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
             if (lnumStr !== undefined && addrStr !== undefined) {
                 let thisNum = parseInt(lnumStr.value);
                 if (lastNum !== -1 && lastNum >= thisNum) {
