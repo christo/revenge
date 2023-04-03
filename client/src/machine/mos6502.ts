@@ -14,7 +14,7 @@ class AddressingMode {
     desc: string;
     template: string;
     blurb: string
-    numOperandBytes: number;
+    numOperandBytes: 0 | 1 | 2;
 
     /**
      * Make an addressing mode using all the goodies.
