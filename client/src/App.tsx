@@ -17,7 +17,7 @@ import {sniff} from "./machine/revenge";
 import {ActionExecutor, Detail, TypeActions} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
-import {Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
+import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import axios from "axios";
 
 const darkTheme = createTheme({
@@ -47,7 +47,13 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     // add id if this is an address
                     let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {} : {id: "M_" + tup.value};
                     const classes = tup.tags.join(" ");
-                    return <span {...extra} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
+                    let isNote = tup.tags.find(x => x === "note") !== undefined;
+                    if (isNote) {
+                        // doesn't look great...
+                        return <Alert severity="info" sx={{mt:1}}>{tup.value}</Alert>
+                    } else {
+                        return <span {...extra} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
+                    }
                 })}
             </div>;
         })}

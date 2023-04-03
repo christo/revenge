@@ -116,7 +116,8 @@ class Vic20Basic implements BlobSniffer {
                 }
                 lastNum = thisNum;
             } else {
-                throw Error("line number or line addr missing!");
+                // not a basic line
+                // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
             }
 
         })

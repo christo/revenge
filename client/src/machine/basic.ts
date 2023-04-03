@@ -91,6 +91,14 @@ class BasicDecoder {
             const eof = isZilch(fb.bytes.at(i)) && isZilch(fb.bytes.at(i + 1));
             finished = finished || (eol && eof);
         }
+
+        // "i" is pointing at the termination word
+        const remainingBytes = fb.bytes.length - i - 2;
+        if (remainingBytes > 0) {
+            const note = new Tag(`${remainingBytes} remaining bytes`, "note");
+            const addr = new Tag(hex16(baseAddress + i + 2), "addr");
+            lines.push([note, addr]);
+        }
         return lines;
     }
 }
