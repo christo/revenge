@@ -900,13 +900,9 @@ class Disassembler {
      */
     mkPredefLabelsComments(addr: Address): LabelsComments {
         return this.predefLc.filter(t => t[0] === addr).map(t => t[1]).reduce((p, c) => {
-            if (p === undefined) {
-                return c;
-            } else {
-                p.merge(c);
-                return p;
-            }
-        });
+            p.merge(c);
+            return p;
+        }, new LabelsComments());
     }
 
     /**
