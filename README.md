@@ -33,6 +33,8 @@ by [Michael Steil](https://pagetable.com/) of
 
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
+* Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
+  * Sniffer / hybrid disassembler/basic decoder
 * better styling for BASIC decoder
 * functional data structure for byte interpretation
   * make random access and modification to disassembled instruction list (lenses?)
