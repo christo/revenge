@@ -579,7 +579,7 @@ class FullInstruction implements Byteable {
      *
      * @param pc address to resolve to if this addressing mode is pc-relative.
      */
-    resolveOperandAddress(pc: Address):Address {
+    resolveOperandAddress(pc: Address): Address {
         const mode = this.instruction.mode;
         if (mode === MODE_RELATIVE) {
             if (mode.numOperandBytes !== 1) {

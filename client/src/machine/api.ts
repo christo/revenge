@@ -52,13 +52,13 @@ type TagSeq = Tag[]
  */
 class LogicalLine {
 
-    tags:TagSeq;
+    tags: TagSeq;
 
     constructor(tags: TagSeq) {
         this.tags = tags;
     }
 
-    getTags():TagSeq {
+    getTags(): TagSeq {
         return this.tags;
     }
 }

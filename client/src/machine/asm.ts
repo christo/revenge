@@ -656,7 +656,7 @@ export class LabelsComments {
         toArray(comments).forEach(s => this._labels.push(s));
     }
 
-    merge(lc:LabelsComments) {
+    merge(lc: LabelsComments) {
         this.addLabels(lc._labels);
         this.addComments(lc._comments);
     }
@@ -847,7 +847,7 @@ class Disassembler {
             return new ByteDeclaration(bytes, lc);
         } else {
             const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
-            const mkBd = (n:number) => {
+            const mkBd = (n: number) => {
                 const bytes = [opcode, ...this.eatBytes(n - 1)];
                 lc.addComments(`inferred via edict@+${n}`);
                 return new ByteDeclaration(bytes, lc);
