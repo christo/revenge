@@ -1,6 +1,6 @@
 // assembler / disassembler stuff - 6502-specific
 
-import {Address, assertByte, Byteable, hex16, hex8, TODO, unToSigned} from "./core";
+import {Address, assertByte, Byteable, hex16, hex8, toArray, TODO, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -170,7 +170,7 @@ class ByteDeclaration extends InstructionBase implements Directive, Byteable {
 
     private readonly _rawBytes: Array<number>;
 
-    constructor(rawBytes: Array<number>, lc: LabelsComments) {
+    constructor(rawBytes: number[], lc: LabelsComments) {
         super(lc, SourceType.DATA);
         this._rawBytes = rawBytes.map(b => assertByte(b));
     }
@@ -644,8 +644,21 @@ export class LabelsComments {
     private readonly _comments: string[];
 
     constructor(labels: string[] | string = [], comments: string[] | string = []) {
-        this._labels = ((typeof labels === "string") ? [labels] : labels).filter(s => s.length > 0);
-        this._comments = ((typeof comments === "string") ? [comments] : comments).filter(s => s.length > 0);
+        this._labels = toArray(labels);
+        this._comments = toArray(comments);
+    }
+
+    addLabels(labels: string[] | string) {
+        toArray(labels).forEach(s => this._labels.push(s));
+    }
+
+    addComments(comments: string[] | string) {
+        toArray(comments).forEach(s => this._labels.push(s));
+    }
+
+    merge(lc:LabelsComments) {
+        this.addLabels(lc._labels);
+        this.addComments(lc._comments);
     }
 
     get labels() {
@@ -809,12 +822,9 @@ class Disassembler {
      * and advances the index by the correct number of bytes.
      */
     nextInstructionLine(): Instructionish {
-        let labels: Array<string> = [];
-        // need to allow multiple labels
-        if (this.hasPredefLabel(this.currentAddress)) {
-            labels = this.generateLabels(this.currentAddress);
-        }
-        let comments: Array<string> = [];
+        // TODO clean up the early returns
+        const lc = this.mkPredefLabelsComments(this.currentAddress);
+
         const edict = this.disMeta.getEdict(this.currentIndex);
         if (edict !== undefined) {
             this.currentIndex += edict.length;
@@ -822,46 +832,58 @@ class Disassembler {
         }
 
         const opcode = this.eatByteOrDie();
-
-        const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
         if (Mos6502.INSTRUCTIONS.op(opcode) === undefined) {
-            return new ByteDeclaration([opcode], mkComments("illegal opcode"));
+            lc.addComments("illegal opcode");
+            return new ByteDeclaration([opcode], lc);
         }
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for the remaining bytes
-        let remainingBytes = this.fb.bytes.length - this.currentIndex;
+        // TODO refactor: instruction doesn't fit, via eof or conflicting edict
+        let bytesLeft = this.fb.bytes.length - this.currentIndex;
+        const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
 
-        if (remainingBytes < numInstructionBytes) {
-            let bytes = [opcode].concat(this.eatBytes(remainingBytes))
-            return new ByteDeclaration(bytes, mkComments("must be data?"));
+        if (bytesLeft < instLen) {
+            let bytes = [opcode].concat(this.eatBytes(bytesLeft))
+            lc.addComments("no more instructions fit");
+            return new ByteDeclaration(bytes, lc);
         } else {
             const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
-            // current index is the byte following the opcode which we've already checked for a edict
-            // check there is no edict inside the bytes this instruction would need
-            if (numInstructionBytes === 2 && edictAhead(1)) {
-                return new ByteDeclaration([opcode], mkComments("inferred via edict@+1"));
-            } else if (numInstructionBytes === 3) {
+            const mkBd = (n:number) => {
+                const bytes = [opcode, ...this.eatBytes(n - 1)];
+                lc.addComments(`inferred via edict@+${n}`);
+                return new ByteDeclaration(bytes, lc);
+            };
+            // current index is the byte following the opcode which we've already checked for an edict
+            // check for edict inside the bytes this instruction would need
+            if (instLen === 2 && edictAhead(1)) {
+                return mkBd(1);
+            } else if (instLen === 3) {
                 if (edictAhead(2)) {
-                    const bytes = [opcode, this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via edict@+2"));
+                    return mkBd(2);
                 } else if (edictAhead(3)) {
-                    const bytes = [opcode, this.eatByte(), this.eatByte()];
-                    return new ByteDeclaration(bytes, mkComments("inferred via edict@+3"));
+                    return mkBd(3);
                 }
             }
-
-            // interpret as instruction
-            let firstOperandByte = 0;
-            let secondOperandByte = 0;
-            if (numInstructionBytes > 1) {
-                firstOperandByte = this.eatByteOrDie();
-            }
-            if (numInstructionBytes === 3) {
-                secondOperandByte = this.eatByteOrDie();
-            }
-
-            const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-            return new FullInstructionLine(il, new LabelsComments(labels, comments));
+            return this.mkInstruction(opcode, lc);
         }
+    }
+
+    /**
+     * For a known instruction opcode, construct the instruction with the {@link LabelsComments} and consume the
+     * requisite bytes.
+     */
+    private mkInstruction(opcode: number, labelsComments: LabelsComments) {
+        const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1
+        // interpret as instruction
+        let firstOperandByte = 0;
+        let secondOperandByte = 0;
+        if (numInstructionBytes > 1) {
+            firstOperandByte = this.eatByteOrDie();
+        }
+        if (numInstructionBytes === 3) {
+            secondOperandByte = this.eatByteOrDie();
+        }
+        const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+        return new FullInstructionLine(il, labelsComments);
     }
 
     hasNext() {
@@ -872,9 +894,15 @@ class Disassembler {
         return typeof this.predefLc.find(t => t[0] === addr) !== "undefined";
     };
 
-    /** Returns zero or more labels that belong at the given addres. */
-    generateLabels(addr: Address): string[] {
-        return this.predefLc.filter(t => t[0] === addr).map(t => t[1].labels).reduce((p, c) => p.concat(c));
+    /**
+     * Returns zero or more {@link LabelsComments} defined for the given address.
+     * @param addr
+     */
+    mkPredefLabelsComments(addr: Address): LabelsComments {
+        return this.predefLc.filter(t => t[0] === addr).map(t => t[1]).reduce((p, c) => {
+            p.merge(c);
+            return p;
+        });
     }
 
     /**

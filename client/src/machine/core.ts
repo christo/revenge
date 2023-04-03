@@ -22,9 +22,10 @@ type Address = number;
 
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
+const toArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
 
 /** Returns the given string as an array of char codes */
-const stringToArray = (s: string): number[] => {
+const codes = (s: string): number[] => {
     const prefix = [];
     for (let i = 0; i < s.length; i++) {
         prefix.push(s.charCodeAt(i));
@@ -52,6 +53,6 @@ const asHex = (b: number[]) => {
     return b.map(hex8).join(" ");
 }
 
-export {unToSigned, assertByte, stringToArray, hex16, hex8, asHex, TODO}
+export {unToSigned, assertByte, codes, hex16, hex8, asHex, TODO, toArray}
 
 export type {Byteable, Address};

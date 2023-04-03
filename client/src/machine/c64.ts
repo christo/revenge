@@ -11,7 +11,7 @@ import {
     mkLabels,
     VectorDefinitionEdict
 } from "./asm";
-import {stringToArray} from "./core";
+import {codes} from "./core";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
 import {BlobToActions, hexDumper} from "./api";
 
@@ -19,7 +19,7 @@ const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
 const C64_BASIC_PRG = new BlobType("C64 basic prg", "BASIC program", ["basic", "c64"], "prg", wordToEndianBytes(C64_MEMORY.basicStart));
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
-const prefix = stringToArray("C64 CARTRIDGE   ");
+const prefix = codes("C64 CARTRIDGE   ");
 const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
 const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
