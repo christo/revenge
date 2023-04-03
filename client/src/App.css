@@ -135,15 +135,6 @@ body {
   cursor: pointer;
 }
 
-/* .op .abs with preceding .mn .br */
-.opnd.abs:hover::after {
-  content: "\27a4";
-  margin-left: 1em;
-  font-size: 150%;
-  position: absolute;
-  top: -0.2em;
-}
-
 .line {
   line-height: 1.5;
   display:flex;
