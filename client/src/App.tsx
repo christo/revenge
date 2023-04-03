@@ -50,7 +50,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     let isNote = tup.tags.find(x => x === "note") !== undefined;
                     if (isNote) {
                         // doesn't look great...
-                        return <Alert severity="info" sx={{mt:2, width: "50%"}}>{tup.value}</Alert>
+                        return <Alert severity="info" sx={{mt:2, width: "50%"}} key={`fb_${i}_${j}`}>{tup.value}</Alert>
                     } else {
                         return <span {...extra} className={classes} key={`fb_${i}_${j}`}>{tup.value}</span>;
                     }
