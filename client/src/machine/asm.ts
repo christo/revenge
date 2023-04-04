@@ -300,10 +300,12 @@ class DefaultDialect implements Dialect {
         // return value could also contain input offset, length, maybe metadata for comment etc.
     }
 
-    private taggedCode(mi: Instruction, fil: FullInstructionLine): TagSeq {
+    private taggedCode(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         // add the mnemonic tag and also the mnemonic category
+        const mi = fil.fullInstruction.instruction;
         const mnemonic: Tag = new Tag(mi.op.mnemonic.toLowerCase(), `mn ${mi.op.cat}`);
-        const operandText = this.renderOperand(fil.fullInstruction).trim();
+        const operandText = this.renderOperand(fil.fullInstruction, dis).trim();
+        // check the symbol table for a symbol that matches this operand
         if (operandText.length > 0) {
             const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
             if (fil.fullInstruction.operandAddressResolvable()) {
@@ -370,7 +372,7 @@ class DefaultDialect implements Dialect {
      * @param il the instruction line
      * @private
      */
-    private renderOperand(il: FullInstruction): string {
+    private renderOperand(il: FullInstruction, dis: Disassembler): string {
 
         let operand = "";
         switch (il.instruction.mode) {
@@ -379,7 +381,14 @@ class DefaultDialect implements Dialect {
                 operand = ""; // implied accumulator not manifest
                 break;
             case MODE_ABSOLUTE:
-                operand = this.hexWordText(il.operand16());
+                const x = il.operand16();
+                const symbol = dis.getSymbol(x);
+                if (symbol !== undefined) {
+                    operand = symbol.name;
+                    dis.addSymbolDefinition(symbol);
+                } else {
+                    operand = this.hexWordText(x);
+                }
                 break;
             case MODE_ABSOLUTE_X:
                 operand = this.hexWordText(il.operand16()) + ", x";
@@ -438,7 +447,7 @@ class DefaultDialect implements Dialect {
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         const comments: Tag = new Tag(this.renderComments(fil.labelsComments.comments), "comment");
         const labels: Tag = new Tag(this.renderLabels(fil.labelsComments.labels), "label");
-        return [comments, labels, ...this.taggedCode(fil.fullInstruction.instruction, fil)];
+        return [comments, labels, ...this.taggedCode(fil, dis)];
     }
 
     directive(directive: Directive, dis: Disassembler): TagSeq {
@@ -557,6 +566,73 @@ class Environment {
 }
 
 /**
+ * Symbol definition.
+ */
+class SymDef {
+    /** Definitive canonical name, traditionally used, usually an overly obtuse contraction. */
+    name:string;
+    /** Numeric memory address for the symbol. */
+    value:Address;
+    /** Short phrase to describe the meaning, more understandable than the canonical name */
+    descriptor:string;
+    /** Extended information */
+    blurb:string;
+
+
+    constructor(name: string, value: Address, description: string, blurb: string = "") {
+        this.name = name;
+        this.value = value;
+        this.descriptor = description;
+        this.blurb = blurb;
+    }
+}
+
+/**
+ * Table of single symbol to single address. Names and addresses must be unique.
+ */
+class SymbolTable {
+
+    // future: keep kernal symbols in a separate table from user-defined symbols, also can have multimap
+
+    private addressToSymbol: Map<Address, SymDef> = new Map<Address, SymDef>();
+    private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>()
+
+    /**
+     * Register a new symbol. One must not exist with the same name or address.
+     *
+     * @param addr address the symbol refers to.
+     * @param name name to be used instead of the address.
+     * @param desc a more verbose description of the symbol.
+     * @param blurb extended info.
+     */
+    reg(addr: Address, name: string, desc: string, blurb: string = "") {
+        if (addr < 0 || addr >= 1<<16) {
+            throw Error("address out of range");
+        }
+        name = name.trim();
+        desc = desc.trim();
+        blurb = blurb.trim();
+        if (name.length < 1) {
+            throw Error("name empty");
+        }
+        if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
+            throw Error("non-unique address or name"); // maybe later we can do a replacement
+        }
+        const symDef = new SymDef(name, addr, desc, blurb);
+        this.addressToSymbol.set(addr, symDef);
+        this.nameToSymbol.set(name, symDef);
+    }
+
+    byName(name:string) {
+        return this.nameToSymbol.get(name);
+    }
+
+    byAddress(addr:Address) {
+        return this.addressToSymbol.get(addr);
+    }
+}
+
+/**
  * Metadata valuable for disassembling a {@link FileBlob}. Expect this interface to evolve dramatically.
  */
 interface DisassemblyMeta {
@@ -592,6 +668,11 @@ interface DisassemblyMeta {
      * Return a list of address + LabelsComments
      */
     getJumpTargets(fb: FileBlob): [Address, LabelsComments][];
+
+    /**
+     * Based on the known machine.
+     */
+    getSymbolTable(): SymbolTable;
 }
 
 class ByteDefinitionEdict implements Edict<Instructionish> {
@@ -678,13 +759,14 @@ type JumpTargetFetcher = (fb: FileBlob) => [Address, LabelsComments][];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
     /** A bit stinky - should never be used and probably not exist. */
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => []);
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => [], new SymbolTable());
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;
     private readonly _contentStartOffset: number;
     private readonly edicts: { [id: number]: Edict<Instructionish>; };
     private readonly jumpTargetFetcher: JumpTargetFetcher;
+    private symbolTable: SymbolTable;
 
     constructor(
         baseAddressOffset: number,
@@ -692,10 +774,12 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         contentStartOffset: number,
         edicts: Edict<Instructionish>[],
         getJumpTargets: JumpTargetFetcher,
+        symbolTable: SymbolTable
     ) {
 
         this._baseAddressOffset = baseAddressOffset;
         this._contentStartOffset = contentStartOffset;
+        this.symbolTable = symbolTable;
 
         // keep the offsets
         this._resetVectorOffset = resetVectorOffset;
@@ -741,6 +825,10 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     getJumpTargets(fb: FileBlob): [Address, LabelsComments][] {
         return this.jumpTargetFetcher(fb);
     }
+
+    getSymbolTable(): SymbolTable {
+        return this.symbolTable;
+    }
 }
 
 /**
@@ -777,6 +865,7 @@ class Disassembler {
     private predefLc: [Address, LabelsComments][];
 
     private disMeta: DisassemblyMeta;
+    private symbolDefinitions: Map<string, SymDef>;
 
     constructor(iset: InstructionSet, fb: FileBlob, bs: BlobSniffer) {
         this.iset = iset;
@@ -790,10 +879,9 @@ class Disassembler {
         this.currentIndex = index;
         this.fb = fb;
         this.segmentBaseAddress = dm.baseAddress(fb);
-
         this.predefLc = dm.getJumpTargets(fb);
-
         this.disMeta = dm;
+        this.symbolDefinitions = new Map<string, SymDef>();
     }
 
     private eatBytes(count: number): number[] {
@@ -893,10 +981,6 @@ class Disassembler {
         return this.currentIndex < this.fb.bytes.length;
     }
 
-    hasPredefLabel = (addr: Address) => {
-        return typeof this.predefLc.find(t => t[0] === addr) !== "undefined";
-    };
-
     /**
      * Returns zero or more {@link LabelsComments} defined for the given address.
      * @param addr
@@ -938,6 +1022,15 @@ class Disassembler {
 
     get currentAddress(): Address {
         return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
+    }
+
+    getSymbol(addr:Address):SymDef|undefined {
+        return this.disMeta.getSymbolTable().byAddress(addr);
+    }
+
+    /** Makes a symbol definition edict */
+    addSymbolDefinition(symbol: SymDef) {
+        this.symbolDefinitions.set(symbol.name, symbol);
     }
 }
 
@@ -1024,7 +1117,9 @@ export {
     ByteDefinitionEdict,
     VectorDefinitionEdict,
     mkLabels,
-    mkComments
+    mkComments,
+    SymDef,
+    SymbolTable
 };
 export type {
     BlobSniffer,

@@ -8,7 +8,7 @@ import {
     DisassemblyMetaImpl,
     JumpTargetFetcher,
     LabelsComments,
-    mkLabels,
+    mkLabels, SymbolTable,
     VectorDefinitionEdict,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
@@ -34,6 +34,11 @@ const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ];
 
+const KERNAL_SYM = new SymbolTable();
+// TODO distinguish between subroutines and registers
+// TODO map the inputs, outputs and register effects of subroutines
+KERNAL_SYM.reg(0xff8a, "RESTOR", "set KERNAL vectors to defaults");
+
 /** VIC-20 cart image sniffer. */
 const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
@@ -49,7 +54,8 @@ const VIC20_CART = new CartSniffer(
             new VectorDefinitionEdict(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
             new VectorDefinitionEdict(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
             new VectorDefinitionEdict(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
-        ], jumpTargetFetcher
+        ], jumpTargetFetcher,
+        KERNAL_SYM
     )
 );
 
@@ -135,6 +141,7 @@ const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
 const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
+
 export {
     COMMON_MLPS,
     VIC20_CART,
@@ -142,5 +149,6 @@ export {
     EXP03K_VIC_BASIC,
     EXP08K_VIC_BASIC,
     EXP16K_VIC_BASIC,
-    EXP24K_VIC_BASIC
+    EXP24K_VIC_BASIC,
+    KERNAL_SYM
 }

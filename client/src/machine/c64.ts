@@ -8,7 +8,7 @@ import {
     DisassemblyMetaImpl,
     JumpTargetFetcher,
     LabelsComments,
-    mkLabels,
+    mkLabels, SymbolTable,
     VectorDefinitionEdict
 } from "./asm";
 import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
@@ -91,7 +91,8 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_RESET_VECTOR,
             C64_CART_NMI_VECTOR
         ],
-        jumpTargetFetcher)
+        jumpTargetFetcher,
+        new SymbolTable())  // TODO add c64 symbol table
 );
 
 

@@ -41,6 +41,7 @@ interface FileContents {
 function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
 
+    // when an address operand is clicked, try to find its destination in the view and if present scroll to it
     const handleClick = (data:[string, string][]) => {
         const tup = data.find(t => t[0] === "opnd_val");
         if (tup !== undefined) {
