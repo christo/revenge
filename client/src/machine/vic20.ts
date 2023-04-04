@@ -15,6 +15,13 @@ import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
 import {TagSeq} from "./api";
 
+const KERNAL_SYM = new SymbolTable();
+// TODO distinguish between subroutines and registers
+// TODO map the inputs, outputs and register effects of subroutines
+KERNAL_SYM.reg(0xff8a, "RESTOR", "set KERNAL vectors to defaults");
+
+// vic-20 cartridge image definition:
+
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
  * CBM is in reverse video (&70).
@@ -33,11 +40,6 @@ const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
     [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ];
-
-const KERNAL_SYM = new SymbolTable();
-// TODO distinguish between subroutines and registers
-// TODO map the inputs, outputs and register effects of subroutines
-KERNAL_SYM.reg(0xff8a, "RESTOR", "set KERNAL vectors to defaults");
 
 /** VIC-20 cart image sniffer. */
 const VIC20_CART = new CartSniffer(
@@ -74,8 +76,8 @@ const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k"
 const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
 
+// TODO move these tag names out - they're shared between disassembler code and front-end css
 const TAG_ADDRESS = "addr";
-
 const TAG_LINE_NUMBER = "lnum";
 
 /**
