@@ -61,7 +61,6 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {id: "M_" + tup.value} : {};
                     const classes = tup.tags.join(" ");
                     let isNote = tup.tags.find(x => x === "note") !== undefined;
-                    // TODO try to rewrite this weird shit as a reduce
                     let data: { [k: string]: string; } = {};
                     tup.data.forEach((kv:[string,string]) => data[`data-${kv[0]}`] = kv[1]);
 
