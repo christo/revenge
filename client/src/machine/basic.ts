@@ -116,6 +116,7 @@ class BasicDecoder {
             const addr = new Tag(hex16(baseAddress + i + 2), "addr");
             lines.push([note, addr]);
         }
+
         return lines;
     }
 }

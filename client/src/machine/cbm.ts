@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, Detail, hexDumper, Tag, UserAction} from "./api";
+import {ActionFunction, Detail, hexDumper, Tag, TagSeq, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -29,6 +29,8 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     let userActions: [UserAction, ...UserAction[]] = [{
         label: "disassembly",
         f: () => {
+            // start timer
+            const startTime = Date.now();
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
             let detail = new Detail(["line"], [])
 
@@ -47,7 +49,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
                 detail.tfield.push(tags);
             }
-            detail.stats.push(["#instructions:", detail.tfield.length.toString()]);
+            detail.stats.push(["lines", detail.tfield.length.toString()]);
+            const timeTaken = Date.now() - startTime;
+            detail.stats.push(["disassembled in", timeTaken.toString() + " ms"])
             return detail;
         }
     }, hexDumper(fb)];
@@ -63,7 +67,12 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
         t: t,
         actions: [{
             label: "basic",
-            f: () => new Detail(["basic"], CBM_BASIC_2_0.decode(fb))
+            f: () => {
+                const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
+                // TODO filter to count only the entries tagged "line"
+                detail.stats.push(["lines", detail.tfield.length.toString()]);
+                return detail;
+            }
         }]
     };
 };

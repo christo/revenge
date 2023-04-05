@@ -28,16 +28,16 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 * High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated 
 by [Michael Steil](https://pagetable.com/) of
 [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
+* stats/summary of file interpretation action taken
+  * execution time for disassembly
+* System kernal subroutine symbol recognition (VIC-20)
 
 ## TODO
 
 * More unit tests for C64 and VIC-20 BASIC decoding
 * stats/summary of action
-  * execution time
-  * symbol detection (disassembly)
-  * file type confidence (hex dump n/a?)
-  * md5 sha1 hashes (maybe add to file detail rather than file type action)
-* System symbol recognition
+  * symbol detection count (disassembly)
+* System kernal subroutine symbol recognition (C64)
 * render source lines without address prefix
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
