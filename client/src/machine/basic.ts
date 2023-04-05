@@ -27,7 +27,18 @@ class BasicDecoder {
 
     private static readonly LOAD_ADDRESS_OFFSET = 0;
     private static readonly CONTENT_START_OFFSET = 2;
-    private static MINIMUM_SIZE: number = 3; // TODO calculate this correctly
+
+    /**
+     * 2 load address
+     * 2 first line vector
+     * 2 first line number
+     * 1 minimal program (single token, e.g. "REM")
+     * 1 line end zero byte
+     * 2 terminating word
+     *
+     * @private
+     */
+    private static MINIMUM_SIZE: number = 2 + 2 + 2 + 1 + 1 + 2;
 
     constructor(name: string, minor: number, major: number) {
         this.name = name;
