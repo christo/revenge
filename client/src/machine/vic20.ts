@@ -155,7 +155,7 @@ export class Vic20Basic implements BlobSniffer {
             let lastNum = -1;
             let lastAddr = -1;
             decoded.lines.forEach((ll: LogicalLine) => {
-                const i: Tag[] = ll.tags;
+                const i: Tag[] = ll.getTags();
                 const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
                 let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
                 if (lnumStr !== undefined && addrStr !== undefined) {
@@ -164,7 +164,6 @@ export class Vic20Basic implements BlobSniffer {
                         // decrease in basic line numbers
                         isBasic *= 0.5;
                     }
-
                     if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
                         // next line address is allegedly lower? This ain't basic
                         isBasic *= 0.3;
@@ -174,8 +173,7 @@ export class Vic20Basic implements BlobSniffer {
                     // not a basic line
                     // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
                 }
-
-            })
+            });
         } catch (e) {
             // if we exploded, it's not BASIC!
             console.error(e);

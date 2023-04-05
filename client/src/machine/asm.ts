@@ -1,10 +1,9 @@
 // assembler / disassembler stuff - 6502-specific
 
-import {Address, assertByte, Byteable, hex16, hex8, toStringArray, TODO, unToSigned} from "./core";
+import {Address, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
-    Instruction,
     InstructionSet,
     MODE_ABSOLUTE,
     MODE_ABSOLUTE_X,
@@ -916,48 +915,68 @@ class Disassembler {
      */
     nextInstructionLine(): Instructionish {
         // TODO clean up the early returns
+
+        // some helper functions
         const lc = this.mkPredefLabelsComments(this.currentAddress);
+
 
         const edict = this.disMeta.getEdict(this.currentIndex);
         if (edict !== undefined) {
+            if (edict.length > this.bytesLeftInFile()) {
+                // TODO handle this more gracefully
+                throw Error(`edict is length ${edict.length} but only ${this.bytesLeftInFile()} bytes left in file!`)
+            }
             this.currentIndex += edict.length;
             return edict.create(this.fb);
         }
 
         const opcode = this.eatByteOrDie();
+
         if (Mos6502.INSTRUCTIONS.op(opcode) === undefined) {
             lc.addComments("illegal opcode");
             return new ByteDeclaration([opcode], lc);
         }
+
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for the remaining bytes
-        // TODO refactor: instruction doesn't fit, via eof or conflicting edict
-        let bytesLeft = this.fb.bytes.length - this.currentIndex;
         const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
 
-        if (bytesLeft < instLen) {
-            let bytes = [opcode].concat(this.eatBytes(bytesLeft))
+        if (this.bytesLeftInFile() < instLen) {
+
             lc.addComments("no more instructions fit");
-            return new ByteDeclaration(bytes, lc);
+            return new ByteDeclaration([opcode, ...this.eatBytes(this.bytesLeftInFile())], lc);
+
         } else {
+
+            // TODO extract this edict inference thing into a method
+
+            // check if there's an edict n ahead of currentIndex
             const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
-            const mkBd = (n: number) => {
-                const bytes = [opcode, ...this.eatBytes(n - 1)];
+
+            // make an edict-enforced byte declaration of the given length
+            const mkEdictInferredByteDec = (n: number) => {
                 lc.addComments(`inferred via edict@+${n}`);
-                return new ByteDeclaration(bytes, lc);
+                return new ByteDeclaration([opcode, ...this.eatBytes(n - 1)], lc);
             };
+
             // current index is the byte following the opcode which we've already checked for an edict
             // check for edict inside the bytes this instruction would need
             if (instLen === 2 && edictAhead(1)) {
-                return mkBd(1);
+                return mkEdictInferredByteDec(1);
             } else if (instLen === 3) {
                 if (edictAhead(2)) {
-                    return mkBd(2);
+                    return mkEdictInferredByteDec(2);
                 } else if (edictAhead(3)) {
-                    return mkBd(3);
+                    return mkEdictInferredByteDec(3);
                 }
             }
+
+            // otherwise make an instruction
             return this.mkInstruction(opcode, lc);
         }
+    }
+
+    private bytesLeftInFile() {
+        return this.fb.bytes.length - this.currentIndex;
     }
 
     /**

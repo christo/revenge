@@ -25,8 +25,9 @@ class Tag {
 }
 
 /**
- * Abstraction that corresponds to a logical line of listing output. This may include multiple labels and comments
- * which are rendered onto multiple physical lines in a typical (dis)assembly listing.
+ * Abstraction containing a sequence of rendered elements that belong on a logical line with meof listing output.
+ * This may include multiple labels and comments which are rendered onto multiple physical lines in a typical
+ * (dis)assembly listing. See {@link LogicalLine} for the fully-connected API type.
  */
 type TagSeq = Tag[]
 
@@ -52,14 +53,13 @@ type TagSeq = Tag[]
  * - labels are different to symbol assignment - label has an implicit "= *"
  *
  *
- * TODO figure out how to manage the bijection between addresses and source lines
  */
 class LogicalLine {
 
-    /** Temporary transition encapsulation */
-    tags: TagSeq;
-    address?: Address;
-    instruction?: Instructionish;
+    /** Temporary transition encapsulation, maybe migrate to lazy rendering. */
+    private tags: TagSeq;
+    private address?: Address;
+    private instruction?: Instructionish;
 
     constructor(tags: TagSeq, address?:Address, instruction?:Instructionish) {
         this.tags = tags;
