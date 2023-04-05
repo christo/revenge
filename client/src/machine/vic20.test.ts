@@ -1,12 +1,14 @@
 import {UNEXPANDED_VIC_BASIC, VIC20_UNEX, Vic20Basic} from './vic20';
 import {FileBlob} from "./FileBlob";
+import {LITTLE} from "./core";
 
 
-test("sniff not valid basic", () => {
+test("sniff minimal basic program", () => {
     let ba:number[] = [];
     // construct basic file then check sniff result
 
-    ba.push(VIC20_UNEX.basicStart)
+    LITTLE.wordToByteArray(VIC20_UNEX.basicStart).forEach(b => ba.push(b));
+
 
     const fb:FileBlob = new FileBlob("basic-test", ba.length, Uint8Array.from(ba));
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
