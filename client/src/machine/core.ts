@@ -49,6 +49,11 @@ interface Endian {
     wordToTwoBytes(word:number):[number,number];
     twoBytesToWord(bytes:[number,number]):number;
 
+    /**
+     * TODO replace this with an endian memory which is a decorated array with word pushing and reading
+     * @param array
+     * @param word
+     */
     pushWordBytes(array:number[], word:number):void;
 }
 

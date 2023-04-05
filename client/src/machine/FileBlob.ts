@@ -39,7 +39,12 @@ class FileBlob {
         }
     }
 
-    /** Read a little-endian 16 bit vector at the given offset. */
+    /**
+     * Read a little-endian 16 bit vector at the given offset.
+     *
+     * @deprecated TODO replace with an EndianMemory, a wrapper around array which implements reading, pushing etc. words and bytes - also {@link Endian.pushWordBytes}
+     * @param offset
+     */
     readVector(offset: number) {
         if (offset < 0 || offset > this.bytes.length - 1) {
             throw Error("offset out of range for vector read");

@@ -231,6 +231,10 @@ class Vic20 implements Computer {
         return this._endian.wordToTwoBytes(word);
     }
 
+    pushWordBytes(array: number[], word: number): void {
+        return this._endian.pushWordBytes(array, word);
+    }
+
 }
 
 export {
