@@ -919,11 +919,12 @@ class Disassembler {
         // some helper functions
         const lc = this.mkPredefLabelsComments(this.currentAddress);
 
-
+        // TODO merge edict check for 0-n bytes ahead where n is the instruction size with opcode = current byte
         const edict = this.disMeta.getEdict(this.currentIndex);
         if (edict !== undefined) {
             if (edict.length > this.bytesLeftInFile()) {
                 // TODO handle this more gracefully
+                // TODO need to audit edicts, they could clash with each other as well as the end of file
                 throw Error(`edict is length ${edict.length} but only ${this.bytesLeftInFile()} bytes left in file!`)
             }
             this.currentIndex += edict.length;
@@ -937,42 +938,49 @@ class Disassembler {
             return new ByteDeclaration([opcode], lc);
         }
 
-        // if there are not enough bytes for this whole instruction, return a ByteDeclaration for the remaining bytes
+        // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
+        // we don't yet know if an instruction will fit for the next byte
         const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
 
         if (this.bytesLeftInFile() < instLen) {
-
-            lc.addComments("no more instructions fit");
-            return new ByteDeclaration([opcode, ...this.eatBytes(this.bytesLeftInFile())], lc);
-
+            lc.addComments("instruction won't fit");
+            return new ByteDeclaration([opcode], lc);
         } else {
-
-            // TODO extract this edict inference thing into a method
-
-            // check if there's an edict n ahead of currentIndex
-            const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
-
-            // make an edict-enforced byte declaration of the given length
-            const mkEdictInferredByteDec = (n: number) => {
-                lc.addComments(`inferred via edict@+${n}`);
-                return new ByteDeclaration([opcode, ...this.eatBytes(n - 1)], lc);
-            };
-
-            // current index is the byte following the opcode which we've already checked for an edict
-            // check for edict inside the bytes this instruction would need
-            if (instLen === 2 && edictAhead(1)) {
-                return mkEdictInferredByteDec(1);
-            } else if (instLen === 3) {
-                if (edictAhead(2)) {
-                    return mkEdictInferredByteDec(2);
-                } else if (edictAhead(3)) {
-                    return mkEdictInferredByteDec(3);
-                }
-            }
-
-            // otherwise make an instruction
-            return this.mkInstruction(opcode, lc);
+            return this.edictAwareInstruction(opcode, lc);
         }
+    }
+
+    /**
+     * If the current byte is interpreted as an instruction, checks the bytes ahead for any defined edicts that would
+     * clash with it, if they exist, then declare bytes up to the edict instead. If there is no clash, return the
+     * instruction.
+     *
+     * @param currentByte
+     * @param lc
+     */
+    edictAwareInstruction(currentByte:number, lc:LabelsComments):Instructionish {
+
+        // check if there's an edict n ahead of currentIndex
+        const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+
+        // make an edict-enforced byte declaration of the given length
+        const mkEdictInferredByteDec = (n: number) => {
+            lc.addComments(`inferred via edict@+${n}`); // need a better way of communicating this to the user
+            return new ByteDeclaration([currentByte, ...this.eatBytes(n - 1)], lc);
+        };
+        const instLen = Mos6502.INSTRUCTIONS.numBytes(currentByte);
+        // current index is the byte following the opcode which we've already checked for an edict
+        // check for edict inside the bytes this instruction would need
+        if (instLen === 2 && edictAhead(1)) {
+            return mkEdictInferredByteDec(1);
+        } else if (instLen === 3) {
+            if (edictAhead(2)) {
+                return mkEdictInferredByteDec(2);
+            } else if (edictAhead(3)) {
+                return mkEdictInferredByteDec(3);
+            }
+        }
+        return this.mkInstruction(currentByte, lc);
     }
 
     private bytesLeftInFile() {
