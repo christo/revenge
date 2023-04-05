@@ -74,7 +74,8 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
 
         </div>
 
-        {detail.tfield.map((tl, i) => {
+        {detail.tfield.lines.map((ll, i) => {
+            const tl = ll.getTags();
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {
                     // add id if this is an address

@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, Detail, hexDumper, Tag, TagSeq, UserAction} from "./api";
+import {ActionFunction, DataView2, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -32,12 +32,13 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             // start timer
             const startTime = Date.now();
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
-            let detail = new Detail(["line"], [])
+            const dv = new NewDataView([]);
+            let detail = new Detail(["line"], dv)
 
             // set the base address
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["entry"], []);
             const tagSeq = assignPc.disassemble(dialect, dis);
-            detail.tfield.push(tagSeq);
+            detail.tfield.lines.push(new LogicalLine(tagSeq));
             while (dis.hasNext()) {
                 let addr: Tag = new Tag(hex16(dis.currentAddress), "addr");
                 let inst: Instructionish = dis.nextInstructionLine();
@@ -45,11 +46,11 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 const tags = [addr, hex];
 
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
-                // TODO link up jumptargets...
+                // TODO link up internal jumptargets...
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
-                detail.tfield.push(tags);
+                detail.tfield.lines.push(new LogicalLine(tags));
             }
-            detail.stats.push(["lines", detail.tfield.length.toString()]);
+            detail.stats.push(["lines", detail.tfield.lines.length.toString()]);
             const timeTaken = Date.now() - startTime;
             detail.stats.push(["disassembled in", timeTaken.toString() + " ms"])
             return detail;
@@ -70,7 +71,8 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             f: () => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // TODO filter to count only the entries tagged "line"
-                detail.stats.push(["lines", detail.tfield.length.toString()]);
+                const tfield:DataView2 = detail.tfield;
+                detail.stats.push(["lines",  tfield.lines.length.toString()]);
                 return detail;
             }
         }]

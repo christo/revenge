@@ -1051,7 +1051,7 @@ interface BlobSniffer {
 
     /**
      * This smells, it's a bag of disassembly-specific detail transported from the thing that knows about the
-     * file contents and the disassembler who needs to construct the {@link DataView}. Is there a generic
+     * file contents and the disassembler who needs to construct the {@link DataView2}. Is there a generic
      * way to bundle this stuff? What's the common API such that ignorant intermediaries can be blissfull
      * as they work at a non-specific altitude? Consider an inversion as I did with the Dialect API. Or
      * use generics.

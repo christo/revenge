@@ -1,4 +1,4 @@
-import {BlobSniffer} from "./asm";
+import {BlobSniffer, Instructionish} from "./asm";
 import {FileBlob} from "./FileBlob";
 import {Address, Endian, hex8} from "./core";
 import {Mos6502} from "./mos6502";
@@ -47,20 +47,35 @@ type TagSeq = Tag[]
  * consume different numbers of bytes. Changing from an insruction to a byte definition may have a knock-on effect
  * that forces a different interpretation of following bytes.
  * - Edicts produce these knock on effects although they're defined at offsets rather than addresses
+ * - can have comments and no instructions
+ * - can have labels but if it has label it needs address
+ * - labels are different to symbol assignment - label has an implicit "= *"
  *
  *
  * TODO figure out how to manage the bijection between addresses and source lines
  */
 class LogicalLine {
 
+    /** Temporary transition encapsulation */
     tags: TagSeq;
+    address?: Address;
+    instruction?: Instructionish;
 
-    constructor(tags: TagSeq) {
+    constructor(tags: TagSeq, address?:Address, instruction?:Instructionish) {
         this.tags = tags;
+        this.address = address;
+        this.instruction = instruction;
     }
 
     getTags(): TagSeq {
         return this.tags;
+    }
+
+    /**
+     * @return possibly undefined instruction for this line
+     */
+    getInstruction() {
+        return this.instruction;
     }
 }
 
@@ -70,7 +85,18 @@ class LogicalLine {
  * string tuples. The string tuple represents a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  */
-type DataView = TagSeq[]; // 2d array of tuples
+interface DataView2 {
+    // was DatView, a TagSeq[]
+    lines:LogicalLine[];
+}
+
+class NewDataView implements DataView2 {
+    lines:LogicalLine[];
+
+    constructor(lines: LogicalLine[]) {
+        this.lines = lines;
+    }
+}
 
 /**
  * Datastructure for all data interpretation output.
@@ -78,9 +104,9 @@ type DataView = TagSeq[]; // 2d array of tuples
 class Detail {
     tags: string[];
     stats: [string, string][];
-    tfield: DataView;
+    tfield: DataView2;
 
-    constructor(tags: string[], tfield: DataView) {
+    constructor(tags: string[], tfield: DataView2) {
         this.tags = tags;
         this.tfield = tfield;
         this.stats = [];
@@ -127,7 +153,10 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
         const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x), "hexbyte"));
-        return new Detail(["hexbytes"], [elements]);
+        const oldDataView:TagSeq[] = [elements];
+        const lls = oldDataView.map((ts:TagSeq) => new LogicalLine(ts));
+        const newDataView:DataView2 = new NewDataView(lls);
+        return new Detail(["hexbytes"], newDataView);
     }
 });
 
@@ -166,7 +195,7 @@ interface Computer extends Endian {
     tags():string[];
 }
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration};
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, NewDataView};
 export type {
     Computer,
     TagSeq,
@@ -174,7 +203,7 @@ export type {
     BlobToActions,
     ActionFunction,
     UserAction,
-    DataView,
+    DataView2,
     TypeActions,
     Continuation
 };

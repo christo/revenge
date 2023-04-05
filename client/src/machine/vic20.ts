@@ -8,12 +8,13 @@ import {
     DisassemblyMetaImpl,
     JumpTargetFetcher,
     LabelsComments,
-    mkLabels, SymbolTable,
+    mkLabels,
+    SymbolTable,
     VectorDefinitionEdict,
 } from "./asm";
 import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
-import {Computer, MemoryConfiguration, TagSeq} from "./api";
+import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
 import {Mos6502} from "./mos6502";
 import {Endian, LITTLE} from "./core";
 
@@ -153,7 +154,8 @@ export class Vic20Basic implements BlobSniffer {
             const decoded = CBM_BASIC_2_0.decode(fb);
             let lastNum = -1;
             let lastAddr = -1;
-            decoded.forEach((i: TagSeq) => {
+            decoded.lines.forEach((ll: LogicalLine) => {
+                const i: Tag[] = ll.tags;
                 const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
                 let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
                 if (lnumStr !== undefined && addrStr !== undefined) {
@@ -192,11 +194,11 @@ const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 // TODO pull up commonality between c64 and vic20 to a base class that does most of this
 class Vic20 implements Computer {
     private readonly _memory: MemoryConfiguration;
-    private readonly _endian:Endian;
+    private readonly _endian: Endian;
     private readonly _cpu: Mos6502;
     private readonly _tags: string[];
 
-    constructor(memory:MemoryConfiguration) {
+    constructor(memory: MemoryConfiguration) {
         this._memory = memory;
         this._endian = LITTLE;
         this._cpu = new Mos6502();
