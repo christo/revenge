@@ -740,6 +740,7 @@ export class LabelsComments {
         toStringArray(comments).forEach(s => this._comments.push(s));
     }
 
+    /** Mutates this by adding all the given labels and comments; */
     merge(lc: LabelsComments) {
         this.addLabels(lc._labels);
         this.addComments(lc._comments);
