@@ -737,7 +737,7 @@ export class LabelsComments {
     }
 
     addComments(comments: string[] | string) {
-        toStringArray(comments).forEach(s => this._labels.push(s));
+        toStringArray(comments).forEach(s => this._comments.push(s));
     }
 
     merge(lc: LabelsComments) {
