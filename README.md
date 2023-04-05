@@ -31,7 +31,7 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
-* Unit tests for C64 and VIC-20 BASIC decoding
+* More unit tests for C64 and VIC-20 BASIC decoding
 * stats/summary of action
   * execution time
   * symbol detection (disassembly)
