@@ -32,7 +32,13 @@ by [Michael Steil](https://pagetable.com/) of
 ## TODO
 
 * Unit tests for C64 and VIC-20 BASIC decoding
+* stats/summary of action
+  * execution time
+  * symbol detection (disassembly)
+  * file type confidence (hex dump n/a?)
+  * md5 sha1 hashes (maybe add to file detail rather than file type action)
 * System symbol recognition
+* render source lines without address prefix
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
