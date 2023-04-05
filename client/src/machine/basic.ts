@@ -29,16 +29,18 @@ class BasicDecoder {
     private static readonly CONTENT_START_OFFSET = 2;
 
     /**
-     * 2 load address
-     * 2 first line vector
-     * 2 first line number
-     * 1 minimal program (single token, e.g. "REM")
-     * 1 line end zero byte
-     * 2 terminating word
-     *
-     * @private
+     * BASIC program consisting of only the following line: 0 REM
      */
-    private static MINIMUM_SIZE: number = 2 + 2 + 2 + 1 + 1 + 2;
+    private static MINIMAL_PROGRAM = Uint8Array.from([
+        0x01,  0x10,    // standard unexpanded VIC basic load address (0x1001)
+        0x07,  0x10,    // address of next line (terminating word) (0x1007)
+        0x00, 0x00,     // line number (0)
+        0x8f,           // token "REM"
+        0x00,           // line end byte
+        0x00,  0x00     // terminating word (0)
+    ]);
+
+    private static MINIMUM_SIZE: number = BasicDecoder.MINIMAL_PROGRAM.length;
 
     constructor(name: string, minor: number, major: number) {
         this.name = name;
@@ -53,7 +55,7 @@ class BasicDecoder {
 
     decode(fb: FileBlob): DataView {
         if (fb.size < BasicDecoder.MINIMUM_SIZE) {
-            throw Error("fb is too small to be valid basic")
+            throw Error("file is too small to be a valid basic program");
         }
         const offset = BasicDecoder.CONTENT_START_OFFSET;
         // assuming the load address is the first two bytes.
