@@ -1,4 +1,4 @@
-// Commodore 8-bit machine stuff, common across machines
+// Shared Commodore 8-bit machine stuff
 
 import {FileBlob} from "./FileBlob";
 import {
@@ -13,7 +13,7 @@ import {
     PcAssign
 } from "./asm";
 import {Mos6502} from "./mos6502";
-import {Address, asHex, hex16, hex8} from "./core";
+import {asHex, hex16, hex8} from "./core";
 import {ActionFunction, Detail, hexDumper, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
@@ -119,42 +119,4 @@ class CartSniffer implements BlobSniffer {
     }
 }
 
-/**
- * Translate a 16 bit value into a Uint8Array in the correct endianness.
- * Future: migrate to a little endian encapsulation
- *
- * @param word the 16 bit value
- */
-function wordToEndianBytes(word: number) {
-    return new Uint8Array([word & 0xff, (word & 0xff00) >> 8]);
-}
-
-/**
- * Available memory, basic load addres etc.
- */
-class MemoryConfiguration {
-    name: string;
-    basicStart: Address;
-
-    /**
-     * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
-     * configuration, this can be empty. Does not need to include any machine identifier.
-     */
-    shortName: string;
-
-    /**
-     * Create a memory configuration.
-     *
-     * @param name for display
-     * @param basicStart 16 bit address where BASIC programs are loaded
-     * @param shortName short designation for UI
-     */
-    constructor(name: string, basicStart: Address, shortName: string = "") {
-        // future: various independent block configurations, now: simple!
-        this.name = name;
-        this.basicStart = basicStart;
-        this.shortName = shortName;
-    }
-}
-
-export {CartSniffer, prg, printBasic, fileTypes, MemoryConfiguration, wordToEndianBytes};
+export {CartSniffer, prg, printBasic, fileTypes};

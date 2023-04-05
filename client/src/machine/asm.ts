@@ -1,6 +1,6 @@
 // assembler / disassembler stuff - 6502-specific
 
-import {Address, assertByte, Byteable, hex16, hex8, toArray, TODO, unToSigned} from "./core";
+import {Address, assertByte, Byteable, hex16, hex8, toStringArray, TODO, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -728,16 +728,16 @@ export class LabelsComments {
     private readonly _comments: string[];
 
     constructor(labels: string[] | string = [], comments: string[] | string = []) {
-        this._labels = toArray(labels);
-        this._comments = toArray(comments);
+        this._labels = toStringArray(labels);
+        this._comments = toStringArray(comments);
     }
 
     addLabels(labels: string[] | string) {
-        toArray(labels).forEach(s => this._labels.push(s));
+        toStringArray(labels).forEach(s => this._labels.push(s));
     }
 
     addComments(comments: string[] | string) {
-        toArray(comments).forEach(s => this._labels.push(s));
+        toStringArray(comments).forEach(s => this._labels.push(s));
     }
 
     merge(lc: LabelsComments) {

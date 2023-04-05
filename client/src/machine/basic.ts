@@ -27,6 +27,7 @@ class BasicDecoder {
 
     private static readonly LOAD_ADDRESS_OFFSET = 0;
     private static readonly CONTENT_START_OFFSET = 2;
+    private static MINIMUM_SIZE: number = 3; // TODO calculate this correctly
 
     constructor(name: string, minor: number, major: number) {
         this.name = name;
@@ -40,6 +41,9 @@ class BasicDecoder {
     }
 
     decode(fb: FileBlob): DataView {
+        if (fb.size < BasicDecoder.MINIMUM_SIZE) {
+            throw Error("fb is too small to be valid basic")
+        }
         const offset = BasicDecoder.CONTENT_START_OFFSET;
         // assuming the load address is the first two bytes.
         const baseAddress = fb.readVector(BasicDecoder.LOAD_ADDRESS_OFFSET);

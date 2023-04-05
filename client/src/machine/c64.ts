@@ -1,6 +1,7 @@
 // C64 specific details
 // noinspection JSUnusedLocalSymbols
 
+
 import {FileBlob} from "./FileBlob";
 import {
     BlobType,
@@ -11,8 +12,9 @@ import {
     mkLabels, SymbolTable,
     VectorDefinitionEdict
 } from "./asm";
-import {CartSniffer, MemoryConfiguration, wordToEndianBytes} from "./cbm";
-import {BlobToActions, hexDumper} from "./api";
+import {CartSniffer} from "./cbm";
+import {BlobToActions, hexDumper, MemoryConfiguration} from "./api";
+import {LITTLE} from "./core";
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
 const C64_BASIC_PRG = new BlobType(
@@ -20,7 +22,7 @@ const C64_BASIC_PRG = new BlobType(
     "BASIC program",
     ["basic", "c64"],
     "prg",
-    wordToEndianBytes(C64_MEMORY.basicStart)
+    LITTLE.wordToByteArray(C64_MEMORY.basicStart)
 );
 
 /** Returns the given string as an array of char codes */

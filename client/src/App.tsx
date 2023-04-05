@@ -1,5 +1,5 @@
 import './App.css';
-import React, {MouseEventHandler, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FileUploader} from "react-drag-drop-files";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';

@@ -22,7 +22,8 @@ type Address = number;
 
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
-const toArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
+const toStringArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
+const toNumberArray = (xs: number[] | number) => ((typeof xs === "number") ? [xs] : xs);
 
 /** Returns the given number after asserting it is in byte range. */
 const assertByte = (value: number): number => {
@@ -31,6 +32,62 @@ const assertByte = (value: number): number => {
     }
     return value & 0xff;
 };
+
+/**
+ * Abstraction to hold all endian-specific utilities. See {@link LittleEndian} and {@link BigEndian}
+ * implementations.
+ */
+interface Endian {
+
+    /**
+     * Translate a 16 bit value into a Uint8Array.
+     *
+     * @param word only 16 unsigned integer bits are used.
+     */
+    wordToByteArray(word: number):Uint8Array;
+
+    wordToTwoBytes(word:number):[number,number];
+    twoBytesToWord(bytes:[number,number]):number;
+}
+
+class LittleEndian implements Endian {
+
+    wordToByteArray(word: number) {
+        return new Uint8Array([word & 0xff, (word & 0xff00) >> 8]);
+    }
+
+    twoBytesToWord(bytes: [number, number]): number {
+        TODO();
+        return 0;
+    }
+
+    wordToTwoBytes(word: number): [number, number] {
+        TODO();
+        return [0, 0];
+    }
+
+}
+
+class BigEndian implements Endian {
+    twoBytesToWord(bytes: [number, number]): number {
+        TODO();
+        return 0;
+    }
+
+    wordToByteArray(word: number): Uint8Array {
+        TODO();
+        return Uint8Array.from([]);
+    }
+
+    wordToTwoBytes(word: number): [number, number] {
+        TODO();
+        return [0, 0];
+    }
+
+}
+
+const LITTLE = new LittleEndian();
+const BIG = new BigEndian();
 
 /**
  * Takes a byte value in the range 0-255 and interprets its numeric value as an 8 bit two's complement value
@@ -44,6 +101,6 @@ const asHex = (b: number[]) => {
     return b.map(hex8).join(" ");
 }
 
-export {unToSigned, assertByte, hex16, hex8, asHex, TODO, toArray}
+export {unToSigned, assertByte, hex16, hex8, asHex, TODO, toStringArray, toNumberArray, LITTLE, BIG}
 
-export type {Byteable, Address};
+export type {Byteable, Address, Endian};

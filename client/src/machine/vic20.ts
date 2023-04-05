@@ -1,6 +1,6 @@
 // VIC-20 specific details
 
-import {CartSniffer, MemoryConfiguration, prg} from "./cbm";
+import {CartSniffer, prg} from "./cbm";
 import {
     BlobSniffer,
     ByteDefinitionEdict,
@@ -13,7 +13,7 @@ import {
 } from "./asm";
 import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
-import {TagSeq} from "./api";
+import {MemoryConfiguration, TagSeq} from "./api";
 
 const KERNAL_SYM = new SymbolTable();
 // TODO distinguish between subroutines and registers
@@ -83,7 +83,7 @@ const TAG_LINE_NUMBER = "lnum";
 /**
  * Vic-20 BASIC
  */
-class Vic20Basic implements BlobSniffer {
+export class Vic20Basic implements BlobSniffer {
 
     desc: string;
     name: string;
@@ -152,5 +152,10 @@ export {
     EXP08K_VIC_BASIC,
     EXP16K_VIC_BASIC,
     EXP24K_VIC_BASIC,
-    KERNAL_SYM
+    KERNAL_SYM,
+    VIC20_UNEX,
+    VIC20_EXP03K,
+    VIC20_EXP08K,
+    VIC20_EXP16K,
+    VIC20_EXP24K,
 }

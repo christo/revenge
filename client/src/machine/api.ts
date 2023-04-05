@@ -1,6 +1,7 @@
 import {BlobSniffer} from "./asm";
 import {FileBlob} from "./FileBlob";
-import {hex8} from "./core";
+import {Address, Endian, hex8} from "./core";
+import {Mos6502} from "./mos6502";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
@@ -128,7 +129,42 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     }
 });
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine};
+/**
+ * Available memory, basic load addres etc.
+ */
+class MemoryConfiguration {
+    name: string;
+    basicStart: Address;
+
+    /**
+     * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
+     * configuration, this can be empty. Does not need to include any machine identifier.
+     */
+    shortName: string;
+
+    /**
+     * Create a memory configuration.
+     *
+     * @param name for display
+     * @param basicStart 16 bit address where BASIC programs are loaded
+     * @param shortName short designation for UI
+     */
+    constructor(name: string, basicStart: Address, shortName: string = "") {
+        // future: various independent block configurations, now: simple!
+        this.name = name;
+        this.basicStart = basicStart;
+        this.shortName = shortName;
+    }
+}
+
+interface Computer extends Endian {
+    cpu():Mos6502; // for now all computers have this CPU
+    memory():MemoryConfiguration;
+    name():string;
+    tags():string[];
+}
+
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration};
 export type {
     TagSeq,
     ActionExecutor,
