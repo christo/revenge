@@ -54,6 +54,17 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
     }
 
     return <div className="actionResult">
+
+        <div className="statspanel">
+            {detail.stats.map((tup:[string,string], i) => {
+                // TODO: add number of labels interpreted
+                return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span className="sval">{tup[1]}</span></div>
+            })}
+        </div>
+
+        {/*TODO options form for this detail*/}
+        <div className="optionspanel">options</div>
+
         {detail.tfield.map((tl, i) => {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup, j) => {

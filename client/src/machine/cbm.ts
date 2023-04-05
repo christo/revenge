@@ -47,6 +47,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
                 detail.tfield.push(tags);
             }
+            detail.stats.push(["#instructions:", detail.tfield.length.toString()]);
             return detail;
         }
     }, hexDumper(fb)];

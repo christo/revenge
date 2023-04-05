@@ -500,6 +500,7 @@ interface Instructionish extends Byteable {
      * @param dialect the syntax-specifics for disassembly.
      * @param dis the stateful disassembler.
      */
+    // TODO maybe add an observer which can collect statistsics?
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq
 
     /**

@@ -77,11 +77,13 @@ type DataView = TagSeq[]; // 2d array of tuples
  */
 class Detail {
     tags: string[];
+    stats: [string, string][];
     tfield: DataView;
 
     constructor(tags: string[], tfield: DataView) {
         this.tags = tags;
         this.tfield = tfield;
+        this.stats = [];
     }
 }
 
