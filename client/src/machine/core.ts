@@ -48,6 +48,8 @@ interface Endian {
 
     wordToTwoBytes(word:number):[number,number];
     twoBytesToWord(bytes:[number,number]):number;
+
+    pushWordBytes(array:number[], word:number):void;
 }
 
 class LittleEndian implements Endian {
@@ -62,10 +64,13 @@ class LittleEndian implements Endian {
     }
 
     wordToTwoBytes(word: number): [number, number] {
-        TODO();
-        return [0, 0];
+        return [word & 0xff, (word & 0xff00) >> 8];
     }
 
+    pushWordBytes(array: number[], word: number) {
+        const w = this.wordToTwoBytes(word);
+        array.push(w[0], w[1]);
+    }
 }
 
 class BigEndian implements Endian {
@@ -75,15 +80,17 @@ class BigEndian implements Endian {
     }
 
     wordToByteArray(word: number): Uint8Array {
-        TODO();
-        return Uint8Array.from([]);
+        return Uint8Array.from([(word & 0xff00) >> 8, word & 0xff]);
     }
 
     wordToTwoBytes(word: number): [number, number] {
-        TODO();
-        return [0, 0];
+        return [(word & 0xff00) >> 8, word & 0xff];
     }
 
+    pushWordBytes(array: number[], word: number) {
+        const w = this.wordToTwoBytes(word);
+        array.push(w[0], w[1]);
+    }
 }
 
 const LITTLE = new LittleEndian();
