@@ -13,7 +13,9 @@ import {
 } from "./asm";
 import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
-import {MemoryConfiguration, TagSeq} from "./api";
+import {Computer, MemoryConfiguration, TagSeq} from "./api";
+import {Mos6502} from "./mos6502";
+import {Endian, LITTLE} from "./core";
 
 const KERNAL_SYM = new SymbolTable();
 // TODO distinguish between subroutines and registers
@@ -149,8 +151,52 @@ const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
 const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
+// TODO pull up commonality between c64 and vic20 to a base class that does most of this
+class Vic20 implements Computer {
+    private readonly _memory: MemoryConfiguration;
+    private readonly _endian:Endian;
+    private readonly _cpu: Mos6502;
+    private readonly _tags: string[];
+
+    constructor(memory:MemoryConfiguration) {
+        this._memory = memory;
+        this._endian = LITTLE;
+        this._cpu = new Mos6502();
+        this._tags = ["vic20"];
+    }
+
+    cpu(): Mos6502 {
+        return this._cpu;
+    }
+
+    memory(): MemoryConfiguration {
+        return this._memory;
+    }
+
+    name(): string {
+        return "Vic-20";
+    }
+
+    tags(): string[] {
+        return this._tags;
+    }
+
+    twoBytesToWord(bytes: [number, number]): number {
+        return this._endian.twoBytesToWord(bytes);
+    }
+
+    wordToByteArray(word: number): Uint8Array {
+        return this._endian.wordToByteArray(word);
+    }
+
+    wordToTwoBytes(word: number): [number, number] {
+        return this._endian.wordToTwoBytes(word);
+    }
+
+}
 
 export {
+    Vic20,
     COMMON_MLPS,
     VIC20_CART,
     UNEXPANDED_VIC_BASIC,

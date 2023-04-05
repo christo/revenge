@@ -166,6 +166,7 @@ interface Computer extends Endian {
 
 export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration};
 export type {
+    Computer,
     TagSeq,
     ActionExecutor,
     BlobToActions,
