@@ -1,8 +1,9 @@
-import {UNEXPANDED_VIC_BASIC, VIC20_UNEX, Vic20Basic} from './vic20';
+import {UNEXPANDED_VIC_BASIC, VIC20_UNEX} from './vic20';
 import {FileBlob} from "./FileBlob";
 import {LITTLE} from "./core";
 
 
+// TODO finish this test case
 test("sniff minimal basic program", () => {
     let ba:number[] = [];
     // construct basic file then check sniff result
