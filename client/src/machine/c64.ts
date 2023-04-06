@@ -80,6 +80,50 @@ const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]
 
+const C64_KERNAL = new SymbolTable();
+C64_KERNAL.reg(0xFFA5, "ACPTR", "Input byte from serial port.");
+C64_KERNAL.reg(0xFFC6, "CHKIN", "Open channel for input.");
+C64_KERNAL.reg(0xFFC9, "CHKOUT", "Open channel for output.");
+C64_KERNAL.reg(0xFFCF, "CHRIN", "Input character from channel.");
+C64_KERNAL.reg(0xFFD2, "CHROUT", "Output character to channel.");
+C64_KERNAL.reg(0xFFAB, "CIOUT", "Output byte to serial port.");
+C64_KERNAL.reg(0xFF81, "LINT", "Initialize screen editor.");
+C64_KERNAL.reg(0xFFE7, "CLALL", "Close all channels and files.");
+C64_KERNAL.reg(0xFFC3, "CLOSE", "Close a specified logical file.");
+C64_KERNAL.reg(0xFFCC, "CLRCHN", "Close input and output channels.");
+C64_KERNAL.reg(0xFFE4, "GETIN", "Get character from keyboard buffer.");
+C64_KERNAL.reg(0xFFF3, "IOBASE", "Return base address of I/O devices.");
+C64_KERNAL.reg(0xFF84, "IOINIT", "Initialize input/output.");
+C64_KERNAL.reg(0xFFB1, "LISTEN", "Command devices on serial bus to LISTEN.");
+C64_KERNAL.reg(0xFFD5, "LOAD", "Load RAM from a device.");
+C64_KERNAL.reg(0xFF9C, "MEMBOT", "Read/set bottom of memory.");
+C64_KERNAL.reg(0xFF99, "MEMTOP", "Read/set top of memory.");
+C64_KERNAL.reg(0xFFC0, "OPEN", "Open a logical file.");
+C64_KERNAL.reg(0xFFF0, "PLOT", "Read/set X,Y cursor position.");
+C64_KERNAL.reg(0xFF87, "RAMTAS", "Initialize RAM, reset tape buffer.");
+C64_KERNAL.reg(0xFFDE, "RDTIM", "Read realtime clock.");
+C64_KERNAL.reg(0xFFB7, "READST", "Read I/O status word.");
+C64_KERNAL.reg(0xFF8A, "RESTOR", "Restore I/O default vectors.");
+C64_KERNAL.reg(0xFFDE, "SAVE", "Save RAM to device.");
+C64_KERNAL.reg(0xFF9F, "SCNKEY", "Scan keyboard.");
+C64_KERNAL.reg(0xFFED, "SCREEN", "Return X,Y organization of screen.");
+C64_KERNAL.reg(0xFF93, "SECOND", "Send secondary address after LISTEN.");
+C64_KERNAL.reg(0xFFBA, "SETLFS", "Set logical, first, and second address.");
+C64_KERNAL.reg(0xFF90, "SETMSG", "Control Kernal messages.");
+C64_KERNAL.reg(0xFFBD, "SETNAM", "Set filename.");
+C64_KERNAL.reg(0xFFDB, "SETTIM", "Set realtime clock.");
+C64_KERNAL.reg(0xFFA2, "SETTMO", "Set time-out on serial bus.");
+C64_KERNAL.reg(0xFFE1, "STOP", "Check for STOP key.");
+C64_KERNAL.reg(0xFFB4, "TALK", "Command serial bus device to TALK.");
+C64_KERNAL.reg(0xFF96, "TKSA", "Send secondary address after TALK.");
+C64_KERNAL.reg(0xFFEA, "UDTIM", "Increment realtime clock.");
+C64_KERNAL.reg(0xFFAE, "UNLSN", "Command serial bus to UNLISTEN.");
+C64_KERNAL.reg(0xFFAB, "UNTLK", "Command serial bus to UNTALK.");
+C64_KERNAL.reg(0xFF8D, "VECTOR", "Read/set vectored I/O.");
+
+
+
+
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
@@ -94,7 +138,7 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_NMI_VECTOR
         ],
         jumpTargetFetcher,
-        new SymbolTable())  // TODO add c64 symbol table
+        C64_KERNAL)  // TODO add c64 symbol table
 );
 
 
