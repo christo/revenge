@@ -37,6 +37,8 @@ by [Michael Steil](https://pagetable.com/) of
 * Finish major code cleanup in the transition to `DataView2` (temporary name)
   and `LogicalLine` alias for `DataView = TagSeq[] = Tag[][] = [string,string][][]`
 * More unit tests for C64 and VIC-20 BASIC decoding
+* Render comments on line before if the line is too long to prevent comment and code clash. Also format long byte 
+  declarations on multiple physical lines.
 * stats/summary of action
   * symbol detection count (disassembly)
 * System kernal subroutine symbol recognition (C64)
