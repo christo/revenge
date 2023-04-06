@@ -137,7 +137,7 @@ type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
 type BlobToActions = (fileBlob: FileBlob) => TypeActions;
 
 /**
- * Error class, all the sensible names have been domain squatted by typescript/javascript.
+ * Error class for user-reportable problems, all the sensible names have been domain squatted by typescript/javascript.
  */
 class BooBoo {
     private mesg: string;
