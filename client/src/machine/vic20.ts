@@ -18,47 +18,47 @@ import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
 import {Mos6502} from "./mos6502";
 import {Endian, LITTLE} from "./core";
 
-const KERNAL_SYM = new SymbolTable();
+const VIC20_KERNAL = new SymbolTable();
 // TODO distinguish between subroutines and registers
 // TODO map the inputs, outputs and register effects of subroutines
 
-// kernal jump table
-KERNAL_SYM.reg(0xff8a, "restor", "set KERNAL vectors to defaults", "contains jmp $fd52");
-KERNAL_SYM.reg(0xff8d, "vector", "Change Vectors For User", "contains jmp $fd57");
-KERNAL_SYM.reg(0xff90, "setmsg", "Control OS Messages", "contains jmp $fe66");
-KERNAL_SYM.reg(0xff93, "secnd", "Send SA After Listen", "contains jmp $eec0");
-KERNAL_SYM.reg(0xff96, "tksa", "Send SA After Talk", "contains jmp $eece");
-KERNAL_SYM.reg(0xff99, "memtop", "Set/Read System RAM Top", "contains jmp $fe73");
-KERNAL_SYM.reg(0xff9c, "membot", "Set/Read System RAM Bottom", "contains jmp $fe82");
-KERNAL_SYM.reg(0xff9f, "scnkey", "Scan Keyboard", "contains jmp $eb1e");
-KERNAL_SYM.reg(0xffa2, "settmo", "Set Timeout In IEEE", "contains jmp $fe6f");
-KERNAL_SYM.reg(0xffa5, "acptr", "Handshake Serial Byte In", "contains jmp $ef19");
-KERNAL_SYM.reg(0xffa8, "ciout", "Handshake Serial Byte Out", "contains jmp $eee4");
-KERNAL_SYM.reg(0xffab, "untalk", "Command Serial Bus UNTALK", "contains jmp $eef6");
-KERNAL_SYM.reg(0xffae, "unlsn", "Command Serial Bus UNLISTEN", "contains jmp $ef04");
-KERNAL_SYM.reg(0xffb1, "listn", "Command Serial Bus LISTEN", "contains jmp $ee17");
-KERNAL_SYM.reg(0xffb4, "talk", "Command Serial Bus TALK", "contains jmp $ee14");
-KERNAL_SYM.reg(0xffb7, "readss", "Read I/O Status Word", "contains jmp $fe57");
-KERNAL_SYM.reg(0xffba, "setlfs", "Set Logical File Parameters", "contains jmp $fe50");
-KERNAL_SYM.reg(0xffbd, "setnam", "Set Filename", "contains jmp $fe49");
-KERNAL_SYM.reg(0xffc0, "iopen", "Open Vector [F40A] (indirect entry)", "contains jmp ($031a)");
-KERNAL_SYM.reg(0xffc3, "iclose", "Close Vector [F34A] (indirect entry)", "contains jmp ($031c)");
-KERNAL_SYM.reg(0xffc6, "ichkin", "Set Input [F2C7] (indirect entry)", "contains jmp ($031e)");
-KERNAL_SYM.reg(0xffc9, "ichkout", "Set Output [F309] (indirect entry)", "contains jmp ($0320)");
-KERNAL_SYM.reg(0xffcc, "iclrch", "Restore I/O Vector [F353] (indirect entry)", "contains jmp ($0322)");
-KERNAL_SYM.reg(0xffcf, "ichrin", "Input Vector, chrin [F20E] (indirect entry)", "contains jmp ($0324)");
-KERNAL_SYM.reg(0xffd2, "ichrout", "Output Vector, chrout [F27A] (indirect entry) (indirect entry)", "contains jmp ($0326)");
-KERNAL_SYM.reg(0xffd5, "load", "Load RAM From Device", "contains jmp $f542");
-KERNAL_SYM.reg(0xffd8, "save", "Save RAM To Device", "contains jmp $f675");
-KERNAL_SYM.reg(0xffdb, "settim", "Set Real-Time Clock", "contains jmp $f767");
-KERNAL_SYM.reg(0xffde, "rdtim", "Read Real-Time Clock", "contains jmp $f760");
-KERNAL_SYM.reg(0xffe1, "istop", "Test-Stop Vector [F770] (indirect entry)", "contains jmp ($0328)");
-KERNAL_SYM.reg(0xffe4, "igetin", "Get From Keyboad [F1F5] (indirect entry)", "contains jmp ($032a)");
-KERNAL_SYM.reg(0xffe7, "iclall", "Close All Channels And Files [F3EF] (indirect entry)", "contains jmp ($032c)");
-KERNAL_SYM.reg(0xffea, "udtim", "Increment Real-Time Clock", "contains jmp $f734");
-KERNAL_SYM.reg(0xffed, "screen", "Return Screen Organization", "contains jmp $e505");
-KERNAL_SYM.reg(0xfff0, "plot", "Read / Set Cursor X/Y Position", "contains jmp $e50a");
-KERNAL_SYM.reg(0xfff3, "iobase", "Return I/O Base Address", "contains jmp $e500");
+// kernal jump table, yes that's how they spell it
+VIC20_KERNAL.reg(0xff8a, "restor", "set KERNAL vectors to defaults", "contains jmp $fd52");
+VIC20_KERNAL.reg(0xff8d, "vector", "Change Vectors For User", "contains jmp $fd57");
+VIC20_KERNAL.reg(0xff90, "setmsg", "Control OS Messages", "contains jmp $fe66");
+VIC20_KERNAL.reg(0xff93, "secnd", "Send SA After Listen", "contains jmp $eec0");
+VIC20_KERNAL.reg(0xff96, "tksa", "Send SA After Talk", "contains jmp $eece");
+VIC20_KERNAL.reg(0xff99, "memtop", "Set/Read System RAM Top", "contains jmp $fe73");
+VIC20_KERNAL.reg(0xff9c, "membot", "Set/Read System RAM Bottom", "contains jmp $fe82");
+VIC20_KERNAL.reg(0xff9f, "scnkey", "Scan Keyboard", "contains jmp $eb1e");
+VIC20_KERNAL.reg(0xffa2, "settmo", "Set Timeout In IEEE", "contains jmp $fe6f");
+VIC20_KERNAL.reg(0xffa5, "acptr", "Handshake Serial Byte In", "contains jmp $ef19");
+VIC20_KERNAL.reg(0xffa8, "ciout", "Handshake Serial Byte Out", "contains jmp $eee4");
+VIC20_KERNAL.reg(0xffab, "untalk", "Command Serial Bus UNTALK", "contains jmp $eef6");
+VIC20_KERNAL.reg(0xffae, "unlsn", "Command Serial Bus UNLISTEN", "contains jmp $ef04");
+VIC20_KERNAL.reg(0xffb1, "listn", "Command Serial Bus LISTEN", "contains jmp $ee17");
+VIC20_KERNAL.reg(0xffb4, "talk", "Command Serial Bus TALK", "contains jmp $ee14");
+VIC20_KERNAL.reg(0xffb7, "readss", "Read I/O Status Word", "contains jmp $fe57");
+VIC20_KERNAL.reg(0xffba, "setlfs", "Set Logical File Parameters", "contains jmp $fe50");
+VIC20_KERNAL.reg(0xffbd, "setnam", "Set Filename", "contains jmp $fe49");
+VIC20_KERNAL.reg(0xffc0, "iopen", "Open Vector [F40A] (indirect entry)", "contains jmp ($031a)");
+VIC20_KERNAL.reg(0xffc3, "iclose", "Close Vector [F34A] (indirect entry)", "contains jmp ($031c)");
+VIC20_KERNAL.reg(0xffc6, "ichkin", "Set Input [F2C7] (indirect entry)", "contains jmp ($031e)");
+VIC20_KERNAL.reg(0xffc9, "ichkout", "Set Output [F309] (indirect entry)", "contains jmp ($0320)");
+VIC20_KERNAL.reg(0xffcc, "iclrch", "Restore I/O Vector [F353] (indirect entry)", "contains jmp ($0322)");
+VIC20_KERNAL.reg(0xffcf, "ichrin", "Input Vector, chrin [F20E] (indirect entry)", "contains jmp ($0324)");
+VIC20_KERNAL.reg(0xffd2, "ichrout", "Output Vector, chrout [F27A] (indirect entry) (indirect entry)", "contains jmp ($0326)");
+VIC20_KERNAL.reg(0xffd5, "load", "Load RAM From Device", "contains jmp $f542");
+VIC20_KERNAL.reg(0xffd8, "save", "Save RAM To Device", "contains jmp $f675");
+VIC20_KERNAL.reg(0xffdb, "settim", "Set Real-Time Clock", "contains jmp $f767");
+VIC20_KERNAL.reg(0xffde, "rdtim", "Read Real-Time Clock", "contains jmp $f760");
+VIC20_KERNAL.reg(0xffe1, "istop", "Test-Stop Vector [F770] (indirect entry)", "contains jmp ($0328)");
+VIC20_KERNAL.reg(0xffe4, "igetin", "Get From Keyboad [F1F5] (indirect entry)", "contains jmp ($032a)");
+VIC20_KERNAL.reg(0xffe7, "iclall", "Close All Channels And Files [F3EF] (indirect entry)", "contains jmp ($032c)");
+VIC20_KERNAL.reg(0xffea, "udtim", "Increment Real-Time Clock", "contains jmp $f734");
+VIC20_KERNAL.reg(0xffed, "screen", "Return Screen Organization", "contains jmp $e505");
+VIC20_KERNAL.reg(0xfff0, "plot", "Read / Set Cursor X/Y Position", "contains jmp $e50a");
+VIC20_KERNAL.reg(0xfff3, "iobase", "Return I/O Base Address", "contains jmp $e500");
 
 
 // vic-20 cartridge image definition:
@@ -98,7 +98,7 @@ const VIC20_CART = new CartSniffer(
             new VectorDefinitionEdict(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
             new VectorDefinitionEdict(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], jumpTargetFetcher,
-        KERNAL_SYM
+        VIC20_KERNAL
     )
 );
 
@@ -233,7 +233,7 @@ export {
     EXP08K_VIC_BASIC,
     EXP16K_VIC_BASIC,
     EXP24K_VIC_BASIC,
-    KERNAL_SYM,
+    VIC20_KERNAL,
     VIC20_UNEX,
     VIC20_EXP03K,
     VIC20_EXP08K,
