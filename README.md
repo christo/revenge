@@ -2,7 +2,7 @@
 
 Reverse Engineering Environment
 
-**Project Status**: _pre alpha_ (it might just work sometimes)
+**Project Status**: _pre alpha_ (it does work on the various binaries I'm currently testing with)
 
 The idea is a web-based reverse engineering environment with very small 
 initial goals: binary file type detection and simple disassembly of 6502 machine code 
@@ -30,17 +30,14 @@ by [Michael Steil](https://pagetable.com/) of
 [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
 * stats/summary of file interpretation action taken
   * execution time for disassembly
+  * symbol detection count (disassembly)
 * System kernal subroutine symbol recognition (VIC-20)
 
 ## TODO
 
-* Finish major code cleanup in the transition to `DataView2` (temporary name)
-  and `LogicalLine` alias for `DataView = TagSeq[] = Tag[][] = [string,string][][]`
 * More unit tests for C64 and VIC-20 BASIC decoding
 * Render comments on line before if the line is too long to prevent comment and code clash. Also format long byte 
   declarations on multiple physical lines.
-* stats/summary of action
-  * symbol detection count (disassembly)
 * System kernal subroutine symbol recognition (C64)
 * render source lines without address prefix
 * view options - disassembly, basic, hex each should define their own config options
