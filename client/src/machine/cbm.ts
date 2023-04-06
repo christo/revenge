@@ -50,6 +50,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
                 detail.tfield.lines.push(new LogicalLine(tags));
             }
+            const stats = dis.getStats();
+            // for now assuming there's no doubling up of stats keys
+            stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
             detail.stats.push(["lines", detail.tfield.lines.length.toString()]);
             const timeTaken = Date.now() - startTime;
             detail.stats.push(["disassembled in", timeTaken.toString() + " ms"])

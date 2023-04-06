@@ -385,6 +385,7 @@ class DefaultDialect implements Dialect {
                 if (symbol !== undefined) {
                     operand = symbol.name;
                     dis.addSymbolDefinition(symbol);
+                    dis.addStat("symbol definition");
                 } else {
                     operand = this.hexWordText(x);
                 }
@@ -1120,9 +1121,9 @@ class Disassembler {
     /**
      * Adds to the value of the named statistic. If it's a new stat, first initialises it to zero.
      * @param name name of the statistic
-     * @param x value to add
+     * @param x value to add, defaults to 1
      */
-    addStat(name:string, x:number) {
+    addStat(name:string, x:number=1) {
         let existing = this.stats.get(name) || 0;
         this.stats.set(name, x + existing);
     }
@@ -1134,6 +1135,10 @@ class Disassembler {
      */
     setStat(name: string, x:number) {
         this.stats.set(name, x);
+    }
+
+    getStats() {
+        return this.stats;
     }
 }
 
