@@ -570,13 +570,13 @@ class Environment {
  */
 class SymDef {
     /** Definitive canonical name, traditionally used, usually an overly obtuse contraction. */
-    name:string;
+    name: string;
     /** Numeric memory address for the symbol. */
-    value:Address;
+    value: Address;
     /** Short phrase to describe the meaning, more understandable than the canonical name */
-    descriptor:string;
+    descriptor: string;
     /** Extended information */
-    blurb:string;
+    blurb: string;
 
 
     constructor(name: string, value: Address, description: string, blurb: string = "") {
@@ -606,7 +606,7 @@ class SymbolTable {
      * @param blurb extended info.
      */
     reg(addr: Address, name: string, desc: string, blurb: string = "") {
-        if (addr < 0 || addr >= 1<<16) {
+        if (addr < 0 || addr >= 1 << 16) {
             throw Error("address out of range");
         }
         name = name.trim();
@@ -623,11 +623,11 @@ class SymbolTable {
         this.nameToSymbol.set(name, symDef);
     }
 
-    byName(name:string) {
+    byName(name: string) {
         return this.nameToSymbol.get(name);
     }
 
-    byAddress(addr:Address) {
+    byAddress(addr: Address) {
         return this.addressToSymbol.get(addr);
     }
 }
@@ -698,6 +698,12 @@ class ByteDefinitionEdict implements Edict<Instructionish> {
     get offset(): number {
         return this._offset;
     }
+
+    describe(): string {
+        const s = `${this.numBytes} byte${this.numBytes !== 1 ? 's' : ""}`;
+        return `declare ${s} at offset ${this._offset}`;
+    }
+
 }
 
 /**
@@ -717,6 +723,11 @@ class VectorDefinitionEdict extends ByteDefinitionEdict {
         } else {
             throw Error(`Can't read word from FileBlob ${fb.name} at offset ${this.offset} `);
         }
+    }
+
+
+    describe(): string {
+        return `declare a 16-bit word at offset ${this.length}`;
     }
 }
 
@@ -752,6 +763,14 @@ export class LabelsComments {
 
     get comments() {
         return this._comments;
+    }
+
+
+    /**
+     * Total number of labels plus comments.
+     */
+    length() {
+        return this._comments.length + this._labels.length;
     }
 }
 
@@ -853,6 +872,11 @@ interface Edict<T> {
      * @return the instance.
      */
     create(fb: FileBlob): T;
+
+    /**
+     * Description of the edict for referring to problems with it.
+     */
+    describe(): string;
 }
 
 /** Stateful translator of bytes to their parsed instruction line */
@@ -914,40 +938,51 @@ class Disassembler {
      * and advances the index by the correct number of bytes.
      */
     nextInstructionLine(): Instructionish {
-        // TODO clean up the early returns
-
         // some helper functions
         const lc = this.mkPredefLabelsComments(this.currentAddress);
 
+        let instructionish: Instructionish;
+
         // TODO merge edict check for 0-n bytes ahead where n is the instruction size with opcode = current byte
-        const edict = this.disMeta.getEdict(this.currentIndex);
-        if (edict !== undefined) {
-            if (edict.length > this.bytesLeftInFile()) {
-                // TODO handle this more gracefully
-                // TODO need to audit edicts, they could clash with each other as well as the end of file
-                throw Error(`edict is length ${edict.length} but only ${this.bytesLeftInFile()} bytes left in file!`)
-            }
-            this.currentIndex += edict.length;
-            return edict.create(this.fb);
-        }
 
-        const opcode = this.eatByteOrDie();
-
-        if (Mos6502.INSTRUCTIONS.op(opcode) === undefined) {
-            lc.addComments("illegal opcode");
-            return new ByteDeclaration([opcode], lc);
-        }
-
-        // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
-        // we don't yet know if an instruction will fit for the next byte
-        const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
-
-        if (this.bytesLeftInFile() < instLen) {
-            lc.addComments("instruction won't fit");
-            return new ByteDeclaration([opcode], lc);
+        const maybeInstruction: Instructionish | undefined = this.maybeMkEdict(lc);
+        if (maybeInstruction !== undefined) {
+            instructionish = maybeInstruction;
         } else {
-            return this.edictAwareInstruction(opcode, lc);
+            const illegal = (n: number) => Mos6502.INSTRUCTIONS.op(n) === undefined;
+            const opcode = this.peekByte();
+            if (opcode === undefined) {
+                throw Error(`Cannot get byte at offset ${this.currentIndex} from file ${this.fb.name}`);
+            } else if (illegal(opcode)) {
+                // slurp up multiple illegal opcodes in a row
+                let numBytes = 1;
+                // code smell: too heavy-handed
+                // @ts-ignore
+                while (numBytes < this.bytesLeftInFile() && illegal(this.fb.bytes.at(this.currentIndex + numBytes))) {
+                    numBytes++;
+                }
+                lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
+                instructionish = new ByteDeclaration(this.eatBytes(numBytes), lc);
+            } else {
+                // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
+                // we don't yet know if an instruction will fit for the next byte
+                const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
+
+                if (this.bytesLeftInFile() < instLen) {
+                    lc.addComments("instruction won't fit");
+                    instructionish = new ByteDeclaration(this.eatBytes(1), lc);
+                } else {
+                    instructionish = this.edictAwareInstruction(opcode, lc);
+                }
+            }
+
         }
+
+        return instructionish;
+    }
+
+    private peekByte() {
+        return this.fb.bytes.at(this.currentIndex);
     }
 
     /**
@@ -955,10 +990,10 @@ class Disassembler {
      * clash with it, if they exist, then declare bytes up to the edict instead. If there is no clash, return the
      * instruction.
      *
-     * @param currentByte
-     * @param lc
+     * @param currentByte the byte already read
+     * @param lc labels and comments
      */
-    edictAwareInstruction(currentByte:number, lc:LabelsComments):Instructionish {
+    edictAwareInstruction(currentByte: number, lc: LabelsComments): Instructionish {
 
         // check if there's an edict n ahead of currentIndex
         const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
@@ -966,8 +1001,9 @@ class Disassembler {
         // make an edict-enforced byte declaration of the given length
         const mkEdictInferredByteDec = (n: number) => {
             lc.addComments(`inferred via edict@+${n}`); // need a better way of communicating this to the user
-            return new ByteDeclaration([currentByte, ...this.eatBytes(n - 1)], lc);
+            return new ByteDeclaration(this.eatBytes(n), lc);
         };
+
         const instLen = Mos6502.INSTRUCTIONS.numBytes(currentByte);
         // current index is the byte following the opcode which we've already checked for an edict
         // check for edict inside the bytes this instruction would need
@@ -980,6 +1016,8 @@ class Disassembler {
                 return mkEdictInferredByteDec(3);
             }
         }
+        // by now we know we must consume the current byte
+        this.currentIndex++;
         return this.mkInstruction(currentByte, lc);
     }
 
@@ -1053,13 +1091,30 @@ class Disassembler {
         return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
     }
 
-    getSymbol(addr:Address):SymDef|undefined {
+    getSymbol(addr: Address): SymDef | undefined {
         return this.disMeta.getSymbolTable().byAddress(addr);
     }
 
     /** Makes a symbol definition edict */
     addSymbolDefinition(symbol: SymDef) {
         this.symbolDefinitions.set(symbol.name, symbol);
+    }
+
+    private maybeMkEdict(lc: LabelsComments) {
+        const edict = this.disMeta.getEdict(this.currentIndex);
+        if (edict !== undefined) {
+            if (edict.length > this.bytesLeftInFile()) {
+                const elc = edict.create(this.fb).labelsComments;
+                const explainLc = elc.length() > 0 ? ` (preserving ${elc.length()} labels/comments)` : "";
+                lc.addComments(`End of file clashes with edict${explainLc}: '${edict.describe()}'`);
+                lc.merge(elc);
+                // fall through
+            } else {
+                this.currentIndex += edict.length;
+                return edict.create(this.fb);
+            }
+        }
+        return undefined;
     }
 }
 
