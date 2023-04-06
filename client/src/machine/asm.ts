@@ -499,7 +499,6 @@ interface Instructionish extends Byteable {
      * @param dialect the syntax-specifics for disassembly.
      * @param dis the stateful disassembler.
      */
-    // TODO maybe add an observer which can collect statistsics?
     disassemble(dialect: Dialect, dis: Disassembler): TagSeq
 
     /**
@@ -886,7 +885,7 @@ class Disassembler {
     currentIndex: number;
     fb: FileBlob;
     private readonly segmentBaseAddress: number;
-
+    private stats:Map<string, number>;
     private predefLc: [Address, LabelsComments][];
 
     private disMeta: DisassemblyMeta;
@@ -907,6 +906,7 @@ class Disassembler {
         this.predefLc = dm.getJumpTargets(fb);
         this.disMeta = dm;
         this.symbolDefinitions = new Map<string, SymDef>();
+        this.stats = new Map<string,number>();
     }
 
     private eatBytes(count: number): number[] {
@@ -949,16 +949,16 @@ class Disassembler {
         if (maybeInstruction !== undefined) {
             instructionish = maybeInstruction;
         } else {
-            const illegal = (n: number) => Mos6502.INSTRUCTIONS.op(n) === undefined;
+            const isIllegal = (n: number) => Mos6502.INSTRUCTIONS.op(n) === undefined;
             const opcode = this.peekByte();
             if (opcode === undefined) {
                 throw Error(`Cannot get byte at offset ${this.currentIndex} from file ${this.fb.name}`);
-            } else if (illegal(opcode)) {
+            } else if (isIllegal(opcode)) {
                 // slurp up multiple illegal opcodes in a row
                 let numBytes = 1;
-                // code smell: too heavy-handed
+                // code smell: too heavy-handed although the only probable failure cause of at() is eof
                 // @ts-ignore
-                while (numBytes < this.bytesLeftInFile() && illegal(this.fb.bytes.at(this.currentIndex + numBytes))) {
+                while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.bytes.at(this.currentIndex + numBytes))) {
                     numBytes++;
                 }
                 lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
@@ -1115,6 +1115,25 @@ class Disassembler {
             }
         }
         return undefined;
+    }
+
+    /**
+     * Adds to the value of the named statistic. If it's a new stat, first initialises it to zero.
+     * @param name name of the statistic
+     * @param x value to add
+     */
+    addStat(name:string, x:number) {
+        let existing = this.stats.get(name) || 0;
+        this.stats.set(name, x + existing);
+    }
+
+    /**
+     * Sets the stat with the given name to the given value regardless of whether it has
+     * @param name
+     * @param x
+     */
+    setStat(name: string, x:number) {
+        this.stats.set(name, x);
     }
 }
 
