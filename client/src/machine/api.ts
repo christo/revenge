@@ -52,7 +52,6 @@ type TagSeq = Tag[]
  * - can have labels but if it has label it needs address
  * - labels are different to symbol assignment - label has an implicit "= *"
  *
- *
  */
 class LogicalLine {
 
@@ -85,12 +84,11 @@ class LogicalLine {
  * string tuples. The string tuple represents a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  */
-interface DataView2 {
-    // was DatView, a TagSeq[]
+interface DataView {
     lines:LogicalLine[];
 }
 
-class NewDataView implements DataView2 {
+class NewDataView implements DataView {
     lines:LogicalLine[];
 
     constructor(lines: LogicalLine[]) {
@@ -104,9 +102,9 @@ class NewDataView implements DataView2 {
 class Detail {
     tags: string[];
     stats: [string, string][];
-    tfield: DataView2;
+    tfield: DataView;
 
-    constructor(tags: string[], tfield: DataView2) {
+    constructor(tags: string[], tfield: DataView) {
         this.tags = tags;
         this.tfield = tfield;
         this.stats = [];
@@ -155,7 +153,7 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
         const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x), "hexbyte"));
         const oldDataView:TagSeq[] = [elements];
         const lls = oldDataView.map((ts:TagSeq) => new LogicalLine(ts));
-        const newDataView:DataView2 = new NewDataView(lls);
+        const newDataView:DataView = new NewDataView(lls);
         return new Detail(["hexbytes"], newDataView);
     }
 });
@@ -203,7 +201,7 @@ export type {
     BlobToActions,
     ActionFunction,
     UserAction,
-    DataView2,
+    DataView,
     TypeActions,
     Continuation
 };

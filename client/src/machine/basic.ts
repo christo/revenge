@@ -5,7 +5,7 @@
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
-import {DataView2, LogicalLine, NewDataView, Tag} from "./api";
+import {DataView, LogicalLine, NewDataView, Tag} from "./api";
 
 type Token = [number, string];
 
@@ -53,7 +53,7 @@ class BasicDecoder {
         this.tokens[tok[0]] = tok[1];
     }
 
-    decode(fb: FileBlob): DataView2 {
+    decode(fb: FileBlob): DataView {
         if (fb.size < BasicDecoder.MINIMUM_SIZE) {
             throw Error("file is too small to be a valid basic program");
         }
@@ -65,7 +65,7 @@ class BasicDecoder {
         let nextLineAddr = baseAddress;
         let lineNumber = 0;
         let finished = false;
-        let lines: DataView2 = new NewDataView([]);
+        let lines: DataView = new NewDataView([]);
         let line = "";
         let quoteMode = false;
         while (!finished) {

@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, DataView2, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
+import {ActionFunction, DataView, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -71,7 +71,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             f: () => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // TODO filter to count only the entries tagged "line"
-                const tfield:DataView2 = detail.tfield;
+                const tfield:DataView = detail.tfield;
                 detail.stats.push(["lines",  tfield.lines.length.toString()]);
                 return detail;
             }
