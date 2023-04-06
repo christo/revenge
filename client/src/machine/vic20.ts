@@ -192,13 +192,12 @@ const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 // TODO pull up commonality between c64 and vic20 to a base class that does most of this
 class Vic20 implements Computer {
     private readonly _memory: MemoryConfiguration;
-    private readonly _endian: Endian;
+    private readonly _endian: Endian = LITTLE;
     private readonly _cpu: Mos6502;
     private readonly _tags: string[];
 
     constructor(memory: MemoryConfiguration) {
         this._memory = memory;
-        this._endian = LITTLE;
         this._cpu = new Mos6502();
         this._tags = ["vic20"];
     }
@@ -219,22 +218,10 @@ class Vic20 implements Computer {
         return this._tags;
     }
 
-    twoBytesToWord(bytes: [number, number]): number {
-        return this._endian.twoBytesToWord(bytes);
-    }
-
-    wordToByteArray(word: number): Uint8Array {
-        return this._endian.wordToByteArray(word);
-    }
-
-    wordToTwoBytes(word: number): [number, number] {
-        return this._endian.wordToTwoBytes(word);
-    }
-
-    pushWordBytes(array: number[], word: number): void {
-        return this._endian.pushWordBytes(array, word);
-    }
-
+    twoBytesToWord = this._endian.twoBytesToWord;
+    wordToByteArray = this._endian.wordToByteArray;
+    wordToTwoBytes = this._endian.wordToTwoBytes;
+    pushWordBytes = this._endian.pushWordBytes;
 }
 
 export {
