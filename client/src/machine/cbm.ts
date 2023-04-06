@@ -70,9 +70,9 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             label: "basic",
             f: () => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
-                // TODO filter to count only the entries tagged "line"
-                const tfield:DataView = detail.tfield;
-                detail.stats.push(["lines",  tfield.lines.length.toString()]);
+                // exclude "note" tags which are not a "line"
+                const justLines = (ll:LogicalLine) => ll.getTags().find((t:Tag) => t.hasTag("line")) !== undefined;
+                detail.stats.push(["lines", detail.tfield.lines.filter(justLines).length.toString()]);
                 return detail;
             }
         }]
