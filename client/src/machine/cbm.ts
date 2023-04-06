@@ -46,7 +46,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 const tags = [addr, hex];
 
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
-                // TODO link up internal jumptargets...
+                // TODO link up internal jumptargets so cross-references can be marked on both ends
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
                 detail.tfield.lines.push(new LogicalLine(tags));
             }
