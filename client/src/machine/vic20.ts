@@ -71,32 +71,34 @@ const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
 const MAGIC_OFFSET = 6;
 
 /** The loading address vector is in the image at this offset. */
-const VIC20_BASE_ADDRESS_OFFSET = 0;
+const VIC20_CART_BASE_ADDRESS_OFFSET = 0;
 /** The cold reset vector is stored at this offset. */
-const VIC20_COLD_VECTOR_OFFSET = 2;
+const VIC20_CART_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
-const VIC20_WARM_VECTOR_OFFSET = 4;
+const VIC20_CART_WARM_VECTOR_OFFSET = 4;
 
 const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
-    [fb.readVector(VIC20_COLD_VECTOR_OFFSET), mkLabels("reset")],
-    [fb.readVector(VIC20_WARM_VECTOR_OFFSET), mkLabels("nmi")]
+    [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), mkLabels("reset")],
+    [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ];
 
-/** VIC-20 cart image sniffer. */
+/**
+ * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
+ */
 const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
     "ROM dump from VIC-20",
     ["cart", "vic20"],
     A0CBM, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
-        VIC20_BASE_ADDRESS_OFFSET,
-        VIC20_COLD_VECTOR_OFFSET,
+        VIC20_CART_BASE_ADDRESS_OFFSET,
+        VIC20_CART_COLD_VECTOR_OFFSET,
         2,
         [
             new ByteDefinitionEdict(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
-            new VectorDefinitionEdict(VIC20_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-            new VectorDefinitionEdict(VIC20_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-            new VectorDefinitionEdict(VIC20_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+            new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+            new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+            new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], jumpTargetFetcher,
         VIC20_KERNAL
     )
