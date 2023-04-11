@@ -9,7 +9,8 @@ import {
     DisassemblyMetaImpl,
     JumpTargetFetcher,
     LabelsComments,
-    mkLabels, SymbolTable,
+    mkLabels,
+    SymbolTable,
     VectorDefinitionEdict
 } from "./asm";
 import {CartSniffer} from "./cbm";
@@ -120,8 +121,6 @@ C64_KERNAL.reg(0xffea, "udtim", "Increment realtime clock");
 C64_KERNAL.reg(0xffae, "unlsn", "Command serial bus to UNLISTEN");
 C64_KERNAL.reg(0xffab, "untlk", "Command serial bus to UNTALK");
 C64_KERNAL.reg(0xff8d, "vector", "Read/set vectored I/O");
-
-
 
 
 const C64_8K_CART = new CartSniffer(
