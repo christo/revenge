@@ -47,6 +47,12 @@ interface Endian {
     wordToByteArray(word: number):Uint8Array;
 
     wordToTwoBytes(word:number):[number,number];
+
+    /**
+     * Two bytes in stream order are returned as a 16 bit word.
+     *
+     * @param bytes
+     */
     twoBytesToWord(bytes:[number,number]):number;
 
     /**
@@ -109,6 +115,11 @@ const BIG = new BigEndian();
  */
 const unToSigned = (x: number): number => -(x & 0x80) + (x & 0x7f)
 
+/**
+ * Returns a string of space-separated hex bytes.
+ *
+ * @param b the bytes.
+ */
 const asHex = (b: number[]) => {
     return b.map(hex8).join(" ");
 }
