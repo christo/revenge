@@ -55,7 +55,7 @@ class FileBlob {
     /**
      * Returns true iff our filename has the given extension.
      *
-     * @param ext the part after that last dot in the filename.
+     * @param ext the part after the last dot in the filename.
      * @param caseInsensitive whether to compare case insensitively.
      */
     hasExt(ext: string, caseInsensitive: boolean = true) {
