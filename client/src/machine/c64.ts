@@ -146,7 +146,7 @@ const C64_8K_CART = new CartSniffer(
             C64_CART_NMI_VECTOR
         ],
         jumpTargetFetcher,
-        C64_KERNAL)  // TODO add c64 symbol table
+        C64_KERNAL)
 );
 
 
