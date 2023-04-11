@@ -622,7 +622,7 @@ class SymbolTable {
             throw Error("name empty");
         }
         if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
-            throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`); // maybe later we can do a replacement
+            throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`);
         }
         const symDef = new SymDef(name, addr, desc, blurb);
         this.addressToSymbol.set(addr, symDef);
