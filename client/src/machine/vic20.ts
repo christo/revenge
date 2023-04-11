@@ -18,7 +18,7 @@ import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
 import {Mos6502} from "./mos6502";
 import {Endian, LITTLE} from "./core";
 
-const VIC20_KERNAL = new SymbolTable();
+const VIC20_KERNAL = new SymbolTable("vic20");
 // TODO distinguish between subroutines and registers
 // TODO map the inputs, outputs and register effects of subroutines
 

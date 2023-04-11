@@ -595,7 +595,13 @@ class SymbolTable {
     // future: keep kernal symbols in a separate table from user-defined symbols, also can have multimap
 
     private addressToSymbol: Map<Address, SymDef> = new Map<Address, SymDef>();
+    private name: string;
     private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>()
+
+
+    constructor(name:string) {
+        this.name = name;
+    }
 
     /**
      * Register a new symbol. One must not exist with the same name or address.
@@ -616,7 +622,7 @@ class SymbolTable {
             throw Error("name empty");
         }
         if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
-            throw Error("non-unique address or name"); // maybe later we can do a replacement
+            throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`); // maybe later we can do a replacement
         }
         const symDef = new SymDef(name, addr, desc, blurb);
         this.addressToSymbol.set(addr, symDef);
@@ -779,7 +785,7 @@ type JumpTargetFetcher = (fb: FileBlob) => [Address, LabelsComments][];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
     /** A bit stinky - should never be used and probably not exist. */
-    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => [], new SymbolTable());
+    static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => [], new SymbolTable("null"));
 
     private readonly _baseAddressOffset: number;
     private readonly _resetVectorOffset: number;

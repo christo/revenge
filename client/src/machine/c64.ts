@@ -80,7 +80,7 @@ const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
     [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]
 
-const C64_KERNAL = new SymbolTable();
+const C64_KERNAL = new SymbolTable("c64");
 C64_KERNAL.reg(0xffa5, "acptr", "Input byte from serial port.");
 C64_KERNAL.reg(0xffc6, "chkin", "Open channel for input.");
 C64_KERNAL.reg(0xffc9, "chkout", "Open channel for output.");
@@ -104,7 +104,7 @@ C64_KERNAL.reg(0xff87, "ramtas", "Initialize RAM, reset tape buffer.");
 C64_KERNAL.reg(0xffde, "rdtim", "Read realtime clock.");
 C64_KERNAL.reg(0xffb7, "readst", "Read I/O status word.");
 C64_KERNAL.reg(0xff8a, "restor", "Restore I/O default vectors.");
-C64_KERNAL.reg(0xffde, "save", "Save RAM to device.");
+C64_KERNAL.reg(0xffd8, "save", "Save RAM to device.");
 C64_KERNAL.reg(0xff9f, "scnkey", "Scan keyboard.");
 C64_KERNAL.reg(0xffed, "screen", "Return X,Y organization of screen.");
 C64_KERNAL.reg(0xff93, "second", "Send secondary address after LISTEN.");
