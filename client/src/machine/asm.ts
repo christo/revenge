@@ -565,10 +565,16 @@ class Environment {
     }
 }
 
+enum SymbolType {
+    "reg",
+    "sub"
+}
+
 /**
  * Symbol definition.
  */
 class SymDef {
+    sType: SymbolType;
     /** Definitive canonical name, traditionally used, usually an overly obtuse contraction. */
     name: string;
     /** Numeric memory address for the symbol. */
@@ -578,8 +584,8 @@ class SymDef {
     /** Extended information */
     blurb: string;
 
-
-    constructor(name: string, value: Address, description: string, blurb: string = "") {
+    constructor(sType : SymbolType, name: string, value: Address, description: string, blurb: string = "") {
+        this.sType = sType;
         this.name = name;
         this.value = value;
         this.descriptor = description;
@@ -596,22 +602,29 @@ class SymbolTable {
 
     private addressToSymbol: Map<Address, SymDef> = new Map<Address, SymDef>();
     private name: string;
-    private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>()
-
+    private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>();
 
     constructor(name:string) {
         this.name = name;
     }
 
     /**
-     * Register a new symbol. One must not exist with the same name or address.
+     * Register a new symbol for the described subroutine. One must not exist with the same name or address.
      *
      * @param addr address the symbol refers to.
      * @param name name to be used instead of the address.
      * @param desc a more verbose description of the symbol.
      * @param blurb extended info.
      */
+    sub(addr: Address, name: string, desc: string, blurb: string = "") {
+        this.sym(SymbolType.sub, addr, name, desc, blurb);
+    }
+
     reg(addr: Address, name: string, desc: string, blurb: string = "") {
+        this.sym(SymbolType.reg, addr, name, desc, blurb);
+    }
+
+    sym(sType: SymbolType, addr: Address, name: string, desc: string, blurb: string = "") {
         if (addr < 0 || addr >= 1 << 16) {
             throw Error("address out of range");
         }
@@ -624,10 +637,11 @@ class SymbolTable {
         if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
             throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`);
         }
-        const symDef = new SymDef(name, addr, desc, blurb);
+        const symDef = new SymDef(sType, name, addr, desc, blurb);
         this.addressToSymbol.set(addr, symDef);
         this.nameToSymbol.set(name, symDef);
     }
+
 
     byName(name: string) {
         return this.nameToSymbol.get(name);
@@ -748,6 +762,8 @@ export class LabelsComments {
         this._labels = toStringArray(labels);
         this._comments = toStringArray(comments);
     }
+
+    longestLabel = () => this.labels.map(s => s.length).reduce((p, c) => p > c ? p : c);
 
     addLabels(labels: string[] | string) {
         toStringArray(labels).forEach(s => this._labels.push(s));
