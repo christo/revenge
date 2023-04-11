@@ -1,6 +1,6 @@
 import {BlobSniffer, Instructionish} from "./asm";
 import {FileBlob} from "./FileBlob";
-import {Address, Endian, hex8} from "./core";
+import {Address, BigEndian, hex8, LittleEndian, Memory} from "./core";
 import {Mos6502} from "./mos6502";
 
 /**
@@ -60,7 +60,7 @@ class LogicalLine {
     private address?: Address;
     private instruction?: Instructionish;
 
-    constructor(tags: TagSeq, address?:Address, instruction?:Instructionish) {
+    constructor(tags: TagSeq, address?: Address, instruction?: Instructionish) {
         this.tags = tags;
         this.address = address;
         this.instruction = instruction;
@@ -85,11 +85,11 @@ class LogicalLine {
  * the name as a className and the value as the text content of a span element.
  */
 interface DataView {
-    lines:LogicalLine[];
+    lines: LogicalLine[];
 }
 
 class NewDataView implements DataView {
-    lines:LogicalLine[];
+    lines: LogicalLine[];
 
     constructor(lines: LogicalLine[]) {
         this.lines = lines;
@@ -150,10 +150,10 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements: TagSeq = Array.from(fb.bytes).map(x => new Tag(hex8(x), "hexbyte"));
-        const oldDataView:TagSeq[] = [elements];
-        const lls = oldDataView.map((ts:TagSeq) => new LogicalLine(ts));
-        const newDataView:DataView = new NewDataView(lls);
+        const elements: TagSeq = Array.from(fb.getBytes()).map(x => new Tag(hex8(x), "hexbyte"));
+        const oldDataView: TagSeq[] = [elements];
+        const lls = oldDataView.map((ts: TagSeq) => new LogicalLine(ts));
+        const newDataView: DataView = new NewDataView(lls);
         return new Detail(["hexbytes"], newDataView);
     }
 });
@@ -186,16 +186,45 @@ class MemoryConfiguration {
     }
 }
 
-interface Computer extends Endian {
-    cpu():Mos6502; // for now all computers have this CPU
-    memory():MemoryConfiguration;
-    name():string;
-    tags():string[];
+abstract class Computer {
+    private _cpu: Mos6502;
+    private _memory: Memory<BigEndian | LittleEndian>;
+    private _memoryConfig: MemoryConfiguration;
+    private _name: string;
+    private _tags: string[];
+
+
+    constructor(name: string, cpu: Mos6502, memory: Memory<BigEndian | LittleEndian>, memoryConfig: MemoryConfiguration, tags: string[]) {
+        this._name = name;
+        this._cpu = cpu;
+        this._memory = memory;
+        this._memoryConfig = memoryConfig;
+        this._tags = tags;
+    }
+
+    cpu() {
+        return this.cpu;
+    }
+
+    memory() {
+        return this._memoryConfig;
+    }
+
+    name() {
+        return this._name;
+    }
+
+    tags() {
+        return this._tags;
+    }
+
+    pushWordBytes(ba: number[], baseAddr: number) {
+        return this._memory.endianness().pushWordBytes(ba, baseAddr);
+    }
 }
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, NewDataView};
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, NewDataView, Computer};
 export type {
-    Computer,
     TagSeq,
     ActionExecutor,
     BlobToActions,

@@ -19,6 +19,7 @@ import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import axios from "axios";
+import {Endian, LE} from "./machine/core";
 
 const darkTheme = createTheme({
     palette: {
@@ -141,8 +142,9 @@ function FileDetail(props: { fb: FileBlob }) {
 
 function CurrentFileSummary(props: { file: File | FileLike }) {
     const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
+    const endian:Endian = LE; // TODO get this from the Computer implementation
     useEffect(() => {
-        FileBlob.fromFile(props.file).then(fb => setRendered({fb: fb, loading: false}));
+        FileBlob.fromFile(props.file, LE).then(fb => setRendered({fb: fb, loading: false}));
     }, [props.file]);
 
     return <div className="fileSummary">

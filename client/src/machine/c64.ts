@@ -14,8 +14,17 @@ import {
     VectorDefinitionEdict
 } from "./asm";
 import {CartSniffer} from "./cbm";
-import {BlobToActions, hexDumper, MemoryConfiguration} from "./api";
-import {LITTLE} from "./core";
+import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
+import {ArrayMemory, KB_64, LE, LittleEndian} from "./core";
+import {Mos6502} from "./mos6502";
+
+class C64 extends Computer {
+
+    constructor(name: string, memoryConfig: MemoryConfiguration, tags: string[]) {
+        super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, tags);
+    }
+}
+
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
 const C64_BASIC_PRG = new BlobType(
@@ -23,7 +32,7 @@ const C64_BASIC_PRG = new BlobType(
     "BASIC program",
     ["basic", "c64"],
     "prg",
-    LITTLE.wordToByteArray(C64_MEMORY.basicStart)
+    LE.wordToByteArray(C64_MEMORY.basicStart)
 );
 
 /** Returns the given string as an array of char codes */
@@ -77,8 +86,8 @@ const C64_CART_NMI_VECTOR = new VectorDefinitionEdict(C64_COLD_VECTOR_OFFSET, mk
 const C64_CART_RESET_VECTOR = new VectorDefinitionEdict(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
 const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
-    [fb.readVector(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
-    [fb.readVector(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
+    [fb.read16(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
+    [fb.read16(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]
 
 const C64_KERNAL = new SymbolTable("c64");

@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, DataView, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
+import {ActionFunction, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**

@@ -693,7 +693,7 @@ class ByteDefinitionEdict implements Edict<Instructionish> {
     }
 
     create(fb: FileBlob): Instructionish {
-        const bytes = fb.bytes.slice(this.offset, this.offset + this.length);
+        const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
         return new ByteDeclaration(Array.from(bytes), this.lc);
     }
 
@@ -722,8 +722,8 @@ class VectorDefinitionEdict extends ByteDefinitionEdict {
     }
 
     create(fb: FileBlob): Instructionish {
-        const firstByte = fb.bytes.at(this.offset);
-        const secondByte = fb.bytes.at(this.offset + 1);
+        const firstByte = fb.read8(this.offset);
+        const secondByte = fb.read8(this.offset + 1);
         if (firstByte !== undefined && secondByte !== undefined) {
             return new WordDefinition(firstByte, secondByte, this.lc);
         } else {
@@ -818,7 +818,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     }
 
     baseAddress(fb: FileBlob): number {
-        return fb.readVector(this._baseAddressOffset);
+        return fb.read16(this._baseAddressOffset);
     }
 
     contentStartOffset(): number {
@@ -826,12 +826,12 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     }
 
     disassemblyStartOffset(fb: FileBlob): number {
-        const resetAddr = fb.readVector(this._resetVectorOffset);
+        const resetAddr = fb.read16(this._resetVectorOffset);
         // two bytes make an address
         const resetMsb = resetAddr + 1;
         const resetVectorIsInBinary = this.inBinary(resetMsb, fb);
         if (resetVectorIsInBinary) {
-            return resetAddr - fb.readVector(this._baseAddressOffset);
+            return resetAddr - fb.read16(this._baseAddressOffset);
         } else {
             // reset vector is outside binary, so start disassembly at content start?
             console.log(`reset vector is outside binary ($${hex16(resetAddr)})`);
@@ -841,7 +841,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
     private inBinary(addr: number, fb: FileBlob) {
         const base = this.baseAddress(fb);
-        return addr >= base && addr <= base + fb.size;
+        return addr >= base && addr <= base + fb.getLength();
     }
 
     getEdict(address: number): Edict<Instructionish> | undefined {
@@ -902,9 +902,9 @@ class Disassembler {
         this.iset = iset;
         const dm = bs.getMeta();
         let index = dm.contentStartOffset();
-        let bytes = fb.bytes;
+        let bytes:number[] = fb.getBytes();
         if (index >= bytes.length || index < 0) {
-            throw Error("index out of range");
+            throw Error(`index '${index}' out of range`);
         }
         this.originalIndex = index;
         this.currentIndex = index;
@@ -925,14 +925,14 @@ class Disassembler {
     }
 
     private eatByteOrDie() {
-        if (this.currentIndex >= this.fb.bytes.length) {
+        if (this.currentIndex >= this.fb.getBytes().length) {
             throw Error("No more bytes");
         }
         return this.eatByte();
     }
 
     private eatByte() {
-        const value = this.fb.bytes.at(this.currentIndex++);
+        const value = this.fb.read8(this.currentIndex++);
         if (typeof value === "undefined") {
             throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
         } else {
@@ -965,7 +965,7 @@ class Disassembler {
                 let numBytes = 1;
                 // code smell: too heavy-handed although the only probable failure cause of at() is eof
                 // @ts-ignore
-                while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.bytes.at(this.currentIndex + numBytes))) {
+                while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.getBytes().at(this.currentIndex + numBytes))) {
                     numBytes++;
                 }
                 lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
@@ -989,7 +989,7 @@ class Disassembler {
     }
 
     private peekByte() {
-        return this.fb.bytes.at(this.currentIndex);
+        return this.fb.read8(this.currentIndex);
     }
 
     /**
@@ -1029,7 +1029,7 @@ class Disassembler {
     }
 
     private bytesLeftInFile() {
-        return this.fb.bytes.length - this.currentIndex;
+        return this.fb.getBytes().length - this.currentIndex;
     }
 
     /**
@@ -1052,7 +1052,7 @@ class Disassembler {
     }
 
     hasNext() {
-        return this.currentIndex < this.fb.bytes.length;
+        return this.currentIndex < this.fb.getBytes().length;
     }
 
     /**
@@ -1090,7 +1090,7 @@ class Disassembler {
      */
     private addressInRange = (addr: Address): boolean => {
         const notTooLow = addr >= this.segmentBaseAddress;
-        const notTooHigh = addr <= this.segmentBaseAddress + this.fb.size - this.originalIndex;
+        const notTooHigh = addr <= this.segmentBaseAddress + this.fb.getLength() - this.originalIndex;
         return notTooLow && notTooHigh;
     };
 
@@ -1205,7 +1205,7 @@ class BlobType implements BlobSniffer {
         return this.dm;
     }
 
-    dataMatch(fileBlob: FileBlob) {
+    dataMatch(fileBlob: FileBlob):boolean {
         return fileBlob.submatch(this.prefix, 0);
     }
 

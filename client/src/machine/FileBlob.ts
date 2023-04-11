@@ -1,66 +1,66 @@
+import {Address, ArrayMemory, BE, BigEndian, Byteable, Endian} from "./core";
+
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
  * like a byte array.
  */
-class FileBlob {
-    public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, new Uint8Array(0));
+class FileBlob implements Byteable {
+    public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, BE);
 
     name: string;
-    size: number;
-    bytes: Uint8Array;
-
-    constructor(name: string, size: number, bytes: Uint8Array) {
+    private memory: ArrayMemory<Endian>;
+    constructor(name: string, bytes: number | number[], endian: Endian) {
         this.name = name;
-        this.size = size;
-        this.bytes = bytes;
+        this.memory = new ArrayMemory(bytes, endian);
     }
 
-    static async fromFile(f: File | FileLike) {
+    getBytes():number[] {
+        return this.memory.getBytes();
+    }
+
+    getLength():number {
+        return this.memory.getLength();
+    }
+
+    read16(byteOffset: Address): number {
+        return this.memory.read16(byteOffset);
+    }
+
+    static async fromFile(f: File | FileLike, endian: Endian) {
         if (f instanceof File) {
-            let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, f.size, new Uint8Array(buf));
+            let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, Array.from(new Uint8Array(buf)), endian);
             return f.arrayBuffer().then(mkBlob);
         } else {
-            return new FileBlob(f.name, f.size, f.data);
+            return new FileBlob(f.name, Array.from(f.data), endian);
         }
     }
 
     submatch(seq: Uint8Array, atOffset: number) {
-        if (seq.length + atOffset <= this.size && seq.length > 0) {
-            for (let i = 0; i < seq.length; i++) {
-                if (seq[i] !== this.bytes[i + atOffset]) {
-                    return false;
-                }
-            }
-            // sequence has matched at offset
-            return true;
-        } else {
-            console.log("Sequence length out of range (" + seq.length + ") for fileblob size " + this.size);
-            return false;
-        }
+        return this.memory.submatch(seq, atOffset);
     }
 
     /**
-     * Read a little-endian 16 bit vector at the given offset.
+     * Read a 16 bit vector at the given offset using correct endianness.
      *
-     * @deprecated TODO replace with an EndianMemory, a wrapper around array which implements reading, pushing etc. words and bytes - also {@link Endian.pushWordBytes}
      * @param offset
      */
     readVector(offset: number) {
-        if (offset < 0 || offset > this.bytes.length - 1) {
-            throw Error("offset out of range for vector read");
-        }
-        return (this.bytes[offset + 1] << 8) + this.bytes[offset]
+        return this.memory.read16(offset);
     }
 
     /**
      * Returns true iff our filename has the given extension.
      *
-     * @param ext the part after the last dot in the filename.
+     * @param ext the part after the last dot in the filename (dot must exist).
      * @param caseInsensitive whether to compare case insensitively.
      */
     hasExt(ext: string, caseInsensitive: boolean = true) {
         const f = caseInsensitive ? (x: string) => x.toLowerCase() : (x: string) => x;
         return f(this.name).endsWith("." + f(ext));
+    }
+
+    read8(offset: Address) {
+        return this.memory.read8(offset);
     }
 }
 

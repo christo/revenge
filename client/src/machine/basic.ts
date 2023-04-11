@@ -54,12 +54,12 @@ class BasicDecoder {
     }
 
     decode(fb: FileBlob): DataView {
-        if (fb.size < BasicDecoder.MINIMUM_SIZE) {
+        if (fb.getLength() < BasicDecoder.MINIMUM_SIZE) {
             throw Error("file is too small to be a valid basic program");
         }
         const offset = BasicDecoder.CONTENT_START_OFFSET;
         // assuming the load address is the first two bytes.
-        const baseAddress = fb.readVector(BasicDecoder.LOAD_ADDRESS_OFFSET);
+        const baseAddress = fb.read16(BasicDecoder.LOAD_ADDRESS_OFFSET);
         let i = offset;
         // read address of next BASIC line (may be the 0x0000 end marker)
         let nextLineAddr = baseAddress;
@@ -72,16 +72,16 @@ class BasicDecoder {
             const newLine = i - offset + baseAddress === nextLineAddr;
             if (newLine) {
                 quoteMode = false;
-                nextLineAddr = fb.readVector(i);
+                nextLineAddr = fb.read16(i);
                 if (nextLineAddr === 0) {
                     throw Error("tripped end of program unexpectedly"); // shouldn't happen
                 }
                 i += 2;
-                lineNumber = fb.readVector(i); // not really a vector but a 16 bit value
+                lineNumber = fb.read16(i);
                 i += 2;
                 line = " "; // the space after the line number
             }
-            let b = fb.bytes.at(i++);
+            let b = fb.getBytes().at(i++);
             const eol = b === 0;
             if (b === undefined) {
                 console.error("byte no existo");
@@ -106,12 +106,12 @@ class BasicDecoder {
             }
             // two zero bytes mark the end, if we are out of bytes, same thing.
             // i has already been incremented, so i and i+1 peek ahead for a zero-terminating word
-            const eof = isZilch(fb.bytes.at(i)) && isZilch(fb.bytes.at(i + 1));
+            const eof = isZilch(fb.getBytes().at(i)) && isZilch(fb.getBytes().at(i + 1));
             finished = finished || (eol && eof);
         }
 
         // "i" is pointing at the termination word
-        const remainingBytes = fb.bytes.length - i - 2;
+        const remainingBytes = fb.getLength() - i - 2;
         if (remainingBytes > 0) {
             const note = new Tag(`${remainingBytes} remaining bytes`, "note");
             const addr = new Tag(hex16(baseAddress + i + 2), "addr");

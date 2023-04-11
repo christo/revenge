@@ -1,5 +1,6 @@
 import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
 import {FileBlob} from "./FileBlob";
+import {LE} from "./core";
 
 
 // TODO finish this test case
@@ -23,7 +24,7 @@ test("sniff basic program consisting only of line: 0 PRINT", () => {
     firstLine.forEach(x => ba.push(x));
     ba.push(0x00, 0x00); // end of program
 
-    const fb:FileBlob = new FileBlob("basic-test", ba.length, Uint8Array.from(ba));
+    const fb:FileBlob = new FileBlob("basic-test", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).toBeGreaterThan(1);   // this is a well-formed minimal basic program
 });

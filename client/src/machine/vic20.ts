@@ -16,7 +16,7 @@ import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
 import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
 import {Mos6502} from "./mos6502";
-import {Endian, LITTLE} from "./core";
+import {ArrayMemory, KB_64, LE} from "./core";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 // TODO distinguish between subroutines and registers
@@ -146,9 +146,8 @@ export class Vic20Basic implements BlobSniffer {
 
     sniff(fb: FileBlob): number {
         // check if the start address bytes match the basic load address for our MemoryConfiguration
-        const byte0 = fb.bytes.at(0) === (this.memory.basicStart & 0xff);
-        const byte1 = fb.bytes.at(1) === ((this.memory.basicStart & 0xff00) >> 8);
-
+        const byte0 = fb.getBytes()[0] === (this.memory.basicStart & 0xff);
+        const byte1 = fb.getBytes()[1] === ((this.memory.basicStart & 0xff00) >> 8);
         let isBasic = (byte0 && byte1) ? 1.2 : 0.8;
 
         // try decoding it as basic
@@ -164,10 +163,13 @@ export class Vic20Basic implements BlobSniffer {
                     let thisNum = parseInt(lnumStr.value);
                     if (lastNum !== -1 && lastNum >= thisNum) {
                         // decrease in basic line numbers
+                        console.log(`decrease in basic line numbers for ${fb.name}`)
                         isBasic *= 0.5;
                     }
                     if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
                         // next line address is allegedly lower? This ain't basic
+                        // eslint-disable-next-line no-template-curly-in-string
+                        console.log(`lower next line address for ${fb.name}`)
                         isBasic *= 0.3;
                     }
                     lastNum = thisNum;
@@ -191,39 +193,10 @@ const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
 const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
-// TODO pull up commonality between c64 and vic20 to a base class that does most of this
-class Vic20 implements Computer {
-    private readonly _memory: MemoryConfiguration;
-    private readonly _endian: Endian = LITTLE;
-    private readonly _cpu: Mos6502;
-    private readonly _tags: string[];
-
+class Vic20 extends Computer {
     constructor(memory: MemoryConfiguration) {
-        this._memory = memory;
-        this._cpu = new Mos6502();
-        this._tags = ["vic20"];
+        super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, ["vic20"]);
     }
-
-    cpu(): Mos6502 {
-        return this._cpu;
-    }
-
-    memory(): MemoryConfiguration {
-        return this._memory;
-    }
-
-    name(): string {
-        return "Vic-20";
-    }
-
-    tags(): string[] {
-        return this._tags;
-    }
-
-    twoBytesToWord = this._endian.twoBytesToWord;
-    wordToByteArray = this._endian.wordToByteArray;
-    wordToTwoBytes = this._endian.wordToTwoBytes;
-    pushWordBytes = this._endian.pushWordBytes;
 }
 
 export {
