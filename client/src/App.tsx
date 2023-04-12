@@ -141,7 +141,6 @@ function FileDetail(props: { fb: FileBlob }) {
 
 function CurrentFileSummary(props: { file: File | FileLike }) {
     const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
-    const endian:Endian = LE; // TODO get this from the Computer implementation
     useEffect(() => {
         FileBlob.fromFile(props.file, LE).then(fb => setRendered({fb: fb, loading: false}));
     }, [props.file]);
