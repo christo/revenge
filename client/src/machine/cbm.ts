@@ -36,7 +36,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             let detail = new Detail(["line"], dv)
 
             // set the base address
-            const assignPc: Directive = new PcAssign(dis.currentAddress, ["entry"], []);
+            const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
             const tagSeq = assignPc.disassemble(dialect, dis);
             detail.tfield.lines.push(new LogicalLine(tagSeq));
             while (dis.hasNext()) {
@@ -48,7 +48,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
                 // TODO link up internal jumptargets so cross-references can be marked on both ends
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
-                detail.tfield.lines.push(new LogicalLine(tags));
+                detail.tfield.lines.push(new LogicalLine(tags, currentAddress, inst));
             }
             const stats = dis.getStats();
             // for now assuming there's no doubling up of stats keys
