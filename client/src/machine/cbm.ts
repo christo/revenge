@@ -40,7 +40,8 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             const tagSeq = assignPc.disassemble(dialect, dis);
             detail.tfield.lines.push(new LogicalLine(tagSeq));
             while (dis.hasNext()) {
-                let addr: Tag = new Tag(hex16(dis.currentAddress), "addr");
+                const currentAddress = dis.currentAddress;
+                let addr: Tag = new Tag(hex16(currentAddress), "addr");
                 let inst: Instructionish = dis.nextInstructionLine();
                 let hex: Tag = new Tag(asHex(inst.getBytes()), "hex");
                 const tags = [addr, hex];
