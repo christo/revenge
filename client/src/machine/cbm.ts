@@ -22,6 +22,7 @@ import {CBM_BASIC_2_0} from "./basic";
  */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
+// TODO extract these into a shared namespace
 const TAG_ADDRESS = "addr";
 const TAG_HEX = "hex";
 const TAG_LINE = "line";
