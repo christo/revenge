@@ -22,6 +22,9 @@ import {CBM_BASIC_2_0} from "./basic";
  */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
+const TAG_ADDRESS = "addr";
+const TAG_HEX = "hex";
+const TAG_LINE = "line";
 /** User action that disassembles the file. */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
@@ -33,7 +36,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             const startTime = Date.now();
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
             const dv = new NewDataView([]);
-            let detail = new Detail(["line"], dv)
+            let detail = new Detail([TAG_LINE], dv)
 
             // set the base address
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
@@ -41,9 +44,9 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             detail.tfield.lines.push(new LogicalLine(tagSeq));
             while (dis.hasNext()) {
                 const currentAddress = dis.currentAddress;
-                let addr: Tag = new Tag(hex16(currentAddress), "addr");
+                let addr: Tag = new Tag(hex16(currentAddress), TAG_ADDRESS);
                 let inst: Instructionish = dis.nextInstructionLine();
-                let hex: Tag = new Tag(asHex(inst.getBytes()), "hex");
+                let hex: Tag = new Tag(asHex(inst.getBytes()), TAG_HEX);
                 const tags = [addr, hex];
 
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
@@ -75,7 +78,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             f: () => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // exclude "note" tags which are not a "line"
-                const justLines = (ll:LogicalLine) => ll.getTags().find((t:Tag) => t.hasTag("line")) !== undefined;
+                const justLines = (ll:LogicalLine) => ll.getTags().find((t:Tag) => t.hasTag(TAG_LINE)) !== undefined;
                 detail.stats.push(["lines", detail.tfield.lines.filter(justLines).length.toString()]);
                 return detail;
             }
