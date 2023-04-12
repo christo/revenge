@@ -308,18 +308,33 @@ class Petscii {
 
     static C64: Petscii = Petscii.makeC64();
 
+    /**
+     * Returns the given string as an array of petscii codes. All chars must exist in petscii or asplode.
+     */
+    static codes = (s: string): number[] => {
+        const bytes = [];
+        for (let i = 0; i < s.length; i++) {
+            const ch = s.charAt(i);
+            // special handling for space (code 32)
+            if (ch === " ") {
+                bytes.push(32);
+            } else {
+                const mayMatch:[string, number] | undefined = Petscii.C64.vice
+                    .filter((s:string) => s.length === 1)
+                    .map((s:string, i:number):[string,number] => [s,i])
+                    .find((t:[string, number]) => t[0] === ch);
+                // lookup char
+                if (mayMatch !== undefined) {
+                    bytes.push(mayMatch[1]);
+                } else {
+                    throw Error(`cannot lookup char '${ch}' (${ch.charCodeAt(0)})`);
+                }
+            }
+        }
+        return bytes;
+    }
 }
 
-/**
- * Returns the given string as an array of char codes.
- * TODO: make work properly with PETSCII
- */
-export const codes = (s: string): number[] => {
-    const prefix = [];
-    for (let i = 0; i < s.length; i++) {
-        prefix.push(s.charCodeAt(i));
-    }
-    return prefix;
-}
+
 
 export {Petscii}

@@ -2,7 +2,7 @@ import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
 import {FileBlob} from "./FileBlob";
 import {Address, asHex, LE} from "./core";
 import {TOKEN_PRINT, TOKEN_REM} from "./basic";
-import {codes} from "./petscii";
+import {Petscii} from "./petscii";
 
 
 /**
@@ -32,7 +32,7 @@ test("sniff basic program consisting only of line: 0 PRINT", () => {
     let ba:number[] = [];
     const baseAddr = VIC20_UNEX.basicStart;
     VIC.pushWordBytes(ba, baseAddr);
-    let [lineAddress,bline] = basicLine(baseAddr, 0, [TOKEN_PRINT]);
+    let [,bline] = basicLine(baseAddr, 0, [TOKEN_PRINT]);
     // don't need next line address on last and only basic line
     bline.forEach((i) => ba.push(i));
     ba.push(0x00, 0x00); // end of program
@@ -48,9 +48,9 @@ test("sniff basic program with non-ascending line numbers", () => {
     VIC.pushWordBytes(ba, VIC20_UNEX.basicStart);
     let [addr, line] = basicLine(VIC20_UNEX.basicStart, 10, [TOKEN_PRINT]);
     line.forEach(i => ba.push(i));
-    [addr, line] = basicLine(addr, 9, [TOKEN_REM, ...codes(" lower line number")]);
+    [addr, line] = basicLine(addr, 9, [TOKEN_REM, ...Petscii.codes(" lower line number")]);
     line.forEach(i => ba.push(i));
-    [addr, line] = basicLine(addr, 9, [TOKEN_REM, ...codes(" same line number")]);
+    [, line] = basicLine(addr, 9, [TOKEN_REM, ...Petscii.codes(" same line number")]);
     line.push(0, 0); // end of program
 
     const fb:FileBlob = new FileBlob("basic-descending-lnums", ba, LE);

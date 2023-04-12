@@ -17,7 +17,7 @@ import {CartSniffer} from "./cbm";
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
 import {ArrayMemory, KB_64, LE} from "./core";
 import {Mos6502} from "./mos6502";
-import {codes} from "./petscii";
+import {Petscii} from "./petscii";
 
 class C64 extends Computer {
 
@@ -37,7 +37,7 @@ const C64_BASIC_PRG = new BlobType(
 );
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
-const prefix = codes("C64 CARTRIDGE   ");
+const prefix = Petscii.codes("C64 CARTRIDGE   ");
 const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
 const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
 
