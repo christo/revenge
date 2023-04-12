@@ -242,6 +242,8 @@ class Section {
     }
 }
 
+const TAG_IN_BINARY = "inbinary";
+
 /**
  * Need to support options, possibly at specific memory locations.
  * Global option may be lowercase opcodes.
@@ -308,7 +310,13 @@ class DefaultDialect implements Dialect {
         if (operandText.length > 0) {
             const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
             if (fil.fullInstruction.operandAddressResolvable()) {
-                const opnd = fil.fullInstruction.operandValue()
+                const opnd = fil.fullInstruction.operandValue();
+                // TODO check if operand is in the known memory map
+                // TODO check other addressing modes
+                // check if the operand is an address inside the binary
+                if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE && dis.isInBinary(opnd)) {
+                    operandTag.tags.push(TAG_IN_BINARY)
+                }
                 operandTag.data = [["opnd_val", hex16(opnd)]];
             }
             return [mnemonic, operandTag];
@@ -693,6 +701,8 @@ interface DisassemblyMeta {
      * Based on the known machine.
      */
     getSymbolTable(): SymbolTable;
+
+    isInBinary(addr: Address, fb: FileBlob): boolean;
 }
 
 class ByteDefinitionEdict implements Edict<Instructionish> {
@@ -839,6 +849,14 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
     contentStartOffset(): number {
         return this._contentStartOffset;
+    }
+
+    isInBinary(addr: Address, fb: FileBlob): boolean {
+        const baseAddress = fb.read16(this._baseAddressOffset);
+        const contentStartAddress = baseAddress + this._contentStartOffset;
+        const contentEndAddress = baseAddress + fb.getLength();
+        // last address location is 1 below last byte
+        return addr >= contentStartAddress && addr <= contentEndAddress - 1;
     }
 
     disassemblyStartOffset(fb: FileBlob): number {
@@ -1006,6 +1024,10 @@ class Disassembler {
 
     private peekByte() {
         return this.fb.read8(this.currentIndex);
+    }
+
+    isInBinary(addr:Address) {
+        return this.disMeta.isInBinary(addr, this.fb);
     }
 
     /**

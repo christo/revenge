@@ -154,6 +154,10 @@ body {
   cursor: pointer;
 }
 
+.opnd.abs.inbinary::after {
+  content: "  🖇";
+}
+
 .line {
   line-height: 1.5;
   display:flex;
