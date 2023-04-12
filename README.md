@@ -31,14 +31,14 @@ by [Michael Steil](https://pagetable.com/) of
 * stats/summary of file interpretation action taken
   * execution time for disassembly
   * symbol detection count (disassembly)
-* System kernal subroutine symbol recognition (VIC-20)
+* System kernal subroutine symbol recognition (VIC-20, C64)
 
 ## TODO
 
 * More unit tests for C64 and VIC-20 BASIC decoding
 * Render comments on line before if the line is too long to prevent comment and code clash. Also format long byte 
   declarations on multiple physical lines.
-* System kernal subroutine symbol recognition (C64)
+* Kernel subroutines: map the inputs, outputs and register effects of subroutines 
 * render source lines without address prefix
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
