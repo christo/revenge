@@ -44,7 +44,7 @@ class Petscii {
         this.description[byte] = description || unicode;
     }
 
-    /** Apparently slightly different to Vic-20. Uses VICE format codes. */
+    /** Apparently slightly different to Vic-20. */
     private static makeC64() {
         const C64 = new Petscii();
         C64.reg(0, "{null}", "{null}", "{null}");
