@@ -20,8 +20,6 @@ import {ArrayMemory, KB_64, LE} from "./core";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 
-// TODO map the inputs, outputs and register effects of subroutines
-
 // kernal jump table, yes that's how they spell it
 VIC20_KERNAL.sub(0xff8a, "restor", "set KERNAL vectors to defaults", "contains jmp $fd52");
 VIC20_KERNAL.sub(0xff8d, "vector", "Change Vectors For User", "contains jmp $fd57");
