@@ -67,7 +67,6 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
             <div className="statspanel">
                 <h4>Stats</h4>
                 {detail.stats.map((tup:[string,string], i) => {
-                    // TODO: add number of labels interpreted
                     return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span className="sval">{tup[1]}</span></div>
                 })}
             </div>
