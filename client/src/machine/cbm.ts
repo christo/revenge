@@ -60,7 +60,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
             detail.stats.push(["lines", detail.tfield.lines.length.toString()]);
             const timeTaken = Date.now() - startTime;
-            detail.stats.push(["disassembled in", timeTaken.toString() + " ms"])
+            detail.stats.push(["disassembled in", `${timeTaken}  ms`])
             return detail;
         }
     }, hexDumper(fb)];
