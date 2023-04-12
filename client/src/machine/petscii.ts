@@ -310,4 +310,16 @@ class Petscii {
 
 }
 
+/**
+ * Returns the given string as an array of char codes.
+ * TODO: make work properly with PETSCII
+ */
+export const codes = (s: string): number[] => {
+    const prefix = [];
+    for (let i = 0; i < s.length; i++) {
+        prefix.push(s.charCodeAt(i));
+    }
+    return prefix;
+}
+
 export {Petscii}

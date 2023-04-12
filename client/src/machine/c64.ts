@@ -15,8 +15,9 @@ import {
 } from "./asm";
 import {CartSniffer} from "./cbm";
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
-import {ArrayMemory, KB_64, LE, LittleEndian} from "./core";
+import {ArrayMemory, KB_64, LE} from "./core";
 import {Mos6502} from "./mos6502";
+import {codes} from "./petscii";
 
 class C64 extends Computer {
 
@@ -34,15 +35,6 @@ const C64_BASIC_PRG = new BlobType(
     "prg",
     LE.wordToByteArray(C64_MEMORY.basicStart)
 );
-
-/** Returns the given string as an array of char codes */
-const codes = (s: string): number[] => {
-    const prefix = [];
-    for (let i = 0; i < s.length; i++) {
-        prefix.push(s.charCodeAt(i));
-    }
-    return prefix;
-}
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = codes("C64 CARTRIDGE   ");

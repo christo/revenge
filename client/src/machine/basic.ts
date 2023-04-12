@@ -124,6 +124,8 @@ class BasicDecoder {
 
 const CBM_BASIC_2_0 = new BasicDecoder("Commodore BASIC", 2, 0);
 
+const TOKEN_PRINT = 153;
+const TOKEN_REM = 143;
 const TOKENS: Token[] = [
     [32, " "],
     [128, "END"],
@@ -141,7 +143,7 @@ const TOKENS: Token[] = [
     [140, "RESTORE"],
     [141, "GOSUB"],
     [142, "RETURN"],
-    [143, "REM"],
+    [TOKEN_REM, "REM"],
     [144, "STOP"],
     [145, "ON"],
     [146, "WAIT"],
@@ -151,7 +153,7 @@ const TOKENS: Token[] = [
     [150, "DEF"],
     [151, "POKE"],
     [152, "PRINT#"],
-    [153, "PRINT"],
+    [TOKEN_PRINT, "PRINT"],
     [154, "CONT"],
     [155, "LIST"],
     [156, "CLR"],
@@ -205,4 +207,4 @@ const TOKENS: Token[] = [
     [255, "π"]];
 TOKENS.forEach(t => CBM_BASIC_2_0.reg(t));
 
-export {CBM_BASIC_2_0, BasicDecoder}
+export {CBM_BASIC_2_0, BasicDecoder, TOKEN_REM, TOKEN_PRINT}

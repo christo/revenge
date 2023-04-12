@@ -218,8 +218,8 @@ abstract class Computer {
         return this._tags;
     }
 
-    pushWordBytes(ba: number[], baseAddr: number) {
-        return this._memory.endianness().pushWordBytes(ba, baseAddr);
+    pushWordBytes(ba: number[], word: number) {
+        return this._memory.endianness().pushWordBytes(ba, word);
     }
 }
 
