@@ -5,7 +5,7 @@
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
-import {DataView, LogicalLine, DataViewImpl, Tag} from "./api";
+import {DataView, DataViewImpl, LogicalLine, Tag} from "./api";
 
 type Token = [number, string];
 
@@ -40,12 +40,12 @@ class BasicDecoder {
      * BASIC program consisting of only the following line: 0 REM
      */
     private static MINIMAL_PROGRAM = Uint8Array.from([
-        0x01,  0x10,    // standard unexpanded VIC basic load address (0x1001)
-        0x07,  0x10,    // address of next line (terminating word) (0x1007)
+        0x01, 0x10,    // standard unexpanded VIC basic load address (0x1001)
+        0x07, 0x10,    // address of next line (terminating word) (0x1007)
         0x00, 0x00,     // line number (0)
         0x8f,           // token "REM"
         0x00,           // line end byte
-        0x00,  0x00     // terminating word (0)
+        0x00, 0x00     // terminating word (0)
     ]);
 
     private static MINIMUM_SIZE: number = BasicDecoder.MINIMAL_PROGRAM.length;

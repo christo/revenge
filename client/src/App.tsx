@@ -19,7 +19,7 @@ import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import axios from "axios";
-import {Endian, LE} from "./machine/core";
+import {LE} from "./machine/core";
 
 const darkTheme = createTheme({
     palette: {
@@ -43,13 +43,13 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
 
     // when an address operand is clicked, try to find its destination in the view and if present scroll to it
-    const handleClick = (data:[string, string][]) => {
+    const handleClick = (data: [string, string][]) => {
         const tup = data.find(t => t[0] === "opnd_val");
         if (tup !== undefined) {
             const id = "M_" + tup[1];
             const jumpTo = document.getElementById(id);
             if (jumpTo !== null) {
-                jumpTo.scrollIntoView({ behavior: "smooth" });
+                jumpTo.scrollIntoView({behavior: "smooth"});
             }
         }
     }
@@ -66,8 +66,9 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
 
             <div className="statspanel">
                 <h4>Stats</h4>
-                {detail.stats.map((tup:[string,string], i) => {
-                    return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span className="sval">{tup[1]}</span></div>
+                {detail.stats.map((tup: [string, string], i) => {
+                    return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span
+                        className="sval">{tup[1]}</span></div>
                 })}
             </div>
 
@@ -83,13 +84,14 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     const classes = tup.tags.join(" ");
                     let isNote = tup.tags.find(x => x === "note") !== undefined;
                     let data: { [k: string]: string; } = {};
-                    tup.data.forEach((kv:[string,string]) => data[`data-${kv[0]}`] = kv[1]);
+                    tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
 
                     if (isNote) {
                         return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                                       key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
-                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`} onClick={()=>handleClick(tup.data)}>{tup.value}</span>;
+                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`}
+                                     onClick={() => handleClick(tup.data)}>{tup.value}</span>;
                     }
                 })}
             </div>;

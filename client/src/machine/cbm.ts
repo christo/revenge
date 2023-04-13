@@ -78,7 +78,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             f: () => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // exclude "note" tags which are not a "line"
-                const justLines = (ll:LogicalLine) => ll.getTags().find((t:Tag) => t.hasTag(TAG_LINE)) !== undefined;
+                const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.hasTag(TAG_LINE)) !== undefined;
                 detail.stats.push(["lines", detail.dataView.lines.filter(justLines).length.toString()]);
                 return detail;
             }

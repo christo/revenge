@@ -337,12 +337,12 @@ class DefaultDialect implements Dialect {
         }
     }
 
-    private renderLabels(labels: string[]):string {
+    private renderLabels(labels: string[]): string {
         const le = this._env.targetLineEndings();
         return labels.map(s => this.formatLabel(s)).join(le);
     }
 
-    private renderComments(comments: string[]):string {
+    private renderComments(comments: string[]): string {
         const le = this._env.targetLineEndings();
         const cp = this.commentPrefix();
         return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
@@ -631,7 +631,7 @@ class SymDef {
     /** Extended information */
     blurb: string;
 
-    constructor(sType : SymbolType, name: string, value: Address, description: string, blurb: string = "") {
+    constructor(sType: SymbolType, name: string, value: Address, description: string, blurb: string = "") {
         this.sType = sType;
         this.name = name;
         this.value = value;
@@ -651,7 +651,7 @@ class SymbolTable {
     private name: string;
     private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>();
 
-    constructor(name:string) {
+    constructor(name: string) {
         this.name = name;
     }
 
@@ -965,7 +965,7 @@ class Disassembler {
     currentIndex: number;
     fb: FileBlob;
     private readonly segmentBaseAddress: number;
-    private stats:Map<string, number>;
+    private stats: Map<string, number>;
     private predefLc: [Address, LabelsComments][];
 
     private disMeta: DisassemblyMeta;
@@ -975,7 +975,7 @@ class Disassembler {
         this.iset = iset;
         const dm = bs.getMeta();
         let index = dm.contentStartOffset();
-        let bytes:number[] = fb.getBytes();
+        let bytes: number[] = fb.getBytes();
         if (index >= bytes.length || index < 0) {
             throw Error(`index '${index}' out of range`);
         }
@@ -986,7 +986,7 @@ class Disassembler {
         this.predefLc = dm.getJumpTargets(fb);
         this.disMeta = dm;
         this.symbolDefinitions = new Map<string, SymDef>();
-        this.stats = new Map<string,number>();
+        this.stats = new Map<string, number>();
     }
 
     private eatBytes(count: number): number[] {
@@ -1065,7 +1065,7 @@ class Disassembler {
         return this.fb.read8(this.currentIndex);
     }
 
-    isInBinary(addr:Address) {
+    isInBinary(addr: Address) {
         return this.disMeta.isInBinary(addr, this.fb);
     }
 
@@ -1215,7 +1215,7 @@ class Disassembler {
      * @param name name of the statistic
      * @param x value to add, defaults to 1
      */
-    addStat(name:string, x:number=1) {
+    addStat(name: string, x: number = 1) {
         let existing = this.stats.get(name) || 0;
         this.stats.set(name, x + existing);
     }
@@ -1225,7 +1225,7 @@ class Disassembler {
      * @param name
      * @param x
      */
-    setStat(name: string, x:number) {
+    setStat(name: string, x: number) {
         this.stats.set(name, x);
     }
 
@@ -1291,7 +1291,7 @@ class BlobType implements BlobSniffer {
         return this.dm;
     }
 
-    dataMatch(fileBlob: FileBlob):boolean {
+    dataMatch(fileBlob: FileBlob): boolean {
         return fileBlob.submatch(this.prefix, 0);
     }
 

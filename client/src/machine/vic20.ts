@@ -73,7 +73,6 @@ VIC20_KERNAL.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location
 VIC20_KERNAL.reg(0x0286, "color_mode", "characters are multi-color or single color");
 
 
-
 // vic-20 cartridge image definition:
 
 /**

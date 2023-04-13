@@ -1,4 +1,4 @@
-import {Address, ArrayMemory, BE, BigEndian, Byteable, Endian} from "./core";
+import {Address, ArrayMemory, BE, Byteable, Endian} from "./core";
 
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
@@ -9,16 +9,17 @@ class FileBlob implements Byteable {
 
     name: string;
     private memory: ArrayMemory<Endian>;
+
     constructor(name: string, bytes: number | number[], endian: Endian) {
         this.name = name;
         this.memory = new ArrayMemory(bytes, endian);
     }
 
-    getBytes():number[] {
+    getBytes(): number[] {
         return this.memory.getBytes();
     }
 
-    getLength():number {
+    getLength(): number {
         return this.memory.getLength();
     }
 

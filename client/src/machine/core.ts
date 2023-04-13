@@ -179,7 +179,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         return this._bytes;
     }
 
-    submatch(seq: Uint8Array, atOffset: number):boolean {
+    submatch(seq: Uint8Array, atOffset: number): boolean {
         if (seq.length + atOffset <= this._bytes.length && seq.length > 0) {
             for (let i = 0; i < seq.length; i++) {
                 if (seq[i] !== this._bytes[i + atOffset]) {

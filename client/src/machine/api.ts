@@ -161,7 +161,7 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
         const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(hex8(x), "hexbyte"));
         // currently whole hex dump is a single logical line at no address with no instruction
         const oldDataView: TagSeq[] = [elements];
-        const lls = oldDataView.map((ts: TagSeq, i:number) => new LogicalLine(ts, i));
+        const lls = oldDataView.map((ts: TagSeq, i: number) => new LogicalLine(ts, i));
         const newDataView: DataView = new DataViewImpl(lls);
         return new Detail(["hexbytes"], newDataView);
     }
@@ -201,7 +201,6 @@ abstract class Computer {
     private readonly _memoryConfig: MemoryConfiguration;
     private readonly _name: string;
     private readonly _tags: string[];
-
 
     protected constructor(
         name: string,
