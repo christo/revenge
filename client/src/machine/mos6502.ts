@@ -566,6 +566,10 @@ class FullInstruction implements Byteable {
         return this.instruction.getLength();
     }
 
+    /**
+     * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
+     * because those depend on the state of other memory locations or registers at execution time.
+     */
     operandAddressResolvable() {
         const m = this.instruction.mode;
         return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
