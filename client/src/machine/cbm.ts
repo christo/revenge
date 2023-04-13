@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {Mos6502} from "./mos6502";
 import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, Detail, hexDumper, LogicalLine, NewDataView, Tag, UserAction} from "./api";
+import {ActionFunction, DataViewImpl, Detail, hexDumper, LogicalLine, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
 
 /**
@@ -36,16 +36,15 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             // start timer
             const startTime = Date.now();
             const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
-            const dv = new NewDataView([]);
-            let detail = new Detail([TAG_LINE], dv)
+            const detail = new Detail([TAG_LINE], new DataViewImpl([]))
 
             // set the base address
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
             const tagSeq = assignPc.disassemble(dialect, dis);
-            detail.tfield.lines.push(new LogicalLine(tagSeq));
+            detail.dataView.lines.push(new LogicalLine(tagSeq, dis.currentAddress));
             while (dis.hasNext()) {
-                const currentAddress = dis.currentAddress;
-                let addr: Tag = new Tag(hex16(currentAddress), TAG_ADDRESS);
+                const instAddress = dis.currentAddress; // save current address before we increment it
+                let addr: Tag = new Tag(hex16(instAddress), TAG_ADDRESS);
                 let inst: Instructionish = dis.nextInstructionLine();
                 let hex: Tag = new Tag(asHex(inst.getBytes()), TAG_HEX);
                 const tags = [addr, hex];
@@ -53,12 +52,12 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
                 // TODO link up internal jumptargets so cross-references can be marked on both ends
                 //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
-                detail.tfield.lines.push(new LogicalLine(tags, currentAddress, inst));
+                detail.dataView.lines.push(new LogicalLine(tags, instAddress, inst));
             }
             const stats = dis.getStats();
             // for now assuming there's no doubling up of stats keys
             stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
-            detail.stats.push(["lines", detail.tfield.lines.length.toString()]);
+            detail.stats.push(["lines", detail.dataView.lines.length.toString()]);
             const timeTaken = Date.now() - startTime;
             detail.stats.push(["disassembled in", `${timeTaken}  ms`])
             return detail;
@@ -80,7 +79,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // exclude "note" tags which are not a "line"
                 const justLines = (ll:LogicalLine) => ll.getTags().find((t:Tag) => t.hasTag(TAG_LINE)) !== undefined;
-                detail.stats.push(["lines", detail.tfield.lines.filter(justLines).length.toString()]);
+                detail.stats.push(["lines", detail.dataView.lines.filter(justLines).length.toString()]);
                 return detail;
             }
         }]

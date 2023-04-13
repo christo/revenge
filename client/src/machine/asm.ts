@@ -22,6 +22,12 @@ import {
 } from "./mos6502";
 import {BooBoo, Tag, TagSeq} from "./api";
 
+const TAG_IN_BINARY = "inbinary";
+
+const TAG_LABEL = "label";
+
+const TAG_COMMENT = "comment";
+
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
  * assembly language.
@@ -93,6 +99,8 @@ interface Dialect {
      * @param dis
      */
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq;
+
+    labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq;
 }
 
 /**
@@ -109,10 +117,10 @@ const enum SourceType {
     DATA,
     /** Assembly directive or pseudo-op, including symbol definitions. */
     PSEUDO,
-    /** Label definition */
+    /** Just label definition */
     LABEL,
-    /** Something for the humans */
-    COMMENT,
+    /** Comments and or labels */
+    COMMENT_LABEL,
     /** Forced space. */
     BLANK
 }
@@ -242,7 +250,11 @@ class Section {
     }
 }
 
-const TAG_IN_BINARY = "inbinary";
+const TAG_DATA = "data";
+
+const TAG_OPERAND = "opnd";
+
+const TAG_ABSOLUTE = "abs";
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -309,7 +321,7 @@ class DefaultDialect implements Dialect {
         // check the symbol table for a symbol that matches this operand
         if (operandText.length > 0) {
             const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
-            if (fil.fullInstruction.operandAddressResolvable()) {
+            if (fil.fullInstruction.staticallyResolvableOperand()) {
                 const opnd = fil.fullInstruction.operandValue();
                 // TODO check if operand is in the known memory map
                 // TODO check other addressing modes
@@ -325,12 +337,12 @@ class DefaultDialect implements Dialect {
         }
     }
 
-    private renderLabels(labels: string[]) {
+    private renderLabels(labels: string[]):string {
         const le = this._env.targetLineEndings();
         return labels.map(s => this.formatLabel(s)).join(le);
     }
 
-    private renderComments(comments: string[]) {
+    private renderComments(comments: string[]):string {
         const le = this._env.targetLineEndings();
         const cp = this.commentPrefix();
         return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
@@ -438,23 +450,23 @@ class DefaultDialect implements Dialect {
 
     bytes(x: FullInstructionLine, dis: Disassembler): TagSeq {
         // future: context may give us rules about grouping, pattern detection etc.
-        const comments: Tag = new Tag(this.renderComments(x.labelsComments.comments), "comment");
-        const labels: Tag = new Tag(this.renderLabels(x.labelsComments.labels), "label");
-        const data: Tag = new Tag(this._env.indent() + tagText(this.byteDeclaration(x)), "data");
+        const comments: Tag = new Tag(this.renderComments(x.labelsComments.comments), TAG_COMMENT);
+        const labels: Tag = new Tag(this.renderLabels(x.labelsComments.labels), TAG_LABEL);
+        const data: Tag = new Tag(this._env.indent() + tagText(this.byteDeclaration(x)), TAG_DATA);
         return [comments, labels, data];
     }
 
     words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
-        const comments: Tag = new Tag(this.renderComments(lc.comments), "comment");
-        const labels: Tag = new Tag(this.renderLabels(lc.labels), "label");
+        const comments: Tag = new Tag(this.renderComments(lc.comments), TAG_COMMENT);
+        const labels: Tag = new Tag(this.renderLabels(lc.labels), TAG_LABEL);
         const tags: TagSeq = this.wordDeclaration(words)
-        const data: Tag = new Tag(this._env.indent() + tagText(tags), "data");
+        const data: Tag = new Tag(this._env.indent() + tagText(tags), TAG_DATA);
         return [comments, labels, data];
     }
 
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
-        const comments: Tag = new Tag(this.renderComments(fil.labelsComments.comments), "comment");
-        const labels: Tag = new Tag(this.renderLabels(fil.labelsComments.labels), "label");
+        const comments: Tag = new Tag(this.renderComments(fil.labelsComments.comments), TAG_COMMENT);
+        const labels: Tag = new Tag(this.renderLabels(fil.labelsComments.labels), TAG_LABEL);
         return [comments, labels, ...this.taggedCode(fil, dis)];
     }
 
@@ -464,14 +476,19 @@ class DefaultDialect implements Dialect {
     }
 
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
-        const comments = new Tag(this.renderComments(pcAssign.labelsComments.comments), "comment");
-        const labels = new Tag(this.renderLabels(pcAssign.labelsComments.labels), "label");
+        const comments = new Tag(this.renderComments(pcAssign.labelsComments.comments), TAG_COMMENT);
+        const labels = new Tag(this.renderLabels(pcAssign.labelsComments.labels), TAG_LABEL);
         const pc = new Tag("* =", "code");
-        const addr = new Tag(this.hexWordText(pcAssign.address), ["abs", "opnd"]);
+        const addr = new Tag(this.hexWordText(pcAssign.address), [TAG_ABSOLUTE, TAG_OPERAND]);
         const dummy = new Tag("_", "addr");
         return [comments, labels, dummy, pc, addr];
     }
 
+    labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq {
+        const labels: Tag = new Tag(this.renderLabels(labelsComments.labels), TAG_LABEL);
+        const comments: Tag = new Tag(this.renderComments(labelsComments.comments), TAG_COMMENT);
+        return [comments, labels];
+    }
 }
 
 /**
@@ -522,6 +539,28 @@ interface Instructionish extends Byteable {
      * Return the {@link SourceType} for the generated code (regardless of comments).
      */
     get sourceType(): SourceType;
+}
+
+/**
+ * No code or data, just labels and comments.
+ */
+class LabelsCommentsOnly extends InstructionBase {
+
+    constructor(lc: LabelsComments) {
+        super(lc, SourceType.COMMENT_LABEL);
+    }
+
+    disassemble(dialect: Dialect, dis: Disassembler): TagSeq {
+        return dialect.labelsComments(this.labelsComments, dis);
+    }
+
+    getBytes(): number[] {
+        return [];
+    }
+
+    getLength(): number {
+        return 0;
+    }
 }
 
 /**
@@ -1105,20 +1144,29 @@ class Disassembler {
     }
 
     /**
-     * Determine all jump targets both statically defined and implied by the given sequence of instructions. Only
-     * those targets that lie within the address range of our loaded binary are returned.
+     * Determine all jump targets both statically defined and implied by the given sequence of address,instruction
+     * pairs. Only those targets that lie within the address range of our loaded binary are returned.
+     *
      */
-    private jumpTargets = (instructions: [Address, FullInstruction][]): Address[] => {
+    jumpTargets = (instructions: [Address, FullInstruction][]): Address[] => {
         // collect predefined jump targets
         const fromDm = this.predefLc.map(t => t[0]);
+
+        // instructions that are jumps and have a resolvable destination
+        const resolvableJump = (addrInst: [number, FullInstruction]) => {
+            return addrInst[1].instruction.op.isJump && addrInst[1].staticallyResolvableOperand();
+        };
+
         // collect targets of all current jump instructions
-        const dests: Address[] = instructions
-            .filter(addrInst => addrInst[1].instruction.op.isJump && addrInst[1].operandAddressResolvable())
-            .map(j => j[1].resolveOperandAddress(j[0]));
+
         // for all jump instructions, collect the destination address
-        const allJumpTargets = fromDm.concat(dests);
-        // for all such addresses, filter those in range of the loaded binary
-        return allJumpTargets.filter(this.addressInRange);
+        const allJumpTargets: Address[] = instructions
+            .filter(addrInst => resolvableJump(addrInst))   // only jumps, only statically resolvable
+            .map(j => j[1].resolveOperandAddress(j[0]))     // resolve pc-relative operands
+            .concat(fromDm)                                 // add the predefs
+            .filter(this.addressInRange);                   // only those in range of the loaded binary
+
+        return allJumpTargets;
     };
 
     /**
@@ -1261,6 +1309,7 @@ export {
     DisassemblyMetaImpl,
     Environment,
     FullInstructionLine,
+    LabelsCommentsOnly,
     PcAssign,
     Section,
     SectionType,

@@ -570,16 +570,16 @@ class FullInstruction implements Byteable {
      * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
      * because those depend on the state of other memory locations or registers at execution time.
      */
-    operandAddressResolvable() {
+    staticallyResolvableOperand() {
         const m = this.instruction.mode;
         return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
     }
 
     /**
      * Resolve the operand as an address, if relevant, relative to the given program counter. This currently only
-     * supports static resolution, either relative that depends on the program counter or absolute. Indexed and indirect
-     * modes depend on the dynamic memory or register contents which is in the general case, unknowable prior to
-     * runtime.
+     * supports static resolution, either pc-relative or absolute. Indexed and indirect modes depend on dynamic
+     * memory or register contents which, in some cases can be resolved with more context and flow-analysis and in the
+     * general case, is unknowable prior to runtime.
      *
      * If there is no operand, or it is not an address then the results are undefined.
      *

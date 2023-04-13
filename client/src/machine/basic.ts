@@ -5,7 +5,7 @@
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
-import {DataView, LogicalLine, NewDataView, Tag} from "./api";
+import {DataView, LogicalLine, DataViewImpl, Tag} from "./api";
 
 type Token = [number, string];
 
@@ -73,7 +73,7 @@ class BasicDecoder {
         let nextLineAddr = baseAddress;
         let lineNumber = 0;
         let finished = false;
-        let lines: DataView = new NewDataView([]);
+        let lines: DataView = new DataViewImpl([]);
         let line = "";
         let quoteMode = false;
         while (!finished) {
@@ -124,8 +124,9 @@ class BasicDecoder {
         if (remainingBytes > 0) {
             const note = new Tag(`${remainingBytes} remaining bytes`, TAG_NOTE);
             // not really an address, a number of bytes
-            const addr = new Tag(hex16(baseAddress + i + 2), TAG_ADDRESS);
-            lines.lines.push(new LogicalLine([note, addr]));
+            const numBytes = baseAddress + i + 2;
+            const addr = new Tag(hex16(numBytes), TAG_ADDRESS);
+            lines.lines.push(new LogicalLine([note, addr], numBytes));
         }
 
         return lines;

@@ -29,7 +29,7 @@ class Tag {
  * This may include multiple labels and comments which are rendered onto multiple physical lines in a typical
  * (dis)assembly listing. See {@link LogicalLine} for the fully-connected API type.
  */
-type TagSeq = Tag[]
+type TagSeq = Tag[];
 
 /**
  * New type that holds a logical line. Need to be bidirectionally mapped to addresses and yet also we want to
@@ -57,16 +57,17 @@ class LogicalLine {
 
     /** Temporary transition encapsulation, maybe migrate to lazy rendering. */
     private tags: TagSeq;
-    private address?: Address;
+    private address: Address;
     private instruction?: Instructionish;
 
-    constructor(tags: TagSeq, address?: Address, instruction?: Instructionish) {
+    constructor(tags: TagSeq, address: Address, instruction?: Instructionish) {
         this.tags = tags;
         this.address = address;
         this.instruction = instruction;
     }
 
     getTags(): TagSeq {
+        // TODO put address in tags dynamically and stop receiving it in constructor
         return this.tags;
     }
 
@@ -75,6 +76,10 @@ class LogicalLine {
      */
     getInstruction() {
         return this.instruction;
+    }
+
+    getAddress() {
+        return this.address;
     }
 }
 
@@ -88,7 +93,7 @@ interface DataView {
     lines: LogicalLine[];
 }
 
-class NewDataView implements DataView {
+class DataViewImpl implements DataView {
     lines: LogicalLine[];
 
     constructor(lines: LogicalLine[]) {
@@ -102,11 +107,11 @@ class NewDataView implements DataView {
 class Detail {
     tags: string[];
     stats: [string, string][];
-    tfield: DataView;
+    dataView: DataView;
 
-    constructor(tags: string[], tfield: DataView) {
+    constructor(tags: string[], dataView: DataView) {
         this.tags = tags;
-        this.tfield = tfield;
+        this.dataView = dataView;
         this.stats = [];
     }
 }
@@ -150,10 +155,11 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements: TagSeq = Array.from(fb.getBytes()).map(x => new Tag(hex8(x), "hexbyte"));
+        const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(hex8(x), "hexbyte"));
+        // currently whole hex dump is a single logical line at no address with no instruction
         const oldDataView: TagSeq[] = [elements];
-        const lls = oldDataView.map((ts: TagSeq) => new LogicalLine(ts));
-        const newDataView: DataView = new NewDataView(lls);
+        const lls = oldDataView.map((ts: TagSeq, i:number) => new LogicalLine(ts, i));
+        const newDataView: DataView = new DataViewImpl(lls);
         return new Detail(["hexbytes"], newDataView);
     }
 });
@@ -223,7 +229,7 @@ abstract class Computer {
     }
 }
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, NewDataView, Computer};
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, DataViewImpl, Computer};
 export type {
     TagSeq,
     ActionExecutor,
