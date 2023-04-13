@@ -35,7 +35,6 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
-* More unit tests for C64 and VIC-20 BASIC decoding
 * Render comments on line before if the line is too long to prevent comment and code clash. Also format long byte 
   declarations on multiple physical lines.
 * Kernel subroutines: map the inputs, outputs and register effects of subroutines 
