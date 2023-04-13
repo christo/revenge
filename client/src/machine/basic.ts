@@ -11,6 +11,14 @@ type Token = [number, string];
 
 const isZilch = (x: number | undefined) => (x === undefined || x === 0);
 
+const TAG_LINE = "line";
+
+const TAG_LINE_NUM = "lnum";
+
+const TAG_ADDRESS = "addr";
+
+const TAG_NOTE = "note";
+
 /**
  * Decodes a BASIC {@link FileBlob} into its program structure.
  */
@@ -87,11 +95,11 @@ class BasicDecoder {
                 console.error("byte no existo");
                 finished = true;
             } else if (eol) {
-                const address = new Tag(hex16(nextLineAddr), "addr");
-                const lineNum = new Tag(lineNumber.toString(10), "lnum");
-                const lineText = new Tag(line, "line");
+                const address = new Tag(hex16(nextLineAddr), TAG_ADDRESS);
+                const lineNum = new Tag(lineNumber.toString(10), TAG_LINE_NUM);
+                const lineText = new Tag(line, TAG_LINE);
                 const tags = [address, lineNum, lineText];
-                lines.lines.push(new LogicalLine(tags));
+                lines.lines.push(new LogicalLine(tags, nextLineAddr));  // TODO confirm address is correct
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
@@ -99,6 +107,7 @@ class BasicDecoder {
                     // in quotemode we never want the basic keyword to appear
                     token = Petscii.C64.vice[b];
                 }
+                // toggle quotemode
                 if (token === '"') {
                     quoteMode = !quoteMode;
                 }
@@ -106,15 +115,16 @@ class BasicDecoder {
             }
             // two zero bytes mark the end, if we are out of bytes, same thing.
             // i has already been incremented, so i and i+1 peek ahead for a zero-terminating word
-            const eof = isZilch(fb.getBytes().at(i)) && isZilch(fb.getBytes().at(i + 1));
+            const eof = isZilch(fb.read8(i)) && isZilch(fb.read8(i + 1));
             finished = finished || (eol && eof);
         }
 
         // "i" is pointing at the termination word
         const remainingBytes = fb.getLength() - i - 2;
         if (remainingBytes > 0) {
-            const note = new Tag(`${remainingBytes} remaining bytes`, "note");
-            const addr = new Tag(hex16(baseAddress + i + 2), "addr");
+            const note = new Tag(`${remainingBytes} remaining bytes`, TAG_NOTE);
+            // not really an address, a number of bytes
+            const addr = new Tag(hex16(baseAddress + i + 2), TAG_ADDRESS);
             lines.lines.push(new LogicalLine([note, addr]));
         }
 
