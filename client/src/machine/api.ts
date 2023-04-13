@@ -32,11 +32,11 @@ class Tag {
 type TagSeq = Tag[];
 
 /**
- * New type that holds a logical line. Need to be bidirectionally mapped to addresses and yet also we want to
- * generate listings where there are lines that have no address but they do usually belong in a specific place
- * in the listing. Macro definitions, for example, need to exist in the listing but they have no address location
- * and could be reordered so long as they adhere to dialect-enforced-rules about forward references inherited from
- * assemblers.
+ * Holds a logical line of source with its address and the {@link Instructionish}. Need to be bidirectionally mapped to
+ * addresses and yet also we want to generate listings where there are lines that have no address, but they do usually
+ * belong in a specific place in the listing. Macro definitions, for example, need to exist in the listing, but they
+ * have no address location and could be reordered so long as they adhere to dialect-enforced-rules about forward
+ * references inherited from assemblers.
  *
  * The mapping between addresses and source lines is bijective:
  *
@@ -47,18 +47,18 @@ type TagSeq = Tag[];
  * - instructions have variable byte length correspondence, so alternative instructions (e.g. code vs data) will
  * consume different numbers of bytes. Changing from an insruction to a byte definition may have a knock-on effect
  * that forces a different interpretation of following bytes.
- * - Edicts produce these knock on effects although they're defined at offsets rather than addresses
+ * - Edicts produce these knock on effects, although they're defined at offsets rather than addresses
  * - can have comments and no instructions
- * - can have labels but if it has label it needs address
+ * - can have labels but if it has a label it needs address
  * - labels are different to symbol assignment - label has an implicit "= *"
  *
  */
 class LogicalLine {
 
-    /** Temporary transition encapsulation, maybe migrate to lazy rendering. */
-    private tags: TagSeq;
-    private address: Address;
-    private instruction?: Instructionish;
+    /** Temporary transition encapsulation, future: migrate to dynamic generation. */
+    private readonly tags: TagSeq;
+    private readonly address: Address;
+    private readonly instruction?: Instructionish;
 
     constructor(tags: TagSeq, address: Address, instruction?: Instructionish) {
         this.tags = tags;
@@ -71,6 +71,7 @@ class LogicalLine {
         return this.tags;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     /**
      * @return possibly undefined instruction for this line
      */
@@ -78,6 +79,7 @@ class LogicalLine {
         return this.instruction;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     getAddress() {
         return this.address;
     }
@@ -121,6 +123,7 @@ class Detail {
  */
 type ActionExecutor = () => Detail;
 
+// noinspection JSUnusedGlobalSymbols
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo: ActionExecutor) => void;
 
@@ -168,14 +171,14 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
  * Available memory, basic load addres etc.
  */
 class MemoryConfiguration {
-    name: string;
-    basicStart: Address;
+    readonly name: string;
+    readonly basicStart: Address;
 
     /**
      * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
      * configuration, this can be empty. Does not need to include any machine identifier.
      */
-    shortName: string;
+    readonly shortName: string;
 
     /**
      * Create a memory configuration.
@@ -195,12 +198,17 @@ class MemoryConfiguration {
 abstract class Computer {
     private _cpu: Mos6502;
     private _memory: Memory<BigEndian | LittleEndian>;
-    private _memoryConfig: MemoryConfiguration;
-    private _name: string;
-    private _tags: string[];
+    private readonly _memoryConfig: MemoryConfiguration;
+    private readonly _name: string;
+    private readonly _tags: string[];
 
 
-    constructor(name: string, cpu: Mos6502, memory: Memory<BigEndian | LittleEndian>, memoryConfig: MemoryConfiguration, tags: string[]) {
+    protected constructor(
+        name: string,
+        cpu: Mos6502,
+        memory: Memory<BigEndian | LittleEndian>,
+        memoryConfig: MemoryConfiguration,
+        tags: string[]) {
         this._name = name;
         this._cpu = cpu;
         this._memory = memory;
