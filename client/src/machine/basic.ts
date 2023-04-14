@@ -6,18 +6,11 @@ import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {hex16} from "./core";
 import {DataView, DataViewImpl, LogicalLine, Tag} from "./api";
+import {TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "./tags";
 
 type Token = [number, string];
 
 const isZilch = (x: number | undefined) => (x === undefined || x === 0);
-
-const TAG_LINE = "line";
-
-const TAG_LINE_NUM = "lnum";
-
-const TAG_ADDRESS = "addr";
-
-const TAG_NOTE = "note";
 
 /**
  * Decodes a BASIC {@link FileBlob} into its program structure.

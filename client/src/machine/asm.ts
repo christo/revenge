@@ -21,12 +21,7 @@ import {
     Mos6502
 } from "./mos6502";
 import {BooBoo, Tag, TagSeq} from "./api";
-
-const TAG_IN_BINARY = "inbinary";
-
-const TAG_LABEL = "label";
-
-const TAG_COMMENT = "comment";
+import {TAG_ABSOLUTE, TAG_COMMENT, TAG_DATA, TAG_IN_BINARY, TAG_LABEL, TAG_OPERAND} from "./tags";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -249,12 +244,6 @@ class Section {
         return this.startOffset + this.length;
     }
 }
-
-const TAG_DATA = "data";
-
-const TAG_OPERAND = "opnd";
-
-const TAG_ABSOLUTE = "abs";
 
 /**
  * Need to support options, possibly at specific memory locations.

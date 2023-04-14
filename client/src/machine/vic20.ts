@@ -17,6 +17,7 @@ import {CBM_BASIC_2_0} from "./basic";
 import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
 import {Mos6502} from "./mos6502";
 import {ArrayMemory, KB_64, LE} from "./core";
+import {TAG_ADDRESS, TAG_LINE_NUMBER} from "./tags";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 
@@ -130,10 +131,6 @@ const VIC20_EXP03K = new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k")
 const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k");
 const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
-
-// TODO move these tag names out - they're shared between disassembler code and front-end css
-const TAG_ADDRESS = "addr";
-const TAG_LINE_NUMBER = "lnum";
 
 /**
  * Vic-20 BASIC
