@@ -64,6 +64,7 @@ class BasicDecoder {
         let i = offset;
         // read address of next BASIC line (may be the 0x0000 end marker)
         let nextLineAddr = baseAddress;
+        let thisLineAddr = nextLineAddr;
         let lineNumber = 0;
         let finished = false;
         let lines: DataView = new DataViewImpl([]);
@@ -73,6 +74,7 @@ class BasicDecoder {
             const newLine = i - offset + baseAddress === nextLineAddr;
             if (newLine) {
                 quoteMode = false;
+                thisLineAddr = nextLineAddr;
                 nextLineAddr = fb.read16(i);
                 if (nextLineAddr === 0) {
                     throw Error("tripped end of program unexpectedly"); // shouldn't happen
@@ -88,11 +90,11 @@ class BasicDecoder {
                 console.error("byte no existo");
                 finished = true;
             } else if (eol) {
-                const address = new Tag(hex16(nextLineAddr), TAG_ADDRESS);
+                const address = new Tag(hex16(thisLineAddr), TAG_ADDRESS);
                 const lineNum = new Tag(lineNumber.toString(10), TAG_LINE_NUM);
                 const lineText = new Tag(line, TAG_LINE);
                 const tags = [address, lineNum, lineText];
-                lines.lines.push(new LogicalLine(tags, nextLineAddr));  // TODO confirm address is correct
+                lines.lines.push(new LogicalLine(tags, thisLineAddr));
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
