@@ -67,7 +67,7 @@ class LogicalLine {
     }
 
     getTags(): TagSeq {
-        // TODO put address in tags dynamically and stop receiving it in constructor
+        // TODO put address in tags dynamically and stop receiving it as a tag in constructor
         return this.tags;
     }
 
@@ -104,17 +104,30 @@ class DataViewImpl implements DataView {
 }
 
 /**
- * Datastructure for all data interpretation output.
+ * Data interpretation output form. Tags represent top level "folksonomy". Stats relay generic summary information.
+ * The {@link DataView} holds the data itself.
  */
 class Detail {
-    tags: string[];
-    stats: [string, string][];
-    dataView: DataView;
+    private readonly _tags: string[];
+    private readonly _stats: [string, string][];
+    private readonly _dataView: DataView;
 
     constructor(tags: string[], dataView: DataView) {
-        this.tags = tags;
-        this.dataView = dataView;
-        this.stats = [];
+        this._tags = tags;
+        this._dataView = dataView;
+        this._stats = [];
+    }
+
+    get tags(): string[] {
+        return this._tags;
+    }
+
+    get stats(): [string, string][] {
+        return this._stats;
+    }
+
+    get dataView(): DataView {
+        return this._dataView;
     }
 }
 
