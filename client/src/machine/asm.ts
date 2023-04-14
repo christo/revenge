@@ -1193,7 +1193,6 @@ class Disassembler {
     }
 
     private maybeMkEdict(lc: LabelsComments) {
-        // TODO Maybe type
         const edict = this.disMeta.getEdict(this.currentIndex);
         if (edict !== undefined) {
             return this.edictOrBust(edict, this.bytesLeftInFile(), lc);
@@ -1201,7 +1200,6 @@ class Disassembler {
         return undefined;
     }
 
-    // TODO Maybe type
     private edictOrBust(edict: Edict<Instructionish>, remainingBytes: number, lc: LabelsComments) {
         // if the edict won't fit in the remaining bytes, just get its labels/comments and explain
         const edictWillFit = edict.length <= remainingBytes;
