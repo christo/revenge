@@ -1194,18 +1194,28 @@ class Disassembler {
     }
 
     private maybeMkEdict(lc: LabelsComments) {
+        // TODO Maybe type
         const edict = this.disMeta.getEdict(this.currentIndex);
         if (edict !== undefined) {
-            if (edict.length > this.bytesLeftInFile()) {
-                const elc = edict.create(this.fb).labelsComments;
-                const explainLc = elc.length() > 0 ? ` (preserving ${elc.length()} labels/comments)` : "";
-                lc.addComments(`End of file clashes with edict${explainLc}: '${edict.describe()}'`);
-                lc.merge(elc);
-                // fall through
-            } else {
-                this.currentIndex += edict.length;
-                return edict.create(this.fb);
-            }
+            return this.edictOrBust(edict, this.bytesLeftInFile(), lc);
+        }
+        return undefined;
+    }
+
+    // TODO Maybe type
+    private edictOrBust(edict: Edict<Instructionish>, remainingBytes: number, lc: LabelsComments) {
+        // if the edict won't fit in the remaining bytes, just get its labels/comments and explain
+        const edictWillFit = edict.length <= remainingBytes;
+        if (edictWillFit) {
+            this.currentIndex += edict.length;
+            return edict.create(this.fb);
+        } else {
+            const elc = edict.create(this.fb).labelsComments;
+            const explainLc = elc.length() > 0 ? ` (preserving ${elc.length()} labels/comments)` : "";
+            lc.addComments(`End of file clashes with edict${explainLc}: '${edict.describe()}'`);
+            lc.merge(elc);
+            this.currentIndex += remainingBytes;
+            // fall through
         }
         return undefined;
     }
