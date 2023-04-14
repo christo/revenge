@@ -14,12 +14,13 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {sniff} from "./machine/revenge";
-import {ActionExecutor, Detail, TypeActions} from "./machine/api";
+import {ActionExecutor, Detail, Tag, TypeActions} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import axios from "axios";
 import {LE} from "./machine/core";
+import {TAG_ADDRESS, TAG_NOTE} from "./machine/tags";
 
 const darkTheme = createTheme({
     palette: {
@@ -39,6 +40,30 @@ interface FileContents {
     loading: boolean
 }
 
+function OptionsPanel() {
+    return <div className="optionspanel">
+        <h4>Options</h4>
+        <p>Options control panel will go here and possibly have quite a lot of stuff.</p>
+    </div>;
+}
+
+function StatsPanel(props: {detail:Detail}) {
+    return <div className="statspanel">
+        <h4>Stats</h4>
+        {props.detail.stats.map((tup: [string, string], i) => {
+            return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span
+                className="sval">{tup[1]}</span></div>
+        })}
+    </div>;
+}
+
+function InfoPanel(props: {detail: Detail}) {
+    return <div className="infopanel">
+        <OptionsPanel/>
+        <StatsPanel detail={props.detail}/>
+    </div>;
+}
+
 function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
 
@@ -55,42 +80,22 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
     }
 
     return <div className="actionResult">
-
-        <div className="infopanel">
-
-            {/*TODO options form for this detail*/}
-            <div className="optionspanel">
-                <h4>Options</h4>
-                <p>Options control panel will go here and possibly have quite a lot of stuff.</p>
-            </div>
-
-            <div className="statspanel">
-                <h4>Stats</h4>
-                {detail.stats.map((tup: [string, string], i) => {
-                    return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span
-                        className="sval">{tup[1]}</span></div>
-                })}
-            </div>
-
-
-        </div>
+        <InfoPanel detail={detail}/>
 
         {detail.dataView.lines.map((ll, i) => {
             const tl = ll.getTags();
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
-                {tl.map((tup, j) => {
+                {tl.map((tup: Tag, j) => {
                     // add id if this is an address
-                    let extra = (tup.tags.find(x => x === "addr") !== undefined) ? {id: "M_" + tup.value} : {};
-                    const classes = tup.tags.join(" ");
-                    let isNote = tup.tags.find(x => x === "note") !== undefined;
+                    let extra = (tup.tags.find(x => x === TAG_ADDRESS) !== undefined) ? {id: "M_" + tup.value} : {};
+                    let isNote = tup.tags.find(x => x === TAG_NOTE) !== undefined;
                     let data: { [k: string]: string; } = {};
                     tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
-
                     if (isNote) {
                         return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                                       key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
-                        return <span {...extra} {...data} className={classes} key={`fb_${i}_${j}`}
+                        return <span {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
                                      onClick={() => handleClick(tup.data)}>{tup.value}</span>;
                     }
                 })}

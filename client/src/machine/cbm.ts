@@ -26,7 +26,6 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 /** User action that disassembles the file. */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
-
     let userActions: [UserAction, ...UserAction[]] = [{
         label: "disassembly",
         f: () => {

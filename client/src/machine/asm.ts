@@ -312,7 +312,7 @@ class DefaultDialect implements Dialect {
             const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
             if (fil.fullInstruction.staticallyResolvableOperand()) {
                 const opnd = fil.fullInstruction.operandValue();
-                // TODO check other addressing modes
+                // future: check other addressing modes
                 // check if the operand is an address inside the binary
                 if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE && dis.isInBinary(opnd)) {
                     operandTag.tags.push(TAG_IN_BINARY)

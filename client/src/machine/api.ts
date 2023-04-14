@@ -22,6 +22,10 @@ class Tag {
     hasTag(s: string) {
         return this.tags.find(x => x === s) !== undefined;
     }
+
+    spacedTags() {
+        return this.tags.join(" ");
+    }
 }
 
 /**
@@ -67,7 +71,7 @@ class LogicalLine {
     }
 
     getTags(): TagSeq {
-        // TODO put address in tags dynamically and stop receiving it as a tag in constructor
+        // future: put address in tags dynamically and stop receiving it as a tag in constructor
         return this.tags;
     }
 
