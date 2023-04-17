@@ -1,25 +1,25 @@
-import './App.css';
-import React, {useEffect, useState} from "react";
-import {FileUploader} from "react-drag-drop-files";
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuIcon from '@mui/icons-material/Menu';
+import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
+import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {FileUploader} from "react-drag-drop-files";
 
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {sniff} from "./machine/revenge";
+import './App.css';
+import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {ActionExecutor, Detail, Tag, TypeActions} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
-import {FileBlob, FileLike} from "./machine/FileBlob";
-import {Alert, Button, Chip, CircularProgress, Stack, Tab, Tabs} from "@mui/material";
-import axios from "axios";
 import {LE} from "./machine/core";
+import {FileBlob, FileLike} from "./machine/FileBlob";
+import {sniff} from "./machine/revenge";
 import {TAG_ADDRESS, TAG_NOTE} from "./machine/tags";
 
 const darkTheme = createTheme({
