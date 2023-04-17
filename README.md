@@ -35,6 +35,7 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
+* vic 20 / c64 hardware register detection
 * Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
 * Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte 
   declarations on multiple physical lines.
@@ -81,7 +82,6 @@ by [Michael Steil](https://pagetable.com/) of
 * multiple disassembly dialect support
 * Test suite coverage measurement / build script
 * type possibility list with probabilities etc.
-* vic 20 / c64 hardware register detection
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
 natch)
 * user accounts
