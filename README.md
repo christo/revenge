@@ -39,7 +39,7 @@ by [Michael Steil](https://pagetable.com/) of
 * Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte 
   declarations on multiple physical lines.
 * Kernel subroutines: map the inputs, outputs and register effects of subroutines 
-* render source lines without address prefix
+* render source lines that have no address prefix - such as symbol definitions
 * view options - disassembly, basic, hex each should define their own config options
   * dialect options - layout handles for indenting
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
