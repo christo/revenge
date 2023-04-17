@@ -48,7 +48,7 @@ by [Michael Steil](https://pagetable.com/) of
 * hovertools: 
   * dynamically decorate
   * single instruction or selection
-  * selection can be expanded using tools (drag extend up or down)
+  * selection lollypop handles can be expanded using tools (drag extend up or down)
   * extra info
   * edit options
   * branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
