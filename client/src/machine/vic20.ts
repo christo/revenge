@@ -1,6 +1,6 @@
 // VIC-20 specific details
 
-import {CartSniffer, prg} from "./cbm";
+import {Computer, LogicalLine, MemoryConfiguration, Tag, TAG_ADDRESS, TAG_LINE_NUMBER} from "./api";
 import {
     BlobSniffer,
     ByteDefinitionEdict,
@@ -12,12 +12,11 @@ import {
     SymbolTable,
     VectorDefinitionEdict,
 } from "./asm";
-import {FileBlob} from "./FileBlob";
 import {CBM_BASIC_2_0} from "./basic";
-import {Computer, LogicalLine, MemoryConfiguration, Tag} from "./api";
-import {Mos6502} from "./mos6502";
+import {CartSniffer, prg} from "./cbm";
 import {ArrayMemory, KB_64, LE} from "./core";
-import {TAG_ADDRESS, TAG_LINE_NUMBER} from "./tags";
+import {FileBlob} from "./FileBlob";
+import {Mos6502} from "./mos6502";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 

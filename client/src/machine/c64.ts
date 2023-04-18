@@ -2,7 +2,7 @@
 // noinspection JSUnusedLocalSymbols
 
 
-import {FileBlob} from "./FileBlob";
+import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
 import {
     BlobType,
     ByteDefinitionEdict,
@@ -14,8 +14,8 @@ import {
     VectorDefinitionEdict
 } from "./asm";
 import {CartSniffer} from "./cbm";
-import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
 import {ArrayMemory, KB_64, LE} from "./core";
+import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 import {Petscii} from "./petscii";
 

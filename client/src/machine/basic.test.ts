@@ -1,7 +1,7 @@
-import {FileBlob} from "./FileBlob";
-import {CBM_BASIC_2_0} from "./basic";
 import * as fs from "fs";
+import {CBM_BASIC_2_0} from "./basic";
 import {LE} from "./core";
+import {FileBlob} from "./FileBlob";
 
 test("basic load", () => {
     const fname = "data/Killer Comet.prg";

@@ -15,12 +15,11 @@ import {FileUploader} from "react-drag-drop-files";
 
 import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
-import {ActionExecutor, Detail, Tag, TypeActions} from "./machine/api";
+import {ActionExecutor, Detail, Tag, TAG_ADDRESS, TAG_NOTE, TypeActions} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {LE} from "./machine/core";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {sniff} from "./machine/revenge";
-import {TAG_ADDRESS, TAG_NOTE} from "./machine/tags";
 
 const darkTheme = createTheme({
     palette: {

@@ -1,8 +1,8 @@
-import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
-import {FileBlob} from "./FileBlob";
-import {Address, LE} from "./core";
 import {TOKEN_PRINT, TOKEN_REM} from "./basic";
+import {Address, LE} from "./core";
+import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
+import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
 
 
 /**

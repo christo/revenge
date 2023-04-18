@@ -1,6 +1,22 @@
 // assembler / disassembler stuff - 6502-specific
 
-import * as R from 'ramda';
+import {
+    BooBoo,
+    Tag,
+    TAG_ABSOLUTE,
+    TAG_ADDRESS,
+    TAG_CODE,
+    TAG_COMMENT,
+    TAG_DATA,
+    TAG_HEXARRAY,
+    TAG_IN_BINARY,
+    TAG_KEYWORD,
+    TAG_LABEL,
+    TAG_MNEMONIC,
+    TAG_OPERAND,
+    TAG_OPERAND_VALUE,
+    TagSeq
+} from "./api";
 
 import {Address, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
@@ -22,8 +38,6 @@ import {
     MODE_ZEROPAGE_Y,
     Mos6502
 } from "./mos6502";
-import {BooBoo, Tag, TagSeq} from "./api";
-import {TAG_ABSOLUTE, TAG_COMMENT, TAG_DATA, TAG_IN_BINARY, TAG_LABEL, TAG_OPERAND} from "./tags";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -98,6 +112,18 @@ interface Dialect {
     pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq;
 
     labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq;
+
+    /**
+     * Return the source string for the given byte as a hex literal.
+     * @param b
+     */
+    hexByteText(b: number): string;
+
+    /**
+     * Return the source string for the given word as a hex literal.
+     * @param x
+     */
+    hexWordText(x: number): string;
 }
 
 /**
@@ -260,16 +286,16 @@ class DefaultDialect implements Dialect {
     private static readonly KW_BYTE_DECLARATION: string = '.byte';
     private static readonly KW_WORD_DECLARATION: string = '.word';
 
+    constructor(env: Environment) {
+        this._env = env;
+    }
+
     get name(): string {
         return "Default Dialect";
     }
 
     get env(): Environment {
         return this._env;
-    }
-
-    constructor(env: Environment) {
-        this._env = env;
     }
 
     checkLabel(l: String): BooBoo[] {
@@ -282,6 +308,64 @@ class DefaultDialect implements Dialect {
         }
     }
 
+    commentPrefix() {
+        return "; ";
+    }
+
+    formatLabel(s: string) {
+        return s + ": ";
+    }
+
+    hexByteText(b: number) {
+        return "$" + hex8(b);
+    }
+
+    hexWordText(x: number) {
+        return "$" + hex16(x);
+    }
+
+    bytes(x: FullInstructionLine, dis: Disassembler): TagSeq {
+        // future: context may give us rules about grouping, pattern detection etc.
+        const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(x.labelsComments.comments));
+        const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(x.labelsComments.labels));
+        const data: Tag = new Tag(TAG_DATA, this._env.indent() + tagText(this.byteDeclaration(x)));
+        return [comments, labels, data];
+    }
+
+    words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
+        const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(lc.comments));
+        const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(lc.labels));
+        const tags: TagSeq = this.wordDeclaration(words)
+        const data: Tag = new Tag(TAG_DATA, this._env.indent() + tagText(tags));
+        return [comments, labels, data];
+    }
+
+    code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
+        const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(fil.labelsComments.comments));
+        const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(fil.labelsComments.labels));
+        return [comments, labels, ...this.taggedCode(fil, dis)];
+    }
+
+    directive(directive: Directive, dis: Disassembler): TagSeq {
+        TODO();
+        return [];
+    }
+
+    pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
+        const comments = new Tag(TAG_COMMENT, this.renderComments(pcAssign.labelsComments.comments));
+        const labels = new Tag(TAG_LABEL, this.renderLabels(pcAssign.labelsComments.labels));
+        const pc = new Tag(TAG_CODE, "* =");
+        const addr = new Tag([TAG_ABSOLUTE, TAG_OPERAND], this.hexWordText(pcAssign.address));
+        const dummy = new Tag(TAG_ADDRESS, "_");
+        return [comments, labels, dummy, pc, addr];
+    }
+
+    labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq {
+        const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(labelsComments.labels));
+        const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(labelsComments.comments));
+        return [comments, labels];
+    }
+
     // noinspection JSUnusedGlobalSymbols
     /**
      * Parse input from index offset characters in until end of line or end of input,
@@ -289,6 +373,9 @@ class DefaultDialect implements Dialect {
      * Interpret mnemonic syntax of our assembly dialect and return a datastructure
      * of properties for that machine instruction, including operands and expected
      * runtime in clock cycles.
+     *
+     * This API is suggestive only of the future shape when implemented.
+     *
      * @param input
      * @param index
      */
@@ -307,11 +394,11 @@ class DefaultDialect implements Dialect {
     private taggedCode(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         // add the mnemonic tag and also the mnemonic category
         const mi = fil.fullInstruction.instruction;
-        const mnemonic: Tag = new Tag(mi.op.mnemonic.toLowerCase(), `mn ${mi.op.cat}`);
+        const mnemonic: Tag = new Tag([TAG_MNEMONIC, mi.op.cat], mi.op.mnemonic.toLowerCase());
         const operandText = this.renderOperand(fil.fullInstruction, dis).trim();
         // check the symbol table for a symbol that matches this operand
         if (operandText.length > 0) {
-            const operandTag = new Tag(operandText, `opnd ${mi.mode.code}`);
+            const operandTag = new Tag([TAG_OPERAND, mi.mode.code], operandText);
             if (fil.fullInstruction.staticallyResolvableOperand()) {
                 const opnd = fil.fullInstruction.operandValue();
                 // future: check other addressing modes
@@ -319,7 +406,8 @@ class DefaultDialect implements Dialect {
                 if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE && dis.isInBinary(opnd)) {
                     operandTag.tags.push(TAG_IN_BINARY)
                 }
-                operandTag.data = [["opnd_val", hex16(opnd)]];
+                // add operand hex value as data so front-end can always extract it
+                operandTag.data = [[TAG_OPERAND_VALUE, hex16(opnd)]];
             }
             return [mnemonic, operandTag];
         } else {
@@ -335,15 +423,8 @@ class DefaultDialect implements Dialect {
     private renderComments(comments: string[]): string {
         const le = this._env.targetLineEndings();
         const cp = this.commentPrefix();
+        // transform all lines in the comment to line comments
         return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
-    }
-
-    commentPrefix() {
-        return "; ";
-    }
-
-    formatLabel(s: string) {
-        return s + ": ";
     }
 
     /**
@@ -356,28 +437,19 @@ class DefaultDialect implements Dialect {
         if (b.getLength() === 0) {
             throw Error("not entirely sure how to declare zero bytes");
         }
-        let kw: Tag = new Tag(DefaultDialect.KW_BYTE_DECLARATION, 'kw');
-        const hexTag = new Tag(b.getBytes().map(this.hexByteText).join(", "), "hexarray");
+        let kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_BYTE_DECLARATION);
+        const hexTag = new Tag(TAG_HEXARRAY, b.getBytes().map(this.hexByteText).join(", "));
         return [kw, hexTag];
     }
 
     private wordDeclaration(words: number[]): TagSeq {
-        let kw: Tag = new Tag(DefaultDialect.KW_WORD_DECLARATION, 'kw');
-        const values: Tag = new Tag(words.map(this.hexWordText).join(", "), "hexarray");
+        let kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_WORD_DECLARATION);
+        const values: Tag = new Tag(TAG_HEXARRAY, words.map(this.hexWordText).join(", "));
         return [kw, values];
-    }
-
-    private hexByteText(b: number) {
-        return "$" + hex8(b);
-    }
-
-    private hexWordText(x: number) {
-        return "$" + hex16(x);
     }
 
     /**
      * Returns only the operand portion, trimmed.
-     * Currently, only supports hex literals for operand values;
      * @param il
      * @param dis
      * @private
@@ -437,48 +509,6 @@ class DefaultDialect implements Dialect {
                 break;
         }
         return operand;
-    }
-
-    bytes(x: FullInstructionLine, dis: Disassembler): TagSeq {
-        // future: context may give us rules about grouping, pattern detection etc.
-        const comments: Tag = new Tag(this.renderComments(x.labelsComments.comments), TAG_COMMENT);
-        const labels: Tag = new Tag(this.renderLabels(x.labelsComments.labels), TAG_LABEL);
-        const data: Tag = new Tag(this._env.indent() + tagText(this.byteDeclaration(x)), TAG_DATA);
-        return [comments, labels, data];
-    }
-
-    words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
-        const comments: Tag = new Tag(this.renderComments(lc.comments), TAG_COMMENT);
-        const labels: Tag = new Tag(this.renderLabels(lc.labels), TAG_LABEL);
-        const tags: TagSeq = this.wordDeclaration(words)
-        const data: Tag = new Tag(this._env.indent() + tagText(tags), TAG_DATA);
-        return [comments, labels, data];
-    }
-
-    code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
-        const comments: Tag = new Tag(this.renderComments(fil.labelsComments.comments), TAG_COMMENT);
-        const labels: Tag = new Tag(this.renderLabels(fil.labelsComments.labels), TAG_LABEL);
-        return [comments, labels, ...this.taggedCode(fil, dis)];
-    }
-
-    directive(directive: Directive, dis: Disassembler): TagSeq {
-        TODO();
-        return [];
-    }
-
-    pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
-        const comments = new Tag(this.renderComments(pcAssign.labelsComments.comments), TAG_COMMENT);
-        const labels = new Tag(this.renderLabels(pcAssign.labelsComments.labels), TAG_LABEL);
-        const pc = new Tag("* =", "code");
-        const addr = new Tag(this.hexWordText(pcAssign.address), [TAG_ABSOLUTE, TAG_OPERAND]);
-        const dummy = new Tag("_", "addr");
-        return [comments, labels, dummy, pc, addr];
-    }
-
-    labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq {
-        const labels: Tag = new Tag(this.renderLabels(labelsComments.labels), TAG_LABEL);
-        const comments: Tag = new Tag(this.renderComments(labelsComments.comments), TAG_COMMENT);
-        return [comments, labels];
     }
 }
 

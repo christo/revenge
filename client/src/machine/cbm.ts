@@ -1,6 +1,17 @@
 // Shared Commodore 8-bit machine stuff
 
-import {FileBlob} from "./FileBlob";
+import {
+    ActionFunction,
+    DataViewImpl,
+    Detail,
+    hexDumper,
+    LogicalLine,
+    Tag,
+    TAG_ADDRESS,
+    TAG_HEX,
+    TAG_LINE,
+    UserAction
+} from "./api";
 import {
     BlobSniffer,
     BlobType,
@@ -12,11 +23,10 @@ import {
     Instructionish,
     PcAssign
 } from "./asm";
-import {Mos6502} from "./mos6502";
-import {asHex, hex16, hex8} from "./core";
-import {ActionFunction, DataViewImpl, Detail, hexDumper, LogicalLine, Tag, UserAction} from "./api";
 import {CBM_BASIC_2_0} from "./basic";
-import {TAG_ADDRESS, TAG_HEX, TAG_LINE} from "./tags";
+import {asHex, hex16, hex8} from "./core";
+import {FileBlob} from "./FileBlob";
+import {Mos6502} from "./mos6502";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
@@ -40,14 +50,12 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
             while (dis.hasNext()) {
                 const instAddress = dis.currentAddress; // save current address before we increment it
-                let addr: Tag = new Tag(hex16(instAddress), TAG_ADDRESS);
                 let inst: Instructionish = dis.nextInstructionLine();
-                let hex: Tag = new Tag(asHex(inst.getBytes()), TAG_HEX);
-                const tags = [addr, hex];
-
-                inst.disassemble(dialect, dis).forEach(i => tags.push(i));
-
-
+                const tags = [
+                    new Tag(TAG_ADDRESS, hex16(instAddress)),
+                    new Tag(TAG_HEX, asHex(inst.getBytes())),
+                    ...inst.disassemble(dialect, dis)
+                ];
                 detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
             }
             // TODO link up internal address references including jump targets and mark two-sided cross-references

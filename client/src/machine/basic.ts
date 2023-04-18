@@ -2,11 +2,10 @@
  Commodore BASIC
  */
 
+import {DataView, DataViewImpl, LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "./api";
+import {hex16} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
-import {hex16} from "./core";
-import {DataView, DataViewImpl, LogicalLine, Tag} from "./api";
-import {TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "./tags";
 
 type Token = [number, string];
 
@@ -90,9 +89,9 @@ class BasicDecoder {
                 console.error("byte no existo");
                 finished = true;
             } else if (eol) {
-                const address = new Tag(hex16(thisLineAddr), TAG_ADDRESS);
-                const lineNum = new Tag(lineNumber.toString(10), TAG_LINE_NUM);
-                const lineText = new Tag(line, TAG_LINE);
+                const address = new Tag(TAG_ADDRESS, hex16(thisLineAddr));
+                const lineNum = new Tag(TAG_LINE_NUM, lineNumber.toString(10));
+                const lineText = new Tag(TAG_LINE, line);
                 const tags = [address, lineNum, lineText];
                 dataView.addLine(new LogicalLine(tags, thisLineAddr));
             } else {
@@ -117,10 +116,10 @@ class BasicDecoder {
         // "i" is pointing at the termination word
         const remainingBytes = fb.getLength() - i - 2;
         if (remainingBytes > 0) {
-            const note = new Tag(`${remainingBytes} remaining bytes`, TAG_NOTE);
+            const note = new Tag(TAG_NOTE, `${remainingBytes} remaining bytes`);
             // not really an address, a number of bytes
             const numBytes = baseAddress + i + 2;
-            const addr = new Tag(hex16(numBytes), TAG_ADDRESS);
+            const addr = new Tag(TAG_ADDRESS, hex16(numBytes));
             dataView.addLine(new LogicalLine([note, addr], numBytes));
         }
 

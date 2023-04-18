@@ -1,9 +1,10 @@
 // application-level stuff to tie user interface and domain model
 
-import {FileBlob} from "./FileBlob";
-import {disassemble, printBasic} from "./cbm";
+import {hexDumper, TypeActions} from "./api";
 import {UNKNOWN_BLOB} from "./asm";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./c64";
+import {disassemble, printBasic} from "./cbm";
+import {FileBlob} from "./FileBlob";
 import {
     COMMON_MLPS,
     EXP03K_VIC_BASIC,
@@ -13,7 +14,6 @@ import {
     UNEXPANDED_VIC_BASIC,
     VIC20_CART
 } from "./vic20";
-import {hexDumper, TypeActions} from "./api";
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.

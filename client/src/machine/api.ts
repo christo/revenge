@@ -1,6 +1,6 @@
 import {BlobSniffer, Instructionish} from "./asm";
-import {FileBlob} from "./FileBlob";
 import {Address, BigEndian, hex8, LittleEndian, Memory} from "./core";
+import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 
 /**
@@ -12,7 +12,7 @@ class Tag {
     data: [string, string][];
     value: string;
 
-    constructor(value: string, tags: string | string[], id: string | undefined = undefined, data: [string, string][] = []) {
+    constructor(tags: string | string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
         this.tags = (typeof tags === "string") ? [tags] : tags;
         this.id = id;
         this.data = data;
@@ -27,6 +27,26 @@ class Tag {
         return this.tags.join(" ");
     }
 }
+
+export const TAG_IN_BINARY = "inbinary";
+export const TAG_LABEL = "label";
+export const TAG_COMMENT = "comment";
+export const TAG_DATA = "data";
+export const TAG_OPERAND = "opnd";
+export const TAG_ABSOLUTE = "abs";
+export const TAG_ADDRESS = "addr";
+export const TAG_HEX = "hex";
+export const TAG_LINE = "line";
+export const TAG_LINE_NUM = "lnum";
+export const TAG_NOTE = "note";
+export const TAG_LINE_NUMBER = "lnum";
+export const TAG_KEYWORD = 'kw';
+export const TAG_HEXARRAY = "hexarray";
+export const TAG_CODE = "code";
+export const TAG_MNEMONIC = "mn";
+export const TAG_OPERAND_VALUE = "opnd_val";
+export const TAG_HEXBYTE = "hexbyte";
+export const TAG_HEXBYTES = "hexbytes";
 
 /**
  * Abstraction containing a sequence of rendered elements that belong on a logical line with meof listing output.
@@ -97,6 +117,7 @@ class LogicalLine {
  */
 interface DataView {
     getLines(): LogicalLine[];
+
     addLine(ll: LogicalLine): void;
 }
 
@@ -114,7 +135,6 @@ class DataViewImpl implements DataView {
     addLine(ll: LogicalLine): void {
         this.lines.push(ll);
     }
-
 
 
 }
@@ -187,12 +207,12 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     label: "Hex Dump",
     f: () => {
-        const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(hex8(x), "hexbyte"));
+        const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
         // currently whole hex dump is a single logical line at no address with no instruction
         const oldDataView: TagSeq[] = [elements];
         const lls = oldDataView.map((ts: TagSeq, i: number) => new LogicalLine(ts, i));
         const newDataView: DataView = new DataViewImpl(lls);
-        return new Detail(["hexbytes"], newDataView);
+        return new Detail([TAG_HEXBYTES], newDataView);
     }
 });
 
