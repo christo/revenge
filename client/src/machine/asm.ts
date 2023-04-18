@@ -148,6 +148,10 @@ abstract class InstructionBase implements Instructionish {
     abstract getBytes(): number[];
 
     abstract getLength(): number;
+
+    get symbolOptions(): SymbolOptions {
+        return SymbolOptions.NONE;
+    }
 }
 
 class PcAssign extends InstructionBase implements Directive {
@@ -376,7 +380,8 @@ class DefaultDialect implements Dialect {
     /**
      * Returns only the operand portion, trimmed.
      * Currently, only supports hex literals for operand values;
-     * @param il the instruction line
+     * @param il
+     * @param dis
      * @private
      */
     private renderOperand(il: FullInstruction, dis: Disassembler): string {
@@ -384,7 +389,7 @@ class DefaultDialect implements Dialect {
         let operand = "";
         switch (il.instruction.mode) {
             case MODE_ACCUMULATOR:
-                // operand = "a";
+                // operand = "a"; // in some weird dialects this may be so
                 operand = ""; // implied accumulator not manifest
                 break;
             case MODE_ABSOLUTE:
