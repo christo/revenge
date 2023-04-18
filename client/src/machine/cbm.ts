@@ -37,7 +37,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
             // set the base address
             const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
             const tagSeq = assignPc.disassemble(dialect, dis);
-            detail.dataView.lines.push(new LogicalLine(tagSeq, dis.currentAddress));
+            detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
             while (dis.hasNext()) {
                 const instAddress = dis.currentAddress; // save current address before we increment it
                 let addr: Tag = new Tag(hex16(instAddress), TAG_ADDRESS);
@@ -47,16 +47,17 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
                 inst.disassemble(dialect, dis).forEach(i => tags.push(i));
 
-                // TODO link up internal jumptargets so cross-references can be marked on both ends
-                //  need to keep a list of all instructions somewhere, then call jumpTargets on the full sequence
-                detail.dataView.lines.push(new LogicalLine(tags, instAddress, inst));
+
+                detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
             }
+            // TODO link up internal jumptargets so cross-references can be marked on both ends
+            // TODO but it's not just jumptargets, any resolvable address reference e.g. .word $1234
             const stats = dis.getStats();
             // for now assuming there's no doubling up of stats keys
             stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
-            detail.stats.push(["lines", detail.dataView.lines.length.toString()]);
+            detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
             const timeTaken = Date.now() - startTime;
-            detail.stats.push(["disassembled in", `${timeTaken}  ms`])
+            detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
             return detail;
         }
     }, hexDumper(fb)];
@@ -76,7 +77,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
                 const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
                 // exclude "note" tags which are not a "line"
                 const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.hasTag(TAG_LINE)) !== undefined;
-                detail.stats.push(["lines", detail.dataView.lines.filter(justLines).length.toString()]);
+                detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);
                 return detail;
             }
         }]

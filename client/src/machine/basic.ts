@@ -67,7 +67,7 @@ class BasicDecoder {
         let thisLineAddr = nextLineAddr;
         let lineNumber = 0;
         let finished = false;
-        let lines: DataView = new DataViewImpl([]);
+        let dataView: DataView = new DataViewImpl([]);
         let line = "";
         let quoteMode = false;
         while (!finished) {
@@ -94,7 +94,7 @@ class BasicDecoder {
                 const lineNum = new Tag(lineNumber.toString(10), TAG_LINE_NUM);
                 const lineText = new Tag(line, TAG_LINE);
                 const tags = [address, lineNum, lineText];
-                lines.lines.push(new LogicalLine(tags, thisLineAddr));
+                dataView.addLine(new LogicalLine(tags, thisLineAddr));
             } else {
                 // interpret as a token, falling back to petscii
                 let token = this.tokens[b];
@@ -121,10 +121,10 @@ class BasicDecoder {
             // not really an address, a number of bytes
             const numBytes = baseAddress + i + 2;
             const addr = new Tag(hex16(numBytes), TAG_ADDRESS);
-            lines.lines.push(new LogicalLine([note, addr], numBytes));
+            dataView.addLine(new LogicalLine([note, addr], numBytes));
         }
 
-        return lines;
+        return dataView;
     }
 }
 

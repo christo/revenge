@@ -1,5 +1,7 @@
 // assembler / disassembler stuff - 6502-specific
 
+import * as R from 'ramda';
+
 import {Address, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
@@ -148,10 +150,6 @@ abstract class InstructionBase implements Instructionish {
     abstract getBytes(): number[];
 
     abstract getLength(): number;
-
-    get symbolOptions(): SymbolOptions {
-        return SymbolOptions.NONE;
-    }
 }
 
 class PcAssign extends InstructionBase implements Directive {

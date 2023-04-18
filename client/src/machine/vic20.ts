@@ -164,7 +164,7 @@ export class Vic20Basic implements BlobSniffer {
             const decoded = CBM_BASIC_2_0.decode(fb);
             let lastNum = -1;
             let lastAddr = -1;
-            decoded.lines.forEach((ll: LogicalLine) => {
+            decoded.getLines().forEach((ll: LogicalLine) => {
                 const i: Tag[] = ll.getTags();
                 const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
                 let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));

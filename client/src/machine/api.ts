@@ -96,15 +96,27 @@ class LogicalLine {
  * the name as a className and the value as the text content of a span element.
  */
 interface DataView {
-    lines: LogicalLine[];
+    getLines(): LogicalLine[];
+    addLine(ll: LogicalLine): void;
 }
 
 class DataViewImpl implements DataView {
-    lines: LogicalLine[];
+    private lines: LogicalLine[];
 
     constructor(lines: LogicalLine[]) {
         this.lines = lines;
     }
+
+    getLines(): LogicalLine[] {
+        return this.lines;
+    }
+
+    addLine(ll: LogicalLine): void {
+        this.lines.push(ll);
+    }
+
+
+
 }
 
 /**

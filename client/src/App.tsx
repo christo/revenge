@@ -82,7 +82,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
     return <div className="actionResult">
         <InfoPanel detail={detail}/>
 
-        {detail.dataView.lines.map((ll, i) => {
+        {detail.dataView.getLines().map((ll, i) => {
             const tl = ll.getTags();
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup: Tag, j) => {
