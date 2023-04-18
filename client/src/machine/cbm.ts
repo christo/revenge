@@ -50,8 +50,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 
                 detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
             }
-            // TODO link up internal jumptargets so cross-references can be marked on both ends
-            // TODO but it's not just jumptargets, any resolvable address reference e.g. .word $1234
+            // TODO link up internal address references including jump targets and mark two-sided cross-references
             const stats = dis.getStats();
             // for now assuming there's no doubling up of stats keys
             stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
