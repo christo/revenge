@@ -44,6 +44,9 @@ const assertByte = (value: number): number => {
     return value & 0xff;
 };
 
+const asByte = (b:number) => b && 0xff;
+
+
 /**
  * Abstraction to hold all endian-specific utilities. See {@link LittleEndian} and {@link BigEndian}
  * implementations.
@@ -234,6 +237,7 @@ const asHex = (b: number[]) => {
 
 export {
     unToSigned,
+    asByte,
     assertByte,
     hex16,
     hex8,

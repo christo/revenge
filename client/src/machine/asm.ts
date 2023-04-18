@@ -1,5 +1,6 @@
 // assembler / disassembler stuff - 6502-specific
 
+import * as R from "ramda";
 import {
     BooBoo,
     Tag,
@@ -18,7 +19,7 @@ import {
     TagSeq
 } from "./api";
 
-import {Address, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
+import {Address, asByte, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -1010,6 +1011,24 @@ class Disassembler {
         this.stats = new Map<string, number>();
     }
 
+    /**
+     * Starting from one offset, read count bytes at most. Only reads up to the end of the file.
+     * @param from must be 0+
+     * @param count must be 1+ (defaults to 1)
+     * @return the possibly empty actual bytes read.
+     * @private
+     */
+    readBytes = (from:number, count:number = 1) => {
+        const i1 = R.max(0, from);
+        const i2 = from + R.max(1, count);
+        return this.fb.getBytes().slice(i1, i2).map(asByte);
+    }
+
+
+    /**
+     * @deprecated side effect
+     * @private
+     */
     private eatBytes(count: number): number[] {
         const bytes: number[] = [];
         for (let i = 1; i <= count; i++) {
@@ -1018,6 +1037,10 @@ class Disassembler {
         return bytes;
     }
 
+    /**
+     * @deprecated side effect
+     * @private
+     */
     private eatByteOrDie() {
         if (this.currentIndex >= this.fb.getBytes().length) {
             throw Error("No more bytes");
@@ -1025,8 +1048,12 @@ class Disassembler {
         return this.eatByte();
     }
 
+    /**
+     * @deprecated side effect
+     * @private
+     */
     private eatByte() {
-        const value = this.fb.read8(this.currentIndex++);
+        const value = this.fb.read8(this.currentIndex++); // side effect
         if (typeof value === "undefined") {
             throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
         } else {
@@ -1209,7 +1236,7 @@ class Disassembler {
         return this.disMeta.getSymbolTable().byAddress(addr);
     }
 
-    /** Makes a symbol definition edict */
+    /** Keeps a record of a used symbol that must be added to the source output. */
     addSymbolDefinition(symbol: SymDef) {
         this.symbolDefinitions.set(symbol.name, symbol);
     }
