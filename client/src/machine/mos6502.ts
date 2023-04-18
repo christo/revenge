@@ -569,8 +569,14 @@ class FullInstruction implements Byteable {
     /**
      * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
      * because those depend on the state of other memory locations or registers at execution time.
+     *
+     * Note: this method may be upgraded to receive a context of surrounding code such that analysis can resolve the
+     * operand using that additional context. For example if using x-register indexed directly after an instruction
+     * that sets the x register with an immediate value. There should also be a way to constrain the context by
+     * declaring the memory region of the context code to be readonly which rules out impossible dynamic scenarios like
+     * selfmod.
      */
-    staticallyResolvableOperand() {
+    staticallyResolvableOperand(): boolean {
         const m = this.instruction.mode;
         return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
     }
