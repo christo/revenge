@@ -35,6 +35,8 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
+* check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/ 
+* check out Haskell Difference List datastructure
 * vic 20 / c64 hardware register detection
 * Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
 * Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte 
@@ -293,3 +295,9 @@ minimum necessary syntax may be supported.
 * https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and examples
 * ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
 * [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
+
+## Reading List
+
+* [x] [Solving BIT Magic](https://rosenzweig.io/blog/solving-bit-magic.html) by Alyssa Rosenzweig
+* [ ] [Statically Recompiling NES Games into Native Executables with LLVM and Go](https://andrewkelley.me/post/jamulator.html)
+  by Andrew Kelley
