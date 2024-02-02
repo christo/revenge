@@ -164,7 +164,7 @@ abstract class InstructionBase implements Instructionish {
     }
 
     assemble(dialect: Dialect, ass: Assembler): FileBlob {
-        TODO("assembler");
+        TODO(`assembler ${ass} for ${dialect}`);
         return FileBlob.NULL_FILE_BLOB;
     }
 
@@ -361,7 +361,7 @@ class DefaultDialect implements Dialect {
         return "$" + hex16(x);
     }
 
-    bytes(x: FullInstructionLine, dis: Disassembler): TagSeq {
+    bytes(x: FullInstructionLine, _dis: Disassembler): TagSeq {
         // future: context may give us rules about grouping, pattern detection etc.
         const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(x.labelsComments.comments));
         const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(x.labelsComments.labels));
@@ -369,7 +369,7 @@ class DefaultDialect implements Dialect {
         return [comments, labels, data];
     }
 
-    words(words: number[], lc: LabelsComments, dis: Disassembler): TagSeq {
+    words(words: number[], lc: LabelsComments, _dis: Disassembler): TagSeq {
         const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(lc.comments));
         const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(lc.labels));
         const tags: TagSeq = this.wordDeclaration(words)
@@ -390,12 +390,12 @@ class DefaultDialect implements Dialect {
         return [comments, labels, ...this.taggedCode(fil, dis)];
     }
 
-    directive(directive: Directive, dis: Disassembler): TagSeq {
+    directive(_directive: Directive, _dis: Disassembler): TagSeq {
         TODO();
         return [];
     }
 
-    pcAssign(pcAssign: PcAssign, dis: Disassembler): TagSeq {
+    pcAssign(pcAssign: PcAssign, _dis: Disassembler): TagSeq {
         const comments = new Tag(TAG_COMMENT, this.renderComments(pcAssign.labelsComments.comments));
         const labels = new Tag(TAG_LABEL, this.renderLabels(pcAssign.labelsComments.labels));
         const pc = new Tag(TAG_CODE, "* =");
@@ -404,7 +404,7 @@ class DefaultDialect implements Dialect {
         return [comments, labels, dummy, pc, addr];
     }
 
-    labelsComments(labelsComments: LabelsComments, dis: Disassembler): TagSeq {
+    labelsComments(labelsComments: LabelsComments, _dis: Disassembler): TagSeq {
         const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(labelsComments.labels));
         const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(labelsComments.comments));
         return [comments, labels];
@@ -767,6 +767,7 @@ class SymbolTable {
     }
 
 
+    // noinspection JSUnusedGlobalSymbols
     byName(name: string) {
         return this.nameToSymbol.get(name);
     }
@@ -926,6 +927,7 @@ type JumpTargetFetcher = (fb: FileBlob) => [Address, LabelsComments][];
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
+    // noinspection JSUnusedLocalSymbols
     /** A bit stinky - should never be used and probably not exist. */
     static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (fb) => [], new SymbolTable("null"));
 
@@ -1262,13 +1264,12 @@ class Disassembler {
         // collect targets of all current jump instructions
 
         // for all jump instructions, collect the destination address
-        const allJumpTargets: Address[] = instructions
+
+        return instructions
             .filter(addrInst => resolvableJump(addrInst))   // only jumps, only statically resolvable
             .map(j => j[1].resolveOperandAddress(j[0]))     // resolve pc-relative operands
-            .concat(fromDm)                                 // add the predefs
-            .filter(this.addressInRange);                   // only those in range of the loaded binary
-
-        return allJumpTargets;
+            .concat(fromDm)                                     // add the predefs
+            .filter(this.addressInRange);                       // only those in range of the loaded binary
     };
 
     /**
@@ -1359,7 +1360,7 @@ interface BlobSniffer {
 
     /**
      * This smells, it's a bag of disassembly-specific detail transported from the thing that knows about the
-     * file contents and the disassembler who needs to construct the {@link DataView2}. Is there a generic
+     * file contents and the disassembler who needs to construct the {@link DataView}. Is there a generic
      * way to bundle this stuff? What's the common API such that ignorant intermediaries can be blissfull
      * as they work at a non-specific altitude? Consider an inversion as I did with the Dialect API. Or
      * use generics.

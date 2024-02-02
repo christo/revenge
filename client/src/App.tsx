@@ -22,8 +22,7 @@ import {
     TAG_ABSOLUTE,
     TAG_ADDRESS, TAG_IN_BINARY,
     TAG_NOTE,
-    TAG_OPERAND, TAG_OPERAND_VALUE,
-    TypeActions
+    TAG_OPERAND, TypeActions
 } from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {LE} from "./machine/core";
