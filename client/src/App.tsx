@@ -100,7 +100,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup: Tag, j) => {
                     // add id if this is an address
-                    const extra = (tup.tags.find(x => x === TAG_ADDRESS) !== undefined) ? {id: "M_" + tup.value} : {};
+                    const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
                     const isNote = tup.tags.find(x => x === TAG_NOTE) !== undefined;
                     const data: { [k: string]: string; } = {};
                     tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
