@@ -22,7 +22,7 @@ import {
     TAG_ABSOLUTE,
     TAG_ADDRESS, TAG_IN_BINARY,
     TAG_NOTE,
-    TAG_OPERAND,
+    TAG_OPERAND, TAG_OPERAND_VALUE,
     TypeActions
 } from "./machine/api";
 import {fileTypes} from "./machine/cbm";
@@ -30,6 +30,9 @@ import {LE} from "./machine/core";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {sniff} from "./machine/revenge";
 import {InsertLink} from "@mui/icons-material";
+
+
+const BASE_TITLE = window.document.title;
 
 const darkTheme = createTheme({
     palette: {
@@ -80,8 +83,12 @@ function InfoPanel(props: {detail: Detail}) {
 function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
 
+    window.addEventListener("popstate", (...args) => {
+        console.log(`popstate: ${args}`);
+        debugger;
+    });
     // when an address operand is clicked, try to find its destination in the view and if present scroll to it
-    const handleClick = (data: [string, string][]) => {
+    const handleClick = (data: [string, string][], addr: string) => {
         const tup = data.find(t => t[0] === "opnd_val");
         if (tup !== undefined) {
             const id = "M_" + tup[1];
@@ -89,6 +96,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
             if (jumpTo !== null) {
                 jumpTo.scrollIntoView({behavior: "smooth"});
                 // TODO navigate to anchor once scrolled so history holds locations and back buttons navigate properly
+                history.pushState(`id-${id}`, `${BASE_TITLE} ${addr}`, window.location.href);
             }
         }
     }
@@ -109,8 +117,9 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                         return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                                       key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
+                        const operand = tup.value;
                         return <div {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
-                                     onClick={() => handleClick(tup.data)}>{tup.value}
+                                                           onClick={() => handleClick(tup.data, operand)}>{tup.value}
                             <div className="iconAnno">{tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]) ? <InsertLink/> : ""}</div>
                         </div>;
                     }
