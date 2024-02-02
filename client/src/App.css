@@ -154,19 +154,12 @@ body {
   cursor: pointer;
 }
 
-.opnd.abs {
-}
-
-div.opnd {
-  display: inline-block;
-}
-
 .opnd.abs.inbinary > .iconAnno {
   position: relative;
   display: inline-block;
   left: 0.4rem;
   top: 0.3rem;
-  line-height: 1.0;
+  /*line-height: 1.0;*/
   cursor: pointer;
 }
 
