@@ -26,6 +26,10 @@ class Tag {
     spacedTags() {
         return this.tags.join(" ");
     }
+
+    hasTags(ts: string[]) {
+        return ts.every((t) => this.tags.includes(t));
+    }
 }
 
 export const TAG_IN_BINARY = "inbinary";
@@ -236,7 +240,7 @@ class MemoryConfiguration {
      * @param basicStart 16 bit address where BASIC programs are loaded
      * @param shortName short designation for UI
      */
-    constructor(name: string, basicStart: Address, shortName: string = "") {
+    constructor(name: string, basicStart: Address, shortName = "") {
         // future: various independent block configurations, now: simple!
         this.name = name;
         this.basicStart = basicStart;

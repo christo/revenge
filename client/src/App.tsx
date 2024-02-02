@@ -20,6 +20,7 @@ import {fileTypes} from "./machine/cbm";
 import {LE} from "./machine/core";
 import {FileBlob, FileLike} from "./machine/FileBlob";
 import {sniff} from "./machine/revenge";
+import {InsertLink} from "@mui/icons-material";
 
 const darkTheme = createTheme({
     palette: {
@@ -63,6 +64,10 @@ function InfoPanel(props: {detail: Detail}) {
     </div>;
 }
 
+/**
+ * Shows the detailed contents of a single file with a leading info summary specific to
+ * the detailed view.
+ */
 function DetailRenderer(props: { ae: ActionExecutor }) {
     const detail: Detail = props.ae();
 
@@ -86,16 +91,18 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
             return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
                 {tl.map((tup: Tag, j) => {
                     // add id if this is an address
-                    let extra = (tup.tags.find(x => x === TAG_ADDRESS) !== undefined) ? {id: "M_" + tup.value} : {};
-                    let isNote = tup.tags.find(x => x === TAG_NOTE) !== undefined;
-                    let data: { [k: string]: string; } = {};
+                    const extra = (tup.tags.find(x => x === TAG_ADDRESS) !== undefined) ? {id: "M_" + tup.value} : {};
+                    const isNote = tup.tags.find(x => x === TAG_NOTE) !== undefined;
+                    const data: { [k: string]: string; } = {};
                     tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
                     if (isNote) {
                         return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                                       key={`fb_${i}_${j}`}>{tup.value}</Alert>;
                     } else {
-                        return <span {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
-                                     onClick={() => handleClick(tup.data)}>{tup.value}</span>;
+                        return <div {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
+                                     onClick={() => handleClick(tup.data)}>{tup.value}
+                            <div className="iconAnno">{tup.hasTags(["opnd", "abs", "inbinary"]) ? <InsertLink/> : ""}</div>
+                        </div>;
                     }
                 })}
             </div>;
@@ -230,8 +237,11 @@ function MenuAppBar() {
     );
 }
 
-type Error = { message: String, name: String, code: String, config: String, request: Request, response: Response };
+type Error = { message: string, name: string, code: string, config: string, request: Request, response: Response };
 
+/**
+ * Try to load the QuickLoad binaries from the server for one click loading.
+ */
 function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     const [items, setItems] = useState<FileLike[]>([]);
     const [error, setError] = useState<Error>();
@@ -246,10 +256,11 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
                 setIsLoaded(true);
                 setError(err);
             }).finally(() => {
+                return;
         });
 
     }, []);
-    let handleFile = (item: FileLike) => {
+    const handleFile = (item: FileLike) => {
         props.setFile(item);
     };
 

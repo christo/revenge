@@ -149,13 +149,25 @@ body {
   cursor: pointer;
 }
 
-.opnd.abs:hover:hover {
+.opnd.abs:hover {
   text-decoration-line: underline;
   cursor: pointer;
 }
 
-.opnd.abs.inbinary::after {
-  content: "  🖇";
+.opnd.abs {
+}
+
+div.opnd {
+  display: inline-block;
+}
+
+.opnd.abs.inbinary > .iconAnno {
+  position: relative;
+  display: inline-block;
+  left: 0.4rem;
+  top: 0.3rem;
+  line-height: 1.0;
+  cursor: pointer;
 }
 
 .line {
