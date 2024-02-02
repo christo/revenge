@@ -1,6 +1,6 @@
 # Revenge
 
-Reverse Engineering Environment
+Reverse Engineering Environment 
 
 **Project Status**: _pre alpha_ (it does work on the various binaries I'm currently testing with)
 
@@ -11,6 +11,17 @@ for the Vic-20 and C64.
 It's implemented in TypeScript as a first project for learning the language.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
+
+## Quick Start
+
+After checking out this repo, from a terminal shell in the root directory, run the sanity script to confirm you have the 
+relevant tools installed:
+
+```shell
+./sanity.sh
+```
+
+
 
 ## Features 
 
@@ -35,6 +46,23 @@ by [Michael Steil](https://pagetable.com/) of
 
 ## TODO
 
+* useful material icons:
+  * ManageHistory (reverse engineering)
+  * DragIndicator
+  * ForkLeft
+  * ForkRight
+  * Link (jump address)
+  * LocalOffer or Sell (hashtag)
+  * Message (annotation for binary)
+  * PlayArrow (entry point?)
+  * Radar
+  * Report
+  * ReportProblem
+  * RocketLaunch
+  * Science
+  * Star
+  * Tag
+  * Token (logo?)
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/ 
 * check out Haskell Difference List datastructure
 * vic 20 / c64 hardware register detection
