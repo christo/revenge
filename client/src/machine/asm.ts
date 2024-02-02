@@ -55,7 +55,7 @@ interface Dialect {
      *
      * @param label the label to check for syntactic validity.
      */
-    checkLabel(label: String): BooBoo[];
+    checkLabel(label: string): BooBoo[];
 
     /**
      * Return the characters that go before a line comment.
@@ -182,6 +182,18 @@ abstract class InstructionBase implements Instructionish {
 class PcAssign extends InstructionBase implements Directive {
     private readonly _address: number;
 
+    isMacroDefinition(): boolean {
+        return false;
+    }
+
+    isPragma(): boolean {
+        return false;
+    }
+
+    isSymbolDefinition(): boolean {
+        return true;
+    }
+
     constructor(address: number, labels: string[] = [], comments: string[] = []) {
         super(new LabelsComments(labels, comments), SourceType.PSEUDO);
         this._address = address;
@@ -201,6 +213,18 @@ class ByteDeclaration extends InstructionBase implements Directive, Byteable {
 
     private readonly _rawBytes: Array<number>;
 
+    isMacroDefinition(): boolean {
+        return false;
+    }
+
+    isPragma(): boolean {
+        return false;
+    }
+
+    isSymbolDefinition(): boolean {
+        return false;
+    }
+
     constructor(rawBytes: number[], lc: LabelsComments) {
         super(lc, SourceType.DATA);
         this._rawBytes = rawBytes.map(b => assertByte(b));
@@ -217,6 +241,18 @@ class ByteDeclaration extends InstructionBase implements Directive, Byteable {
 class WordDefinition extends InstructionBase implements Directive {
     private readonly value: number;
     private readonly bytes: number[];
+
+    isMacroDefinition(): boolean {
+        return false;
+    }
+
+    isPragma(): boolean {
+        return false;
+    }
+
+    isSymbolDefinition(): boolean {
+        return false;
+    }
 
     /**
      * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
@@ -299,7 +335,7 @@ class DefaultDialect implements Dialect {
         return this._env;
     }
 
-    checkLabel(l: String): BooBoo[] {
+    checkLabel(l: string): BooBoo[] {
         // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
         const regExpMatchArrays = l.matchAll(/(^\d|\s)/g);
         if (regExpMatchArrays) {
@@ -341,6 +377,13 @@ class DefaultDialect implements Dialect {
         return [comments, labels, data];
     }
 
+    /**
+     * Makes a TagSeq for the given FullInstructionLine consisting of
+     * comments, labels and the executable part of the code.
+     *
+     * @param fil the FullInstructionLine
+     * @param dis the Disassembler
+     */
     code(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(fil.labelsComments.comments));
         const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(fil.labelsComments.labels));
@@ -392,6 +435,14 @@ class DefaultDialect implements Dialect {
         // return value could also contain input offset, length, maybe metadata for comment etc.
     }
 
+    /**
+     * Create a TagSeq for just the code of the given FullInstructionLine
+     * consisting of the mnemonic and, if present, the operand.
+     *
+     * @param fil the FullInstructionLine
+     * @param dis the Disassembler
+     * @private
+     */
     private taggedCode(fil: FullInstructionLine, dis: Disassembler): TagSeq {
         // add the mnemonic tag and also the mnemonic category
         const mi = fil.fullInstruction.instruction;
@@ -438,13 +489,13 @@ class DefaultDialect implements Dialect {
         if (b.getLength() === 0) {
             throw Error("not entirely sure how to declare zero bytes");
         }
-        let kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_BYTE_DECLARATION);
+        const kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_BYTE_DECLARATION);
         const hexTag = new Tag(TAG_HEXARRAY, b.getBytes().map(this.hexByteText).join(", "));
         return [kw, hexTag];
     }
 
     private wordDeclaration(words: number[]): TagSeq {
-        let kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_WORD_DECLARATION);
+        const kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_WORD_DECLARATION);
         const values: Tag = new Tag(TAG_HEXARRAY, words.map(this.hexWordText).join(", "));
         return [kw, values];
     }
@@ -518,6 +569,9 @@ class DefaultDialect implements Dialect {
  * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
  */
 interface Directive extends Instructionish {
+    isSymbolDefinition(): boolean;
+    isMacroDefinition(): boolean;
+    isPragma(): boolean;
     // symbol definition
     // macro definition
     // cpu pragma
@@ -563,6 +617,7 @@ interface Instructionish extends Byteable {
     get sourceType(): SourceType;
 }
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * No code or data, just labels and comments.
  */
@@ -653,7 +708,7 @@ class SymDef {
     /** Extended information */
     blurb: string;
 
-    constructor(sType: SymbolType, name: string, value: Address, description: string, blurb: string = "") {
+    constructor(sType: SymbolType, name: string, value: Address, description: string, blurb = "") {
         this.sType = sType;
         this.name = name;
         this.value = value;
@@ -685,15 +740,15 @@ class SymbolTable {
      * @param desc a more verbose description of the symbol.
      * @param blurb extended info.
      */
-    sub(addr: Address, name: string, desc: string, blurb: string = "") {
+    sub(addr: Address, name: string, desc: string, blurb= "") {
         this.sym(SymbolType.sub, addr, name, desc, blurb);
     }
 
-    reg(addr: Address, name: string, desc: string, blurb: string = "") {
+    reg(addr: Address, name: string, desc: string, blurb= "") {
         this.sym(SymbolType.reg, addr, name, desc, blurb);
     }
 
-    sym(sType: SymbolType, addr: Address, name: string, desc: string, blurb: string = "") {
+    sym(sType: SymbolType, addr: Address, name: string, desc: string, blurb = "") {
         if (addr < 0 || addr >= 1 << 16) {
             throw Error("address out of range");
         }
@@ -996,8 +1051,8 @@ class Disassembler {
     constructor(iset: InstructionSet, fb: FileBlob, bs: BlobSniffer) {
         this.iset = iset;
         const dm = bs.getMeta();
-        let index = dm.contentStartOffset();
-        let bytes: number[] = fb.getBytes();
+        const index = dm.contentStartOffset();
+        const bytes: number[] = fb.getBytes();
         if (index >= bytes.length || index < 0) {
             throw Error(`index '${index}' out of range`);
         }
@@ -1011,6 +1066,7 @@ class Disassembler {
         this.stats = new Map<string, number>();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     /**
      * Starting from one offset, read count bytes at most. Only reads up to the end of the file.
      * @param from must be 0+
@@ -1018,7 +1074,7 @@ class Disassembler {
      * @return the possibly empty actual bytes read.
      * @private
      */
-    readBytes = (from:number, count:number = 1) => {
+    readBytes = (from:number, count = 1) => {
         const i1 = R.max(0, from);
         const i2 = from + R.max(1, count);
         return this.fb.getBytes().slice(i1, i2).map(asByte);
@@ -1084,9 +1140,7 @@ class Disassembler {
             } else if (isIllegal(opcode)) {
                 // slurp up multiple illegal opcodes in a row
                 let numBytes = 1;
-                // code smell: too heavy-handed although the only probable failure cause of at() is eof
-                // @ts-ignore
-                while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.getBytes().at(this.currentIndex + numBytes))) {
+                while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.getBytes().at(this.currentIndex + numBytes)!)) {
                     numBytes++;
                 }
                 lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
@@ -1271,8 +1325,8 @@ class Disassembler {
      * @param name name of the statistic
      * @param x value to add, defaults to 1
      */
-    addStat(name: string, x: number = 1) {
-        let existing = this.stats.get(name) || 0;
+    addStat(name: string, x= 1) {
+        const existing = this.stats.get(name) || 0;
         this.stats.set(name, x + existing);
     }
 
