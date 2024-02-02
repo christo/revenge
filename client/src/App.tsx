@@ -15,7 +15,16 @@ import {FileUploader} from "react-drag-drop-files";
 
 import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
-import {ActionExecutor, Detail, Tag, TAG_ADDRESS, TAG_NOTE, TypeActions} from "./machine/api";
+import {
+    ActionExecutor,
+    Detail,
+    Tag,
+    TAG_ABSOLUTE,
+    TAG_ADDRESS, TAG_IN_BINARY,
+    TAG_NOTE,
+    TAG_OPERAND,
+    TypeActions
+} from "./machine/api";
 import {fileTypes} from "./machine/cbm";
 import {LE} from "./machine/core";
 import {FileBlob, FileLike} from "./machine/FileBlob";
@@ -101,7 +110,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
                     } else {
                         return <div {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
                                      onClick={() => handleClick(tup.data)}>{tup.value}
-                            <div className="iconAnno">{tup.hasTags(["opnd", "abs", "inbinary"]) ? <InsertLink/> : ""}</div>
+                            <div className="iconAnno">{tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]) ? <InsertLink/> : ""}</div>
                         </div>;
                     }
                 })}
