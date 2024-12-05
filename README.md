@@ -14,14 +14,12 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ## Quick Start
 
-After checking out this repo, from a terminal shell in the root directory, run the sanity script to confirm you have the 
-relevant tools installed:
+After checking out this repo, from a terminal shell in the root directory, run the sanity script
+to confirm you have the relevant tools installed:
 
 ```shell
 ./sanity.sh
 ```
-
-
 
 ## Features 
 
