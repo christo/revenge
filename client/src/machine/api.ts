@@ -7,6 +7,9 @@ import {Mos6502} from "./mos6502";
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  */
 class Tag {
+
+    // TODO the naming of Tag feels misleading upon returning from a break
+
     tags: string[];
     id: string | undefined;
     data: [string, string][];
