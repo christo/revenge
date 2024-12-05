@@ -19,7 +19,7 @@ import {
     TagSeq
 } from "./api";
 
-import {Address, asByte, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
+import {Addr, asByte, assertByte, Byteable, hex16, hex8, TODO, toStringArray, unToSigned} from "./core";
 import {FileBlob} from "./FileBlob";
 import {
     FullInstruction,
@@ -702,13 +702,13 @@ class SymDef {
     /** Definitive canonical name, traditionally used, usually an overly obtuse contraction. */
     name: string;
     /** Numeric memory address for the symbol. */
-    value: Address;
+    value: Addr;
     /** Short phrase to describe the meaning, more understandable than the canonical name */
     descriptor: string;
     /** Extended information */
     blurb: string;
 
-    constructor(sType: SymbolType, name: string, value: Address, description: string, blurb = "") {
+    constructor(sType: SymbolType, name: string, value: Addr, description: string, blurb = "") {
         this.sType = sType;
         this.name = name;
         this.value = value;
@@ -724,7 +724,7 @@ class SymbolTable {
 
     // future: keep kernal symbols in a separate table from user-defined symbols, also can have multimap
 
-    private addressToSymbol: Map<Address, SymDef> = new Map<Address, SymDef>();
+    private addressToSymbol: Map<Addr, SymDef> = new Map<Addr, SymDef>();
     private name: string;
     private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>();
 
@@ -740,15 +740,15 @@ class SymbolTable {
      * @param desc a more verbose description of the symbol.
      * @param blurb extended info.
      */
-    sub(addr: Address, name: string, desc: string, blurb= "") {
+    sub(addr: Addr, name: string, desc: string, blurb= "") {
         this.sym(SymbolType.sub, addr, name, desc, blurb);
     }
 
-    reg(addr: Address, name: string, desc: string, blurb= "") {
+    reg(addr: Addr, name: string, desc: string, blurb= "") {
         this.sym(SymbolType.reg, addr, name, desc, blurb);
     }
 
-    sym(sType: SymbolType, addr: Address, name: string, desc: string, blurb = "") {
+    sym(sType: SymbolType, addr: Addr, name: string, desc: string, blurb = "") {
         if (addr < 0 || addr >= 1 << 16) {
             throw Error("address out of range");
         }
@@ -772,13 +772,15 @@ class SymbolTable {
         return this.nameToSymbol.get(name);
     }
 
-    byAddress(addr: Address) {
+    byAddress(addr: Addr) {
         return this.addressToSymbol.get(addr);
     }
 }
 
 /**
- * Metadata valuable for disassembling a {@link FileBlob}. Expect this interface to evolve dramatically.
+ * Provider of metadata about binaries, valuable for disassembling a {@link FileBlob}.
+ *
+ * Expect this interface to evolve dramatically.
  */
 interface DisassemblyMeta {
     /**
@@ -812,14 +814,14 @@ interface DisassemblyMeta {
     /**
      * Return a list of address + LabelsComments
      */
-    getJumpTargets(fb: FileBlob): [Address, LabelsComments][];
+    getJumpTargets(fb: FileBlob): [Addr, LabelsComments][];
 
     /**
      * Based on the known machine.
      */
     getSymbolTable(): SymbolTable;
 
-    isInBinary(addr: Address, fb: FileBlob): boolean;
+    isInBinary(addr: Addr, fb: FileBlob): boolean;
 }
 
 class ByteDefinitionEdict implements Edict<Instructionish> {
@@ -923,7 +925,7 @@ export class LabelsComments {
     }
 }
 
-type JumpTargetFetcher = (fb: FileBlob) => [Address, LabelsComments][];
+type JumpTargetFetcher = (fb: FileBlob) => Array<[Addr, LabelsComments]>;
 
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
@@ -969,7 +971,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this._contentStartOffset;
     }
 
-    isInBinary(addr: Address, fb: FileBlob): boolean {
+    isInBinary(addr: Addr, fb: FileBlob): boolean {
         const baseAddress = fb.read16(this._baseAddressOffset);
         const contentStartAddress = baseAddress + this._contentStartOffset;
         const contentEndAddress = baseAddress + fb.getLength();
@@ -1000,7 +1002,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
         return this.edicts[address];
     }
 
-    getJumpTargets(fb: FileBlob): [Address, LabelsComments][] {
+    getJumpTargets(fb: FileBlob): [Addr, LabelsComments][] {
         return this.jumpTargetFetcher(fb);
     }
 
@@ -1045,14 +1047,13 @@ class Disassembler {
     fb: FileBlob;
     private readonly segmentBaseAddress: number;
     private stats: Map<string, number>;
-    private predefLc: [Address, LabelsComments][];
+    private predefLc: [Addr, LabelsComments][];
 
     private disMeta: DisassemblyMeta;
     private symbolDefinitions: Map<string, SymDef>;
 
-    constructor(iset: InstructionSet, fb: FileBlob, bs: BlobSniffer) {
+    constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
         this.iset = iset;
-        const dm = bs.getMeta();
         const index = dm.contentStartOffset();
         const bytes: number[] = fb.getBytes();
         if (index >= bytes.length || index < 0) {
@@ -1169,7 +1170,7 @@ class Disassembler {
         return this.fb.read8(this.currentIndex);
     }
 
-    isInBinary(addr: Address) {
+    isInBinary(addr: Addr) {
         return this.disMeta.isInBinary(addr, this.fb);
     }
 
@@ -1240,7 +1241,7 @@ class Disassembler {
      * Returns zero or more {@link LabelsComments} defined for the given address.
      * @param addr
      */
-    mkPredefLabelsComments(addr: Address): LabelsComments {
+    mkPredefLabelsComments(addr: Addr): LabelsComments {
         return this.predefLc.filter(t => t[0] === addr).map(t => t[1]).reduce((p, c) => {
             p.merge(c);
             return p;
@@ -1252,7 +1253,7 @@ class Disassembler {
      * pairs. Only those targets that lie within the address range of our loaded binary are returned.
      *
      */
-    jumpTargets = (instructions: [Address, FullInstruction][]): Address[] => {
+    jumpTargets = (instructions: [Addr, FullInstruction][]): Addr[] => {
         // collect predefined jump targets
         const fromDm = this.predefLc.map(t => t[0]);
 
@@ -1277,17 +1278,17 @@ class Disassembler {
      *
      * @param addr the address to query.
      */
-    private addressInRange = (addr: Address): boolean => {
+    private addressInRange = (addr: Addr): boolean => {
         const notTooLow = addr >= this.segmentBaseAddress;
         const notTooHigh = addr <= this.segmentBaseAddress + this.fb.getLength() - this.originalIndex;
         return notTooLow && notTooHigh;
     };
 
-    get currentAddress(): Address {
+    get currentAddress(): Addr {
         return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
     }
 
-    getSymbol(addr: Address): SymDef | undefined {
+    getSymbol(addr: Addr): SymDef | undefined {
         return this.disMeta.getSymbolTable().byAddress(addr);
     }
 

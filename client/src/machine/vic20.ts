@@ -188,7 +188,7 @@ export class Vic20Basic implements BlobSniffer {
             });
         } catch (e) {
             // if we exploded, it's not BASIC!
-            console.error(e);
+            // console.error(e);
             isBasic = 0.01;
         }
         return isBasic;

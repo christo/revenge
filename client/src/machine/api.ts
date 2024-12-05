@@ -1,5 +1,5 @@
 import {BlobSniffer, Instructionish} from "./asm";
-import {Address, BigEndian, hex8, LittleEndian, Memory} from "./core";
+import {Addr, BigEndian, hex8, LittleEndian, Memory} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 
@@ -88,10 +88,10 @@ class LogicalLine {
 
     /** Temporary transition encapsulation, future: migrate to dynamic generation. */
     private readonly tags: TagSeq;
-    private readonly address: Address;
+    private readonly address: Addr;
     private readonly instruction?: Instructionish;
 
-    constructor(tags: TagSeq, address: Address, instruction?: Instructionish) {
+    constructor(tags: TagSeq, address: Addr, instruction?: Instructionish) {
         this.tags = tags;
         this.address = address;
         this.instruction = instruction;
@@ -228,7 +228,7 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
  */
 class MemoryConfiguration {
     readonly name: string;
-    readonly basicStart: Address;
+    readonly basicStart: Addr;
 
     /**
      * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
@@ -243,7 +243,7 @@ class MemoryConfiguration {
      * @param basicStart 16 bit address where BASIC programs are loaded
      * @param shortName short designation for UI
      */
-    constructor(name: string, basicStart: Address, shortName = "") {
+    constructor(name: string, basicStart: Addr, shortName = "") {
         // future: various independent block configurations, now: simple!
         this.name = name;
         this.basicStart = basicStart;

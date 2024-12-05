@@ -7,7 +7,8 @@
 
  */
 
-import {Address, assertByte, Byteable, unToSigned} from "./core";
+import {Addr, assertByte, Byteable, LE, unToSigned} from "./core";
+import {FileBlob} from "./FileBlob";
 
 type OperandLength = 0 | 1 | 2;
 
@@ -320,11 +321,48 @@ class InstructionSet {
         return this.instructions[assertByte(opcode)];
     }
 
+    instructionByName(mnemonic: string): Instruction | undefined {
+        return this.instructions.find(i => mnemonic === i.op.mnemonic);
+    }
+
+    all() {
+        // TODO finish implementing this weird thing
+        const builder: Builder = {
+            bytes: [] as number[],
+            add: {} as InstructionCall,
+            opMap: {},
+            build: () => [234]
+        };
+        this.ops.forEach(op => {
+            builder.opMap[op.mnemonic] = (args: number[]) => {
+                const instructionBytes = this.instructionByName(op.mnemonic)?.getBytes();
+                instructionBytes?.forEach(b => builder.bytes.push(b));
+                return builder;
+            };
+        })
+    }
 
 }
 
+/**
+ * Fluent builder for constructing binary programs
+ */
+type Builder = {
+    bytes: number[],
+    add: InstructionCall,
+    // TODO looks way skuffed here
+    opMap: {[keyof: string]:(args: number[]) => Builder}
+    build: () => number[];
+}
+
+type InstructionCall = (args: string[]) => void;
+
+type MachineCodeBuilder = {bytes: number[]; add: {[n: string]: InstructionCall}};
+
 // build the instruction set
 const I = new InstructionSet();
+
+// TODO should this be driven by a vanilla data file?
 
 // ADC
 I.add(0x69, ADC, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
@@ -591,7 +629,7 @@ class FullInstruction implements Byteable {
      *
      * @param pc address to resolve to if this addressing mode is pc-relative.
      */
-    resolveOperandAddress(pc: Address): Address {
+    resolveOperandAddress(pc: Addr): Addr {
         const mode = this.instruction.mode;
         if (mode === MODE_RELATIVE) {
             if (mode.numOperandBytes !== 1) {
@@ -638,6 +676,14 @@ class Mos6502 {
     //  IRQ (Interrupt Request) vector, 16-bit (LB, HB)
     static readonly VECTOR_IRQ_LB = 0xfffe;
     static readonly VECTOR_IRQ_HB = 0xffff;
+
+    static builder(): Builder {
+
+        // for each instruction,
+        // add a method with the mnemonic name that appends that instruction's bytes to its internal FileBlob
+        // and which takes the args as numeric parameters
+        return {} as Builder; // TODO implement this
+    }
 }
 
 export {
@@ -661,4 +707,4 @@ export {
     AddressingMode,
 };
 
-export type {OperandLength}
+export type {OperandLength, InstructionCall}

@@ -1,4 +1,4 @@
-import {Address, ArrayMemory, BE, Byteable, Endian} from "./core";
+import {Addr, ArrayMemory, BE, Byteable, Endian} from "./core";
 
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
@@ -23,13 +23,13 @@ class FileBlob implements Byteable {
         return this.memory.getLength();
     }
 
-    read16(byteOffset: Address): number {
+    read16(byteOffset: Addr): number {
         return this.memory.read16(byteOffset);
     }
 
     static async fromFile(f: File | FileLike, endian: Endian) {
         if (f instanceof File) {
-            let mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, Array.from(new Uint8Array(buf)), endian);
+            const mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, Array.from(new Uint8Array(buf)), endian);
             return f.arrayBuffer().then(mkBlob);
         } else {
             return new FileBlob(f.name, Array.from(f.data), endian);
@@ -55,12 +55,12 @@ class FileBlob implements Byteable {
      * @param ext the part after the last dot in the filename (dot must exist).
      * @param caseInsensitive whether to compare case insensitively.
      */
-    hasExt(ext: string, caseInsensitive: boolean = true) {
+    hasExt(ext: string, caseInsensitive = true) {
         const f = caseInsensitive ? (x: string) => x.toLowerCase() : (x: string) => x;
         return f(this.name).endsWith("." + f(ext));
     }
 
-    read8(offset: Address) {
+    read8(offset: Addr) {
         return this.memory.read8(offset);
     }
 }

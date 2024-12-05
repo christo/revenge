@@ -41,7 +41,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
         f: () => {
             // start timer
             const startTime = Date.now();
-            const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t);
+            const dis = new Disassembler(Mos6502.INSTRUCTIONS, fb, t.getMeta());
             const detail = new Detail([TAG_LINE], new DataViewImpl([]))
 
             // set the base address

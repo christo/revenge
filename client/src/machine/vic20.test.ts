@@ -1,5 +1,5 @@
 import {TOKEN_PRINT, TOKEN_REM} from "./basic";
-import {Address, LE} from "./core";
+import {Addr, LE} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Petscii} from "./petscii";
 import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
@@ -14,7 +14,7 @@ import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
  * @param lineContents valid basic line contents, token bytes or petscii bytes
  * @return a tuple of line address and array of basic bytes according to the valid basic format
  */
-const basicLine = (addr: Address, lineNumber: number, lineContents: number[]): [Address, number[]] => {
+const basicLine = (addr: Addr, lineNumber: number, lineContents: number[]): [Addr, number[]] => {
     const lineNumberBytes = LE.wordToTwoBytes(lineNumber);
     const EOL_LENGTH = 1; // bytes in EOL value
     const EOL_VALUE = 0;

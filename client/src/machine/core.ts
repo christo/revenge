@@ -29,7 +29,7 @@ interface Byteable {
 /**
  * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
  */
-type Address = number;
+type Addr = number;
 
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
@@ -125,20 +125,26 @@ const BE: BigEndian = new BigEndian();
  */
 interface Memory<T extends Endian> {
 
+    writeable(): boolean;
+
+    executable(): boolean;
+
     /**
      * Read from the offset a 16 bit word in the right {@link Endian Endianness}.
      * @param byteOffset
      */
-    read16(byteOffset: Address): number;
+    read16(byteOffset: Addr): number;
 
     /**
-     * Gets the name of the {@link Endian endianness}.
+     * Gets the {@link Endian endianness}.
      */
     endianness(): T;
 
     getLength(): number;
 
     submatch(seq: Uint8Array, atOffset: number): boolean;
+
+    contains(location: Addr): boolean;
 }
 
 /**
@@ -148,16 +154,22 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
     private _bytes: number[];
     private readonly endian: T;
 
-    /** Arbitrary size, big for retro computers. */
+    /** Arbitrary size, plenty for retro computers. */
     private static MAX: number = MB_8;
+    private _writeable: boolean;
+    private _executable: boolean;
 
     /**
      * Construct with an array of values or a desired size.
      *
      * @param bytes if a size, must be sensible, if an array, we use that.
      * @param endian byte order for word interpretation.
+     * @param writeable whether this memory is marked as writeable by user code (does not imply immutable)
+     * @param executable whether this memory is marked as executable for user code
      */
-    constructor(bytes: number | number[], endian: T) {
+    constructor(bytes: number | number[], endian: T, writeable = true, executable = true) {
+        this._writeable = writeable;
+        this._executable = executable;
         if (typeof bytes === "number") {
             if (bytes < 0 || bytes > ArrayMemory.MAX) {
                 throw Error(`Memory size ${bytes} is not supported`);
@@ -172,6 +184,14 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
             this._bytes = bytes;
         }
         this.endian = endian;
+    }
+
+    executable(): boolean {
+        return this._executable;
+    }
+
+    writeable(): boolean {
+        return this._writeable;
     }
 
     getLength(): number {
@@ -197,7 +217,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         }
     }
 
-    read16(byteOffset: Address) {
+    read16(byteOffset: Addr) {
         // last possible word offset must fit word
         const lastWordAddress = this._bytes.length - 2;
         if (byteOffset < 0 || byteOffset > lastWordAddress) {
@@ -206,8 +226,8 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         return this.endian.twoBytesToWord([this._bytes[byteOffset], this._bytes[byteOffset + 1]]);
     }
 
-    read8(byteOffset: Address) {
-        if (byteOffset < 0 || byteOffset > this._bytes.length) {
+    read8(byteOffset: Addr) {
+        if (!this.contains(byteOffset)) {
             throw Error("offset out of range for vector read");
         }
         return this._bytes[byteOffset];
@@ -215,6 +235,10 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
 
     endianness(): T {
         return this.endian;
+    }
+
+    contains(location: Addr) {
+        return location >= 0 && location < this._bytes.length;
     }
 }
 
@@ -255,4 +279,4 @@ export {
     MB_8,
 }
 
-export type {Byteable, Address, Endian, Memory};
+export type {Byteable, Addr, Endian, Memory};
