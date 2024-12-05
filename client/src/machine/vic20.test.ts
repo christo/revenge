@@ -26,13 +26,12 @@ const basicLine = (addr: Address, lineNumber: number, lineContents: number[]): [
     return [nextLineAddress, basicBytes];
 }
 
-
 test("sniff basic program consisting only of line: 0 PRINT", () => {
     const VIC = new Vic20(VIC20_UNEX);
-    let ba: number[] = [];
+    const ba: number[] = [];
     const baseAddr = VIC20_UNEX.basicStart;
     VIC.pushWordBytes(ba, baseAddr);
-    let [, bline] = basicLine(baseAddr, 0, [TOKEN_PRINT]);
+    const [, bline] = basicLine(baseAddr, 0, [TOKEN_PRINT]);
     // don't need next line address on last and only basic line
     bline.forEach((i) => ba.push(i));
     ba.push(0x00, 0x00); // end of program
@@ -44,7 +43,7 @@ test("sniff basic program consisting only of line: 0 PRINT", () => {
 
 test("sniff basic program with non-ascending line numbers", () => {
     const VIC = new Vic20(VIC20_UNEX);
-    let ba: number[] = [];
+    const ba: number[] = [];
     VIC.pushWordBytes(ba, VIC20_UNEX.basicStart);
     let [addr, line] = basicLine(VIC20_UNEX.basicStart, 10, [TOKEN_PRINT]);
     line.forEach(i => ba.push(i));
