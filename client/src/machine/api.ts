@@ -8,8 +8,6 @@ import {Mos6502} from "./mos6502";
  */
 class Tag {
 
-  // TODO the naming of Tag feels misleading upon returning from a break
-
   tags: string[];
   id: string | undefined;
   data: [string, string][];
@@ -123,7 +121,7 @@ interface DataView {
 }
 
 class DataViewImpl implements DataView {
-  private lines: LogicalLine[];
+  private readonly lines: LogicalLine[];
 
   constructor(lines: LogicalLine[]) {
     this.lines = lines;
@@ -264,7 +262,7 @@ abstract class Computer {
     this._tags = tags;
   }
 
-  private _cpu: Mos6502;
+  private readonly _cpu: Mos6502;
 
   get cpu() {
     return this._cpu;
@@ -278,6 +276,7 @@ abstract class Computer {
     return this._name;
   }
 
+  // noinspection JSUnusedGlobalSymbols
   tags() {
     return this._tags;
   }
