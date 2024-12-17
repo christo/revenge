@@ -1,7 +1,10 @@
 # TODO
 
-* [ ] migrate project to bun
-* [ ] migrate tests to mocha/chai
+* [x] migrate project to bun
+* [x] migrate tests to mocha/chai
+* [ ] implement Tracer and tests
+  * [ ] Tracer needs memory recorder (read, write, execute)
+  * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
 
 * useful material icons:
   * ManageHistory (reverse engineering)
