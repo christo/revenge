@@ -9,7 +9,7 @@ describe.skip("tracer", () => {
   it("performs simple linear trace", () => {
     const i = Mos6502.INSTRUCTIONS;
     const machineCode = Mos6502.builder()
-        .opMap.brk([0]) // TODO implement this
+        .opMap["brk"]([]) // TODO implement this
         .build();
     const fb = new FileBlob("testblob", machineCode, LE);
     const st = new SymbolTable("empty");
