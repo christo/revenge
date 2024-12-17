@@ -1,7 +1,7 @@
 @font-face {
-   font-family: "BebasNeueRegular";
-   src: local("Bebas Neue"),
-    url("./fonts/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
+  font-family: "BebasNeueRegular";
+  src: local("Bebas Neue"),
+  url("./fonts/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
 }
 
 @font-face {
@@ -79,12 +79,12 @@ body {
   color: #e3d5c9;
 }
 
-.actionResult  .lnum {
+.actionResult .lnum {
   font-family: "Martian Mono", monospace;
   margin-top: 3px;
 }
 
-.actionResult  .line {
+.actionResult .line {
   font-family: "Martian Mono", monospace;
   margin-top: 3px;
 }
@@ -164,7 +164,7 @@ body {
 
 .line {
   line-height: 1.5;
-  display:flex;
+  display: flex;
 }
 
 .hex {
@@ -173,7 +173,7 @@ body {
   width: 9ch;
   background-color: #282c34;
   border-radius: 4px;
-  padding: 2px   4px;
+  padding: 2px 4px;
 }
 
 .label {
@@ -189,13 +189,14 @@ body {
   border: #7a7373 solid;
 }
 
-.mn,.code {
+.mn, .code {
   font-weight: bold;
   position: absolute;
   left: 40ch;
   padding: 1px 6px;
   border-radius: 2px;
 }
+
 .opnd {
   position: absolute;
   left: 45ch;
@@ -213,51 +214,73 @@ body {
 }
 
 /* Arithmetic */
-.arith {background-color: rgba(75, 204, 227, 0.2)
-}
-/* Branch instructions */
-.br {background-color: rgba(227, 197, 75, 0.2)
-}
-/* Stack instructions */
-.st {background-color: rgba(136, 227, 75, 0.2)
-}
-/* Logic instructions */
-.lg {background-color: rgba(184, 75, 227, 0.2)}
-/* Flow instructions */
-.fl {background-color: rgba(227, 98, 75, 0.2)
-}
-/* Status register instructions */
-.sr {background-color: rgba(75, 146, 227, 0.2)
-}
-/* Interrupt instructions */
-.int {background-color: rgba(95, 75, 227, 0.2)
-}
-/* Memory instructions */
-.mem {background-color: rgba(227, 143, 75, 0.2)
-}
-/* Transfer instructions */
-.tr {background-color: rgba(75, 227, 192, 0.2)
-}
-/* Subroutine instructions */
-.sub {background-color: rgba(227, 75, 214, 0.2)
-}
-/* Misc */
-.ms {background-color: rgba(114, 95, 121, 0.2)
+.arith {
+  background-color: rgba(75, 204, 227, 0.2)
 }
 
-.opnd.acc{ /* addressing mode accumulator implied */
+/* Branch instructions */
+.br {
+  background-color: rgba(227, 197, 75, 0.2)
+}
+
+/* Stack instructions */
+.st {
+  background-color: rgba(136, 227, 75, 0.2)
+}
+
+/* Logic instructions */
+.lg {
+  background-color: rgba(184, 75, 227, 0.2)
+}
+
+/* Flow instructions */
+.fl {
+  background-color: rgba(227, 98, 75, 0.2)
+}
+
+/* Status register instructions */
+.sr {
+  background-color: rgba(75, 146, 227, 0.2)
+}
+
+/* Interrupt instructions */
+.int {
+  background-color: rgba(95, 75, 227, 0.2)
+}
+
+/* Memory instructions */
+.mem {
+  background-color: rgba(227, 143, 75, 0.2)
+}
+
+/* Transfer instructions */
+.tr {
+  background-color: rgba(75, 227, 192, 0.2)
+}
+
+/* Subroutine instructions */
+.sub {
+  background-color: rgba(227, 75, 214, 0.2)
+}
+
+/* Misc */
+.ms {
+  background-color: rgba(114, 95, 121, 0.2)
+}
+
+.opnd.acc { /* addressing mode accumulator implied */
   /* there's no arg here */
 }
 
-.opnd.abs{ /* addressing mode absolute */
+.opnd.abs { /* addressing mode absolute */
   color: #a3b3d5;
 }
 
-.opnd.abs_x{ /* addressing mode absolute, X-indexed */
+.opnd.abs_x { /* addressing mode absolute, X-indexed */
   color: #23b774;
 }
 
-.opnd.abs_y{ /* addressing mode absolute, Y-indexed */
+.opnd.abs_y { /* addressing mode absolute, Y-indexed */
   color: #23b2b7;
 }
 
@@ -265,33 +288,33 @@ body {
   color: #87a15b;
 }
 
-.opnd.impl{ /* addressing mode implied */
+.opnd.impl { /* addressing mode implied */
 }
 
-.opnd.ind{ /* addressing mode indirect */
+.opnd.ind { /* addressing mode indirect */
 }
 
-.opnd.x_ind{ /* addressing mode X-indexed, indirect */
+.opnd.x_ind { /* addressing mode X-indexed, indirect */
 
 }
 
-.opnd.ind_y{ /* addressing mode indirect, Y-indexed */
+.opnd.ind_y { /* addressing mode indirect, Y-indexed */
   color: #8282e0;
 }
 
-.opnd.rel{ /* addressing mode relative */
+.opnd.rel { /* addressing mode relative */
   color: orange;
 }
 
-.opnd.zpg{ /* addressing mode zeropage */
+.opnd.zpg { /* addressing mode zeropage */
   color: #ce91c4;
 }
 
-.opnd.zpg_x{ /* addressing mode zeropage, X-indexed */
+.opnd.zpg_x { /* addressing mode zeropage, X-indexed */
   color: #c7ae92;
 }
 
-.opnd.zpg_y{ /* addressing mode zeropage, Y-indexed */
+.opnd.zpg_y { /* addressing mode zeropage, Y-indexed */
   color: #92b1c7;
 }
 

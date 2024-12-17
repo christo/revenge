@@ -8,31 +8,31 @@ import {Mos6502} from "./mos6502";
  */
 class Tag {
 
-    // TODO the naming of Tag feels misleading upon returning from a break
+  // TODO the naming of Tag feels misleading upon returning from a break
 
-    tags: string[];
-    id: string | undefined;
-    data: [string, string][];
-    value: string;
+  tags: string[];
+  id: string | undefined;
+  data: [string, string][];
+  value: string;
 
-    constructor(tags: string | string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
-        this.tags = (typeof tags === "string") ? [tags] : tags;
-        this.id = id;
-        this.data = data;
-        this.value = value;
-    }
+  constructor(tags: string | string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
+    this.tags = (typeof tags === "string") ? [tags] : tags;
+    this.id = id;
+    this.data = data;
+    this.value = value;
+  }
 
-    hasTag(s: string) {
-        return this.tags.find(x => x === s) !== undefined;
-    }
+  hasTag(s: string) {
+    return this.tags.find(x => x === s) !== undefined;
+  }
 
-    spacedTags() {
-        return this.tags.join(" ");
-    }
+  spacedTags() {
+    return this.tags.join(" ");
+  }
 
-    hasTags(ts: string[]) {
-        return ts.every((t) => this.tags.includes(t));
-    }
+  hasTags(ts: string[]) {
+    return ts.every((t) => this.tags.includes(t));
+  }
 }
 
 export const TAG_IN_BINARY = "inbinary";
@@ -86,34 +86,34 @@ type TagSeq = Tag[];
  */
 class LogicalLine {
 
-    /** Temporary transition encapsulation, future: migrate to dynamic generation. */
-    private readonly tags: TagSeq;
-    private readonly address: Addr;
-    private readonly instruction?: Instructionish;
+  /** Temporary transition encapsulation, future: migrate to dynamic generation. */
+  private readonly tags: TagSeq;
+  private readonly address: Addr;
+  private readonly instruction?: Instructionish;
 
-    constructor(tags: TagSeq, address: Addr, instruction?: Instructionish) {
-        this.tags = tags;
-        this.address = address;
-        this.instruction = instruction;
-    }
+  constructor(tags: TagSeq, address: Addr, instruction?: Instructionish) {
+    this.tags = tags;
+    this.address = address;
+    this.instruction = instruction;
+  }
 
-    getTags(): TagSeq {
-        // future: put address in tags dynamically and stop receiving it as a tag in constructor
-        return this.tags;
-    }
+  getTags(): TagSeq {
+    // future: put address in tags dynamically and stop receiving it as a tag in constructor
+    return this.tags;
+  }
 
-    // noinspection JSUnusedGlobalSymbols
-    /**
-     * @return possibly undefined instruction for this line
-     */
-    getInstruction() {
-        return this.instruction;
-    }
+  // noinspection JSUnusedGlobalSymbols
+  /**
+   * @return possibly undefined instruction for this line
+   */
+  getInstruction() {
+    return this.instruction;
+  }
 
-    // noinspection JSUnusedGlobalSymbols
-    getAddress() {
-        return this.address;
-    }
+  // noinspection JSUnusedGlobalSymbols
+  getAddress() {
+    return this.address;
+  }
 }
 
 /**
@@ -123,25 +123,25 @@ class LogicalLine {
  * the name as a className and the value as the text content of a span element.
  */
 interface DataView {
-    getLines(): LogicalLine[];
+  getLines(): LogicalLine[];
 
-    addLine(ll: LogicalLine): void;
+  addLine(ll: LogicalLine): void;
 }
 
 class DataViewImpl implements DataView {
-    private lines: LogicalLine[];
+  private lines: LogicalLine[];
 
-    constructor(lines: LogicalLine[]) {
-        this.lines = lines;
-    }
+  constructor(lines: LogicalLine[]) {
+    this.lines = lines;
+  }
 
-    getLines(): LogicalLine[] {
-        return this.lines;
-    }
+  getLines(): LogicalLine[] {
+    return this.lines;
+  }
 
-    addLine(ll: LogicalLine): void {
-        this.lines.push(ll);
-    }
+  addLine(ll: LogicalLine): void {
+    this.lines.push(ll);
+  }
 
 
 }
@@ -151,27 +151,27 @@ class DataViewImpl implements DataView {
  * The {@link DataView} holds the data itself.
  */
 class Detail {
-    private readonly _tags: string[];
-    private readonly _stats: [string, string][];
-    private readonly _dataView: DataView;
+  private readonly _tags: string[];
+  private readonly _stats: [string, string][];
+  private readonly _dataView: DataView;
 
-    constructor(tags: string[], dataView: DataView) {
-        this._tags = tags;
-        this._dataView = dataView;
-        this._stats = [];
-    }
+  constructor(tags: string[], dataView: DataView) {
+    this._tags = tags;
+    this._dataView = dataView;
+    this._stats = [];
+  }
 
-    get tags(): string[] {
-        return this._tags;
-    }
+  get tags(): string[] {
+    return this._tags;
+  }
 
-    get stats(): [string, string][] {
-        return this._stats;
-    }
+  get stats(): [string, string][] {
+    return this._stats;
+  }
 
-    get dataView(): DataView {
-        return this._dataView;
-    }
+  get dataView(): DataView {
+    return this._dataView;
+  }
 }
 
 /**
@@ -204,102 +204,103 @@ type BlobToActions = (fileBlob: FileBlob) => TypeActions;
  * Error class for user-reportable problems, all the sensible names have been domain squatted by typescript/javascript.
  */
 class BooBoo {
-    mesg: string;
+  mesg: string;
 
-    constructor(mesg: string) {
-        this.mesg = mesg;
-    }
+  constructor(mesg: string) {
+    this.mesg = mesg;
+  }
 }
 
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
-    label: "Hex Dump",
-    f: () => {
-        const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
-        // currently whole hex dump is a single logical line at no address with no instruction
-        const oldDataView: TagSeq[] = [elements];
-        const lls = oldDataView.map((ts: TagSeq, i: number) => new LogicalLine(ts, i));
-        const newDataView: DataView = new DataViewImpl(lls);
-        return new Detail([TAG_HEXBYTES], newDataView);
-    }
+  label: "Hex Dump",
+  f: () => {
+    const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
+    // currently whole hex dump is a single logical line at no address with no instruction
+    const oldDataView: TagSeq[] = [elements];
+    const lls = oldDataView.map((ts: TagSeq, i: number) => new LogicalLine(ts, i));
+    const newDataView: DataView = new DataViewImpl(lls);
+    return new Detail([TAG_HEXBYTES], newDataView);
+  }
 });
 
 /**
  * Available memory, basic load addres etc.
  */
 class MemoryConfiguration {
-    readonly name: string;
-    readonly basicStart: Addr;
+  readonly name: string;
+  readonly basicStart: Addr;
 
-    /**
-     * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
-     * configuration, this can be empty. Does not need to include any machine identifier.
-     */
-    readonly shortName: string;
+  /**
+   * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
+   * configuration, this can be empty. Does not need to include any machine identifier.
+   */
+  readonly shortName: string;
 
-    /**
-     * Create a memory configuration.
-     *
-     * @param name for display
-     * @param basicStart 16 bit address where BASIC programs are loaded
-     * @param shortName short designation for UI
-     */
-    constructor(name: string, basicStart: Addr, shortName = "") {
-        // future: various independent block configurations, now: simple!
-        this.name = name;
-        this.basicStart = basicStart;
-        this.shortName = shortName;
-    }
+  /**
+   * Create a memory configuration.
+   *
+   * @param name for display
+   * @param basicStart 16 bit address where BASIC programs are loaded
+   * @param shortName short designation for UI
+   */
+  constructor(name: string, basicStart: Addr, shortName = "") {
+    // future: various independent block configurations, now: simple!
+    this.name = name;
+    this.basicStart = basicStart;
+    this.shortName = shortName;
+  }
 }
 
 abstract class Computer {
-    private _cpu: Mos6502;
-    private _memory: Memory<BigEndian | LittleEndian>;
-    private readonly _memoryConfig: MemoryConfiguration;
-    private readonly _name: string;
-    private readonly _tags: string[];
+  private _memory: Memory<BigEndian | LittleEndian>;
+  private readonly _memoryConfig: MemoryConfiguration;
+  private readonly _name: string;
+  private readonly _tags: string[];
 
-    protected constructor(
-        name: string,
-        cpu: Mos6502,
-        memory: Memory<BigEndian | LittleEndian>,
-        memoryConfig: MemoryConfiguration,
-        tags: string[]) {
-        this._name = name;
-        this._cpu = cpu;
-        this._memory = memory;
-        this._memoryConfig = memoryConfig;
-        this._tags = tags;
-    }
+  protected constructor(
+      name: string,
+      cpu: Mos6502,
+      memory: Memory<BigEndian | LittleEndian>,
+      memoryConfig: MemoryConfiguration,
+      tags: string[]) {
+    this._name = name;
+    this._cpu = cpu;
+    this._memory = memory;
+    this._memoryConfig = memoryConfig;
+    this._tags = tags;
+  }
 
-    get cpu() {
-        return this._cpu;
-    }
+  private _cpu: Mos6502;
 
-    memory() {
-        return this._memoryConfig;
-    }
+  get cpu() {
+    return this._cpu;
+  }
 
-    name() {
-        return this._name;
-    }
+  memory() {
+    return this._memoryConfig;
+  }
 
-    tags() {
-        return this._tags;
-    }
+  name() {
+    return this._name;
+  }
 
-    pushWordBytes(ba: number[], word: number) {
-        return this._memory.endianness().pushWordBytes(ba, word);
-    }
+  tags() {
+    return this._tags;
+  }
+
+  pushWordBytes(ba: number[], word: number) {
+    return this._memory.endianness().pushWordBytes(ba, word);
+  }
 }
 
 export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, DataViewImpl, Computer};
 export type {
-    TagSeq,
-    ActionExecutor,
-    BlobToActions,
-    ActionFunction,
-    UserAction,
-    DataView,
-    TypeActions,
-    Continuation
+  TagSeq,
+  ActionExecutor,
+  BlobToActions,
+  ActionFunction,
+  UserAction,
+  DataView,
+  TypeActions,
+  Continuation
 };

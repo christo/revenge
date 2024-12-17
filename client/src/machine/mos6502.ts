@@ -7,94 +7,93 @@
 
  */
 
-import {Addr, assertByte, Byteable, LE, unToSigned} from "./core";
-import {FileBlob} from "./FileBlob";
+import {Addr, assertByte, Byteable, unToSigned} from "./core";
 
 type OperandLength = 0 | 1 | 2;
 
 class AddressingMode {
-    code: string;
-    desc: string;
-    template: string;
-    blurb: string
-    numOperandBytes: 0 | 1 | 2;
+  code: string;
+  desc: string;
+  template: string;
+  blurb: string
+  numOperandBytes: 0 | 1 | 2;
 
-    /**
-     * Make an addressing mode using all the goodies.
-     *
-     * @param code the short code used to signify this addressing mode. Must contain no spaces.
-     * @param desc human readable description.
-     * @param template a semiformal documentation format.
-     * @param blurb additional clarifying description.
-     * @param numOperandBytes number of bytes in the expected operand.
-     */
-    constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: OperandLength) {
-        if (!code.match(/^\w+$/)) {
-            throw Error("Addressing mode code must contain only these chars: A-Za-z_");
-        }
-        this.code = code;
-        this.desc = desc;
-        this.template = template;
-        this.blurb = blurb;
-        this.numOperandBytes = numOperandBytes;
+  /**
+   * Make an addressing mode using all the goodies.
+   *
+   * @param code the short code used to signify this addressing mode. Must contain no spaces.
+   * @param desc human readable description.
+   * @param template a semiformal documentation format.
+   * @param blurb additional clarifying description.
+   * @param numOperandBytes number of bytes in the expected operand.
+   */
+  constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: OperandLength) {
+    if (!code.match(/^\w+$/)) {
+      throw Error("Addressing mode code must contain only these chars: A-Za-z_");
     }
+    this.code = code;
+    this.desc = desc;
+    this.template = template;
+    this.blurb = blurb;
+    this.numOperandBytes = numOperandBytes;
+  }
 }
 
 class Op {
-    mnemonic: string;
-    description: string;
-    /** mnemonic category */
-    cat: string;
-    private readonly _isJump: boolean;
+  mnemonic: string;
+  description: string;
+  /** mnemonic category */
+  cat: string;
+  private readonly _isJump: boolean;
 
-    constructor(mnemonic: string, description: string, cat: string, isJump = false) {
-        this.mnemonic = mnemonic;
-        this.description = description;
-        this.cat = cat;
-        this._isJump = isJump;
-    }
+  constructor(mnemonic: string, description: string, cat: string, isJump = false) {
+    this.mnemonic = mnemonic;
+    this.description = description;
+    this.cat = cat;
+    this._isJump = isJump;
+  }
 
-    get isJump(): boolean {
-        return this._isJump;
-    }
+  get isJump(): boolean {
+    return this._isJump;
+  }
 }
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {
-    name: string;
-    description: string;
-    bit: number;
-    mask: number;
+  name: string;
+  description: string;
+  bit: number;
+  mask: number;
 
-    constructor(name: string, description: string, bit: number) {
-        if (bit < 0 || bit > 7) {
-            throw new Error("status flag bit number must be 0-7");
-        }
-        this.name = name;
-        this.description = description;
-        this.bit = bit;
-        this.mask = 0x01 << bit;
+  constructor(name: string, description: string, bit: number) {
+    if (bit < 0 || bit > 7) {
+      throw new Error("status flag bit number must be 0-7");
     }
+    this.name = name;
+    this.description = description;
+    this.bit = bit;
+    this.mask = 0x01 << bit;
+  }
 
-    // noinspection JSUnusedGlobalSymbols
-    isSet(sr: number) {
-        return sr & this.mask;
-    }
+  // noinspection JSUnusedGlobalSymbols
+  isSet(sr: number) {
+    return sr & this.mask;
+  }
 }
 
 // noinspection JSUnusedLocalSymbols
 const SR_FLAGS: ArrayLike<StatusRegisterFlag> = (() => {
-    let b = 0;
-    return [
-        new StatusRegisterFlag("C", "Carry", b++),
-        new StatusRegisterFlag("Z", "Zero", b++),
-        new StatusRegisterFlag("I", "Interrupt (IRQ disable)", b++),
-        new StatusRegisterFlag("D", "Decimal (use BCD for arithmetics)", b++),
-        new StatusRegisterFlag("B", "Break", b++),
-        new StatusRegisterFlag("-", "ignored", b++),
-        new StatusRegisterFlag("V", "Overflow", b++),
-        new StatusRegisterFlag("N", "Negative", b++),
-    ];
+  let b = 0;
+  return [
+    new StatusRegisterFlag("C", "Carry", b++),
+    new StatusRegisterFlag("Z", "Zero", b++),
+    new StatusRegisterFlag("I", "Interrupt (IRQ disable)", b++),
+    new StatusRegisterFlag("D", "Decimal (use BCD for arithmetics)", b++),
+    new StatusRegisterFlag("B", "Break", b++),
+    new StatusRegisterFlag("-", "ignored", b++),
+    new StatusRegisterFlag("V", "Overflow", b++),
+    new StatusRegisterFlag("N", "Negative", b++),
+  ];
 })();
 
 /* The code for each addressing mode should be suitable to use as css classes */
@@ -212,135 +211,136 @@ const TYA = new Op("TYA", "transfer Y to accumulator", TR);
  * branch was taken.
  */
 class Cycles {
-    /** System-wide per-instruction minimum guard. */
-    static MIN_CYCLES = 2;
-    /** System-wide per-instruction maximum guard. */
-    static MAX_CYCLES = 7;
+  /** System-wide per-instruction minimum guard. */
+  static MIN_CYCLES = 2;
+  /** System-wide per-instruction maximum guard. */
+  static MAX_CYCLES = 7;
+  private min: number;
+  private xPage: number;
+  private branch: number;
+  private branchXPage: number;
 
-    /** Fixed cycle cost. */
-    static FIXED = (n: number) => new Cycles(n, 0, 0, 0);
-    /** For branches, additional cost for taking branch, further cost for branching across page boundary. */
-    static BRANCH = (n: number) => new Cycles(n, 0, 1, 2);
-    /** Costs n cycles with additional cycle for crossing page boundary. */
-    static XPAGE = (n: number) => new Cycles(n, 1, 0, 0);
-
-    private min: number;
-    private xPage: number;
-    private branch: number;
-    private branchXPage: number;
-
-    private constructor(min: number, xPage: number, branch: number, branchXPage: number) {
-        if (min < Cycles.MIN_CYCLES || min > Cycles.MAX_CYCLES) {
-            throw new Error(`Cycles out of range: ${Cycles.MIN_CYCLES}-${Cycles.MAX_CYCLES}`);
-        }
-        this.min = min;
-        this.xPage = xPage;
-        this.branch = branch;
-        this.branchXPage = branchXPage;
+  private constructor(min: number, xPage: number, branch: number, branchXPage: number) {
+    if (min < Cycles.MIN_CYCLES || min > Cycles.MAX_CYCLES) {
+      throw new Error(`Cycles out of range: ${Cycles.MIN_CYCLES}-${Cycles.MAX_CYCLES}`);
     }
+    this.min = min;
+    this.xPage = xPage;
+    this.branch = branch;
+    this.branchXPage = branchXPage;
+  }
+
+  /** Fixed cycle cost. */
+  static FIXED = (n: number) => new Cycles(n, 0, 0, 0);
+
+  /** For branches, additional cost for taking branch, further cost for branching across page boundary. */
+  static BRANCH = (n: number) => new Cycles(n, 0, 1, 2);
+
+  /** Costs n cycles with additional cycle for crossing page boundary. */
+  static XPAGE = (n: number) => new Cycles(n, 1, 0, 0);
 }
 
 /** Machine instruction definition. */
 class Instruction {
-    private readonly _op: Op;
-    private readonly _numBytes: number;
-    private readonly _mode: AddressingMode;
-    private readonly opcode: number; // byte
-    private minCycles: Cycles;
-    private illegal: boolean;
+  private readonly _op: Op;
+  private readonly _numBytes: number;
+  private readonly _mode: AddressingMode;
+  private readonly opcode: number; // byte
+  private minCycles: Cycles;
+  private illegal: boolean;
 
-    constructor(op: Op, mode: AddressingMode, opcode: number, numBytes: number, cycles: Cycles, illegal: boolean) {
-        this._op = op;
-        this._mode = mode;
-        this.opcode = opcode;
-        this._numBytes = numBytes;
-        this.minCycles = cycles;
-        this.illegal = illegal;
-    }
+  constructor(op: Op, mode: AddressingMode, opcode: number, numBytes: number, cycles: Cycles, illegal: boolean) {
+    this._op = op;
+    this._mode = mode;
+    this.opcode = opcode;
+    this._numBytes = numBytes;
+    this.minCycles = cycles;
+    this.illegal = illegal;
+  }
 
-    get op(): Op {
-        return this._op;
-    }
+  get op(): Op {
+    return this._op;
+  }
 
-    getBytes(): number[] {
-        return [this.opcode];
-    }
+  get mode(): AddressingMode {
+    return this._mode;
+  }
 
-    getLength(): number {
-        return this._numBytes;
-    }
+  getBytes(): number[] {
+    return [this.opcode];
+  }
 
-    get mode(): AddressingMode {
-        return this._mode;
-    }
+  getLength(): number {
+    return this._numBytes;
+  }
 }
 
 /** Represents the whole set of machine instructions. */
 class InstructionSet {
-    // note redundancy here, like all bad code, huddles behind the defense of performance,
-    // prematurely optimised as per root of all evil
-    private mnemonicToByte = new Map<string, number>([]);
-    private ops: Array<Op> = [];
-    private modes: Array<AddressingMode> = [];
-    /** The number of bytes in the instruction with the given opcode */
-    private bytes: Array<number> = [];
-    // noinspection JSMismatchedCollectionQueryUpdate
-    private cycles: Array<Cycles> = [];
-    private instructions: Array<Instruction> = [];
+  // note redundancy here, like all bad code, huddles behind the defense of performance,
+  // prematurely optimised as per root of all evil
+  private mnemonicToByte = new Map<string, number>([]);
+  private ops: Array<Op> = [];
+  private modes: Array<AddressingMode> = [];
+  /** The number of bytes in the instruction with the given opcode */
+  private bytes: Array<number> = [];
+  // noinspection JSMismatchedCollectionQueryUpdate
+  private cycles: Array<Cycles> = [];
+  private instructions: Array<Instruction> = [];
 
-    add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
-        const o = assertByte(opcode);
-        if (this.instructions[o]) {
-            throw Error("Instruction for this opcode already registered.");
-        }
-        if (bytes !== 0 && bytes !== 1 && bytes !== 2 && bytes !== 3) {
-            throw Error("number of bytes in an instruction should be only: 0,1,2 or 3");
-        }
-        this.mnemonicToByte.set(op.mnemonic, o);
-        this.ops[o] = op;
-        this.modes[o] = mode;
-        this.bytes[o] = bytes;
-        this.cycles[o] = cycles;
-        this.instructions[o] = new Instruction(op, mode, o, bytes, cycles, false);
+  add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
+    const o = assertByte(opcode);
+    if (this.instructions[o]) {
+      throw Error("Instruction for this opcode already registered.");
     }
+    if (bytes !== 0 && bytes !== 1 && bytes !== 2 && bytes !== 3) {
+      throw Error("number of bytes in an instruction should be only: 0,1,2 or 3");
+    }
+    this.mnemonicToByte.set(op.mnemonic, o);
+    this.ops[o] = op;
+    this.modes[o] = mode;
+    this.bytes[o] = bytes;
+    this.cycles[o] = cycles;
+    this.instructions[o] = new Instruction(op, mode, o, bytes, cycles, false);
+  }
 
-    op(opcode: number) {
-        return this.ops[assertByte(opcode)];
-    }
+  op(opcode: number) {
+    return this.ops[assertByte(opcode)];
+  }
 
-    // noinspection JSUnusedGlobalSymbols
-    mode(opcode: number) {
-        return this.modes[assertByte(opcode)];
-    }
+  // noinspection JSUnusedGlobalSymbols
+  mode(opcode: number) {
+    return this.modes[assertByte(opcode)];
+  }
 
-    numBytes(opcode: number) {
-        return this.bytes[assertByte(opcode)];
-    }
+  numBytes(opcode: number) {
+    return this.bytes[assertByte(opcode)];
+  }
 
-    instruction(opcode: number): Instruction {
-        return this.instructions[assertByte(opcode)];
-    }
+  instruction(opcode: number): Instruction {
+    return this.instructions[assertByte(opcode)];
+  }
 
-    instructionByName(mnemonic: string): Instruction | undefined {
-        return this.instructions.find(i => mnemonic === i.op.mnemonic);
-    }
+  instructionByName(mnemonic: string): Instruction | undefined {
+    return this.instructions.find(i => mnemonic === i.op.mnemonic);
+  }
 
-    all() {
-        // TODO finish implementing this weird thing
-        const builder: Builder = {
-            bytes: [] as number[],
-            add: {} as InstructionCall,
-            opMap: {},
-            build: () => [234]
-        };
-        this.ops.forEach(op => {
-            builder.opMap[op.mnemonic] = (args: number[]) => {
-                const instructionBytes = this.instructionByName(op.mnemonic)?.getBytes();
-                instructionBytes?.forEach(b => builder.bytes.push(b));
-                return builder;
-            };
-        })
-    }
+  all() {
+    // TODO finish implementing this weird thing
+    const builder: Builder = {
+      bytes: [] as number[],
+      add: {} as InstructionCall,
+      opMap: {},
+      build: () => [234]
+    };
+    this.ops.forEach(op => {
+      builder.opMap[op.mnemonic] = (args: number[]) => {
+        const instructionBytes = this.instructionByName(op.mnemonic)?.getBytes();
+        instructionBytes?.forEach(b => builder.bytes.push(b));
+        return builder;
+      };
+    })
+  }
 
 }
 
@@ -348,16 +348,16 @@ class InstructionSet {
  * Fluent builder for constructing binary programs
  */
 type Builder = {
-    bytes: number[],
-    add: InstructionCall,
-    // TODO looks way skuffed here
-    opMap: {[keyof: string]:(args: number[]) => Builder}
-    build: () => number[];
+  bytes: number[],
+  add: InstructionCall,
+  // TODO looks way skuffed here
+  opMap: { [keyof: string]: (args: number[]) => Builder }
+  build: () => number[];
 }
 
 type InstructionCall = (args: string[]) => void;
 
-type MachineCodeBuilder = {bytes: number[]; add: {[n: string]: InstructionCall}};
+type MachineCodeBuilder = { bytes: number[]; add: { [n: string]: InstructionCall } };
 
 // build the instruction set
 const I = new InstructionSet();
@@ -570,141 +570,141 @@ I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
 
 /** An instruction with operands. */
 class FullInstruction implements Byteable {
-    readonly instruction: Instruction;    // contains operand byte size
+  readonly instruction: Instruction;    // contains operand byte size
 
-    readonly firstByte: number;              // literal if defined by instruction
-    readonly secondByte: number;              // literal if defined by instruction
+  readonly firstByte: number;              // literal if defined by instruction
+  readonly secondByte: number;              // literal if defined by instruction
 
-    constructor(instruction: Instruction, lobyte: number, hibyte: number) {
-        this.instruction = instruction;
-        this.firstByte = assertByte(lobyte);
-        this.secondByte = assertByte(hibyte);
+  constructor(instruction: Instruction, lobyte: number, hibyte: number) {
+    this.instruction = instruction;
+    this.firstByte = assertByte(lobyte);
+    this.secondByte = assertByte(hibyte);
+  }
+
+  /** Gives the operand as a 16-bit little-endian number value. */
+  operand16 = () => (this.secondByte << 8) + this.firstByte;
+
+  getBytes(): number[] {
+    const i = this.instruction;
+    const opcode = i.getBytes()[0]
+    if (i.getLength() === 1) {
+      return [opcode];
     }
-
-    /** Gives the operand as a 16-bit little-endian number value. */
-    operand16 = () => (this.secondByte << 8) + this.firstByte;
-
-    getBytes(): number[] {
-        const i = this.instruction;
-        const opcode = i.getBytes()[0]
-        if (i.getLength() === 1) {
-            return [opcode];
-        }
-        if (i.getLength() === 2) {
-            return [opcode, this.firstByte];
-        }
-        if (i.getLength() === 3) {
-            return [opcode, this.firstByte, this.secondByte];
-        } else {
-            throw Error("more than 3 byte instruction?");
-        }
+    if (i.getLength() === 2) {
+      return [opcode, this.firstByte];
     }
-
-    getLength(): number {
-        return this.instruction.getLength();
+    if (i.getLength() === 3) {
+      return [opcode, this.firstByte, this.secondByte];
+    } else {
+      throw Error("more than 3 byte instruction?");
     }
+  }
 
-    /**
-     * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
-     * because those depend on the state of other memory locations or registers at execution time.
-     *
-     * Note: this method may be upgraded to receive a context of surrounding code such that analysis can resolve the
-     * operand using that additional context. For example if using x-register indexed directly after an instruction
-     * that sets the x register with an immediate value. There should also be a way to constrain the context by
-     * declaring the memory region of the context code to be readonly which rules out impossible dynamic scenarios like
-     * selfmod.
-     */
-    staticallyResolvableOperand(): boolean {
-        const m = this.instruction.mode;
-        return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
-    }
+  getLength(): number {
+    return this.instruction.getLength();
+  }
 
-    /**
-     * Resolve the operand as an address, if relevant, relative to the given program counter. This currently only
-     * supports static resolution, either pc-relative or absolute. Indexed and indirect modes depend on dynamic
-     * memory or register contents which, in some cases can be resolved with more context and flow-analysis and in the
-     * general case, is unknowable prior to runtime.
-     *
-     * If there is no operand, or it is not an address then the results are undefined.
-     *
-     * @param pc address to resolve to if this addressing mode is pc-relative.
-     */
-    resolveOperandAddress(pc: Addr): Addr {
-        const mode = this.instruction.mode;
-        if (mode === MODE_RELATIVE) {
-            if (mode.numOperandBytes !== 1) {
-                throw Error("assertion failure: relative mode always has single byte operand");
-            }
-            // relative operands are signed byte offset from PC
-            return pc + unToSigned(this.firstByte);
-        } else if (mode === MODE_ABSOLUTE || mode === MODE_IMMEDIATE) {
-            return this.operandValue();
-        }
-        // other modes have undefined behaviour
-        throw Error("undefined operand address");
-    }
+  /**
+   * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
+   * because those depend on the state of other memory locations or registers at execution time.
+   *
+   * Note: this method may be upgraded to receive a context of surrounding code such that analysis can resolve the
+   * operand using that additional context. For example if using x-register indexed directly after an instruction
+   * that sets the x register with an immediate value. There should also be a way to constrain the context by
+   * declaring the memory region of the context code to be readonly which rules out impossible dynamic scenarios like
+   * selfmod.
+   */
+  staticallyResolvableOperand(): boolean {
+    const m = this.instruction.mode;
+    return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
+  }
 
-    /**
-     * Returns the operand numeric value based solely on the number of bytes in the operand. Throws a fit if there
-     * are no operand bytes.
-     */
-    operandValue() {
-        if (this.instruction.mode.numOperandBytes === 1) {
-            return this.firstByte;
-        } else if (this.instruction.mode.numOperandBytes === 2) {
-            return this.operand16();
-        }
-        throw Error("no operand");
+  /**
+   * Resolve the operand as an address, if relevant, relative to the given program counter. This currently only
+   * supports static resolution, either pc-relative or absolute. Indexed and indirect modes depend on dynamic
+   * memory or register contents which, in some cases can be resolved with more context and flow-analysis and in the
+   * general case, is unknowable prior to runtime.
+   *
+   * If there is no operand, or it is not an address then the results are undefined.
+   *
+   * @param pc address to resolve to if this addressing mode is pc-relative.
+   */
+  resolveOperandAddress(pc: Addr): Addr {
+    const mode = this.instruction.mode;
+    if (mode === MODE_RELATIVE) {
+      if (mode.numOperandBytes !== 1) {
+        throw Error("assertion failure: relative mode always has single byte operand");
+      }
+      // relative operands are signed byte offset from PC
+      return pc + unToSigned(this.firstByte);
+    } else if (mode === MODE_ABSOLUTE || mode === MODE_IMMEDIATE) {
+      return this.operandValue();
     }
+    // other modes have undefined behaviour
+    throw Error("undefined operand address");
+  }
+
+  /**
+   * Returns the operand numeric value based solely on the number of bytes in the operand. Throws a fit if there
+   * are no operand bytes.
+   */
+  operandValue() {
+    if (this.instruction.mode.numOperandBytes === 1) {
+      return this.firstByte;
+    } else if (this.instruction.mode.numOperandBytes === 2) {
+      return this.operand16();
+    }
+    throw Error("no operand");
+  }
 }
 
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 {
-    static readonly INSTRUCTIONS = I;
+  static readonly INSTRUCTIONS = I;
 
-    static readonly STACK_LO = 0x0100;
-    static readonly STACK_HI = 0x01ff;
+  static readonly STACK_LO = 0x0100;
+  static readonly STACK_HI = 0x01ff;
 
-    // NMI (Non-Maskable Interrupt) vector, 16-bit (LB, HB)
-    static readonly VECTOR_NMI_LB = 0xfffa;
-    static readonly VECTOR_NMI_HB = 0xfffb;
+  // NMI (Non-Maskable Interrupt) vector, 16-bit (LB, HB)
+  static readonly VECTOR_NMI_LB = 0xfffa;
+  static readonly VECTOR_NMI_HB = 0xfffb;
 
-    // RES (Reset) vector, 16-bit (LB, HB)
-    static readonly VECTOR_RESET_LB = 0xfffc;
-    static readonly VECTOR_RESET_HB = 0xfffd;
+  // RES (Reset) vector, 16-bit (LB, HB)
+  static readonly VECTOR_RESET_LB = 0xfffc;
+  static readonly VECTOR_RESET_HB = 0xfffd;
 
-    //  IRQ (Interrupt Request) vector, 16-bit (LB, HB)
-    static readonly VECTOR_IRQ_LB = 0xfffe;
-    static readonly VECTOR_IRQ_HB = 0xffff;
+  //  IRQ (Interrupt Request) vector, 16-bit (LB, HB)
+  static readonly VECTOR_IRQ_LB = 0xfffe;
+  static readonly VECTOR_IRQ_HB = 0xffff;
 
-    static builder(): Builder {
+  static builder(): Builder {
 
-        // for each instruction,
-        // add a method with the mnemonic name that appends that instruction's bytes to its internal FileBlob
-        // and which takes the args as numeric parameters
-        return {} as Builder; // TODO implement this
-    }
+    // for each instruction,
+    // add a method with the mnemonic name that appends that instruction's bytes to its internal FileBlob
+    // and which takes the args as numeric parameters
+    return {} as Builder; // TODO implement this
+  }
 }
 
 export {
-    Mos6502,
-    Instruction,
-    FullInstruction,
-    InstructionSet,
-    MODE_ABSOLUTE,
-    MODE_IMPLIED,
-    MODE_ZEROPAGE,
-    MODE_IMMEDIATE,
-    MODE_RELATIVE,
-    MODE_ACCUMULATOR,
-    MODE_ABSOLUTE_X,
-    MODE_ABSOLUTE_Y,
-    MODE_ZEROPAGE_X,
-    MODE_INDIRECT_X,
-    MODE_INDIRECT_Y,
-    MODE_INDIRECT,
-    MODE_ZEROPAGE_Y,
-    AddressingMode,
+  Mos6502,
+  Instruction,
+  FullInstruction,
+  InstructionSet,
+  MODE_ABSOLUTE,
+  MODE_IMPLIED,
+  MODE_ZEROPAGE,
+  MODE_IMMEDIATE,
+  MODE_RELATIVE,
+  MODE_ACCUMULATOR,
+  MODE_ABSOLUTE_X,
+  MODE_ABSOLUTE_Y,
+  MODE_ZEROPAGE_X,
+  MODE_INDIRECT_X,
+  MODE_INDIRECT_Y,
+  MODE_INDIRECT,
+  MODE_ZEROPAGE_Y,
+  AddressingMode,
 };
 
 export type {OperandLength, InstructionCall}

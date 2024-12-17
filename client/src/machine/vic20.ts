@@ -90,8 +90,8 @@ const VIC20_CART_COLD_VECTOR_OFFSET = 2;
 const VIC20_CART_WARM_VECTOR_OFFSET = 4;
 
 const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
-    [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
-    [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
+  [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
+  [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
 
 /**
@@ -107,10 +107,10 @@ const VIC20_CART = new CartSniffer(
         VIC20_CART_COLD_VECTOR_OFFSET,
         2,
         [
-            new ByteDefinitionEdict(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
-            new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-            new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-            new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+          new ByteDefinitionEdict(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
+          new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+          new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+          new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], jumpTargetFetcher,
         VIC20_KERNAL
     )
@@ -118,11 +118,11 @@ const VIC20_CART = new CartSniffer(
 
 /** Common load addresses for machine language programs. */
 const COMMON_MLPS = [
-    prg([0x00, 0x40]),  // 0x4000
-    prg([0x00, 0x60]),  // 0x6000
-    prg([0x00, 0x80]),  // 0x8000
-    prg([0x00, 0xa0]),  // 0xa000
-    prg([0x00, 0xc0]),  // 0xc000
+  prg([0x00, 0x40]),  // 0x4000
+  prg([0x00, 0x60]),  // 0x6000
+  prg([0x00, 0x80]),  // 0x8000
+  prg([0x00, 0xa0]),  // 0xa000
+  prg([0x00, 0xc0]),  // 0xc000
 ];
 
 const VIC20_UNEX = new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded");
@@ -136,63 +136,63 @@ const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24
  */
 export class Vic20Basic implements BlobSniffer {
 
-    desc: string;
-    name: string;
-    tags: string[];
-    private memory: MemoryConfiguration;
+  desc: string;
+  name: string;
+  tags: string[];
+  private memory: MemoryConfiguration;
 
-    constructor(memory: MemoryConfiguration) {
-        this.memory = memory;
-        this.desc = `VIC-20 BASIC (${memory.shortName})`;
-        this.name = "BASIC prg";
-        this.tags = ["basic", "vic20", memory.shortName];
-    }
+  constructor(memory: MemoryConfiguration) {
+    this.memory = memory;
+    this.desc = `VIC-20 BASIC (${memory.shortName})`;
+    this.name = "BASIC prg";
+    this.tags = ["basic", "vic20", memory.shortName];
+  }
 
-    getMeta(): DisassemblyMeta {
-        return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
-    }
+  getMeta(): DisassemblyMeta {
+    return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
+  }
 
-    sniff(fb: FileBlob): number {
-        // check if the start address bytes match the basic load address for our MemoryConfiguration
-        const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicStart);
-        const byte1Match = fb.getBytes()[1] === msb(this.memory.basicStart);
-        let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
+  sniff(fb: FileBlob): number {
+    // check if the start address bytes match the basic load address for our MemoryConfiguration
+    const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicStart);
+    const byte1Match = fb.getBytes()[1] === msb(this.memory.basicStart);
+    let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
 
-        // try decoding it as basic
-        try {
-            const decoded = CBM_BASIC_2_0.decode(fb);
-            let lastNum = -1;
-            let lastAddr = -1;
-            decoded.getLines().forEach((ll: LogicalLine) => {
-                const i: Tag[] = ll.getTags();
-                const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
-                let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
-                if (lnumStr !== undefined && addrStr !== undefined) {
-                    let thisNum = parseInt(lnumStr.value);
-                    if (lastNum !== -1 && lastNum >= thisNum) {
-                        // decrease in basic line numbers
-                        console.log(`decrease in basic line numbers for ${fb.name}`)
-                        isBasic *= 0.5;
-                    }
-                    if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
-                        // next line address is allegedly lower? This ain't basic
-                        // eslint-disable-next-line no-template-curly-in-string
-                        console.log(`lower next line address for ${fb.name}`)
-                        isBasic *= 0.3;
-                    }
-                    lastNum = thisNum;
-                } else {
-                    // not a basic line
-                    // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
-                }
-            });
-        } catch (e) {
-            // if we exploded, it's not BASIC!
-            // console.error(e);
-            isBasic = 0.01;
+    // try decoding it as basic
+    try {
+      const decoded = CBM_BASIC_2_0.decode(fb);
+      let lastNum = -1;
+      let lastAddr = -1;
+      decoded.getLines().forEach((ll: LogicalLine) => {
+        const i: Tag[] = ll.getTags();
+        const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
+        let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
+        if (lnumStr !== undefined && addrStr !== undefined) {
+          let thisNum = parseInt(lnumStr.value);
+          if (lastNum !== -1 && lastNum >= thisNum) {
+            // decrease in basic line numbers
+            console.log(`decrease in basic line numbers for ${fb.name}`)
+            isBasic *= 0.5;
+          }
+          if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
+            // next line address is allegedly lower? This ain't basic
+            // eslint-disable-next-line no-template-curly-in-string
+            console.log(`lower next line address for ${fb.name}`)
+            isBasic *= 0.3;
+          }
+          lastNum = thisNum;
+        } else {
+          // not a basic line
+          // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
         }
-        return isBasic;
+      });
+    } catch (e) {
+      // if we exploded, it's not BASIC!
+      // console.error(e);
+      isBasic = 0.01;
     }
+    return isBasic;
+  }
 }
 
 const UNEXPANDED_VIC_BASIC = new Vic20Basic(VIC20_UNEX);
@@ -202,24 +202,24 @@ const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
 class Vic20 extends Computer {
-    constructor(memory: MemoryConfiguration) {
-        super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, ["vic20"]);
-    }
+  constructor(memory: MemoryConfiguration) {
+    super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, ["vic20"]);
+  }
 }
 
 export {
-    Vic20,
-    COMMON_MLPS,
-    VIC20_CART,
-    UNEXPANDED_VIC_BASIC,
-    EXP03K_VIC_BASIC,
-    EXP08K_VIC_BASIC,
-    EXP16K_VIC_BASIC,
-    EXP24K_VIC_BASIC,
-    VIC20_KERNAL,
-    VIC20_UNEX,
-    VIC20_EXP03K,
-    VIC20_EXP08K,
-    VIC20_EXP16K,
-    VIC20_EXP24K,
+  Vic20,
+  COMMON_MLPS,
+  VIC20_CART,
+  UNEXPANDED_VIC_BASIC,
+  EXP03K_VIC_BASIC,
+  EXP08K_VIC_BASIC,
+  EXP16K_VIC_BASIC,
+  EXP24K_VIC_BASIC,
+  VIC20_KERNAL,
+  VIC20_UNEX,
+  VIC20_EXP03K,
+  VIC20_EXP08K,
+  VIC20_EXP16K,
+  VIC20_EXP24K,
 }
