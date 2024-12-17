@@ -8,7 +8,6 @@
  * idioms may be recognised this same way across different code bases.
  */
 
-
 import {Endian, Memory} from "./core";
 import {Disassembler} from "./asm";
 import {Thread} from "./Thread.ts";
@@ -23,6 +22,8 @@ class Tracer {
 
   // TODO: identify self-mod code and refuse to trace it
   // TODO: identify code vs data. Data may be written to without causing self-mod.
+  // TODO: keep track of locations written to (data)
+  // TODO: keep track of locations visited (code)
   // TODO: a history of executed locations and their stacks(!), when revisiting with the same stack, kill that thread
   //          maybe we can only afford to do this for empty stacks? maybe certain small stacks of say 1 or 2 size?
   //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
@@ -49,6 +50,10 @@ class Tracer {
   }
 
   running(): any {
+    // if reached rts, not running
+    // if reached brk, not running
+    // if at visited instruction, not running
+    // if at written-to location, error & not running
     throw new Error("Method not implemented.");
   }
 
