@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// noinspection JSUnusedLocalSymbols
+
 /*
  MOS Technology 6502-family of 8-bit microprocessors.
 
@@ -334,7 +336,7 @@ class InstructionSet {
       build: () => [234]
     };
     this.ops.forEach(op => {
-      builder.opMap[op.mnemonic] = (args: number[]) => {
+      builder.opMap[op.mnemonic] = (_args: number[]) => {
         const instructionBytes = this.instructionByName(op.mnemonic)?.getBytes();
         instructionBytes?.forEach(b => builder.bytes.push(b));
         return builder;
