@@ -18,7 +18,7 @@ import {Thread} from "./Thread.ts";
  * following all theoretically reachable code paths from the entry point.
  *
  */
-class Tracerz {
+class Tracer {
   threads: Thread[] = [];
 
   // TODO: identify self-mod code and refuse to trace it
@@ -61,4 +61,4 @@ class Tracerz {
 
 }
 
-export {Tracerz};
+export {Tracer};

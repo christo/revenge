@@ -954,7 +954,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       contentStartOffset: number,
       edicts: Edict<Instructionish>[],
       getJumpTargets: JumpTargetFetcher,
-      symbolTable: SymbolTable
+      symbolTable: SymbolTable = new SymbolTable("default")
   ) {
 
     this._baseAddressOffset = baseAddressOffset;
