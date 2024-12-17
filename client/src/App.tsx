@@ -86,7 +86,7 @@ function DetailRenderer(props: { ae: ActionExecutor }) {
 
   window.addEventListener("popstate", (...args) => {
     console.log(`popstate: ${args}`);
-    debugger;
+    // debugger;
   });
   // when an address operand is clicked, try to find its destination in the view and if present scroll to it
   const handleClick = (data: [string, string][], addr: string) => {
