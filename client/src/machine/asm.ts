@@ -296,7 +296,7 @@ class Section {
     startOffset: number;
     length: number;
     writeable: boolean;
-    private sType: SectionType;
+    private readonly sType: SectionType;
 
     constructor(startOffset: number, length: number, writeable: boolean, sType?: SectionType) {
         this.startOffset = startOffset;
@@ -307,6 +307,10 @@ class Section {
 
     get endOffset() {
         return this.startOffset + this.length;
+    }
+
+    get sectionType() {
+        return this.sType;
     }
 }
 
