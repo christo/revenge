@@ -1,4 +1,5 @@
-import {unToSigned} from "./core";
+import {expect} from "chai";
+import {unToSigned} from "../../src/machine/core";
 
 /** Data-driven test of two's complement: input, expected output */
 const TC_DATA: [number, number][] = [
@@ -14,7 +15,7 @@ const TC_DATA: [number, number][] = [
 ];
 
 test('twos complement', () => {
-    TC_DATA.forEach(x => expect(unToSigned(x[0])).toBe(x[1]));
+    TC_DATA.forEach(x => expect(unToSigned(x[0])).eq(x[1]));
 });
 
 export {}

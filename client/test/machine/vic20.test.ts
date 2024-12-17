@@ -1,8 +1,9 @@
-import {TOKEN_PRINT, TOKEN_REM} from "./basic";
-import {Addr, LE} from "./core";
-import {FileBlob} from "./FileBlob";
-import {Petscii} from "./petscii";
-import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
+import {expect} from "chai";
+import {Addr, LE} from "../../src/machine/core";
+import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from "../../src/machine/vic20";
+import {TOKEN_PRINT, TOKEN_REM} from "../../src/machine/basic";
+import {FileBlob} from "../../src/machine/FileBlob";
+import {Petscii} from "../../src/machine/petscii";
 
 
 /**
@@ -15,18 +16,19 @@ import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from './vic20';
  * @return a tuple of line address and array of basic bytes according to the valid basic format
  */
 const basicLine = (addr: Addr, lineNumber: number, lineContents: number[]): [Addr, number[]] => {
-    const lineNumberBytes = LE.wordToTwoBytes(lineNumber);
-    const EOL_LENGTH = 1; // bytes in EOL value
-    const EOL_VALUE = 0;
-    const lineLength = lineNumberBytes.length + lineContents.length + EOL_LENGTH;
-    const nextLineAddress = addr + lineLength;
-    const nextLineBytes = LE.wordToTwoBytes(nextLineAddress);
-    const basicBytes = [nextLineBytes[0], nextLineBytes[1], lineNumberBytes[0], lineNumberBytes[1], ...lineContents, EOL_VALUE];
+  const lineNumberBytes = LE.wordToTwoBytes(lineNumber);
+  const EOL_LENGTH = 1; // bytes in EOL value
+  const EOL_VALUE = 0;
+  const lineLength = lineNumberBytes.length + lineContents.length + EOL_LENGTH;
+  const nextLineAddress = addr + lineLength;
+  const nextLineBytes = LE.wordToTwoBytes(nextLineAddress);
+  const basicBytes = [nextLineBytes[0], nextLineBytes[1], lineNumberBytes[0], lineNumberBytes[1], ...lineContents, EOL_VALUE];
 
-    return [nextLineAddress, basicBytes];
+  return [nextLineAddress, basicBytes];
 }
 
-test("sniff basic program consisting only of line: 0 PRINT", () => {
+describe("vic20", () => {
+  it("sniff basic program consisting only of line: 0 PRINT", () => {
     const VIC = new Vic20(VIC20_UNEX);
     const ba: number[] = [];
     const baseAddr = VIC20_UNEX.basicStart;
@@ -38,10 +40,10 @@ test("sniff basic program consisting only of line: 0 PRINT", () => {
 
     const fb: FileBlob = new FileBlob("basic-test", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
-    expect(score).toBeGreaterThan(1);   // this is a well-formed minimal basic program
-});
+    expect(score).gte(1);   // this is a well-formed minimal basic program
+  });
 
-test("sniff basic program with non-ascending line numbers", () => {
+  it("sniff basic program with non-ascending line numbers", () => {
     const VIC = new Vic20(VIC20_UNEX);
     const ba: number[] = [];
     VIC.pushWordBytes(ba, VIC20_UNEX.basicStart);
@@ -54,7 +56,8 @@ test("sniff basic program with non-ascending line numbers", () => {
 
     const fb: FileBlob = new FileBlob("basic-descending-lnums", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
-    expect(score).toBeLessThan(1);
+    expect(score).lt(1);
+  })
 });
 
-export {}
+export {};

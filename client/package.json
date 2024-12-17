@@ -22,6 +22,10 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.9",
+    "@types/chai": "^5.0.1",
+    "mocha": "^10.8.2",
+    "chai": "^5.1.2",
     "@eslint/js": "^9.9.0",
     "@types/prop-types": "^15.7.11",
     "@types/ramda": "^0.29.10",
