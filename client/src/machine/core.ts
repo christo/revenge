@@ -31,6 +31,8 @@ interface Byteable {
  */
 type Addr = number;
 
+const msb = (addr: Addr): number => (addr & 0xff00) >> 8;
+const lsb = (addr: Addr): number => addr & 0xff;
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
 const toStringArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
@@ -254,3 +256,4 @@ export {
 }
 
 export type {Byteable, Addr, Endian, Memory};
+export {msb, lsb};
