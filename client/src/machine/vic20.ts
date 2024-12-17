@@ -14,7 +14,7 @@ import {
 } from "./asm";
 import {CBM_BASIC_2_0} from "./basic";
 import {CartSniffer, prg} from "./cbm";
-import {ArrayMemory, KB_64, LE} from "./core";
+import {ArrayMemory, KB_64, LE, lsb, msb} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 
@@ -154,9 +154,9 @@ export class Vic20Basic implements BlobSniffer {
 
     sniff(fb: FileBlob): number {
         // check if the start address bytes match the basic load address for our MemoryConfiguration
-        const byte0 = fb.getBytes()[0] === (this.memory.basicStart & 0xff);
-        const byte1 = fb.getBytes()[1] === ((this.memory.basicStart & 0xff00) >> 8);
-        let isBasic = (byte0 && byte1) ? 1.2 : 0.8;
+        const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicStart);
+        const byte1Match = fb.getBytes()[1] === msb(this.memory.basicStart);
+        let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
 
         // try decoding it as basic
         try {
