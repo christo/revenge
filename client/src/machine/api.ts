@@ -22,17 +22,11 @@ class Tag {
     this.value = value;
   }
 
-  hasTag(s: string) {
-    return this.tags.find(x => x === s) !== undefined;
-  }
+  hasTag = (s: string) => this.tags.includes(s);
 
-  spacedTags() {
-    return this.tags.join(" ");
-  }
+  spacedTags = () => this.tags.join(" ");
 
-  hasTags(ts: string[]) {
-    return ts.every((t) => this.tags.includes(t));
-  }
+  hasTags = (ts: string[]) => ts.every((t) => this.tags.includes(t));
 }
 
 export const TAG_IN_BINARY = "inbinary";
