@@ -271,8 +271,8 @@ abstract class Computer {
         this._tags = tags;
     }
 
-    cpu() {
-        return this.cpu;
+    get cpu() {
+        return this._cpu;
     }
 
     memory() {
