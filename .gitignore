@@ -24,3 +24,5 @@ yarn-error.log*
 client/node_modules
 server/node_modules
 /client/ramdatest.js
+/server/dist/
+/client/dist/
