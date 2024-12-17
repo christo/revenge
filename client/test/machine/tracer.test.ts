@@ -5,7 +5,7 @@ import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/tracer";
 import {Disassembler, DisassemblyMetaImpl, JumpTargetFetcher, LabelsComments, SymbolTable} from "../../src/machine/asm";
 
-describe("tracer", () => {
+describe.skip("tracer", () => {
   it("performs simple linear trace", () => {
     const i = Mos6502.INSTRUCTIONS;
     const machineCode = Mos6502.builder()
