@@ -79,17 +79,11 @@ interface Endian {
 
 class LittleEndian implements Endian {
 
-    wordToByteArray(word: number) {
-        return new Uint8Array([word & 0xff, (word & 0xff00) >> 8]);
-    }
+    wordToByteArray = (word: number) => new Uint8Array([word & 0xff, (word & 0xff00) >> 8]);
 
-    twoBytesToWord(bytes: [number, number]): number {
-        return (bytes[1] << 8) + bytes[0];
-    }
+    twoBytesToWord = (bytes: [number, number]): number => (bytes[1] << 8) + bytes[0];
 
-    wordToTwoBytes(word: number): [number, number] {
-        return [word & 0xff, (word & 0xff00) >> 8];
-    }
+    wordToTwoBytes = (word: number): [number, number] => [word & 0xff, (word & 0xff00) >> 8];
 
     pushWordBytes(array: number[], word: number) {
         const w = this.wordToTwoBytes(word);
@@ -99,17 +93,11 @@ class LittleEndian implements Endian {
 
 class BigEndian implements Endian {
 
-    twoBytesToWord(bytes: [number, number]): number {
-        return (bytes[0] << 8) + bytes[1]
-    }
+    twoBytesToWord = (bytes: [number, number]): number => (bytes[0] << 8) + bytes[1];
 
-    wordToByteArray(word: number): Uint8Array {
-        return Uint8Array.from([(word & 0xff00) >> 8, word & 0xff]);
-    }
+    wordToByteArray = (word: number): Uint8Array => Uint8Array.from([(word & 0xff00) >> 8, word & 0xff]);
 
-    wordToTwoBytes(word: number): [number, number] {
-        return [(word & 0xff00) >> 8, word & 0xff];
-    }
+    wordToTwoBytes = (word: number): [number, number] => [(word & 0xff00) >> 8, word & 0xff];
 
     pushWordBytes(array: number[], word: number) {
         const w = this.wordToTwoBytes(word);
@@ -151,13 +139,13 @@ interface Memory<T extends Endian> {
  * Represents a contiguous, {@link Endian} Memory, backed by an array.
  */
 class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
-    private _bytes: number[];
+    private readonly _bytes: number[];
     private readonly endian: T;
 
     /** Arbitrary size, plenty for retro computers. */
     private static MAX: number = MB_8;
-    private _writeable: boolean;
-    private _executable: boolean;
+    private readonly _writeable: boolean;
+    private readonly _executable: boolean;
 
     /**
      * Construct with an array of values or a desired size.
@@ -186,21 +174,13 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         this.endian = endian;
     }
 
-    executable(): boolean {
-        return this._executable;
-    }
+    executable = (): boolean => this._executable;
 
-    writeable(): boolean {
-        return this._writeable;
-    }
+    writeable = (): boolean => this._writeable;
 
-    getLength(): number {
-        return this._bytes.length;
-    }
+    getLength = (): number => this._bytes.length;
 
-    getBytes() {
-        return this._bytes;
-    }
+    getBytes = () => this._bytes;
 
     submatch(seq: Uint8Array, atOffset: number): boolean {
         if (seq.length + atOffset <= this._bytes.length && seq.length > 0) {
@@ -233,13 +213,9 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         return this._bytes[byteOffset];
     }
 
-    endianness(): T {
-        return this.endian;
-    }
+    endianness = (): T => this.endian;
 
-    contains(location: Addr) {
-        return location >= 0 && location < this._bytes.length;
-    }
+    contains = (location: Addr) => location >= 0 && location < this._bytes.length;
 }
 
 /**
@@ -255,9 +231,7 @@ const unToSigned = (x: number): number => -(x & 0x80) + (x & 0x7f)
  *
  * @param b the bytes.
  */
-const asHex = (b: number[]) => {
-    return b.map(hex8).join(" ");
-}
+const asHex = (b: number[]) => b.map(hex8).join(" ")
 
 export {
     unToSigned,
