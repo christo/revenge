@@ -265,7 +265,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     const [error, setError] = useState<Error>();
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
-        axios.get("/quickloads", {})
+        axios.get("/api/quickloads", {})
             .then(r => {
                 setIsLoaded(true);
                 setItems(r.data);

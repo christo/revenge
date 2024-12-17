@@ -4,7 +4,7 @@
 # to my mind this is better than a readme
 
 all_good=1
-for e in npx node; do
+for e in npx node bun; do
   if [[ ! $(which "$e") ]]; then
     echo missing required executable: $e
     echo "   you should install that"

@@ -1,6 +1,5 @@
 import express from "express";
-import indexRouter from "./routes/index.js";
-import quickloadsRouter from "./routes/quickloads.js";
+import quickloadsRouter from "./routes/quickloads";
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
@@ -10,5 +9,5 @@ app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
 
-app.use('/', indexRouter);
-app.use('/quickloads', quickloadsRouter);
+// app.use('/', indexRouter);
+app.use('/api/quickloads', quickloadsRouter);
