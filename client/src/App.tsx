@@ -155,7 +155,7 @@ function FileDetail(props: { fb: FileBlob }) {
                 })}
             </div>
         </div>
-        <Tabs value={action} onChange={(event: React.SyntheticEvent, newValue: number) => {
+        <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => {
             setAction(newValue);
         }}>
             {typeActions.actions.map((a, i) => {
