@@ -2,7 +2,6 @@
 
 * [ ] migrate project to bun
 * [ ] migrate tests to mocha/chai
-## TODO
 
 * useful material icons:
   * ManageHistory (reverse engineering)
