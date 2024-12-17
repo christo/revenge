@@ -892,6 +892,9 @@ class VectorDefinitionEdict extends ByteDefinitionEdict {
 const mkLabels = (labels: string[] | string) => new LabelsComments(labels);
 const mkComments = (comments: string[] | string) => new LabelsComments([], comments);
 
+/**
+ * A collection of labels and comments.
+ */
 export class LabelsComments {
   private readonly _labels: string[];
   private readonly _comments: string[];
@@ -911,16 +914,18 @@ export class LabelsComments {
 
   longestLabel = () => this.labels.map(s => s.length).reduce((p, c) => p > c ? p : c);
 
-  addLabels(labels: string[] | string) {
+  addLabels(labels: string[] | string): void {
     toStringArray(labels).forEach(s => this._labels.push(s));
   }
 
-  addComments(comments: string[] | string) {
+  addComments(comments: string[] | string): void {
     toStringArray(comments).forEach(s => this._comments.push(s));
   }
 
-  /** Mutates this by adding all the given labels and comments; */
-  merge(lc: LabelsComments) {
+  /**
+   * Mutates this by adding all the given labels and comments
+   */
+  merge(lc: LabelsComments): void {
     this.addLabels(lc._labels);
     this.addComments(lc._comments);
   }
