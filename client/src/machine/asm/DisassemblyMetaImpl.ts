@@ -22,7 +22,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /**
    * Create context with minimalist defaults.
-   * @param baseAddressOffset offset in bytes in which to find start address, defaults to 0.
+   * @param baseAddressOffset memory address to load into.
    * @param resetVectorOffset reset vector, defaults to baseAddressOffset
    * @param contentStartOffset start of content, defaults to baseAddressOffset
    * @param edicts any predefined edicts for disassembly, defaults to empty

@@ -39,7 +39,7 @@ interface DisassemblyMeta {
   getEdict(offset: number): Edict<InstructionLike> | undefined;
 
   /**
-   * Return a list of address + LabelsComments
+   * Return a list of address + LabelsComments to use for address aliases
    */
   getJumpTargets(fb: FileBlob): [Addr, LabelsComments][];
 

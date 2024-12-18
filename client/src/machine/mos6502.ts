@@ -262,6 +262,10 @@ class Instruction {
     this.illegal = illegal;
   }
 
+  toString(): string {
+    return `${this.op.mnemonic}:${this._mode}/${this._numBytes}`;
+  }
+
   get op(): Op {
     return this._op;
   }
@@ -333,7 +337,7 @@ class InstructionSet {
    */
   byName(mnemonic: string): Instruction | undefined {
     const m = mnemonic.toUpperCase();
-    return this.instructions.find(i => m === i.op.mnemonic);
+    return this.instructions.find(i => i && i.op.mnemonic.toUpperCase() === m);
   }
 
   all() {
@@ -373,210 +377,212 @@ type MachineCodeBuilder = { bytes: number[]; add: { [n: string]: InstructionCall
 // build the instruction set
 const I = new InstructionSet();
 
-// TODO should this be driven by a vanilla data file?
+const FIXED = Cycles.FIXED;
+const BRANCH = Cycles.BRANCH;
+const XPAGE = Cycles.XPAGE;
 
 // ADC
-I.add(0x69, ADC, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0x65, ADC, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x75, ADC, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x6d, ADC, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x7d, ADC, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0x79, ADC, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0x61, ADC, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0x71, ADC, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0x69, ADC, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0x65, ADC, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x75, ADC, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x6d, ADC, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x7d, ADC, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0x79, ADC, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0x61, ADC, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0x71, ADC, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // AND
-I.add(0x29, AND, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0x25, AND, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x35, AND, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x2d, AND, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x3d, AND, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0x39, AND, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0x21, AND, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0x31, AND, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0x29, AND, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0x25, AND, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x35, AND, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x2d, AND, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x3d, AND, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0x39, AND, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0x21, AND, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0x31, AND, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // ASL
-I.add(0x0a, ASL, MODE_ACCUMULATOR, 1, Cycles.FIXED(2));
-I.add(0x06, ASL, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0x16, ASL, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0x0e, ASL, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0x1e, ASL, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0x0a, ASL, MODE_ACCUMULATOR, 1, FIXED(2));
+I.add(0x06, ASL, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0x16, ASL, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0x0e, ASL, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0x1e, ASL, MODE_ABSOLUTE_X, 3, FIXED(7));
 
-I.add(0x90, BCC, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0xb0, BCS, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0xf0, BEQ, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0x24, BIT, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x2c, BIT, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x30, BMI, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0xd0, BNE, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0x10, BPL, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0x00, BRK, MODE_IMPLIED, 1, Cycles.FIXED(7));
-I.add(0x50, BVC, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0x70, BVS, MODE_RELATIVE, 2, Cycles.BRANCH(2));
-I.add(0x18, CLC, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xd8, CLD, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x58, CLI, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xb8, CLV, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0x90, BCC, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0xb0, BCS, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0xf0, BEQ, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0x24, BIT, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x2c, BIT, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x30, BMI, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0xd0, BNE, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0x10, BPL, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0x00, BRK, MODE_IMPLIED, 1, FIXED(7));
+I.add(0x50, BVC, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0x70, BVS, MODE_RELATIVE, 2, BRANCH(2));
+I.add(0x18, CLC, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xd8, CLD, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x58, CLI, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xb8, CLV, MODE_IMPLIED, 1, FIXED(2));
 
 // CMP
-I.add(0xc9, CMP, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xc5, CMP, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xd5, CMP, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0xcd, CMP, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0xdd, CMP, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0xd9, CMP, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0xc1, CMP, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0xd1, CMP, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0xc9, CMP, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xc5, CMP, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xd5, CMP, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0xcd, CMP, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0xdd, CMP, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0xd9, CMP, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0xc1, CMP, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0xd1, CMP, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // CPX
-I.add(0xe0, CPX, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xe4, CPX, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xec, CPX, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
+I.add(0xe0, CPX, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xe4, CPX, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xec, CPX, MODE_ABSOLUTE, 3, FIXED(4));
 
 // CPY
-I.add(0xc0, CPY, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xc4, CPY, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xcc, CPY, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
+I.add(0xc0, CPY, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xc4, CPY, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xcc, CPY, MODE_ABSOLUTE, 3, FIXED(4));
 
 // DEC
-I.add(0xc6, DEC, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0xd6, DEC, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0xce, DEC, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0xde, DEC, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0xc6, DEC, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0xd6, DEC, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0xce, DEC, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0xde, DEC, MODE_ABSOLUTE_X, 3, FIXED(7));
 
 // DE*
-I.add(0xca, DEX, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x88, DEY, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0xca, DEX, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x88, DEY, MODE_IMPLIED, 1, FIXED(2));
 
 // EOR
-I.add(0x49, EOR, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0x45, EOR, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x55, EOR, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x4d, EOR, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x5d, EOR, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0x59, EOR, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0x41, EOR, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0x51, EOR, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0x49, EOR, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0x45, EOR, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x55, EOR, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x4d, EOR, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x5d, EOR, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0x59, EOR, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0x41, EOR, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0x51, EOR, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // INC
-I.add(0xe6, INC, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0xf6, INC, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0xee, INC, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0xfe, INC, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0xe6, INC, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0xf6, INC, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0xee, INC, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0xfe, INC, MODE_ABSOLUTE_X, 3, FIXED(7));
 
 // IN*
-I.add(0xe8, INX, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xc8, INY, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0xe8, INX, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xc8, INY, MODE_IMPLIED, 1, FIXED(2));
 
-I.add(0x4c, JMP, MODE_ABSOLUTE, 3, Cycles.FIXED(3));
-I.add(0x6c, JMP, MODE_INDIRECT, 3, Cycles.FIXED(5));
-I.add(0x20, JSR, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
+I.add(0x4c, JMP, MODE_ABSOLUTE, 3, FIXED(3));
+I.add(0x6c, JMP, MODE_INDIRECT, 3, FIXED(5));
+I.add(0x20, JSR, MODE_ABSOLUTE, 3, FIXED(6));
 
 // LDA
-I.add(0xa9, LDA, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xa5, LDA, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xb5, LDA, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0xad, LDA, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0xbd, LDA, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0xb9, LDA, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0xa1, LDA, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0xb1, LDA, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0xa9, LDA, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xa5, LDA, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xb5, LDA, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0xad, LDA, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0xbd, LDA, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0xb9, LDA, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0xa1, LDA, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0xb1, LDA, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // LDX
-I.add(0xa2, LDX, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xa6, LDX, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xb6, LDX, MODE_ZEROPAGE_Y, 2, Cycles.FIXED(4));
-I.add(0xae, LDX, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0xbe, LDX, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
+I.add(0xa2, LDX, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xa6, LDX, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xb6, LDX, MODE_ZEROPAGE_Y, 2, FIXED(4));
+I.add(0xae, LDX, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0xbe, LDX, MODE_ABSOLUTE_Y, 3, XPAGE(4));
 
 // LDY
-I.add(0xa0, LDY, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xa4, LDY, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xb4, LDY, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0xac, LDY, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0xbc, LDY, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
+I.add(0xa0, LDY, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xa4, LDY, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xb4, LDY, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0xac, LDY, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0xbc, LDY, MODE_ABSOLUTE_X, 3, XPAGE(4));
 
 // LSR
-I.add(0x4a, LSR, MODE_ACCUMULATOR, 1, Cycles.FIXED(2));
-I.add(0x46, LSR, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0x56, LSR, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0x4e, LSR, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0x5e, LSR, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0x4a, LSR, MODE_ACCUMULATOR, 1, FIXED(2));
+I.add(0x46, LSR, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0x56, LSR, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0x4e, LSR, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0x5e, LSR, MODE_ABSOLUTE_X, 3, FIXED(7));
 
-I.add(0xea, NOP, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0xea, NOP, MODE_IMPLIED, 1, FIXED(2));
 
 // ORA
-I.add(0x09, ORA, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0x05, ORA, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x15, ORA, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x0d, ORA, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x1d, ORA, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0x19, ORA, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0x01, ORA, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0x11, ORA, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0x09, ORA, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0x05, ORA, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x15, ORA, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x0d, ORA, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x1d, ORA, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0x19, ORA, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0x01, ORA, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0x11, ORA, MODE_INDIRECT_Y, 2, XPAGE(5));
 
 // stack ops
-I.add(0x48, PHA, MODE_IMPLIED, 1, Cycles.FIXED(3));
-I.add(0x08, PHP, MODE_IMPLIED, 1, Cycles.FIXED(3));
-I.add(0x68, PLA, MODE_IMPLIED, 1, Cycles.FIXED(4));
-I.add(0x28, PLP, MODE_IMPLIED, 1, Cycles.FIXED(4));
+I.add(0x48, PHA, MODE_IMPLIED, 1, FIXED(3));
+I.add(0x08, PHP, MODE_IMPLIED, 1, FIXED(3));
+I.add(0x68, PLA, MODE_IMPLIED, 1, FIXED(4));
+I.add(0x28, PLP, MODE_IMPLIED, 1, FIXED(4));
 
 // ROL
-I.add(0x2a, ROL, MODE_ACCUMULATOR, 1, Cycles.FIXED(2));
-I.add(0x26, ROL, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0x36, ROL, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0x2e, ROL, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0x3e, ROL, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0x2a, ROL, MODE_ACCUMULATOR, 1, FIXED(2));
+I.add(0x26, ROL, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0x36, ROL, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0x2e, ROL, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0x3e, ROL, MODE_ABSOLUTE_X, 3, FIXED(7));
 
 // ROR
-I.add(0x6a, ROR, MODE_ACCUMULATOR, 1, Cycles.FIXED(2));
-I.add(0x66, ROR, MODE_ZEROPAGE, 2, Cycles.FIXED(5));
-I.add(0x76, ROR, MODE_ZEROPAGE_X, 2, Cycles.FIXED(6));
-I.add(0x6e, ROR, MODE_ABSOLUTE, 3, Cycles.FIXED(6));
-I.add(0x7e, ROR, MODE_ABSOLUTE_X, 3, Cycles.FIXED(7));
+I.add(0x6a, ROR, MODE_ACCUMULATOR, 1, FIXED(2));
+I.add(0x66, ROR, MODE_ZEROPAGE, 2, FIXED(5));
+I.add(0x76, ROR, MODE_ZEROPAGE_X, 2, FIXED(6));
+I.add(0x6e, ROR, MODE_ABSOLUTE, 3, FIXED(6));
+I.add(0x7e, ROR, MODE_ABSOLUTE_X, 3, FIXED(7));
 
-I.add(0x40, RTI, MODE_IMPLIED, 1, Cycles.FIXED(6));
-I.add(0x60, RTS, MODE_IMPLIED, 1, Cycles.FIXED(6));
+I.add(0x40, RTI, MODE_IMPLIED, 1, FIXED(6));
+I.add(0x60, RTS, MODE_IMPLIED, 1, FIXED(6));
 
 // SBC
-I.add(0xe9, SBC, MODE_IMMEDIATE, 2, Cycles.FIXED(2));
-I.add(0xe5, SBC, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0xf5, SBC, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0xed, SBC, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0xfd, SBC, MODE_ABSOLUTE_X, 3, Cycles.XPAGE(4));
-I.add(0xf9, SBC, MODE_ABSOLUTE_Y, 3, Cycles.XPAGE(4));
-I.add(0xe1, SBC, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0xf1, SBC, MODE_INDIRECT_Y, 2, Cycles.XPAGE(5));
+I.add(0xe9, SBC, MODE_IMMEDIATE, 2, FIXED(2));
+I.add(0xe5, SBC, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0xf5, SBC, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0xed, SBC, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0xfd, SBC, MODE_ABSOLUTE_X, 3, XPAGE(4));
+I.add(0xf9, SBC, MODE_ABSOLUTE_Y, 3, XPAGE(4));
+I.add(0xe1, SBC, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0xf1, SBC, MODE_INDIRECT_Y, 2, XPAGE(5));
 
-I.add(0x38, SEC, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xf8, SED, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x78, SEI, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0x38, SEC, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xf8, SED, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x78, SEI, MODE_IMPLIED, 1, FIXED(2));
 
 // STA
-I.add(0x85, STA, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x95, STA, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x8d, STA, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
-I.add(0x9d, STA, MODE_ABSOLUTE_X, 3, Cycles.FIXED(5));
-I.add(0x99, STA, MODE_ABSOLUTE_Y, 3, Cycles.FIXED(5));
-I.add(0x81, STA, MODE_INDIRECT_X, 2, Cycles.FIXED(6));
-I.add(0x91, STA, MODE_INDIRECT_Y, 2, Cycles.FIXED(6));
+I.add(0x85, STA, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x95, STA, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x8d, STA, MODE_ABSOLUTE, 3, FIXED(4));
+I.add(0x9d, STA, MODE_ABSOLUTE_X, 3, FIXED(5));
+I.add(0x99, STA, MODE_ABSOLUTE_Y, 3, FIXED(5));
+I.add(0x81, STA, MODE_INDIRECT_X, 2, FIXED(6));
+I.add(0x91, STA, MODE_INDIRECT_Y, 2, FIXED(6));
 
 // STX
-I.add(0x86, STX, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x96, STX, MODE_ZEROPAGE_Y, 2, Cycles.FIXED(4));
-I.add(0x8e, STX, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
+I.add(0x86, STX, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x96, STX, MODE_ZEROPAGE_Y, 2, FIXED(4));
+I.add(0x8e, STX, MODE_ABSOLUTE, 3, FIXED(4));
 
 // LDY
-I.add(0x84, STY, MODE_ZEROPAGE, 2, Cycles.FIXED(3));
-I.add(0x94, STY, MODE_ZEROPAGE_X, 2, Cycles.FIXED(4));
-I.add(0x8c, STY, MODE_ABSOLUTE, 3, Cycles.FIXED(4));
+I.add(0x84, STY, MODE_ZEROPAGE, 2, FIXED(3));
+I.add(0x94, STY, MODE_ZEROPAGE_X, 2, FIXED(4));
+I.add(0x8c, STY, MODE_ABSOLUTE, 3, FIXED(4));
 
-I.add(0xaa, TAX, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xa8, TAY, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0xba, TSX, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x8a, TXA, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x9a, TXS, MODE_IMPLIED, 1, Cycles.FIXED(2));
-I.add(0x98, TYA, MODE_IMPLIED, 1, Cycles.FIXED(2));
+I.add(0xaa, TAX, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xa8, TAY, MODE_IMPLIED, 1, FIXED(2));
+I.add(0xba, TSX, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x8a, TXA, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x9a, TXS, MODE_IMPLIED, 1, FIXED(2));
+I.add(0x98, TYA, MODE_IMPLIED, 1, FIXED(2));
 
 
 /** An instruction with operands. */

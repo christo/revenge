@@ -1,21 +1,15 @@
-import {assert, expect} from 'chai';
-import {FileBlob} from "../../src/machine/FileBlob";
-import {ArrayMemory, LE} from "../../src/machine/core";
+import {expect} from 'chai';
 import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
-import {Disassembler} from "../../src/machine/asm/Disassembler";
-import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {JumpTargetFetcher, LabelsComments} from "../../src/machine/asm/asm";
+import {createDisassembler, machineCode, mem} from "./util";
 
 describe("tracer", () => {
-  it("stops at break", () => {
+  it("runs then stops at BRK", () => {
     const machineCode: number[] = [
-        0, 0, // base address 0x0000
-        ...Mos6502.ISA.byName("BRK").getBytes(),
+      0, 0, // base address 0x0000
+      ...Mos6502.ISA.byName("BRK").getBytes(),
     ];
-    const fb = new FileBlob("testblob", machineCode, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
-    const d = new Disassembler(Mos6502.ISA, fb, dm);
+    const d = createDisassembler(machineCode, 2);
     const t = new Tracer(d, 0, mem(machineCode));
     expect(t.threads.length == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
@@ -23,15 +17,31 @@ describe("tracer", () => {
     expect(!t.running(), "tracer should be stopped after hitting break");
     expect(t.threads.length == 1, "should end with 1 thread");
   });
+
+  it("records executed locations", () => {
+    const bytes: number[] = [
+      0, 0, // base address 0x0000
+      ...machineCode(["NOP", "NOP", "BRK"])
+    ];
+    console.log(bytes);
+    const d = createDisassembler(bytes, 2);
+    const t = new Tracer(d, 2, mem(bytes));
+    expect(t.executed().length === 0, "should have executed none");
+    t.step();
+    expect(t.executed().length === 1);
+    let executed = t.executed();
+    console.log(executed);
+    expect(executed).to.have.members([2]);
+    t.step();
+    expect(t.executed().length === 2);
+    executed = t.executed();
+    expect(executed).to.have.members([2, 3]);
+    expect(t.running());
+    t.step();
+    expect(!t.running());
+    executed = t.executed();
+    expect(executed).to.have.members([2, 3, 4]);
+  });
 });
-
-function mem(contents: number[]) {
-  return new ArrayMemory(contents, LE, true, true);
-}
-
-const fakeJumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => {
-  return [[123, new LabelsComments()]]
-}
-
 
 export {};

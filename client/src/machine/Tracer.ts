@@ -49,9 +49,19 @@ class Tracer {
     this.threads.push(new Thread("root", disasm, pc, memory));
   }
 
-  running(): any {
+  running(): boolean {
     // delegate to threads
     return 0 < this.threads.filter((thread: Thread) => thread.running).length;
+  }
+
+  executed(): Array<number> {
+    const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getExecuted()]));
+    return Array.from(set.keys()).sort();
+  }
+
+  written(): Array<number> {
+    const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getWritten()]));
+    return Array.from(set.keys()).sort();
   }
 
   /**
@@ -60,6 +70,7 @@ class Tracer {
   step() {
     this.threads.filter((t) => t.running).forEach((t) => {
       try {
+        console.log("stepping tracer");
         t.step();
       } catch (e) {
         console.error(`${t.descriptor} had error`, e);

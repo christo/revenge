@@ -8,8 +8,8 @@ export class Thread {
   private readonly disasm: Disassembler;
   /** This should be immutable */
   private readonly memory: Memory<Endian>;
-  private readonly executed: boolean[];
-  private readonly written: boolean[];
+  private readonly executed: Array<number>;
+  private readonly written: Array<number>;
   private pc: number;
   readonly descriptor: string;
 
@@ -64,10 +64,11 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
+    console.log(`stepping ${this.descriptor}`);
     this.execute();
-
-    // TODO need to keep a record of all visited memory locations so that we can decide to end this thread if we
-    //  reach one of them (only 80% certain this assumption contains no caveats apart from self-mod)
+    this.executed.push(this.pc++);
+    console.log(`end of step ${this.descriptor} at ${this.pc}`);
+    console.log(`executed: ${this.executed}`);
   }
 
   /**
@@ -79,6 +80,7 @@ export class Thread {
    * If an branching instruction occurs, the new {@link Thread} is returned, otherwise undefined.
    */
   private execute(): Thread | undefined {
+    console.log(`executing: ${this.descriptor}`);
     // TODO disassemble instruction at PC
 
 
@@ -96,5 +98,13 @@ export class Thread {
     //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
     //  degenerate runtime state is represented.
     return undefined;
+  }
+
+  getExecuted(): Array<number> {
+    return [...this.executed];
+  }
+
+  getWritten(): Array<number> {
+    return [...this.written];
   }
 }

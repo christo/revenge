@@ -15,14 +15,21 @@ import {Petscii} from "../../src/machine/petscii";
  * @param lineContents valid basic line contents, token bytes or petscii bytes
  * @return a tuple of line address and array of basic bytes according to the valid basic format
  */
-const basicLine = (addr: Addr, lineNumber: number, lineContents: number[]): [Addr, number[]] => {
+function basicLine(addr: Addr, lineNumber: number, lineContents: number[]): [Addr, number[]] {
   const lineNumberBytes = LE.wordToTwoBytes(lineNumber);
   const EOL_LENGTH = 1; // bytes in EOL value
   const EOL_VALUE = 0;
   const lineLength = lineNumberBytes.length + lineContents.length + EOL_LENGTH;
   const nextLineAddress = addr + lineLength;
   const nextLineBytes = LE.wordToTwoBytes(nextLineAddress);
-  const basicBytes = [nextLineBytes[0], nextLineBytes[1], lineNumberBytes[0], lineNumberBytes[1], ...lineContents, EOL_VALUE];
+  const basicBytes = [
+    nextLineBytes[0],
+    nextLineBytes[1],
+    lineNumberBytes[0],
+    lineNumberBytes[1],
+    ...lineContents,
+    EOL_VALUE
+  ];
 
   return [nextLineAddress, basicBytes];
 }
