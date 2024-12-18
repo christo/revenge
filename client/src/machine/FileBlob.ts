@@ -60,7 +60,7 @@ class FileBlob implements Byteable {
     return f(this.name).endsWith("." + f(ext));
   }
 
-  read8(offset: Addr) {
+  read8(offset: Addr): number {
     return this.memory.read8(offset);
   }
 }

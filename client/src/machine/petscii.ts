@@ -1,16 +1,19 @@
 class Petscii {
 
   static C64: Petscii = Petscii.makeC64();
+
   /**
    * Byte-value-indexed array of character or printable form the way VICE does it.
    */
   vice: string[] = [];
+
   /**
-   * Byte-value indexed array of unicode character equivalent. May be empty if no char makes sense.
+   * Byte-value indexed array of Unicode character equivalent. May be empty if no char makes sense.
    */
   unicode: string[] = [];
+
   /**
-   * Description of the character or the unicode if .
+   * Description of the character or the Unicode if .
    */
   description: string[] = [];
 
@@ -307,7 +310,7 @@ class Petscii {
    *
    * @param byte the byte value
    * @param vice the commonly used vice printable string
-   * @param unicode the unicode equivalent character (approximates graphics), defaults to vice.
+   * @param unicode the Unicode equivalent character (approximates graphics), defaults to vice.
    * @param description explanation of the meaning of the character, defaults to unicode.
    */
   private reg(byte: number, vice: string, unicode?: string, description?: string) {

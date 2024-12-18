@@ -9,7 +9,7 @@
 
  */
 
-import {Addr, assertByte, Byteable, unToSigned} from "./core";
+import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
 
 type OperandLength = 0 | 1 | 2;
 
@@ -18,7 +18,7 @@ class AddressingMode {
   desc: string;
   template: string;
   blurb: string
-  numOperandBytes: 0 | 1 | 2;
+  numOperandBytes: OperandLength;
 
   /**
    * Make an addressing mode using all the goodies.

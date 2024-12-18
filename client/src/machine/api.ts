@@ -1,9 +1,9 @@
-import {BlobSniffer} from "./asm/BlobSniffer.ts";
 import {Addr, BigEndian, hex8, LittleEndian, Memory} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 import {InstructionLike} from "./asm/instructions.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
+import {BlobSniffer} from "./BlobSniffer.ts";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
@@ -213,6 +213,7 @@ abstract class Computer {
   private readonly _memoryConfig: MemoryConfiguration;
   private readonly _name: string;
   private readonly _tags: string[];
+  private readonly _cpu: Mos6502;
 
   protected constructor(
       name: string,
@@ -226,8 +227,6 @@ abstract class Computer {
     this._memoryConfig = memoryConfig;
     this._tags = tags;
   }
-
-  private readonly _cpu: Mos6502;
 
   get cpu() {
     return this._cpu;
@@ -253,7 +252,6 @@ abstract class Computer {
 
 export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer};
 export type {
-  TagSeq,
   ActionExecutor,
   BlobToActions,
   ActionFunction,

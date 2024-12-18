@@ -2,14 +2,14 @@
 // noinspection JSUnusedLocalSymbols
 
 
-import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
-import {CartSniffer} from "./cbm";
-import {ArrayMemory, KB_64, LE} from "./core";
-import {FileBlob} from "./FileBlob";
-import {Mos6502} from "./mos6502";
-import {Petscii} from "./petscii";
-import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl";
-import {BlobType} from "./asm/BlobType.ts";
+import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api.ts";
+import {CartSniffer} from "./cbm.ts";
+import {ArrayMemory, KB_64, LE} from "./core.ts";
+import {FileBlob} from "./FileBlob.ts";
+import {Mos6502} from "./mos6502.ts";
+import {Petscii} from "./petscii.ts";
+import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
+import {BlobType} from "./BlobType.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "./asm/instructions.ts";
 import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "./asm/asm.ts";
 

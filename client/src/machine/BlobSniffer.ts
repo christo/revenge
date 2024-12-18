@@ -1,6 +1,6 @@
-import {FileBlob} from "../FileBlob.ts";
+import {FileBlob} from "./FileBlob.ts";
 
-import {DisassemblyMeta} from "./DisassemblyMeta.ts";
+import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 
 /**
  * Abstraction for scoring relative confidence in file content categorisation.

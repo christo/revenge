@@ -9,8 +9,8 @@ import {Mos6502} from "./mos6502";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl";
 import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "./asm/asm.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "./asm/instructions.ts";
-import {BlobSniffer} from "./asm/BlobSniffer.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
+import {BlobSniffer} from "./BlobSniffer.ts";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 

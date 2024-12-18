@@ -1,29 +1,27 @@
 // Shared Commodore 8-bit machine stuff
 
 import {
-    ActionFunction,
-    Detail,
-    hexDumper,
-    LogicalLine,
-    Tag,
-    TAG_ADDRESS,
-    TAG_HEX,
-    TAG_LINE,
-    UserAction
-} from "./api";
-import {
-    Environment,
-} from "./asm/asm.ts";
-import {CBM_BASIC_2_0} from "./basic";
-import {asHex, hex16, hex8} from "./core";
-import {FileBlob} from "./FileBlob";
-import {Mos6502} from "./mos6502";
+  ActionFunction,
+  Detail,
+  hexDumper,
+  LogicalLine,
+  Tag,
+  TAG_ADDRESS,
+  TAG_HEX,
+  TAG_LINE,
+  UserAction
+} from "./api.ts";
+import {Environment,} from "./asm/asm.ts";
+import {CBM_BASIC_2_0} from "./basic.ts";
+import {asHex, hex16, hex8} from "./core.ts";
+import {FileBlob} from "./FileBlob.ts";
+import {Mos6502} from "./mos6502.ts";
 import {DataViewImpl} from "./DataView.ts";
-import {BlobSniffer} from "./asm/BlobSniffer.ts";
+import {BlobSniffer} from "./BlobSniffer.ts";
 import {DefaultDialect} from "./asm/DefaultDialect.ts";
 import {Disassembler} from "./asm/Disassembler.ts";
 import {Directive, InstructionLike, PcAssign} from "./asm/instructions.ts";
-import {BlobType} from "./asm/BlobType.ts";
+import {BlobType} from "./BlobType.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 
 /**

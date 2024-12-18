@@ -1,10 +1,9 @@
 // assembler / disassembler stuff - 6502-specific
 // noinspection JSUnusedGlobalSymbols
 
-import {Tag} from "../api";
-
-import {Addr, TODO, toStringArray} from "../core";
-import {FileBlob} from "../FileBlob";
+import {Tag} from "../api.ts";
+import {Addr, TODO, toStringArray} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
 import {SymDef} from "./instructions.ts";
 
 /**
@@ -113,7 +112,7 @@ enum SymbolType {
   /**
    * Subroutine symbol.
    */
-  "sub"
+      "sub"
 }
 
 /**

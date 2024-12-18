@@ -11,8 +11,6 @@ export class Thread {
   private readonly executed: boolean[];
   private readonly written: boolean[];
   private pc: number;
-  private _running: boolean;
-
 
   /**
    * Starts in running mode.
@@ -32,6 +30,8 @@ export class Thread {
     this.written = [];
   }
 
+  private _running: boolean;
+
   /**
    * We might have executed a break instruction previously, in which case we are no longer running.
    * @return true only if can take another step.
@@ -39,7 +39,6 @@ export class Thread {
   get running(): boolean {
     return this._running;
   }
-
 
 
   /**

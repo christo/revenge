@@ -178,14 +178,12 @@ class Disassembler {
         .filter(this.addressInRange);                       // only those in range of the loaded binary
   };
 
-  getSymbol(addr: Addr): SymDef | undefined {
-    return this.disMeta.getSymbolTable().byAddress(addr);
-  }
+  getSymbol = (addr: Addr): SymDef | undefined => this.disMeta.getSymbolTable().byAddress(addr);
 
   /** Keeps a record of a used symbol that must be added to the source output. */
-  addSymbolDefinition(symbol: SymDef) {
+  addSymbolDefinition = (symbol: SymDef) => {
     this.symbolDefinitions.set(symbol.name, symbol);
-  }
+  };
 
   /**
    * Adds to the value of the named statistic. If it's a new stat, first initialises it to zero.
@@ -237,7 +235,7 @@ class Disassembler {
    * @deprecated side effect
    * @private
    */
-  private eatByte() {
+  private eatByte(): number {
     const value = this.fb.read8(this.currentIndex++); // side effect
     if (typeof value === "undefined") {
       throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
@@ -246,11 +244,11 @@ class Disassembler {
     }
   }
 
-  private peekByte() {
+  private peekByte(): number {
     return this.fb.read8(this.currentIndex);
   }
 
-  private bytesLeftInFile() {
+  private bytesLeftInFile(): number {
     return this.fb.getBytes().length - this.currentIndex;
   }
 

@@ -3,8 +3,9 @@ import {FileBlob} from "../../src/machine/FileBlob";
 import {ArrayMemory, LE} from "../../src/machine/core";
 import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
-import {Disassembler, JumpTargetFetcher, LabelsComments, SymbolTable} from "../../src/machine/asm";
-import {DisassemblyMetaImpl} from "../../src/machine/DisassemblyMetaImpl";
+import {Disassembler} from "../../src/machine/asm/Disassembler";
+import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
+import {JumpTargetFetcher, LabelsComments, SymbolTable} from "../../src/machine/asm/asm";
 
 describe.skip("tracer", () => {
   it("performs simple linear trace", () => {
