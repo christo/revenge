@@ -26,3 +26,4 @@ server/node_modules
 /client/ramdatest.js
 /server/dist/
 /client/dist/
+*.tsbuildinfo
