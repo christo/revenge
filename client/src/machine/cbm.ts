@@ -2,7 +2,6 @@
 
 import {
     ActionFunction,
-    DataViewImpl,
     Detail,
     hexDumper,
     LogicalLine,
@@ -13,20 +12,19 @@ import {
     UserAction
 } from "./api";
 import {
-    BlobSniffer,
-    BlobType,
-    DefaultDialect,
-    Directive,
-    Disassembler,
-    DisassemblyMeta,
     Environment,
-    Instructionish,
-    PcAssign
-} from "./asm";
+} from "./asm/asm.ts";
 import {CBM_BASIC_2_0} from "./basic";
 import {asHex, hex16, hex8} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
+import {DataViewImpl} from "./DataView.ts";
+import {BlobSniffer} from "./asm/BlobSniffer.ts";
+import {DefaultDialect} from "./asm/DefaultDialect.ts";
+import {Disassembler} from "./asm/Disassembler.ts";
+import {Directive, InstructionLike, PcAssign} from "./asm/instructions.ts";
+import {BlobType} from "./asm/BlobType.ts";
+import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
@@ -50,7 +48,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
       detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
       while (dis.hasNext()) {
         const instAddress = dis.currentAddress; // save current address before we increment it
-        let inst: Instructionish = dis.nextInstructionLine();
+        let inst: InstructionLike = dis.nextInstructionLine();
         const tags = [
           new Tag(TAG_ADDRESS, hex16(instAddress)),
           new Tag(TAG_HEX, asHex(inst.getBytes())),

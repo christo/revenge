@@ -1,0 +1,91 @@
+import {JumpTargetFetcher, LabelsComments, SymbolTable} from "./asm.ts";
+import {Addr, hex16} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Edict, InstructionLike} from "./instructions.ts";
+import {DisassemblyMeta} from "./DisassemblyMeta.ts";
+
+class DisassemblyMetaImpl implements DisassemblyMeta {
+
+  // noinspection JSUnusedLocalSymbols
+  /** A bit stinky - should never be used and probably not exist. */
+  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (_fb) => [], new SymbolTable("null"));
+
+  private readonly _baseAddressOffset: number;
+  private readonly _resetVectorOffset: number;
+  private readonly _contentStartOffset: number;
+  private readonly edicts: { [id: number]: Edict<InstructionLike>; };
+  private readonly jumpTargetFetcher: JumpTargetFetcher;
+  private readonly symbolTable: SymbolTable;
+
+  constructor(
+      baseAddressOffset: number,
+      resetVectorOffset: number,
+      contentStartOffset: number,
+      edicts: Edict<InstructionLike>[],
+      getJumpTargets: JumpTargetFetcher,
+      symbolTable: SymbolTable = new SymbolTable("default")
+  ) {
+
+    this._baseAddressOffset = baseAddressOffset;
+    this._contentStartOffset = contentStartOffset;
+    this.symbolTable = symbolTable;
+
+    // keep the offsets
+    this._resetVectorOffset = resetVectorOffset;
+    this.edicts = {};
+    for (let i = 0; i < edicts.length; i++) {
+      const edict = edicts[i];
+      this.edicts[edict.offset] = edict;
+    }
+    this.jumpTargetFetcher = getJumpTargets;
+  }
+
+  baseAddress(fb: FileBlob): number {
+    return fb.read16(this._baseAddressOffset);
+  }
+
+  contentStartOffset(): number {
+    return this._contentStartOffset;
+  }
+
+  isInBinary(addr: Addr, fb: FileBlob): boolean {
+    const baseAddress = fb.read16(this._baseAddressOffset);
+    const contentStartAddress = baseAddress + this._contentStartOffset;
+    const contentEndAddress = baseAddress + fb.getLength();
+    // last address location is 1 below last byte
+    return addr >= contentStartAddress && addr <= contentEndAddress - 1;
+  }
+
+  disassemblyStartOffset(fb: FileBlob): number {
+    const resetAddr = fb.read16(this._resetVectorOffset);
+    // two bytes make an address
+    const resetMsb = resetAddr + 1;
+    const resetVectorIsInBinary = this.inBinary(resetMsb, fb);
+    if (resetVectorIsInBinary) {
+      return resetAddr - fb.read16(this._baseAddressOffset);
+    } else {
+      // reset vector is outside binary, so start disassembly at content start?
+      console.log(`reset vector is outside binary ($${hex16(resetAddr)})`);
+      return this.contentStartOffset();
+    }
+  }
+
+  getEdict(address: number): Edict<InstructionLike> | undefined {
+    return this.edicts[address];
+  }
+
+  getJumpTargets(fb: FileBlob): [Addr, LabelsComments][] {
+    return this.jumpTargetFetcher(fb);
+  }
+
+  getSymbolTable(): SymbolTable {
+    return this.symbolTable;
+  }
+
+  private inBinary(addr: number, fb: FileBlob) {
+    const base = this.baseAddress(fb);
+    return addr >= base && addr <= base + fb.getLength();
+  }
+}
+
+export {DisassemblyMetaImpl};

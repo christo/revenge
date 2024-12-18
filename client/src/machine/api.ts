@@ -1,7 +1,9 @@
-import {BlobSniffer, Instructionish} from "./asm";
+import {BlobSniffer} from "./asm/BlobSniffer.ts";
 import {Addr, BigEndian, hex8, LittleEndian, Memory} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
+import {InstructionLike} from "./asm/instructions.ts";
+import {DataView, DataViewImpl} from "./DataView.ts";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
@@ -48,14 +50,7 @@ export const TAG_HEXBYTE = "hexbyte";
 export const TAG_HEXBYTES = "hexbytes";
 
 /**
- * Abstraction containing a sequence of rendered elements that belong on a logical line with meof listing output.
- * This may include multiple labels and comments which are rendered onto multiple physical lines in a typical
- * (dis)assembly listing. See {@link LogicalLine} for the fully-connected API type.
- */
-type TagSeq = Tag[];
-
-/**
- * Holds a logical line of source with its address and the {@link Instructionish}. Need to be bidirectionally mapped to
+ * Holds a logical line of source with its address and the {@link InstructionLike}. Need to be bidirectionally mapped to
  * addresses and yet also we want to generate listings where there are lines that have no address, but they do usually
  * belong in a specific place in the listing. Macro definitions, for example, need to exist in the listing, but they
  * have no address location and could be reordered so long as they adhere to dialect-enforced-rules about forward
@@ -79,17 +74,17 @@ type TagSeq = Tag[];
 class LogicalLine {
 
   /** Temporary transition encapsulation, future: migrate to dynamic generation. */
-  private readonly tags: TagSeq;
+  private readonly tags: Tag[];
   private readonly address: Addr;
-  private readonly instruction?: Instructionish;
+  private readonly instruction?: InstructionLike;
 
-  constructor(tags: TagSeq, address: Addr, instruction?: Instructionish) {
+  constructor(tags: Tag[], address: Addr, instruction?: InstructionLike) {
     this.tags = tags;
     this.address = address;
     this.instruction = instruction;
   }
 
-  getTags(): TagSeq {
+  getTags(): Tag[] {
     // future: put address in tags dynamically and stop receiving it as a tag in constructor
     return this.tags;
   }
@@ -106,36 +101,6 @@ class LogicalLine {
   getAddress() {
     return this.address;
   }
-}
-
-/**
- * Representation of a generic view of data, a vertical sequence of horizontal string of kv pairs.
- * A generic displayable structure with a sequence of entries. Each entry is a sequence of
- * string tuples. The string tuple represents a name-value pair that will be rendered with
- * the name as a className and the value as the text content of a span element.
- */
-interface DataView {
-  getLines(): LogicalLine[];
-
-  addLine(ll: LogicalLine): void;
-}
-
-class DataViewImpl implements DataView {
-  private readonly lines: LogicalLine[];
-
-  constructor(lines: LogicalLine[]) {
-    this.lines = lines;
-  }
-
-  getLines(): LogicalLine[] {
-    return this.lines;
-  }
-
-  addLine(ll: LogicalLine): void {
-    this.lines.push(ll);
-  }
-
-
 }
 
 /**
@@ -206,10 +171,10 @@ class BooBoo {
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
   label: "Hex Dump",
   f: () => {
-    const elements: TagSeq = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
+    const elements: Tag[] = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
     // currently whole hex dump is a single logical line at no address with no instruction
-    const oldDataView: TagSeq[] = [elements];
-    const lls = oldDataView.map((ts: TagSeq, i: number) => new LogicalLine(ts, i));
+    const oldDataView: Tag[][] = [elements];
+    const lls = oldDataView.map((ts: Tag[], i: number) => new LogicalLine(ts, i));
     const newDataView: DataView = new DataViewImpl(lls);
     return new Detail([TAG_HEXBYTES], newDataView);
   }
@@ -286,14 +251,13 @@ abstract class Computer {
   }
 }
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, DataViewImpl, Computer};
+export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer};
 export type {
   TagSeq,
   ActionExecutor,
   BlobToActions,
   ActionFunction,
   UserAction,
-  DataView,
   TypeActions,
   Continuation
 };

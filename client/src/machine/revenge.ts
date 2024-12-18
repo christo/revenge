@@ -1,7 +1,7 @@
 // application-level stuff to tie user interface and domain model
 
 import {hexDumper, TypeActions} from "./api";
-import {UNKNOWN_BLOB} from "./asm";
+import {UNKNOWN_BLOB} from "./asm/BlobType.ts";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./c64";
 import {disassemble, printBasic} from "./cbm";
 import {FileBlob} from "./FileBlob";

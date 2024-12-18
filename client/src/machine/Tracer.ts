@@ -9,7 +9,7 @@
  */
 
 import {Endian, Memory} from "./core";
-import {Disassembler} from "./asm";
+import {Disassembler} from "./asm/Disassembler";
 import {Thread} from "./Thread.ts";
 
 /**
@@ -50,6 +50,7 @@ class Tracer {
   }
 
   running(): any {
+
     // if reached rts, not running
     // if reached brk, not running
     // if at visited instruction, not running

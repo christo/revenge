@@ -3,25 +3,19 @@
 
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api";
-import {
-  BlobType,
-  ByteDefinitionEdict,
-  DisassemblyMetaImpl,
-  JumpTargetFetcher,
-  LabelsComments,
-  mkLabels,
-  SymbolTable,
-  VectorDefinitionEdict
-} from "./asm";
 import {CartSniffer} from "./cbm";
 import {ArrayMemory, KB_64, LE} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 import {Petscii} from "./petscii";
+import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl";
+import {BlobType} from "./asm/BlobType.ts";
+import {ByteDefinitionEdict, VectorDefinitionEdict} from "./asm/instructions.ts";
+import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "./asm/asm.ts";
 
 class C64 extends Computer {
 
-  constructor(name: string, memoryConfig: MemoryConfiguration, tags: string[]) {
+  constructor(memoryConfig: MemoryConfiguration, tags: string[]) {
     super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, tags);
   }
 }

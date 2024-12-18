@@ -111,7 +111,7 @@ const LE: LittleEndian = new LittleEndian();
 const BE: BigEndian = new BigEndian();
 
 /**
- * Memory with {@link Endian Endianness}.
+ * Contiguous, fixed-sized 0-based Memory with {@link Endian Endianness}.
  */
 interface Memory<T extends Endian> {
 
