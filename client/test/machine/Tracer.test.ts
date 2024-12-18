@@ -23,14 +23,12 @@ describe("tracer", () => {
       0, 0, // base address 0x0000
       ...machineCode(["NOP", "NOP", "BRK"])
     ];
-    console.log(bytes);
     const d = createDisassembler(bytes, 2);
     const t = new Tracer(d, 2, mem(bytes));
     expect(t.executed().length === 0, "should have executed none");
     t.step();
     expect(t.executed().length === 1);
     let executed = t.executed();
-    console.log(executed);
     expect(executed).to.have.members([2]);
     t.step();
     expect(t.executed().length === 2);

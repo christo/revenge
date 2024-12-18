@@ -70,7 +70,6 @@ class Tracer {
   step() {
     this.threads.filter((t) => t.running).forEach((t) => {
       try {
-        console.log("stepping tracer");
         t.step();
       } catch (e) {
         console.error(`${t.descriptor} had error`, e);

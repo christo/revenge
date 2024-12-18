@@ -64,11 +64,8 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    console.log(`stepping ${this.descriptor}`);
     this.execute();
     this.executed.push(this.pc++);
-    console.log(`end of step ${this.descriptor} at ${this.pc}`);
-    console.log(`executed: ${this.executed}`);
   }
 
   /**
