@@ -16,8 +16,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.10",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1",
     "vite": "^5.4.1",
     "vite-plugin-svgr": "^4.3.0"
   },
@@ -29,7 +29,7 @@
     "@eslint/js": "^9.9.0",
     "@types/prop-types": "^15.7.11",
     "@types/ramda": "^0.29.10",
-    "@types/node": "^20.11.15",
+    "@types/node": "^22.10.2",
     "@types/react": "^18.2.51",
     "@types/react-dom": "^18.2.18",
     "eslint": "^9.9.0",
@@ -53,5 +53,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
   }
 }
