@@ -25,9 +25,10 @@ interface DisassemblyMeta {
   disassemblyStartOffset(fb: FileBlob): number;
 
   /**
-   * The offset from the start of the fileblob at which the base address is to be located. This skips any header data
-   * that isn't real file content.
+   * The offset from the start of the fileblob at which the constent starting address is located.
+   * This skips any header data that isn't real file content.
    */
+  // TODO The base address is unjustifiably assumed to be present in the file.
   contentStartOffset(): number;
 
   /**
@@ -47,6 +48,11 @@ interface DisassemblyMeta {
    */
   getSymbolTable(): SymbolTable;
 
+  /**
+   * Returns true if the given address is present in the given FileBlob
+   * @param addr the address
+   * @param fb the fileblob
+   */
   isInBinary(addr: Addr, fb: FileBlob): boolean;
 }
 

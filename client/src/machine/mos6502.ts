@@ -242,7 +242,9 @@ class Cycles {
   static XPAGE = (n: number) => new Cycles(n, 1, 0, 0);
 }
 
-/** Machine instruction definition. */
+/**
+ * Machine instruction definition.
+ */
 class Instruction {
   private readonly _op: Op;
   private readonly _numBytes: number;
@@ -277,7 +279,9 @@ class Instruction {
   }
 }
 
-/** Represents the whole set of machine instructions. */
+/**
+ * Represents the whole set of machine instructions.
+ */
 class InstructionSet {
   // note redundancy here, like all bad code, huddles behind the defense of performance,
   // prematurely optimised as per root of all evil
@@ -323,8 +327,13 @@ class InstructionSet {
     return this.instructions[assertByte(opcode)];
   }
 
-  instructionByName(mnemonic: string): Instruction | undefined {
-    return this.instructions.find(i => mnemonic === i.op.mnemonic);
+  /**
+   * Case insensitive.
+   * @param mnemonic
+   */
+  byName(mnemonic: string): Instruction | undefined {
+    const m = mnemonic.toUpperCase();
+    return this.instructions.find(i => m === i.op.mnemonic);
   }
 
   all() {
@@ -337,7 +346,7 @@ class InstructionSet {
     };
     this.ops.forEach(op => {
       builder.opMap[op.mnemonic] = (_args: number[]) => {
-        const instructionBytes = this.instructionByName(op.mnemonic)?.getBytes();
+        const instructionBytes = this.byName(op.mnemonic)?.getBytes();
         instructionBytes?.forEach(b => builder.bytes.push(b));
         return builder;
       };
@@ -662,7 +671,7 @@ class FullInstruction implements Byteable {
 
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 {
-  static readonly INSTRUCTIONS = I;
+  static readonly ISA = I;
 
   static readonly STACK_LO = 0x0100;
   static readonly STACK_HI = 0x01ff;
@@ -679,13 +688,6 @@ class Mos6502 {
   static readonly VECTOR_IRQ_LB = 0xfffe;
   static readonly VECTOR_IRQ_HB = 0xffff;
 
-  static builder(): Builder {
-
-    // for each instruction,
-    // add a method with the mnemonic name that appends that instruction's bytes to its internal FileBlob
-    // and which takes the args as numeric parameters
-    return {} as Builder; // TODO implement this
-  }
 }
 
 export {

@@ -1,9 +1,12 @@
-import {JumpTargetFetcher, LabelsComments, SymbolTable} from "./asm.ts";
+import {EMPTY_JUMP_TARGET_FETCHER, JumpTargetFetcher, LabelsComments, SymbolTable} from "./asm.ts";
 import {Addr, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Edict, InstructionLike} from "./instructions.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 
+/**
+ * Encapsulates outer context for performing {@link Disassembler}.
+ */
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
   // noinspection JSUnusedLocalSymbols
@@ -17,12 +20,21 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   private readonly jumpTargetFetcher: JumpTargetFetcher;
   private readonly symbolTable: SymbolTable;
 
+  /**
+   * Create context with minimalist defaults.
+   * @param baseAddressOffset offset in bytes in which to find start address, defaults to 0.
+   * @param resetVectorOffset reset vector, defaults to baseAddressOffset
+   * @param contentStartOffset start of content, defaults to baseAddressOffset
+   * @param edicts any predefined edicts for disassembly, defaults to empty
+   * @param getJumpTargets do find externally defined symbols, defaults to empty.
+   * @param symbolTable predefined symbol table (defaults to empty).
+   */
   constructor(
-      baseAddressOffset: number,
-      resetVectorOffset: number,
-      contentStartOffset: number,
-      edicts: Edict<InstructionLike>[],
-      getJumpTargets: JumpTargetFetcher,
+      baseAddressOffset: number = 0,
+      resetVectorOffset: number = baseAddressOffset,
+      contentStartOffset: number = baseAddressOffset,
+      edicts: Edict<InstructionLike>[] = [],
+      getJumpTargets: JumpTargetFetcher = EMPTY_JUMP_TARGET_FETCHER,
       symbolTable: SymbolTable = new SymbolTable("default")
   ) {
 

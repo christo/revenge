@@ -11,6 +11,7 @@ export class Thread {
   private readonly executed: boolean[];
   private readonly written: boolean[];
   private pc: number;
+  readonly descriptor: string;
 
   /**
    * Starts in running mode.
@@ -18,13 +19,15 @@ export class Thread {
    * @param pc address of next instruction to be executed
    * @param memory
    */
-  constructor(disasm: Disassembler, pc: Addr, memory: Memory<Endian>) {
+  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>) {
+    const memorySize = memory.getLength();
+    if (memorySize < 1) {
+      throw new Error(`Memory length too small: ${memorySize}`);
+    }
+    this.descriptor = `[${creator}](@${pc})`;
     this.disasm = disasm;
     this.pc = pc;
     this._running = true;
-    if (memory.getLength() < 1) {
-      throw new Error(`Memory length too small: ${memory.getLength()}`);
-    }
     this.memory = memory;
     this.executed = [];
     this.written = [];

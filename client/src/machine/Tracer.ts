@@ -41,28 +41,30 @@ class Tracer {
   constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>) {
     if (Math.round(pc) !== pc) {
       throw Error(`startLocation must be integral`);
-    } else if (pc < 0 || memory.getLength() >= pc) {
+    } else if (pc < 0 || memory.getLength() <= pc) {
       throw Error(`startLocation ${pc} not inside memory of size ${memory.getLength()}`);
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }
-    this.threads.push(new Thread(disasm, pc, memory));
+    this.threads.push(new Thread("root", disasm, pc, memory));
   }
 
   running(): any {
-
-    // if reached rts, not running
-    // if reached brk, not running
-    // if at visited instruction, not running
-    // if at written-to location, error & not running
-    throw new Error("Method not implemented.");
+    // delegate to threads
+    return 0 < this.threads.filter((thread: Thread) => thread.running).length;
   }
 
   /**
    * Advance all threads.
    */
   step() {
-    this.threads.filter((t) => t.running).forEach((t) => t.step());
+    this.threads.filter((t) => t.running).forEach((t) => {
+      try {
+        t.step();
+      } catch (e) {
+        console.error(`${t.descriptor} had error`, e);
+      }
+    });
   }
 
 }

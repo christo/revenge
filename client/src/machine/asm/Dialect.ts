@@ -1,7 +1,8 @@
 import {BooBoo, Tag} from "../api.ts";
 import {Environment, LabelsComments} from "./asm.ts";
-import {Directive, FullInstructionLine, PcAssign} from "./instructions.ts";
+import {Directive, FullInstructionLine, InstructionLike, PcAssign} from "./instructions.ts";
 import {Disassembler} from "./Disassembler.ts";
+import {ParserState} from "./DefaultDialect.ts";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of
@@ -12,6 +13,8 @@ interface Dialect {
   readonly name: string;
   readonly env: Environment;
 
+  parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState];
+
   /**
    * Check that the given label conforms to the rules for labels, returning a possibly empty array of
    * errors.
@@ -21,9 +24,14 @@ interface Dialect {
   checkLabel(label: string): BooBoo[];
 
   /**
-   * Return the characters that go before a line comment.
+   * Return all strings that signal comment to end of line.
    */
-  commentPrefix(): string;
+  lineCommentPrefix(): string[];
+
+  /**
+   * Return the start and end strings for multiline comments.
+   */
+  multilineCommentDelimiters(): [string, string];
 
   /**
    * Format the given string as a label. For example adding a trailing colon that must be present but which

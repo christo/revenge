@@ -70,7 +70,7 @@ class Disassembler {
     if (maybeInstruction !== undefined) {
       instructionish = maybeInstruction;
     } else {
-      const isIllegal = (n: number) => Mos6502.INSTRUCTIONS.op(n) === undefined;
+      const isIllegal = (n: number) => Mos6502.ISA.op(n) === undefined;
       const opcode = this.peekByte();
       if (opcode === undefined) {
         throw Error(`Cannot get byte at offset ${this.currentIndex} from file ${this.fb.name}`);
@@ -85,7 +85,7 @@ class Disassembler {
       } else {
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
         // we don't yet know if an instruction will fit for the next byte
-        const instLen = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1;
+        const instLen = Mos6502.ISA.numBytes(opcode) || 1;
 
         if (this.bytesLeftInFile() < instLen) {
           lc.addComments("instruction won't fit");
@@ -121,7 +121,7 @@ class Disassembler {
       return new ByteDeclaration(this.eatBytes(n), lc);
     };
 
-    const instLen = Mos6502.INSTRUCTIONS.numBytes(currentByte);
+    const instLen = Mos6502.ISA.numBytes(currentByte);
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
     if (instLen === 2 && edictAhead(1)) {
@@ -257,7 +257,7 @@ class Disassembler {
    * requisite bytes.
    */
   private mkInstruction(opcode: number, labelsComments: LabelsComments) {
-    const numInstructionBytes = Mos6502.INSTRUCTIONS.numBytes(opcode) || 1
+    const numInstructionBytes = Mos6502.ISA.numBytes(opcode) || 1
     // interpret as instruction
     let firstOperandByte = 0;
     let secondOperandByte = 0;

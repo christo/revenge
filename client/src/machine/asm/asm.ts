@@ -2,7 +2,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import {Tag} from "../api.ts";
-import {Addr, TODO, toStringArray} from "../core.ts";
+import {Addr, toStringArray} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {SymDef} from "./instructions.ts";
 
@@ -69,13 +69,6 @@ class Section {
 
   get sectionType() {
     return this.sType;
-  }
-}
-
-/** syntax-independent assembler */
-class Assembler {
-  constructor() {
-    TODO();
   }
 }
 
@@ -184,6 +177,9 @@ const mkComments = (comments: string[] | string) => new LabelsComments([], comme
  * A collection of labels and comments.
  */
 export class LabelsComments {
+
+  static EMPTY = new LabelsComments();
+
   private readonly _labels: string[];
   private readonly _comments: string[];
 
@@ -232,9 +228,8 @@ export class LabelsComments {
  * {@link FileBlob}.
  */
 type JumpTargetFetcher = (fb: FileBlob) => Array<[Addr, LabelsComments]>;
-
+const EMPTY_JUMP_TARGET_FETCHER: JumpTargetFetcher = (_fb) => []
 export {
-  Assembler,
   Environment,
   Section,
   SectionType,
@@ -244,6 +239,7 @@ export {
   SymbolTable,
   SourceType,
   SymbolType,
+  EMPTY_JUMP_TARGET_FETCHER
 };
 export type {
   JumpTargetFetcher

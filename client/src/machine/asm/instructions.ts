@@ -1,10 +1,11 @@
-import {Addr, assertByte, Byteable, TODO} from "../core.ts";
+import {Addr, assertByte, Byteable} from "../core.ts";
 import {Dialect} from "./Dialect.ts";
 import {Tag} from "../api.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {Assembler, LabelsComments, SourceType, SymbolType} from "./asm.ts";
+import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
 import {Disassembler} from "./Disassembler.ts";
+import {Assembler} from "./Assembler.ts";
 
 /** Convenience base class implementing comment and label properties. */
 export abstract class InstructionBase implements InstructionLike {
@@ -22,11 +23,6 @@ export abstract class InstructionBase implements InstructionLike {
 
   get sourceType(): SourceType {
     return this._sourceType;
-  }
-
-  assemble(dialect: Dialect, ass: Assembler): FileBlob {
-    TODO(`assembler ${ass} for ${dialect}`);
-    return FileBlob.NULL_FILE_BLOB;
   }
 
   abstract disassemble(dialect: Dialect, dis: Disassembler): Tag[];
@@ -80,6 +76,11 @@ class PcAssign extends InstructionBase implements Directive {
     return true;
   }
 
+  assemble(_dialect: Dialect, ass: Assembler): number[] {
+    ass.setCurrentAddress(this._address);
+    return this.getBytes();
+  }
+
   disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.pcAssign(this, dis);
 
   getBytes = (): number[] => [];
@@ -111,6 +112,7 @@ export class ByteDeclaration extends InstructionBase implements Directive, Bytea
 
   getBytes = (): number[] => this._rawBytes;
   getLength = (): number => this._rawBytes.length;
+
   disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.bytes(this, dis);
 }
 
@@ -168,20 +170,33 @@ interface InstructionLike extends Byteable {
    * @param dialect the syntax-specifics for disassembly.
    * @param dis the stateful disassembler.
    */
-  disassemble(dialect: Dialect, dis: Disassembler): Tag[]
-
-  /**
-   * Assemble this instruction in the given dialect with the given assembler.
-   *
-   * @param dialect syntax to use
-   * @param ass stateful assembler
-   */
-  assemble(dialect: Dialect, ass: Assembler): FileBlob
+  disassemble(dialect: Dialect, dis: Disassembler): Tag[];
 
   /**
    * Return the {@link SourceType} for the generated code (regardless of comments).
    */
   get sourceType(): SourceType;
+}
+
+/**
+ * A line containing no comment, label, directive or instruction. It may contain whitespace
+ * or any other content ignored in the dialect.
+ */
+const BLANK_LINE: InstructionLike = {
+
+  disassemble: (_dialect: Dialect, _dis: Disassembler): Tag[] => [],
+
+  getBytes: (): number[] => [],
+
+  getLength: (): number => 0,
+
+  get labelsComments(): LabelsComments {
+    return LabelsComments.EMPTY;
+  },
+
+  get sourceType(): SourceType {
+    return SourceType.BLANK;
+  },
 }
 
 /**
@@ -335,10 +350,13 @@ class LabelsCommentsOnly extends InstructionBase {
   }
 }
 
-export {VectorDefinitionEdict};
-export {ByteDefinitionEdict};
-export {SymDef};
-export {FullInstructionLine};
-export {PcAssign};
+export {
+  VectorDefinitionEdict,
+  ByteDefinitionEdict,
+  SymDef,
+  FullInstructionLine,
+  PcAssign,
+  LabelsCommentsOnly,
+  BLANK_LINE
+};
 export type {Directive, InstructionLike, Edict};
-export {LabelsCommentsOnly};

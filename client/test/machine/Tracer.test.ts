@@ -1,25 +1,27 @@
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
 import {FileBlob} from "../../src/machine/FileBlob";
 import {ArrayMemory, LE} from "../../src/machine/core";
 import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
 import {Disassembler} from "../../src/machine/asm/Disassembler";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {JumpTargetFetcher, LabelsComments, SymbolTable} from "../../src/machine/asm/asm";
+import {JumpTargetFetcher, LabelsComments} from "../../src/machine/asm/asm";
 
-describe.skip("tracer", () => {
-  it("performs simple linear trace", () => {
-    const i = Mos6502.INSTRUCTIONS;
-    const machineCode = Mos6502.builder()
-        .opMap["brk"]([]) // TODO implement this
-        .build();
+describe("tracer", () => {
+  it("stops at break", () => {
+    const machineCode: number[] = [
+        0, 0, // base address 0x0000
+        ...Mos6502.ISA.byName("BRK").getBytes(),
+    ];
     const fb = new FileBlob("testblob", machineCode, LE);
-    const st = new SymbolTable("empty");
-    const jtf: JumpTargetFetcher = fakeJumpTargetFetcher;
-    const dm = new DisassemblyMetaImpl(0, 0, 0, [], jtf, st);
-    const d = new Disassembler(i, fb, dm);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Tracer(d, 0, mem(machineCode));
-    assert(t.running());
+    expect(t.threads.length == 1, "should begin with 1 thread");
+    expect(t.running(), "tracer should have started running");
+    t.step();
+    expect(!t.running(), "tracer should be stopped after hitting break");
+    expect(t.threads.length == 1, "should end with 1 thread");
   });
 });
 

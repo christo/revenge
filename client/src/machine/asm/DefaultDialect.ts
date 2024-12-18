@@ -33,8 +33,23 @@ import {
   MODE_ZEROPAGE_Y
 } from "../mos6502.ts";
 import {Environment, LabelsComments, tagText} from "./asm.ts";
-import {Directive, FullInstructionLine, PcAssign} from "./instructions.ts";
+import {
+  BLANK_LINE,
+  Directive,
+  FullInstructionLine,
+  InstructionLike,
+  LabelsCommentsOnly,
+  PcAssign
+} from "./instructions.ts";
 import {Disassembler} from "./Disassembler.ts";
+
+/**
+ * Represents the state of a line-based parser
+ */
+enum ParserState {
+  READY,
+  MID_MULTILINE_COMMENT,
+}
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -60,6 +75,41 @@ class DefaultDialect implements Dialect {
     return this._env;
   }
 
+  multilineCommentDelimiters(): [string, string] {
+    return ["/*", "*/"];
+  }
+
+  parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState] {
+    if (parserState === ParserState.READY) {
+      // LINE_BEGIN [label] [instruction | directive] [comment] LINE_END
+      const m = line.match(`^([A-Za-z_]\w*:)?\h*()?\h*(\\\*.*\*/|;.*)$`)
+      if (m) {
+        const label = m[1];
+        const instruction = m[2];
+        const comment = m[3];
+        console.log(`label: ${label} instruction:${instruction} comment:${comment}`);
+        throw new Error("unimplemented");
+      } else {
+        throw new Error("parse error");
+      }
+    } else if (parserState === ParserState.MID_MULTILINE_COMMENT) {
+      if (line.match(`^\h*\*/\h*$`)) {
+        // only end of comment
+        return [BLANK_LINE, ParserState.READY];
+      } else {
+        // is this the last comment line?
+        const m = line.match(`^(.*)\*/\h*$`);
+        if (m) {
+          return [new LabelsCommentsOnly(new LabelsComments([], m[1])), ParserState.READY];
+        } else {
+          return [new LabelsCommentsOnly(new LabelsComments([], line.trim())), ParserState.MID_MULTILINE_COMMENT];
+        }
+      }
+    } else {
+      throw new Error(`unknown parser state: ${parserState}`);
+    }
+  }
+
   checkLabel(l: string): BooBoo[] {
     // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
     const regExpMatchArrays = l.matchAll(/(^\d|\s)/g);
@@ -70,8 +120,8 @@ class DefaultDialect implements Dialect {
     }
   }
 
-  commentPrefix() {
-    return "; ";
+  lineCommentPrefix() {
+    return ["; "];
   }
 
   formatLabel(s: string) {
@@ -103,7 +153,7 @@ class DefaultDialect implements Dialect {
   }
 
   /**
-   * Makes a TagSeq for the given FullInstructionLine consisting of
+   * Makes {@link Tag Tags} for the given FullInstructionLine consisting of
    * comments, labels and the executable part of the code.
    *
    * @param fil the FullInstructionLine
@@ -135,33 +185,8 @@ class DefaultDialect implements Dialect {
     return [comments, labels];
   }
 
-  // noinspection JSUnusedGlobalSymbols
   /**
-   * Parse input from index offset characters in until end of line or end of input,
-   * whichever's first but the index must be inside the range of the string's chars.
-   * Interpret mnemonic syntax of our assembly dialect and return a datastructure
-   * of properties for that machine instruction, including operands and expected
-   * runtime in clock cycles.
-   *
-   * This API is suggestive only of the future shape when implemented.
-   *
-   * @param input
-   * @param index
-   */
-  assemble(input: string, index: number) {
-    if (index >= input.length || index < 0) {
-      throw Error("index out of range")
-    }
-    TODO("assemble");
-    // parsing can fail if wrong or not enough bytes
-
-    // return Instruction + 0-2 bytes operand + new index (this may be beyond input which means finished)
-    // or possibly return pseudo op
-    // return value could also contain input offset, length, maybe metadata for comment etc.
-  }
-
-  /**
-   * Create a TagSeq for just the code of the given FullInstructionLine
+   * Create Tags for just the code of the given FullInstructionLine
    * consisting of the mnemonic and, if present, the operand.
    *
    * @param fil the FullInstructionLine
@@ -199,7 +224,7 @@ class DefaultDialect implements Dialect {
 
   private renderComments(comments: string[]): string {
     const le = this._env.targetLineEndings();
-    const cp = this.commentPrefix();
+    const cp = this.lineCommentPrefix();
     // transform all lines in the comment to line comments
     return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
   }
@@ -289,4 +314,4 @@ class DefaultDialect implements Dialect {
   }
 }
 
-export {DefaultDialect};
+export {DefaultDialect, ParserState};
