@@ -6,7 +6,9 @@ import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 
-/** Stateful translator of bytes to their parsed instruction line */
+/**
+ * Stateful translator of bytes to their parsed instruction line
+ */
 class Disassembler {
   originalIndex: number;
   currentIndex: number;
@@ -45,8 +47,7 @@ class Disassembler {
    * Starting from one offset, read count bytes at most. Only reads up to the end of the file.
    * @param from must be 0+
    * @param count must be 1+ (defaults to 1)
-   * @return the possibly empty actual bytes read.
-   * @private
+   * @return the possibly empty array of actual bytes read.
    */
   readBytes(from: number, count = 1) {
     const i1 = R.max(0, from);
@@ -55,11 +56,11 @@ class Disassembler {
   }
 
   /**
-   * Currently responsible for deciding which Instructionish should be constructed at the current index point
+   * Decides which {@link InstructionLike} should be constructed at the current index point
    * and advances the index by the correct number of bytes.
    */
   nextInstructionLine(): InstructionLike {
-    // some helper functions
+
     const lc = this.mkPredefLabelsComments(this.currentAddress);
 
     let instructionish: InstructionLike;
@@ -279,26 +280,32 @@ class Disassembler {
   };
 
   private maybeMkEdict(lc: LabelsComments) {
-    const edict = this.disMeta.getEdict(this.currentIndex);
-    if (edict !== undefined) {
-      return this.edictOrBust(edict, this.bytesLeftInFile(), lc);
+    // see if edict is declared for currentIndex
+    const declaredEdict: Edict<InstructionLike> | undefined = this.disMeta.getEdict(this.currentIndex);
+    if (declaredEdict !== undefined) {
+      // either create as specified or fallback/compromise if it won't fit
+      return this.edictOrBust(declaredEdict, this.bytesLeftInFile(), lc);
     }
+    // no declared edict
     return undefined;
   }
 
-  private edictOrBust(edict: Edict<InstructionLike>, remainingBytes: number, lc: LabelsComments) {
-    // if the edict won't fit in the remaining bytes, just get its labels/comments and explain
+  /**
+   * If the given edict fits, create the
+   */
+  private edictOrBust(edict: Edict<InstructionLike>, remainingBytes: number, lc: LabelsComments): InstructionLike | undefined {
+    // if we can't comply with edict in remaining bytes, make best effort
     const edictWillFit = edict.length <= remainingBytes;
     if (edictWillFit) {
       this.currentIndex += edict.length;
       return edict.create(this.fb);
     } else {
+      // cannot comply
       const elc = edict.create(this.fb).labelsComments;
       const explainLc = elc.length() > 0 ? ` (preserving ${elc.length()} labels/comments)` : "";
       lc.addComments(`End of file clashes with edict${explainLc}: '${edict.describe()}'`);
       lc.merge(elc);
       this.currentIndex += remainingBytes;
-      // fall through
     }
     return undefined;
   }
