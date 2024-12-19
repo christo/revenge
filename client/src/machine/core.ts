@@ -1,5 +1,5 @@
 /*
-    Reusable components with the broadest usage domain and no dependencies.
+    Reusable components with the broadest domain and no dependencies.
  */
 
 /** The number of bytes in a binary kilobyte */
@@ -46,7 +46,7 @@ const assertByte = (value: number): number => {
   return value & 0xff;
 };
 
-const asByte = (b: number) => b && 0xff;
+const asByte = lsb;
 
 
 /**
