@@ -10,6 +10,7 @@ import {DisassemblyMeta} from "./DisassemblyMeta.ts";
  * Stateful translator of bytes to their parsed instruction line
  */
 class Disassembler {
+  // TODO make stateless core mechanism
   originalIndex: number;
   currentIndex: number;
   fb: FileBlob;
