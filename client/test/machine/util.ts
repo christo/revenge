@@ -17,7 +17,7 @@ export function mem(contents: number[]) {
 }
 
 export function createDisassembler(machineCode: number[], contentStartOffset: number) {
-  const fb = new FileBlob("testblob", machineCode, LE);
+  const fb = FileBlob.fromBytes("testblob", machineCode, LE);
   const dm = new DisassemblyMetaImpl(0, 0, contentStartOffset);
   return new Disassembler(Mos6502.ISA, fb, dm);
 }

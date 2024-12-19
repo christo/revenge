@@ -5,23 +5,28 @@ import {Addr, ArrayMemory, BE, Byteable, Endian} from "./core";
  * like a byte array.
  */
 class FileBlob implements Byteable {
-  public static NULL_FILE_BLOB: FileBlob = new FileBlob("null", 0, BE);
+  public static NULL_FILE_BLOB: FileBlob = FileBlob.fromBytes("null", 0, BE);
 
-  name: string;
-  private memory: ArrayMemory<Endian>;
-
-  constructor(name: string, bytes: number | number[], endian: Endian) {
-    this.name = name;
-    this.memory = new ArrayMemory(bytes, endian);
+  static fromBytes(name: string, bytes: number | number[], endian: Endian) {
+    return new FileBlob(name, new ArrayMemory(bytes, endian));
   }
 
   static async fromFile(f: File | FileLike, endian: Endian) {
     if (f instanceof File) {
-      const mkBlob = (buf: ArrayBuffer) => new FileBlob(f.name, Array.from(new Uint8Array(buf)), endian);
-      return f.arrayBuffer().then(mkBlob);
+      const buf = await f.arrayBuffer();
+      const bytes = Array.from(new Uint8Array(buf));
+      return FileBlob.fromBytes(f.name, bytes, endian);
     } else {
-      return new FileBlob(f.name, Array.from(f.data), endian);
+      return FileBlob.fromBytes(f.name, Array.from(f.data), endian);
     }
+  }
+
+  name: string;
+  private memory: ArrayMemory<Endian>;
+
+  constructor(name: string, memory: ArrayMemory<Endian>) {
+    this.name = name;
+    this.memory = memory;
   }
 
   getBytes(): number[] {

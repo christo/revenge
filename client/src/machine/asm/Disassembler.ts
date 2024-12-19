@@ -7,6 +7,8 @@ import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {InstructionSet} from "../InstructionSet.ts";
 
+
+
 /**
  * Stateful translator of bytes to their parsed instruction line
  */
@@ -297,12 +299,14 @@ class Disassembler {
       // default operands are 0
       let firstOperandByte = 0;
       let secondOperandByte = 0;
-      if (instLen === 2) {
+      if (instLen >= 2) {
         firstOperandByte = mem.read8(offset + 1);
-      } else if (instLen === 3) {
+      }
+      if (instLen >= 3) {
         secondOperandByte = mem.read8(offset + 2);
-      } else {
-        throw Error("Illegal state: number of instruction bytes > 3");
+      }
+      if (instLen >= 4) {
+        throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
       }
       // TODO ? what happens if instruction is only one byte?
       const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);

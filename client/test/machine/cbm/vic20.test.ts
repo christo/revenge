@@ -45,7 +45,7 @@ describe("vic20", () => {
     bline.forEach((i) => ba.push(i));
     ba.push(0x00, 0x00); // end of program
 
-    const fb: FileBlob = new FileBlob("basic-test", ba, LE);
+    const fb: FileBlob = FileBlob.fromBytes("basic-test", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).gte(1);   // this is a well-formed minimal basic program
   });
@@ -61,7 +61,7 @@ describe("vic20", () => {
     [, line] = basicLine(addr, 9, [TOKEN_REM, ...Petscii.codes(" same line number")]);
     line.push(0, 0); // end of program
 
-    const fb: FileBlob = new FileBlob("basic-descending-lnums", ba, LE);
+    const fb: FileBlob = FileBlob.fromBytes("basic-descending-lnums", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).lt(1);
   })
