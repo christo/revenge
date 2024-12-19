@@ -285,7 +285,8 @@ class Disassembler {
    * @throws if instruction cannot be decoded at offset
    */
   disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
-    // TODO should we fall back to byte declaration directive?
+    // TODO write unit test for this stateless single instruction disassembler
+    // TODO should we fall back to byte declaration directive rather than throw?
     const opcode = mem.read8(offset);
     const instLen = Mos6502.ISA.numBytes(opcode) || 1
     const bytesRemaining = mem.getLength() - offset;
