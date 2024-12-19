@@ -269,8 +269,8 @@ class Disassembler {
       } else if (numInstructionBytes === 3) {
         secondOperandByte = this.fb.read8(this.currentIndex + 2);
       }
-      this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
       const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+      this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
       return new FullInstructionLine(il, labelsComments);
     } else {
       throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
