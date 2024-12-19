@@ -32,7 +32,7 @@ interface DisassemblyMeta {
   contentStartOffset(): number;
 
   /**
-   * Gets the edict defined for the given offset if one is defined.
+   * Gets any predefined edict for the given offset or undefined.
    *
    * @param offset
    */
