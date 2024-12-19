@@ -78,6 +78,8 @@ export class Thread {
    */
   private execute(): Thread | undefined {
     console.log(`executing: ${this.descriptor}`);
+    // TODO use this.disasm to disassemble current instruction
+
     // TODO disassemble instruction at PC
 
 
