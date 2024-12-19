@@ -65,18 +65,13 @@ class Tracer {
   }
 
   /**
-   * Advance all threads.
+   * Advance all running threads, ignoring the rest.
    */
   step() {
-    this.threads.filter((t) => t.running).forEach((t) => {
-      try {
-        t.step();
-      } catch (e) {
-        console.error(`${t.descriptor} had error`, e);
-      }
-    });
+    this.threads
+        .filter((t) => t.running)
+        .forEach((t) => t.step());
   }
-
 }
 
 export {Tracer};
