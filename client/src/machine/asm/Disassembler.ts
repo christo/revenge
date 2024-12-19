@@ -114,6 +114,8 @@ class Disassembler {
    */
   edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike {
 
+    // TODO refactor bigly, this is insane-o
+
     // check if there's an edict n ahead of currentIndex
     const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
@@ -257,17 +259,23 @@ class Disassembler {
    */
   private mkInstruction(opcode: number, labelsComments: LabelsComments) {
     const numInstructionBytes = Mos6502.ISA.numBytes(opcode) || 1
-    // interpret as instruction
-    let firstOperandByte = 0;
-    let secondOperandByte = 0;
-    if (numInstructionBytes > 1) {
-      firstOperandByte = this.eatByteOrDie();
+    const bytesRemaining = this.fb.getBytes().length - this.currentIndex;
+    if (numInstructionBytes <= bytesRemaining) {
+      // default operands are 0
+      let firstOperandByte = 0;
+      let secondOperandByte = 0;
+      if (numInstructionBytes === 2) {
+        firstOperandByte = this.fb.read8(this.currentIndex + 1);
+      } else if (numInstructionBytes === 3) {
+        secondOperandByte = this.fb.read8(this.currentIndex + 2);
+      }
+      this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
+      const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+      return new FullInstructionLine(il, labelsComments);
+    } else {
+      throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
     }
-    if (numInstructionBytes === 3) {
-      secondOperandByte = this.eatByteOrDie();
-    }
-    const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-    return new FullInstructionLine(il, labelsComments);
+
   }
 
   /**
