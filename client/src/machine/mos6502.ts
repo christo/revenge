@@ -29,8 +29,8 @@ class AddressingMode {
    * @param blurb additional clarifying description.
    * @param numOperandBytes number of bytes in the expected operand.
    */
-  constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: OperandLength) {
-    if (!code.match(/^\w+$/)) {
+  constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: M6502OperandLength) {
+    if (!code.match(/^[A-Za-z_]+$/)) {
       throw Error("Addressing mode code must contain only these chars: A-Za-z_");
     }
     this.code = code;
