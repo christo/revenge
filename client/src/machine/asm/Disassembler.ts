@@ -237,10 +237,11 @@ class Disassembler {
    * @private
    */
   private eatByte(): number {
-    const value = this.fb.read8(this.currentIndex++); // side effect
+    const value = this.fb.read8(this.currentIndex); // side effect
     if (typeof value === "undefined") {
       throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
     } else {
+      this.currentIndex++;
       return (value & 0xff);
     }
   }
