@@ -37,15 +37,12 @@ export abstract class InstructionBase implements InstructionLike {
  * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
  */
 interface Directive extends InstructionLike {
+
   isSymbolDefinition(): boolean;
 
   isMacroDefinition(): boolean;
 
   isPragma(): boolean;
-
-  // symbol definition
-  // macro definition
-  // cpu pragma
 }
 
 /**
