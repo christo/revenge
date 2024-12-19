@@ -332,7 +332,7 @@ class InstructionSet {
   }
 
   /**
-   * Case insensitive.
+   * Case insensitive, finds one instruction with given mnemonic.
    * @param mnemonic
    */
   byName(mnemonic: string): Instruction | undefined {
