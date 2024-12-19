@@ -1,6 +1,6 @@
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction, InstructionSet, Mos6502} from "../mos6502.ts";
-import {Addr, asByte} from "../core.ts";
+import {Addr, asByte, Endian, Memory} from "../core.ts";
 import {ByteDeclaration, Edict, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
@@ -275,7 +275,36 @@ class Disassembler {
     } else {
       throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
     }
+  }
 
+  /**
+   * Disassemble one instruction from memory at given offset. Operands interpreted using endianness T.
+   * @param mem
+   * @param offset
+   * @return instruction
+   * @throws if instruction cannot be decoded at offset
+   */
+  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
+    // TODO should we fall back to byte declaration directive?
+    const opcode = mem.read8(offset);
+    const instLen = Mos6502.ISA.numBytes(opcode) || 1
+    const bytesRemaining = mem.getLength() - offset;
+    if (instLen <= bytesRemaining) {
+      // default operands are 0
+      let firstOperandByte = 0;
+      let secondOperandByte = 0;
+      if (instLen === 2) {
+        firstOperandByte = mem.read8(offset + 1);
+      } else if (instLen === 3) {
+        secondOperandByte = mem.read8(offset + 2);
+      } else {
+        throw Error("Illegal state: number of instruction bytes > 3");
+      }
+      const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+      return inst;
+    } else {
+      throw Error("not enough bytes remaining to fit instruction");
+    }
   }
 
   /**
