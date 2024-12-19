@@ -48,7 +48,7 @@ class Disassembler {
    * @return the possibly empty actual bytes read.
    * @private
    */
-  readBytes = (from: number, count = 1) => {
+  readBytes(from: number, count = 1) {
     const i1 = R.max(0, from);
     const i2 = from + R.max(1, count);
     return this.fb.getBytes().slice(i1, i2).map(asByte);
@@ -244,13 +244,9 @@ class Disassembler {
     }
   }
 
-  private peekByte(): number {
-    return this.fb.read8(this.currentIndex);
-  }
+  private peekByte = (): number => this.fb.read8(this.currentIndex);
 
-  private bytesLeftInFile(): number {
-    return this.fb.getBytes().length - this.currentIndex;
-  }
+  private bytesLeftInFile = (): number => this.fb.getBytes().length - this.currentIndex;
 
   /**
    * For a known instruction opcode, construct the instruction with the {@link LabelsComments} and consume the
