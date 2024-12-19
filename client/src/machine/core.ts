@@ -125,6 +125,9 @@ interface Memory<T extends Endian> {
    */
   read16(byteOffset: Addr): number;
 
+
+  read8(byteOffset: Addr): number;
+
   /**
    * Gets the {@link Endian endianness}.
    */
