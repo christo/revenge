@@ -4,7 +4,11 @@ import {FileBlob} from "../../src/machine/FileBlob";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
 import {Disassembler} from "../../src/machine/asm/Disassembler";
 
-export function machineCode(niladics: string[]): number[] {
+/**
+ * Return the bytes of each opcode in sequence - if there are several, chooses one "randomly"
+ * @param niladics no operands are included, so only suits niladic ops
+ */
+export function niladicOpcodes(niladics: string[]): number[] {
   return niladics.flatMap(op => Mos6502.ISA.byName(op).getBytes())
 }
 
