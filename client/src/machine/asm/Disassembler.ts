@@ -1,10 +1,11 @@
 import {FileBlob} from "../FileBlob.ts";
-import {FullInstruction, InstructionSet, Mos6502} from "../mos6502.ts";
+import {FullInstruction, Mos6502} from "../mos6502.ts";
 import {Addr, asByte, Endian, Memory} from "../core.ts";
 import {ByteDeclaration, Edict, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
+import {InstructionSet} from "../InstructionSet.ts";
 
 /**
  * Stateful translator of bytes to their parsed instruction line
@@ -64,26 +65,27 @@ class Disassembler {
 
     const lc = this.mkPredefLabelsComments(this.currentAddress);
 
-    let instructionish: InstructionLike;
+    let instLike: InstructionLike;
 
     // TODO merge edict check for 0-n bytes ahead where n is the instruction size with opcode = current byte
 
     const maybeInstruction: InstructionLike | undefined = this.maybeMkEdict(lc);
     if (maybeInstruction !== undefined) {
-      instructionish = maybeInstruction;
+      instLike = maybeInstruction;
     } else {
       const isIllegal = (n: number) => Mos6502.ISA.op(n) === undefined;
       const opcode = this.peekByte();
+      // TODO fix: opcode will not be undefined, peekByte will throw error beyond eof
       if (opcode === undefined) {
         throw Error(`Cannot get byte at offset ${this.currentIndex} from file ${this.fb.name}`);
       } else if (isIllegal(opcode)) {
         // slurp up multiple illegal opcodes in a row
         let numBytes = 1;
-        while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.getBytes().at(this.currentIndex + numBytes)!)) {
+        while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.read8(this.currentIndex + numBytes)!)) {
           numBytes++;
         }
         lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
-        instructionish = new ByteDeclaration(this.eatBytes(numBytes), lc);
+        instLike = new ByteDeclaration(this.eatBytes(numBytes), lc);
       } else {
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
         // we don't yet know if an instruction will fit for the next byte
@@ -91,13 +93,13 @@ class Disassembler {
 
         if (this.bytesLeftInFile() < instLen) {
           lc.addComments("instruction won't fit");
-          instructionish = new ByteDeclaration(this.eatBytes(1), lc);
+          instLike = new ByteDeclaration(this.eatBytes(1), lc);
         } else {
-          instructionish = this.edictAwareInstruction(opcode, lc);
+          instLike = this.edictAwareInstruction(opcode, lc);
         }
       }
     }
-    return instructionish;
+    return instLike;
   }
 
   isInBinary(addr: Addr) {
@@ -117,7 +119,8 @@ class Disassembler {
     // TODO refactor bigly, this is insane-o
 
     // check if there's an edict n ahead of currentIndex
-    const edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+    const edictAhead: (n: number) => boolean = (n: number) =>
+        this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
     // make an edict-enforced byte declaration of the given length
     const mkEdictInferredByteDec = (n: number) => {
@@ -301,6 +304,7 @@ class Disassembler {
       } else {
         throw Error("Illegal state: number of instruction bytes > 3");
       }
+      // TODO ? what happens if instruction is only one byte?
       const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
       return inst;
     } else {

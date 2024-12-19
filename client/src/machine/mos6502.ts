@@ -10,15 +10,17 @@
  */
 
 import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
+import {InstructionSet} from "./InstructionSet.ts";
+import {Op} from "./Op.ts";
 
-type OperandLength = 0 | 1 | 2;
+type M6502OperandLength = 0 | 1 | 2;
 
 class AddressingMode {
-  code: string;
-  desc: string;
-  template: string;
-  blurb: string
-  numOperandBytes: OperandLength;
+  readonly code: string;
+  readonly desc: string;
+  readonly template: string;
+  readonly blurb: string
+  readonly numOperandBytes: M6502OperandLength;
 
   /**
    * Make an addressing mode using all the goodies.
@@ -38,25 +40,6 @@ class AddressingMode {
     this.template = template;
     this.blurb = blurb;
     this.numOperandBytes = numOperandBytes;
-  }
-}
-
-class Op {
-  mnemonic: string;
-  description: string;
-  /** mnemonic category */
-  cat: string;
-  private readonly _isJump: boolean;
-
-  constructor(mnemonic: string, description: string, cat: string, isJump = false) {
-    this.mnemonic = mnemonic;
-    this.description = description;
-    this.cat = cat;
-    this._isJump = isJump;
-  }
-
-  get isJump(): boolean {
-    return this._isJump;
   }
 }
 
@@ -212,7 +195,7 @@ const TYA = new Op("TYA", "transfer Y to accumulator", TR);
  * dependent on crossing page boundaries and, for branch instructions, whether the
  * branch was taken.
  */
-class Cycles {
+export class Cycles {
   /** System-wide per-instruction minimum guard. */
   static MIN_CYCLES = 2;
   /** System-wide per-instruction maximum guard. */
@@ -283,92 +266,6 @@ class Instruction {
   }
 }
 
-/**
- * Represents the whole set of machine instructions.
- */
-class InstructionSet {
-  // note redundancy here, like all bad code, huddles behind the defense of performance,
-  // prematurely optimised as per root of all evil
-  private mnemonicToByte = new Map<string, number>([]);
-  private ops: Array<Op> = [];
-  private modes: Array<AddressingMode> = [];
-  /** The number of bytes in the instruction with the given opcode */
-  private bytes: Array<number> = [];
-  // noinspection JSMismatchedCollectionQueryUpdate
-  private cycles: Array<Cycles> = [];
-  private instructions: Array<Instruction> = [];
-
-  add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
-    const o = assertByte(opcode);
-    if (this.instructions[o]) {
-      throw Error("Instruction for this opcode already registered.");
-    }
-    if (bytes !== 0 && bytes !== 1 && bytes !== 2 && bytes !== 3) {
-      throw Error("number of bytes in an instruction should be only: 0,1,2 or 3");
-    }
-    this.mnemonicToByte.set(op.mnemonic, o);
-    this.ops[o] = op;
-    this.modes[o] = mode;
-    this.bytes[o] = bytes;
-    this.cycles[o] = cycles;
-    this.instructions[o] = new Instruction(op, mode, o, bytes, cycles, false);
-  }
-
-  op(opcode: number) {
-    return this.ops[assertByte(opcode)];
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  mode(opcode: number) {
-    return this.modes[assertByte(opcode)];
-  }
-
-  numBytes(opcode: number) {
-    return this.bytes[assertByte(opcode)];
-  }
-
-  instruction(opcode: number): Instruction {
-    return this.instructions[assertByte(opcode)];
-  }
-
-  /**
-   * Case insensitive, finds one instruction with given mnemonic.
-   * @param mnemonic
-   */
-  byName(mnemonic: string): Instruction | undefined {
-    const m = mnemonic.toUpperCase();
-    return this.instructions.find(i => i && i.op.mnemonic.toUpperCase() === m);
-  }
-
-  all() {
-    // TODO finish implementing this weird thing
-    const builder: Builder = {
-      bytes: [] as number[],
-      add: {} as InstructionCall,
-      opMap: {},
-      build: () => [234]
-    };
-    this.ops.forEach(op => {
-      builder.opMap[op.mnemonic] = (_args: number[]) => {
-        const instructionBytes = this.byName(op.mnemonic)?.getBytes();
-        instructionBytes?.forEach(b => builder.bytes.push(b));
-        return builder;
-      };
-    })
-  }
-
-}
-
-/**
- * Fluent builder for constructing binary programs
- */
-type Builder = {
-  bytes: number[],
-  add: InstructionCall,
-  // TODO looks way skuffed here
-  opMap: { [keyof: string]: (args: number[]) => Builder }
-  build: () => number[];
-}
 
 type InstructionCall = (args: string[]) => void;
 
@@ -700,7 +597,6 @@ export {
   Mos6502,
   Instruction,
   FullInstruction,
-  InstructionSet,
   MODE_ABSOLUTE,
   MODE_IMPLIED,
   MODE_ZEROPAGE,
@@ -717,4 +613,4 @@ export {
   AddressingMode,
 };
 
-export type {OperandLength, InstructionCall}
+export type {M6502OperandLength, InstructionCall}
