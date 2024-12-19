@@ -1,25 +1,22 @@
 // C64 specific details
 // noinspection JSUnusedLocalSymbols
 
-
-import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "./api.ts";
+import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "../api.ts";
 import {CartSniffer} from "./cbm.ts";
-import {ArrayMemory, KB_64, LE} from "./core.ts";
-import {FileBlob} from "./FileBlob.ts";
-import {Mos6502} from "./mos6502.ts";
+import {ArrayMemory, KB_64, LE} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Mos6502} from "../mos6502.ts";
 import {Petscii} from "./petscii.ts";
-import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
-import {BlobType} from "./BlobType.ts";
-import {ByteDefinitionEdict, VectorDefinitionEdict} from "./asm/instructions.ts";
-import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "./asm/asm.ts";
+import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
+import {BlobType} from "../BlobType.ts";
+import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
+import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
 
 class C64 extends Computer {
-
   constructor(memoryConfig: MemoryConfiguration, tags: string[]) {
     super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, tags);
   }
 }
-
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
 const C64_BASIC_PRG = new BlobType(

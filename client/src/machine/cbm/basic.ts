@@ -2,11 +2,11 @@
  Commodore BASIC
  */
 
-import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "./api";
-import {hex16} from "./core";
-import {FileBlob} from "./FileBlob";
+import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api";
+import {hex16} from "../core";
+import {FileBlob} from "../FileBlob";
 import {Petscii} from "./petscii";
-import {DataView, DataViewImpl} from "./DataView.ts";
+import {DataView, DataViewImpl} from "../DataView.ts";
 
 type Token = [number, string];
 

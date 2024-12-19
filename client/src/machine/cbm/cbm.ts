@@ -10,19 +10,19 @@ import {
   TAG_HEX,
   TAG_LINE,
   UserAction
-} from "./api.ts";
-import {Environment,} from "./asm/asm.ts";
+} from "../api.ts";
+import {Environment,} from "../asm/asm.ts";
 import {CBM_BASIC_2_0} from "./basic.ts";
-import {asHex, hex16, hex8} from "./core.ts";
-import {FileBlob} from "./FileBlob.ts";
-import {Mos6502} from "./mos6502.ts";
-import {DataViewImpl} from "./DataView.ts";
-import {BlobSniffer} from "./BlobSniffer.ts";
-import {DefaultDialect} from "./asm/DefaultDialect.ts";
-import {Disassembler} from "./asm/Disassembler.ts";
-import {Directive, InstructionLike, PcAssign} from "./asm/instructions.ts";
-import {BlobType} from "./BlobType.ts";
-import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
+import {asHex, hex16, hex8} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Mos6502} from "../mos6502.ts";
+import {DataViewImpl} from "../DataView.ts";
+import {BlobSniffer} from "../BlobSniffer.ts";
+import {DefaultDialect} from "../asm/DefaultDialect.ts";
+import {Disassembler} from "../asm/Disassembler.ts";
+import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
+import {BlobType} from "../BlobType.ts";
+import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
