@@ -1,8 +1,9 @@
 import {Mos6502} from "../../src/machine/mos6502";
-import {ArrayMemory, LE} from "../../src/machine/core";
+import {LE} from "../../src/machine/core";
 import {FileBlob} from "../../src/machine/FileBlob";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
 import {Disassembler} from "../../src/machine/asm/Disassembler";
+import {ArrayMemory} from "../../src/machine/Memory";
 
 /**
  * Return the bytes of each opcode in sequence - if there are several, chooses one "randomly"
@@ -12,8 +13,12 @@ export function niladicOpcodes(niladics: string[]): number[] {
   return niladics.flatMap(op => Mos6502.ISA.byName(op).getBytes())
 }
 
-export function mem(contents: number[]) {
-  return new ArrayMemory(contents, LE, true, true);
+export function mem(contents: number[], offset: number = 0) {
+  const arrayMemory = new ArrayMemory(contents, LE, true, true);
+  if (offset > 0) {
+    throw Error("not implemented");
+  }
+  return arrayMemory;
 }
 
 export function createDisassembler(bytes: number[], contentStartOffset: number) {

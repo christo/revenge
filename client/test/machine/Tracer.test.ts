@@ -41,20 +41,46 @@ describe("tracer", () => {
   it.skip("handles unconditional jump", () => {
     // little endian addresses
     const bytes: number[] = [
-      0, 0,                                     // 0, 1 base address
+      0, 0,                                     // $1000 base address
         // TODO assemble single line useful here
-      0x4c, 0x06, 0x00,                         // 2, 3, 4 JMP $0006
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // 5  hits this if no jump
-      ...Mos6502.ISA.byName("NOP").getBytes(),  // 6  jump target
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // 7  stop
+      0x4c, 0x06, 0x10,                         // $1000, $1001, $1002 JMP $1006
+      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1003  stops here if no jump
+      ...Mos6502.ISA.byName("NOP").getBytes(),  // $1004  jump target
+      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1005  stop
     ];
     const d = createDisassembler(bytes, 2);
     const t = new Tracer(d, 2, mem(bytes));
     t.step(); // execute JMP
     t.step(); // execute NOP
     t.step(); // execute BRK
+
     // currently fails because JMP is not implemented in Tracer
+    expect(t.executed()).to.not.have.members([2, 5], "JMP was ignored");
     expect(t.executed()).to.have.members([2, 6, 7]);
+  });
+
+  // TODO decide how base address is supposed to work for a trace
+  //   a trace is an emulator so the code needs to be "loaded" at an address.
+  //   A binary expects to be loaded at a fixed address, otherwise the addresses are wrong.
+  it.skip("handles unconditional jump with base address", () => {
+    const bytes: number[] = [
+      0, 0x10,                                     // $1000 base address
+      // TODO assemble single line useful here
+      0x4c, 0x06, 0x10,                         // $1000, $1001, $1002 JMP $1006
+      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1003  stops here if no jump
+      ...Mos6502.ISA.byName("NOP").getBytes(),  // $1004  jump target
+      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1005  stop
+    ];
+    const d = createDisassembler(bytes, 0x1000);
+    const t = new Tracer(d, 0x1000, mem(bytes));
+    t.step(); // execute JMP
+    t.step(); // execute NOP
+    t.step(); // execute BRK
+    // currently fails because JMP is not implemented in Tracer
+    const executed = t.executed();
+    expect(executed[0]).to.not.equal(2, "base address was ignored");
+    expect(t.executed()).to.not.have.members([0x1000, 0x1003]);
+    expect(t.executed()).to.have.members([0x1000, 0x0004, 0x0005], "expected execution of jump");
   })
 });
 

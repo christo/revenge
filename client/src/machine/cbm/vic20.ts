@@ -3,7 +3,7 @@
 import {Computer, LogicalLine, MemoryConfiguration, Tag, TAG_ADDRESS, TAG_LINE_NUMBER} from "../api";
 import {CBM_BASIC_2_0} from "./basic";
 import {CartSniffer, prg} from "./cbm";
-import {ArrayMemory, KB_64, LE, lsb, msb} from "../core";
+import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {Mos6502} from "../mos6502";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
@@ -11,6 +11,7 @@ import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "../asm/a
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
+import {ArrayMemory} from "../Memory.ts";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 

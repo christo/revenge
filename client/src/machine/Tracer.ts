@@ -8,9 +8,10 @@
  * idioms may be recognised this same way across different code bases.
  */
 
-import {Endian, Memory} from "./core";
+import {Endian, hex16} from "./core";
 import {Disassembler} from "./asm/Disassembler";
 import {Thread} from "./Thread.ts";
+import {Memory} from "./Memory.ts";
 
 /**
  * Analyser that approximates code execution to some degree. Static analysis ignores register and memory contents,
@@ -39,10 +40,11 @@ class Tracer {
    * @param memory the Memory
    */
   constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>) {
+    const relativePc = pc - disasm.getSegmentBaseAddress();
     if (Math.round(pc) !== pc) {
       throw Error(`startLocation must be integral`);
-    } else if (pc < 0 || memory.getLength() <= pc) {
-      throw Error(`startLocation ${pc} not inside memory of size ${memory.getLength()}`);
+    } else if (relativePc < 0 || memory.getLength() <= relativePc) {
+      throw Error(`startLocation 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }

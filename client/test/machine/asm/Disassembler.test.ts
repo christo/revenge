@@ -1,7 +1,9 @@
 import {expect} from 'chai';
-import {ArrayMemory, LE} from "../../../src/machine/core";
+import {LE} from "../../../src/machine/core";
 import {createDisassembler, niladicOpcodes} from "../util";
 import {AddressingMode, MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502";
+import {OpSemantics} from "../../../src/machine/Op";
+import {ArrayMemory} from "../../../src/machine/Memory";
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {
@@ -22,10 +24,10 @@ describe("disassembler", () => {
     const disassembled = d.disassemble1(mem, 2);
     const instruction = disassembled.instruction;
     const op = instruction.op;
-    expect(instruction.op.isJump).to.equal(true);
+    expect(instruction.op.has(OpSemantics.IS_UNCONDITIONAL_JUMP)).to.equal(true);
     expect(op.mnemonic).to.equal("JMP");
     expect(instruction.mode).to.equal(MODE_ABSOLUTE);
     expect(disassembled.getBytes().length).to.equal(3);
-    expect(disassembled.operand16()).to.equal(0x6502);
+    expect(disassembled.operandValue()).to.equal(0x6502);
   });
 })

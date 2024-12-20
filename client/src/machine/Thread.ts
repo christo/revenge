@@ -1,5 +1,7 @@
 import {Disassembler} from "./asm/Disassembler";
-import {Addr, Endian, Memory} from "./core.ts";
+import {Addr, Endian} from "./core.ts";
+import {OpSemantics} from "./Op.ts";
+import {Memory} from "./Memory.ts";
 
 /**
  * A single thread of execution which records all executed addresses and all written locations.
@@ -65,7 +67,6 @@ export class Thread {
       throw new Error("cannot step if stopped");
     }
     this.execute();
-    this.executed.push(this.pc++);
   }
 
   /**
@@ -77,17 +78,26 @@ export class Thread {
    * If an branching instruction occurs, the new {@link Thread} is returned, otherwise undefined.
    */
   private execute(): Thread | undefined {
-    console.log(`executing: ${this.descriptor}`);
-    // TODO use this.disasm to disassemble current instruction
+    // console.log(`executing: ${this.descriptor}/${this.pc}`);
+    // TODO confirm this.pc is the memory offset - what is the base address?
+    const inst = this.disasm.disassemble1(this.memory, this.pc);
+    // by default, increment PC by length of this instruction
+    let nextPc = this.pc + inst.getLength();
+    if (this.executed.includes(this.pc)) {
+      console.log(`already executed ${this.pc}, terminating thread ${this}`);
+      this._running = false;
+    } else {
+      const op = inst.instruction.op;
+      if (op.any([OpSemantics.IS_BREAK, OpSemantics.IS_JAM])) {
+        this._running = false;
+      } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
+        nextPc = inst.operandValue();
+      }
+    }
 
-    // TODO disassemble instruction at PC
-
-
-    // TODO handle stop cases, i.e. BRK or CPU JAM
     // TODO handle join case, i.e. reaching already traced code
     // TODO handle fork case, i.e. conditional branch
-    // TODO handle simple recording of execution at instruction address, must keep track of first byte and
-    //  instruction length.
+    // TODO handle tracing interrupt handlers - these are tricky - perhaps we can just always trace them
     // TODO edge case: execution at an address could be byte-misaligned with previous execution resulting in
     //  different instruction decoding, so execution records should hold the first byte of the decoded instruction
     //  and coverage measurements imply that coverage of any subsequent bytes of the instruction is predicated on
@@ -96,6 +106,8 @@ export class Thread {
     //  instructions may be rare enough to simply report as anomalies at first and may even be more likely be a
     //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
     //  degenerate runtime state is represented.
+    this.executed.push(this.pc);
+    this.pc = nextPc; // increment PC by length of this instruction
     return undefined;
   }
 
@@ -105,5 +117,9 @@ export class Thread {
 
   getWritten(): Array<number> {
     return [...this.written];
+  }
+
+  getPc() {
+    return this.pc;
   }
 }

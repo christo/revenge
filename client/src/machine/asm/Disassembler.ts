@@ -1,11 +1,13 @@
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction, Mos6502} from "../mos6502.ts";
-import {Addr, asByte, Endian, Memory} from "../core.ts";
+import {Addr, asByte, Endian} from "../core.ts";
 import {ByteDeclaration, Edict, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {InstructionSet} from "../InstructionSet.ts";
+import {Memory} from "../Memory.ts";
+import {OpSemantics} from "../Op.ts";
 
 
 
@@ -30,7 +32,7 @@ class Disassembler {
     const index = dm.contentStartOffset();
     const bytes: number[] = fb.getBytes();
     if (index >= bytes.length || index < 0) {
-      throw Error(`index '${index}' out of range`);
+      throw Error(`index '${index}' out of range for fb size: ${fb.getLength()}`);
     }
     this.originalIndex = index;
     this.currentIndex = index;
@@ -160,6 +162,7 @@ class Disassembler {
     return lc.reduce((p, c) => p.merge(c), new LabelsComments());
   }
 
+  // noinspection JSUnusedGlobalSymbols
   /**
    * Determine all jump targets both statically defined and implied by the given sequence of address,instruction
    * pairs. Only those targets that lie within the address range of our loaded binary are returned.
@@ -171,13 +174,11 @@ class Disassembler {
 
     // instructions that are jumps and have a resolvable destination
     const resolvableJump = (addrInst: [number, FullInstruction]) => {
-      return addrInst[1].instruction.op.isJump && addrInst[1].staticallyResolvableOperand();
+      const isJump = addrInst[1].instruction.op.any([OpSemantics.IS_UNCONDITIONAL_JUMP, OpSemantics.IS_CONDITIONAL_JUMP]);
+      return isJump && addrInst[1].staticallyResolvableOperand();
     };
 
-    // collect targets of all current jump instructions
-
     // for all jump instructions, collect the destination address
-
     return instructions
         .filter(addrInst => resolvableJump(addrInst))   // only jumps, only statically resolvable
         .map(j => j[1].resolveOperandAddress(j[0]))     // resolve pc-relative operands
@@ -222,34 +223,16 @@ class Disassembler {
   private eatBytes(count: number): number[] {
     const bytes: number[] = [];
     for (let i = 1; i <= count; i++) {
-      bytes.push(this.eatByte());
+      const value = this.fb.read8(this.currentIndex); // side effect
+      if (typeof value === "undefined") {
+        throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
+      } else {
+        this.currentIndex++;
+        bytes.push(value & 0xff);
+      }
+
     }
     return bytes;
-  }
-
-  /**
-   * @deprecated side effect
-   * @private
-   */
-  private eatByteOrDie() {
-    if (this.currentIndex >= this.fb.getBytes().length) {
-      throw Error("No more bytes");
-    }
-    return this.eatByte();
-  }
-
-  /**
-   * @deprecated side effect
-   * @private
-   */
-  private eatByte(): number {
-    const value = this.fb.read8(this.currentIndex); // side effect
-    if (typeof value === "undefined") {
-      throw Error(`Illegal state, no byte at index ${this.currentIndex}`);
-    } else {
-      this.currentIndex++;
-      return (value & 0xff);
-    }
   }
 
   private peekByte = (): number => this.fb.read8(this.currentIndex);
@@ -354,6 +337,10 @@ class Disassembler {
       this.currentIndex += remainingBytes;
     }
     return undefined;
+  }
+
+  getSegmentBaseAddress(): Addr {
+    return this.segmentBaseAddress;
   }
 }
 

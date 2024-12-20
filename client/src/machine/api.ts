@@ -1,9 +1,10 @@
-import {Addr, BigEndian, hex8, LittleEndian, Memory} from "./core";
+import {Addr, BigEndian, hex8, LittleEndian} from "./core";
 import {FileBlob} from "./FileBlob";
 import {Mos6502} from "./mos6502";
 import {InstructionLike} from "./asm/instructions.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
+import {Memory} from "./Memory.ts";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.

@@ -1,4 +1,5 @@
-import {Addr, ArrayMemory, BE, Byteable, Endian} from "./core";
+import {Addr, BE, Byteable, Endian} from "./core";
+import {ArrayMemory} from "./Memory.ts";
 
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
