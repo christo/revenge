@@ -115,7 +115,7 @@ class SymbolTable {
 
   // future: keep kernal symbols in a separate table from user-defined symbols, also can have multimap
 
-  private addressToSymbol: Map<Addr, SymDef> = new Map<Addr, SymDef>(); // TODO should have multiple symbols
+  private addressToSymbol: Map<Addr, SymDef> = new Map<Addr, SymDef>();
   private readonly name: string;
   /**
    * string lookup
