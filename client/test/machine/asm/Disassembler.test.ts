@@ -4,15 +4,12 @@ import {createDisassembler, niladicOpcodes} from "../util";
 import {AddressingMode, MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502";
 
 describe("disassembler", () => {
-  it("disassemble1 niladic", () => {
-    const NOP_BYTES = niladicOpcodes(["NOP"]);
-    const code: number[] = [0, 0, ...NOP_BYTES];
+  it("disassembles single niladic instruction", () => {
+    const bytes = niladicOpcodes(["NOP"]);
+    const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
-    const fb = new FileBlob("testblob", mem);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
-    const d: Disassembler = new Disassembler(Mos6502.ISA, fb, dm);
+    const d = createDisassembler(code, 2);
     const disassembled = d.disassemble1(mem, 2);
-    console.log(disassembled);
     expect(disassembled.instruction.op.mnemonic).to.equal("NOP");
   });
   it("disassembles single JMP instruction", () => {
