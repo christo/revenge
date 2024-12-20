@@ -10,7 +10,7 @@ describe("tracer", () => {
   it("runs then stops at BRK", () => {
     const machineCode: number[] = [
       0, 0, // base address 0x0000
-      ...Mos6502.ISA.byName("BRK").getBytes(),
+      brk,
     ];
     const d = createDisassembler(machineCode, 2);
     const t = new Tracer(d, 0, mem(machineCode));
@@ -24,7 +24,7 @@ describe("tracer", () => {
   it("records executed locations", () => {
     const bytes: number[] = [
       0, 0, // base address 0x0000
-      ...niladicOpcodes(["NOP", "NOP", "BRK"])
+      nop, nop, brk
     ];
     const d = createDisassembler(bytes, 2);
     const t = new Tracer(d, 2, mem(bytes));
@@ -65,12 +65,11 @@ describe("tracer", () => {
   //   A binary expects to be loaded at a fixed address, otherwise the addresses are wrong.
   it.skip("handles unconditional jump with base address", () => {
     const bytes: number[] = [
-      0, 0x10,                                     // $1000 base address
-      // TODO assemble single line useful here
-      0x4c, 0x06, 0x10,                         // $1000, $1001, $1002 JMP $1006
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1003  stops here if no jump
-      ...Mos6502.ISA.byName("NOP").getBytes(),  // $1004  jump target
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1005  stop
+      0, 0x10,          // $1000 base address
+      0x4c, 0x06, 0x10, // $1000, $1001, $1002 JMP $1006
+      brk,              // $1003  stops here if no jump
+      nop,              // $1004  jump target
+      brk,              // $1005  intended stop
     ];
     const d = createDisassembler(bytes, 0x1000);
     const t = new Tracer(d, 0x1000, mem(bytes));
