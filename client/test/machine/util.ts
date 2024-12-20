@@ -16,8 +16,8 @@ export function mem(contents: number[]) {
   return new ArrayMemory(contents, LE, true, true);
 }
 
-export function createDisassembler(machineCode: number[], contentStartOffset: number) {
-  const fb = FileBlob.fromBytes("testblob", machineCode, LE);
+export function createDisassembler(bytes: number[], contentStartOffset: number) {
+  const fb = FileBlob.fromBytes("testblob", bytes, LE);
   const dm = new DisassemblyMetaImpl(0, 0, contentStartOffset);
   return new Disassembler(Mos6502.ISA, fb, dm);
 }
