@@ -3,6 +3,7 @@
 * [x] migrate project to bun
 * [x] migrate tests to mocha/chai
 * [ ] implement Tracer and tests
+  * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [ ] Tracer needs memory recorder (read, write, execute)
   * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
 
