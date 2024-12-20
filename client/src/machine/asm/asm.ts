@@ -207,11 +207,12 @@ export class LabelsComments {
   }
 
   /**
-   * Mutates this by adding all the given labels and comments
+   * Mutates this by adding all the given labels and comments, returns this.
    */
-  merge(lc: LabelsComments): void {
+  merge(lc: LabelsComments): LabelsComments {
     this.addLabels(lc._labels);
     this.addComments(lc._comments);
+    return this;
   }
 
   /**
