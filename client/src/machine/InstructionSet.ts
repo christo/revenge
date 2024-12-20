@@ -62,6 +62,13 @@ class InstructionSet {
     return this.instructions.find(i => i && i.op.mnemonic.toUpperCase() === m);
   }
 
+  byNameAndMode(mnemonic: string, mode: AddressingMode): Instruction | undefined {
+    const m = mnemonic.toUpperCase();
+    return this.instructions.find(i => {
+      return i && i.op.mnemonic.toUpperCase() === m && i.mode === mode;
+    });
+  }
+
   all() {
     // TODO finish implementing this weird thing
     const builder: Builder = {
