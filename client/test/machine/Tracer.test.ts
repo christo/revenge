@@ -3,6 +3,9 @@ import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
 import {createDisassembler, niladicOpcodes, mem} from "./util";
 
+const brk = Mos6502.ISA.byName("BRK").getBytes()[0];
+const nop = Mos6502.ISA.byName("NOP").getBytes()[0];
+
 describe("tracer", () => {
   it("runs then stops at BRK", () => {
     const machineCode: number[] = [
@@ -38,15 +41,14 @@ describe("tracer", () => {
     expect(t.executed()).to.have.members([2, 3, 4]);
   });
 
-  it.skip("handles unconditional jump", () => {
+  it("handles unconditional jump", () => {
     // little endian addresses
     const bytes: number[] = [
-      0, 0,                                     // $1000 base address
-        // TODO assemble single line useful here
-      0x4c, 0x06, 0x10,                         // $1000, $1001, $1002 JMP $1006
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1003  stops here if no jump
-      ...Mos6502.ISA.byName("NOP").getBytes(),  // $1004  jump target
-      ...Mos6502.ISA.byName("BRK").getBytes(),  // $1005  stop
+      0, 0,         // 0, 1   : $0000 base address
+      0x4c, 6, 0,   // 2, 3, 4: JMP 6
+      brk,          // 5      : BRK     ; stops here if no jump
+      nop,          // 6      : NOP     ; jump target
+      brk,          // 7      : BRK     ; intended stop
     ];
     const d = createDisassembler(bytes, 2);
     const t = new Tracer(d, 2, mem(bytes));
@@ -54,7 +56,6 @@ describe("tracer", () => {
     t.step(); // execute NOP
     t.step(); // execute BRK
 
-    // currently fails because JMP is not implemented in Tracer
     expect(t.executed()).to.not.have.members([2, 5], "JMP was ignored");
     expect(t.executed()).to.have.members([2, 6, 7]);
   });
