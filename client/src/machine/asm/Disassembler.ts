@@ -79,7 +79,7 @@ class Disassembler {
       const opcode = this.peekByte();
       // TODO fix: opcode will not be undefined, peekByte will throw error beyond eof
       if (opcode === undefined) {
-        throw Error(`Cannot get byte at offset ${this.currentIndex} from file ${this.fb.name}`);
+        throw Error(`Cannot get byte at offset ${this.currentIndex} from ${this.fb.name}`);
       } else if (isIllegal(opcode)) {
         // slurp up multiple illegal opcodes in a row
         let numBytes = 1;
@@ -156,10 +156,8 @@ class Disassembler {
    * @param addr
    */
   mkPredefLabelsComments(addr: Addr): LabelsComments {
-    return this.predefLc.filter(t => t[0] === addr).map(t => t[1]).reduce((p, c) => {
-      p.merge(c);
-      return p;
-    }, new LabelsComments());
+    const lc = this.predefLc.filter(t => t[0] === addr).map(t => t[1]);
+    return lc.reduce((p, c) => p.merge(c), new LabelsComments());
   }
 
   /**
@@ -348,7 +346,7 @@ class Disassembler {
       this.currentIndex += edict.length;
       return edict.create(this.fb);
     } else {
-      // cannot comply
+      // cannot comply, add comment
       const elc = edict.create(this.fb).labelsComments;
       const explainLc = elc.length() > 0 ? ` (preserving ${elc.length()} labels/comments)` : "";
       lc.addComments(`End of file clashes with edict${explainLc}: '${edict.describe()}'`);
