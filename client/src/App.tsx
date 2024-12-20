@@ -25,13 +25,12 @@ import {
     TAG_NOTE,
     TAG_OPERAND,
     TypeActions
-} from "./machine/api";
-import {fileTypes} from "./machine/cbm";
-import {LE} from "./machine/core";
-import {FileBlob, FileLike} from "./machine/FileBlob";
-import {sniff} from "./machine/revenge";
+} from "./machine/api.ts";
+import {fileTypes} from "./machine/cbm/cbm.ts";
+import {LE} from "./machine/core.ts";
+import {FileBlob, FileLike} from "./machine/FileBlob.ts";
+import {sniff} from "./machine/revenge.ts";
 import {InsertLink} from "@mui/icons-material";
-
 
 const BASE_TITLE = window.document.title;
 

@@ -1,9 +1,9 @@
 // application-level stuff to tie user interface and domain model
 
-import {hexDumper, TypeActions} from "./api";
-import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./c64";
-import {disassemble, printBasic} from "./cbm";
-import {FileBlob} from "./FileBlob";
+import {hexDumper, TypeActions} from "./api.ts";
+import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
+import {disassemble, printBasic} from "./cbm/cbm.ts";
+import {FileBlob} from "./FileBlob.ts";
 import {
   COMMON_MLPS,
   EXP03K_VIC_BASIC,
@@ -12,7 +12,7 @@ import {
   EXP24K_VIC_BASIC,
   UNEXPANDED_VIC_BASIC,
   VIC20_CART
-} from "./vic20";
+} from "./cbm/vic20.ts";
 import {UNKNOWN_BLOB} from "./BlobType";
 
 /**
