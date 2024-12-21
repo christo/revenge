@@ -6,6 +6,7 @@ import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 
 /**
  * Encapsulates outer context for performing {@link Disassembler}.
+ * FUTURE: this is very CBM 6502 oriented
  */
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
@@ -22,10 +23,11 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /**
    * Create context with minimalist defaults.
+   *
    * @param baseAddressOffset memory address to load into.
    * @param resetVectorOffset reset vector, defaults to baseAddressOffset
    * @param contentStartOffset start of content, defaults to baseAddressOffset
-   * @param edicts any predefined edicts for disassembly, defaults to empty
+   * @param edicts any predefined edicts for disassembly, defaults to empty, only one per address.
    * @param getJumpTargets do find externally defined symbols, defaults to empty.
    * @param symbolTable predefined symbol table (defaults to empty).
    */
