@@ -54,6 +54,11 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     this.symbolResolver = symbolResolver;
   }
 
+  /**
+   * Read the absolute base address from the given {@link FileBlob} using configured offset.
+   * FUTURE: assumes base load address is present in fb
+   * @param fb the FileBlob
+   */
   baseAddress(fb: FileBlob): number {
     return fb.read16(this._baseAddressOffset);
   }
