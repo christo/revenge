@@ -228,8 +228,10 @@ export class LabelsComments {
  * destinations for jump or branch. Addr is derived from the contents of the
  * {@link FileBlob}.
  */
-type JumpTargetFetcher = (fb: FileBlob) => Array<[Addr, LabelsComments]>;
-const EMPTY_JUMP_TARGET_FETCHER: JumpTargetFetcher = (_fb) => []
+type SymbolResolver = (fb: FileBlob) => Array<[Addr, LabelsComments]>;
+
+const EMPTY_JUMP_TARGET_FETCHER: SymbolResolver = (_fb) => []
+
 export {
   Environment,
   Section,
@@ -243,5 +245,5 @@ export {
   EMPTY_JUMP_TARGET_FETCHER
 };
 export type {
-  JumpTargetFetcher
+  SymbolResolver
 };

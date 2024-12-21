@@ -10,7 +10,7 @@ import {Petscii} from "./petscii.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobType} from "../BlobType.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
-import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
+import {SymbolResolver, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
 import {ArrayMemory} from "../Memory.ts";
 
 class C64 extends Computer {
@@ -69,7 +69,7 @@ const C64_CART_MAGIC = new ByteDefinitionEdict(MAGIC_OFFSET, CBM80.length, new L
 const C64_CART_NMI_VECTOR = new VectorDefinitionEdict(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
 const C64_CART_RESET_VECTOR = new VectorDefinitionEdict(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
-const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
+const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
   [fb.read16(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],
   [fb.read16(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]

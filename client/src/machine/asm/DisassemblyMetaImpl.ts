@@ -1,4 +1,4 @@
-import {EMPTY_JUMP_TARGET_FETCHER, JumpTargetFetcher, LabelsComments, SymbolTable} from "./asm.ts";
+import {EMPTY_JUMP_TARGET_FETCHER, SymbolResolver, LabelsComments, SymbolTable} from "./asm.ts";
 import {Addr, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Edict, InstructionLike} from "./instructions.ts";
@@ -18,7 +18,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   private readonly _resetVectorOffset: number;
   private readonly _contentStartOffset: number;
   private readonly edicts: { [id: number]: Edict<InstructionLike>; };
-  private readonly jumpTargetFetcher: JumpTargetFetcher;
+  private readonly symbolResolver: SymbolResolver;
   private readonly symbolTable: SymbolTable;
 
   /**
@@ -28,7 +28,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    * @param resetVectorOffset reset vector, defaults to baseAddressOffset
    * @param contentStartOffset start of content, defaults to baseAddressOffset
    * @param edicts any predefined edicts for disassembly, defaults to empty, only one per address.
-   * @param getJumpTargets do find externally defined symbols, defaults to empty.
+   * @param symbolResolver do find externally defined symbols, defaults to empty.
    * @param symbolTable predefined symbol table (defaults to empty).
    */
   constructor(
@@ -36,7 +36,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       resetVectorOffset: number = baseAddressOffset,
       contentStartOffset: number = baseAddressOffset,
       edicts: Edict<InstructionLike>[] = [],
-      getJumpTargets: JumpTargetFetcher = EMPTY_JUMP_TARGET_FETCHER,
+      symbolResolver: SymbolResolver = EMPTY_JUMP_TARGET_FETCHER,
       symbolTable: SymbolTable = new SymbolTable("default")
   ) {
 
@@ -51,7 +51,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       const edict = edicts[i];
       this.edicts[edict.offset] = edict;
     }
-    this.jumpTargetFetcher = getJumpTargets;
+    this.symbolResolver = symbolResolver;
   }
 
   baseAddress(fb: FileBlob): number {
@@ -88,8 +88,8 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     return this.edicts[address];
   }
 
-  getJumpTargets(fb: FileBlob): [Addr, LabelsComments][] {
-    return this.jumpTargetFetcher(fb);
+  resolveSymbols(fb: FileBlob): [Addr, LabelsComments][] {
+    return this.symbolResolver(fb);
   }
 
   getSymbolTable(): SymbolTable {

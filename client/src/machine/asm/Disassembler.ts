@@ -38,7 +38,7 @@ class Disassembler {
     this.currentIndex = index;
     this.fb = fb;
     this.segmentBaseAddress = dm.baseAddress(fb);
-    this.predefLc = dm.getJumpTargets(fb);
+    this.predefLc = dm.resolveSymbols(fb);
     this.disMeta = dm;
     this.symbolDefinitions = new Map<string, SymDef>();
     this.stats = new Map<string, number>();

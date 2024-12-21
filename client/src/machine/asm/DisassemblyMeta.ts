@@ -41,7 +41,7 @@ interface DisassemblyMeta {
   /**
    * Return a list of address + LabelsComments to use for address aliases
    */
-  getJumpTargets(fb: FileBlob): [Addr, LabelsComments][];
+  resolveSymbols(fb: FileBlob): [Addr, LabelsComments][];
 
   /**
    * Based on the known machine.

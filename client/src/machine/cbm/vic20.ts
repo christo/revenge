@@ -7,7 +7,7 @@ import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {Mos6502} from "../mos6502";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
-import {JumpTargetFetcher, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
+import {SymbolResolver, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
@@ -84,7 +84,7 @@ const VIC20_CART_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const VIC20_CART_WARM_VECTOR_OFFSET = 4;
 
-const jumpTargetFetcher: JumpTargetFetcher = (fb: FileBlob) => [
+const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
   [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
   [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
