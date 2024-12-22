@@ -24,6 +24,9 @@ interface Byteable {
 
   /** Length in bytes, must equal the number of bytes returned from {@link getBytes} . */
   getLength(): number;
+
+  /** Get a single byte from the given offset */
+  read8(offset: number): number;
 }
 
 /**

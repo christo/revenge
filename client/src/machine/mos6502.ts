@@ -518,6 +518,8 @@ class FullInstruction implements Byteable {
     return this.instruction.getLength();
   }
 
+  read8 = (offset: number): number => this.getBytes()[offset];
+
   /**
    * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes
    * because those depend on the state of other memory locations or registers at execution time.

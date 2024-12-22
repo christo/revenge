@@ -3,7 +3,7 @@ import {Addr, Byteable, Endian, MB_8} from "./core.ts";
 /**
  * Contiguous, fixed-sized 0-based Memory with {@link Endian Endianness}.
  */
-interface Memory<T extends Endian> {
+interface Memory<T extends Endian> extends Byteable {
 
   writeable(): boolean;
 
@@ -15,15 +15,10 @@ interface Memory<T extends Endian> {
    */
   read16(byteOffset: Addr): number;
 
-
-  read8(byteOffset: Addr): number;
-
   /**
    * Gets the {@link Endian endianness}.
    */
   endianness(): T;
-
-  getLength(): number;
 
   submatch(seq: Uint8Array, atOffset: number): boolean;
 

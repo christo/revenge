@@ -25,6 +25,8 @@ export abstract class InstructionBase implements InstructionLike {
     return this._sourceType;
   }
 
+  read8 = (offset: number): number => this.getBytes()[offset];
+
   abstract disassemble(dialect: Dialect, dis: Disassembler): Tag[];
 
   abstract getBytes(): number[];
@@ -186,6 +188,10 @@ const BLANK_LINE: InstructionLike = {
   getBytes: (): number[] => [],
 
   getLength: (): number => 0,
+
+  read8: (_offset: number): number => {
+    throw Error("no bytes to read");
+  },
 
   get labelsComments(): LabelsComments {
     return LabelsComments.EMPTY;
