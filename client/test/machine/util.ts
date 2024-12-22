@@ -6,7 +6,8 @@ import {Disassembler} from "../../src/machine/asm/Disassembler";
 import {ArrayMemory} from "../../src/machine/Memory";
 
 /**
- * Return the bytes of each opcode in sequence - if there are several, chooses one "randomly"
+ * Return the bytes of each opcode in sequence - if there are several, chooses one in an unspecified way,
+ * so presumably only useful for niladic instructions with implied addressing mode.
  * @param niladics no operands are included, so only suits niladic ops
  */
 export function niladicOpcodes(niladics: string[]): number[] {
