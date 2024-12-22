@@ -24,7 +24,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   /**
    * Create context with minimalist defaults.
    *
-   * @param baseAddressOffset memory address to load into.
+   * @param baseAddressOffset memory offset at which to find address to load into.
    * @param resetVectorOffset reset vector, defaults to baseAddressOffset
    * @param contentStartOffset start of content, defaults to baseAddressOffset
    * @param edicts any predefined edicts for disassembly, defaults to empty, only one per address.
@@ -40,6 +40,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       symbolTable: SymbolTable = new SymbolTable("default")
   ) {
 
+    // TODO to what extent is this an unjustified assumption about the load address living in the FileBlob?
     this._baseAddressOffset = baseAddressOffset;
     this._contentStartOffset = contentStartOffset;
     this.symbolTable = symbolTable;
@@ -63,6 +64,11 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     return fb.read16(this._baseAddressOffset);
   }
 
+  /**
+   * Index in the load format at which the first byte of loadable content resides.
+   * This enables skipping leading metadata such as the CBM-style CRT image with the first two bytes holding the
+   * load address.
+   */
   contentStartOffset(): number {
     return this._contentStartOffset;
   }
@@ -79,6 +85,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     const resetAddr = fb.read16(this._resetVectorOffset);
     // two bytes make an address
     const resetMsb = resetAddr + 1;
+    // TODO how does this work? I forgot!
     const resetVectorIsInBinary = this.inBinary(resetMsb, fb);
     if (resetVectorIsInBinary) {
       return resetAddr - fb.read16(this._baseAddressOffset);
