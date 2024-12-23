@@ -94,12 +94,14 @@ class Disassembler {
       } else {
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
         // we don't yet know if an instruction will fit for the next byte
-        const instLen = Mos6502.ISA.numBytes(opcode) || 1;
+        const instLen = this.iset.numBytes(opcode) || 1;
 
-        if (this.bytesLeftInFile() < instLen) {
+        const bytesLeft = this.bytesLeftInFile();
+        if (bytesLeft < instLen) {
           lc.addComments("instruction won't fit");
           instLike = new ByteDeclaration(this.eatBytes(1), lc);
         } else {
+          // console.log(`bytes left: ${bytesLeft} instruction len: ${instLen}`);
           instLike = this.edictAwareInstruction(opcode, lc);
         }
       }
@@ -146,8 +148,26 @@ class Disassembler {
       }
     }
     // by now we know we must consume the current byte
-    this.currentIndex++;
-    return this.mkInstruction(currentByte, lc);
+    {
+      const numInstructionBytes = this.iset.numBytes(currentByte) || 1
+      const bytesRemaining = this.fb.getBytes().length - this.currentIndex;
+      if (numInstructionBytes <= bytesRemaining) {
+        // default operands are 0
+        let firstOperandByte = 0;
+        let secondOperandByte = 0;
+        if (numInstructionBytes === 2) {
+          firstOperandByte = this.fb.read8(this.currentIndex + 1);
+        } else if (numInstructionBytes === 3) {
+          secondOperandByte = this.fb.read8(this.currentIndex + 2);
+        }
+        const il = new FullInstruction(this.iset.instruction(currentByte), firstOperandByte, secondOperandByte);
+        this.currentIndex += (numInstructionBytes); // already consumed opcode
+        return new FullInstructionLine(il, lc);
+      } else {
+        console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
+        throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
+      }
+    }
   }
 
   hasNext() {
@@ -304,7 +324,6 @@ class Disassembler {
       this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
       return new FullInstructionLine(il, labelsComments);
     } else {
-      debugger;
       console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
       throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
     }

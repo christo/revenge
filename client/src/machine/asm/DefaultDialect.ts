@@ -80,6 +80,7 @@ class DefaultDialect implements Dialect {
   }
 
   parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState] {
+    // work in progres - assembler
     if (parserState === ParserState.READY) {
       // LINE_BEGIN [label] [instruction | directive] [comment] LINE_END
       const m = line.match(`^([A-Za-z_]\w*:)?\h*()?\h*(\\\*.*\*/|;.*)$`)
