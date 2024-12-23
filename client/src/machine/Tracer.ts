@@ -21,7 +21,7 @@ import {Memory} from "./Memory.ts";
 class Tracer {
   threads: Thread[] = [];
 
-  // TODO: identify self-mod code and refuse to trace it
+  // TODO: identify self-mod code and raise exception
   //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
   //    * if a written to address is disassembled as opcode or operand byte
   // TODO: identify code vs data. Data may be written to without causing self-mod.
