@@ -147,6 +147,7 @@ function HashChip({tag, key}: {key: string, tag: string}) {
 }
 
 function FileDetail(props: { fb: FileBlob }) {
+  // get actions that can be done on this blob based on scoring from sniff:
   const typeActions: TypeActions = sniff(props.fb);
   const [action, setAction] = useState(0);
   const t = typeActions.t;
@@ -160,6 +161,7 @@ function FileDetail(props: { fb: FileBlob }) {
         {t.tags.map((tag, i) => <HashChip tag={tag} key={`tag_${i}`}/>)}
       </div>
     </div>
+    {/* make a tab for each user action */}
     <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => {
       setAction(newValue);
     }}>
