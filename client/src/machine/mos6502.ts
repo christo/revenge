@@ -245,16 +245,16 @@ class Instruction {
     this.illegal = illegal;
   }
 
-  toString(): string {
-    return `${this.op.mnemonic}:${this._mode}/${this._numBytes}`;
-  }
-
   get op(): Op {
     return this._op;
   }
 
   get mode(): AddressingMode {
     return this._mode;
+  }
+
+  toString(): string {
+    return `${this.op.mnemonic}:${this._mode}/${this._numBytes}`;
   }
 
   getBytes(): number[] {

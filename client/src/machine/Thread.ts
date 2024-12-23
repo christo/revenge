@@ -6,7 +6,7 @@ import {Memory} from "./Memory.ts";
 /**
  * Length of instruction in bytes.
  */
-type InstLen = 1|2|3;
+type InstLen = 1 | 2 | 3;
 
 /**
  * Models all addresses occupied by a single instruction.
@@ -33,6 +33,7 @@ function enumInstAddr(ir: InstRec) {
  * A single thread of execution which records all executed addresses and all written locations.
  */
 export class Thread {
+  readonly descriptor: string;
   private readonly disasm: Disassembler;
   /** This should be immutable */
   private readonly memory: Memory<Endian>;
@@ -43,7 +44,6 @@ export class Thread {
   private readonly executed: Array<InstRec>;
   private readonly written: Array<number>;
   private pc: number;
-  readonly descriptor: string;
 
   /**
    * Starts in running mode.
@@ -100,6 +100,30 @@ export class Thread {
   }
 
   /**
+   * Returns the addresses of the instructions that have been executed. Does not include bytes belonging to operands.
+   */
+  getExecuted(): Array<Addr> {
+    // only return the address of the instruction itself since a theoretical non-self-mod program could reuse
+    // an operand as an instruction which is a different trace execution
+    return [...this.executed.map(il => il[0])];
+  }
+
+  /**
+   * Return all bytes (opcodes and operands) belonging to instructions that were executed.
+   */
+  getExecutedInstructionBytes(): Array<Addr> {
+    return this.executed.flatMap(enumInstAddr);
+  }
+
+  getWritten(): Array<number> {
+    return [...this.written];
+  }
+
+  getPc() {
+    return this.pc;
+  }
+
+  /**
    * Trace-execute the instruction. If it is a conditional branch it forks a thread. If it is a
    * jsr it pushes the appropriate address to the stack (6502 may not put return address), reaching
    * an already-traced address should cause the thread to stop, aka "join" and reaching a brk should
@@ -139,29 +163,5 @@ export class Thread {
     this.executed.push([this.pc, instLen as InstLen]);
     this.pc = nextPc; // increment PC by length of this instruction
     return undefined;
-  }
-
-  /**
-   * Returns the addresses of the instructions that have been executed. Does not include bytes belonging to operands.
-   */
-  getExecuted(): Array<Addr> {
-    // only return the address of the instruction itself since a theoretical non-self-mod program could reuse
-    // an operand as an instruction which is a different trace execution
-    return [...this.executed.map(il => il[0])];
-  }
-
-  /**
-   * Return all bytes (opcodes and operands) belonging to instructions that were executed.
-   */
-  getExecutedInstructionBytes(): Array<Addr> {
-    return this.executed.flatMap(enumInstAddr);
-  }
-
-  getWritten(): Array<number> {
-    return [...this.written];
-  }
-
-  getPc() {
-    return this.pc;
   }
 }
