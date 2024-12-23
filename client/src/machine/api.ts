@@ -114,12 +114,18 @@ class LogicalLine {
 class Detail {
   private readonly _tags: string[];
   private readonly _stats: [string, string][];
+  private readonly _name: string;
   private readonly _dataView: DataView;
 
-  constructor(tags: string[], dataView: DataView) {
+  constructor(name: string, tags: string[], dataView: DataView) {
+    this._name = name;
     this._tags = tags;
     this._dataView = dataView;
     this._stats = [];
+  }
+
+  get name(): string {
+    return this._name;
   }
 
   get tags(): string[] {
@@ -181,7 +187,7 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
     const oldDataView: Tag[][] = [elements];
     const lls = oldDataView.map((ts: Tag[], i: number) => new LogicalLine(ts, i));
     const newDataView: DataView = new DataViewImpl(lls);
-    return new Detail([TAG_HEXBYTES], newDataView);
+    return new Detail("Hex Dump", [TAG_HEXBYTES], newDataView);
   }
 });
 

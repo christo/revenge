@@ -36,7 +36,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta1: Disasse
   const meta = meta1;
 
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
-  const detail = new Detail([TAG_LINE], new DataViewImpl([]))
+  const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
 
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
@@ -86,7 +86,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     actions: [{
       label: "basic",
       f: () => {
-        const detail = new Detail(["basic"], CBM_BASIC_2_0.decode(fb));
+        const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(fb));
         // exclude "note" tags which are not a "line"
         const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.hasTag(TAG_LINE)) !== undefined;
         detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);

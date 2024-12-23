@@ -64,7 +64,7 @@ function InfoPanel({detail}: { detail: Detail }) {
     <SmolPanel heading="Options">
       <Typography>Options control panel will go here enabling assembly dialect selection etc</Typography>
     </SmolPanel>
-    <SmolPanel heading="Stats">
+    <SmolPanel heading={`Stats for ${detail.name}`}>
       {detail.stats.map((tup: [string, string], i) =>
           <Box key={`sp_${i}`} className="stat">
             <span className="skey">{tup[0]}</span> <span className="sval">{tup[1]}</span>
