@@ -26,10 +26,10 @@ interface DisassemblyMeta {
   disassemblyStartOffset(fb: FileBlob): number;
 
   /**
-   * The offset from the start of the fileblob at which the starting address is located.
+   * The offset from the start of the fileblob at which the starting of the binary content is located.
+   * This may not be the entry point.
    * This skips any header data that isn't real file content.
    */
-  // TODO The base address is unjustifiably assumed to be present in the file.
   contentStartOffset(): number;
 
   /**
