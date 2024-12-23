@@ -8,6 +8,8 @@ import {Memory} from "./Memory.ts";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
+ * A sequence of string tuples that represent a name-value pair that will be rendered with
+ * the name as a className and the value as the text content of a span element.
  */
 class Tag {
 
@@ -76,6 +78,7 @@ class LogicalLine {
 
   /**
    * Temporary transition encapsulation
+   *
    * TODO: use an abstraction that more closely models the domain, tags carry too much responsibility
    */
   private readonly tags: Tag[];
