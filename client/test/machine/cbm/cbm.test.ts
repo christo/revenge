@@ -11,9 +11,9 @@ import {InstructionLike} from "../../../src/machine/asm/instructions";
 describe("disassembler integration", () => {
   it("loads hesmon", () => {
     const hesmon = fs.readFileSync("../server/data/preload/HesMon.prg");
+    const fb = FileBlob.fromBytes("hesmon", Array.from(hesmon), LE);
     const dm = new DisassemblyMetaImpl(0, 0, 2);
-    const f = Array.from(hesmon);
-    const d = new Disassembler(Mos6502.ISA, FileBlob.fromBytes("hesmon", f, LE), dm);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const lines: InstructionLike[] = [];
     while (d.hasNext()) {
       lines.push(d.nextInstructionLine());
