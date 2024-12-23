@@ -30,4 +30,4 @@ describe("disassembler", () => {
     expect(disassembled.getBytes().length).to.equal(3);
     expect(disassembled.operandValue()).to.equal(0x6502);
   });
-})
+});
