@@ -68,7 +68,7 @@ class DefaultDialect implements Dialect {
   }
 
   get name(): string {
-    return "Default Dialect";
+    return "Default MOS 6502";
   }
 
   get env(): Environment {

@@ -61,6 +61,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta1: Disasse
   detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
+  detail.stats.push(["dialect", dialect.name]);
   return detail;
 }
 
