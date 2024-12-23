@@ -16,17 +16,17 @@ import {Memory} from "./Memory.ts";
 /**
  * Analyser that approximates code execution to some degree. Static analysis ignores register and memory contents,
  * following all theoretically reachable code paths from the entry point.
- *
+ * Each call to step() advances all execution paths by one instruction. May not terminate, but if it does, running()
+ * will return false.
  */
 class Tracer {
   threads: Thread[] = [];
 
+  // TODO: keep track of locations written to (data)
   // TODO: identify self-mod code and raise exception
   //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
   //    * if a written to address is disassembled as opcode or operand byte
   // TODO: identify code vs data. Data may be written to without causing self-mod.
-  // TODO: keep track of locations written to (data)
-  // TODO: keep track of locations visited (code)
   // TODO: a history of executed locations and their stacks(!), when revisiting with the same stack, kill that thread
   //          maybe we can only afford to do this for empty stacks? maybe certain small stacks of say 1 or 2 size?
   //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
@@ -55,23 +55,33 @@ class Tracer {
     this.threads.push(new Thread("root", disasm, pc, memory));
   }
 
+  /**
+   * Whether or not the tracer has any active execution threads.
+   */
   running(): boolean {
     // delegate to threads
     return 0 < this.threads.filter((thread: Thread) => thread.running).length;
   }
 
+  /**
+   * All addresses of instructions that were executed. Does not include addresses of their operands.
+   * Order is unspecified.
+   */
   executed(): Array<number> {
     const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getExecuted()]));
     return Array.from(set.keys()).sort();
   }
 
+  /**
+   * All addresses that were possibly written to in all theoretical execution paths.
+   */
   written(): Array<number> {
     const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getWritten()]));
     return Array.from(set.keys()).sort();
   }
 
   /**
-   * Advance all running threads, ignoring the rest.
+   * Advance all running threads by one instruction, ignoring the rest.
    */
   step() {
     this.threads
