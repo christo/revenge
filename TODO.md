@@ -1,6 +1,5 @@
 # TODO
 
-* [x] fix crash disassembling hesmon - happens at last byte
 * [ ] remove excessive cleverness in low branches of front-end disassembly render call tree
 * [ ] implement Tracer and tests
   * [x] Tracer can execute simplest instruction traces, recording executed indices
