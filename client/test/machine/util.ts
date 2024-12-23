@@ -24,8 +24,7 @@ export function mem(contents: number[], offset: number = 0) {
 
 /**
  * Convenience for creating a little endian disassembler with base address at 0 and content at 2
- * @param bytes
- * @param contentStartOffset
+ * @param bytes program including load address in little endian at address 0, 1
  * @deprecated
  */
 export function createDisassembler(bytes: number[]) {
