@@ -139,6 +139,13 @@ function TabPanel(props: { children: React.ReactNode, value: number, item: numbe
   );
 }
 
+function HashChip({tag, key}: {key: string, tag: string}) {
+  return <Chip label={tag} size="small"
+               key={key} sx={{marginRight: 1}}
+               variant="outlined" color="info"/>
+
+}
+
 function FileDetail(props: { fb: FileBlob }) {
   const typeActions: TypeActions = sniff(props.fb);
   const [action, setAction] = useState(0);
@@ -150,11 +157,7 @@ function FileDetail(props: { fb: FileBlob }) {
         <span className="smell">Smells like</span>
         <span className="name">{t.name}</span>
         <span className="desc">{t.desc}</span>
-        {t.tags.map((tag, i) => {
-          return <Chip label={tag} size="small"
-                       key={`tag_${i}`} sx={{marginRight: 1}}
-                       variant="outlined" color="info"/>
-        })}
+        {t.tags.map((tag, i) => <HashChip tag={tag} key={`tag_${i}`}/>)}
       </div>
     </div>
     <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => {
