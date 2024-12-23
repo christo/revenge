@@ -14,9 +14,11 @@ import {OpSemantics} from "../Op.ts";
  * Stateful translator of bytes to their parsed instruction line
  */
 class Disassembler {
-  originalIndex: number;
+
+  readonly contentStartIndex: number;
   currentIndex: number;
   fb: FileBlob;
+
   private iset: InstructionSet;
   private readonly segmentBaseAddress: number;
   private readonly stats: Map<string, number>;
@@ -33,7 +35,7 @@ class Disassembler {
     if (index >= bytes.length || index < 0) {
       throw Error(`index '${index}' out of range for fb size: ${fb.getLength()}`);
     }
-    this.originalIndex = index;
+    this.contentStartIndex = index;
     this.currentIndex = index;
     this.fb = fb;
     this.segmentBaseAddress = dm.baseAddress(fb);
@@ -44,7 +46,7 @@ class Disassembler {
   }
 
   get currentAddress(): Addr {
-    return this.segmentBaseAddress + this.currentIndex - this.originalIndex;
+    return this.segmentBaseAddress + this.currentIndex - this.contentStartIndex;
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -302,6 +304,8 @@ class Disassembler {
       this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
       return new FullInstructionLine(il, labelsComments);
     } else {
+      debugger;
+      console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
       throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
     }
   }
@@ -313,7 +317,7 @@ class Disassembler {
    */
   private addressInRange = (addr: Addr): boolean => {
     const notTooLow = addr >= this.segmentBaseAddress;
-    const notTooHigh = addr <= this.segmentBaseAddress + this.fb.getLength() - this.originalIndex;
+    const notTooHigh = addr <= this.segmentBaseAddress + this.fb.getLength() - this.contentStartIndex;
     return notTooLow && notTooHigh;
   };
 
