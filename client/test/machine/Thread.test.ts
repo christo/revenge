@@ -4,6 +4,9 @@ import {Thread} from "../../src/machine/Thread";
 import {createDisassembler} from "./util";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";
+import {FileBlob} from "../../src/machine/FileBlob";
+import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
+import {Disassembler} from "../../src/machine/asm/Disassembler";
 
 describe("thread", () => {
   it("records executed instructions", () => {
@@ -25,7 +28,9 @@ describe("thread", () => {
       brk               // 7
     ];
     const memory = new ArrayMemory(contents, LE, true, true);
-    const d = createDisassembler(contents);
+    const fb = FileBlob.fromBytes("testblob", contents, LE);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Thread("test", d, 2, memory);
     expect(t.getPc()).to.eq(2, "start pc should be received by constructor");
     t.step(); // execute jump, should be at 6 NOP
@@ -34,5 +39,7 @@ describe("thread", () => {
     expect(t.getPc()).to.eq(7);
     t.step();
     expect(t.getPc()).to.eq(8);
+    // check all bytes belonging to executed instructions, only excluding 0x0005
+    expect(t.getExecutedInstructionBytes()).to.have.members([2, 3, 4, 6, 7]);
   });
 });
