@@ -10,21 +10,21 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import axios from "axios";
-import React, {useEffect, useState} from "react";
 import {FileUploader} from "react-drag-drop-files";
+import React, {ReactNode, useEffect, useState} from "react";
 
 import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {
-    ActionExecutor,
-    Detail,
-    Tag,
-    TAG_ABSOLUTE,
-    TAG_ADDRESS,
-    TAG_IN_BINARY,
-    TAG_NOTE,
-    TAG_OPERAND,
-    TypeActions
+  ActionExecutor,
+  Detail,
+  Tag,
+  TAG_ABSOLUTE,
+  TAG_ADDRESS,
+  TAG_IN_BINARY,
+  TAG_NOTE,
+  TAG_OPERAND,
+  TypeActions
 } from "./machine/api.ts";
 import {fileTypes} from "./machine/cbm/cbm.ts";
 import {LE} from "./machine/core.ts";
@@ -52,28 +52,26 @@ interface FileContents {
   loading: boolean
 }
 
-function OptionsPanel() {
-  return <div className="optionspanel">
-    <h4>Options</h4>
-    <p>Options control panel will go here and possibly have quite a lot of stuff.</p>
-  </div>;
+function SmolPanel({heading, children}: {heading: string, children: ReactNode }) {
+  return <Box className="smolpanel">
+    <Typography variant="h6">{heading}</Typography>
+    {children}
+  </Box>;
 }
 
-function StatsPanel(props: { detail: Detail }) {
-  return <div className="statspanel">
-    <h4>Stats</h4>
-    {props.detail.stats.map((tup: [string, string], i) => {
-      return <div key={`sp_${i}`} className="stat"><span className="skey">{tup[0]}</span> <span
-          className="sval">{tup[1]}</span></div>
-    })}
-  </div>;
-}
-
-function InfoPanel(props: { detail: Detail }) {
-  return <div className="infopanel">
-    <OptionsPanel/>
-    <StatsPanel detail={props.detail}/>
-  </div>;
+function InfoPanel({detail}: { detail: Detail }) {
+  return <Box className="infopanel">
+    <SmolPanel heading="Options">
+      <Typography>Options control panel will go here enabling assembly dialect selection etc</Typography>
+    </SmolPanel>
+    <SmolPanel heading="Stats">
+      {detail.stats.map((tup: [string, string], i) =>
+          <Box key={`sp_${i}`} className="stat">
+            <span className="skey">{tup[0]}</span> <span className="sval">{tup[1]}</span>
+          </Box>
+      )}
+    </SmolPanel>
+  </Box>;
 }
 
 /**
@@ -139,20 +137,31 @@ function TabPanel(props: { children: React.ReactNode, value: number, item: numbe
   );
 }
 
-function HashChip({tag, key}: {key: string, tag: string}) {
+function HashChip({tag, key}: { key: string, tag: string }) {
   return <Chip label={tag} size="small"
                key={key} sx={{marginRight: 1}}
                variant="outlined" color="info"/>
 
 }
 
-function FileDetail(props: { fb: FileBlob }) {
+/**
+ * Main content showing interpreted file contents.
+ *
+ * @param props
+ * @constructor
+ */
+function FileDetail({fb}: { fb: FileBlob }) {
   // get actions that can be done on this blob based on scoring from sniff:
-  const typeActions: TypeActions = sniff(props.fb);
+  const typeActions: TypeActions = sniff(fb);
   const [action, setAction] = useState(0);
   const t = typeActions.t;
-
+  /*
+    dataMeta section summarises how the file content was interpreted
+    tabs are like menu items
+    tabpanel is content area where selected tab content goes
+  */
   return <div>
+
     <div className="dataMeta">
       <div className="dataDetail">
         <span className="smell">Smells like</span>
@@ -161,7 +170,7 @@ function FileDetail(props: { fb: FileBlob }) {
         {t.tags.map((tag, i) => <HashChip tag={tag} key={`tag_${i}`}/>)}
       </div>
     </div>
-    {/* make a tab for each user action */}
+
     <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => {
       setAction(newValue);
     }}>
