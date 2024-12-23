@@ -10,8 +10,6 @@ import {LabelsComments, SymbolTable} from "./asm.ts";
  */
 interface DisassemblyMeta {
 
-
-
   /**
    * The address the file should be loaded into.
    * In the future, we need to support multiple segments loaded into
