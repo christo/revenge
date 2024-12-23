@@ -22,6 +22,8 @@ class Tracer {
   threads: Thread[] = [];
 
   // TODO: identify self-mod code and refuse to trace it
+  //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
+  //    * if a written to address is disassembled as opcode or operand byte
   // TODO: identify code vs data. Data may be written to without causing self-mod.
   // TODO: keep track of locations written to (data)
   // TODO: keep track of locations visited (code)
@@ -30,7 +32,7 @@ class Tracer {
   //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
   //          jumps (forks) and subroutine jumps (deferred steps).
   // TODO: a list of contiguous memory regions which can contain executable code
-  // FUTURE: would also be nice to know if a memory location is writeable (later)
+  // FUTURE: would also be nice to know if a memory location is writeable
 
   /**
    * Create a Tracer with a single Memory and single thread of execution at startLocation.
