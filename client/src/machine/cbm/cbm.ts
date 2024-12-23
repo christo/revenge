@@ -29,39 +29,48 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
  */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
+function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta1: DisassemblyMeta) {
+  // start timer
+  const startTime = Date.now();
+
+  const meta = meta1;
+
+  const dis = new Disassembler(Mos6502.ISA, fb, meta);
+  const detail = new Detail([TAG_LINE], new DataViewImpl([]))
+
+  // set the base address with a directive
+  const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
+  const tagSeq = assignPc.disassemble(dialect, dis);
+
+  detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
+  while (dis.hasNext()) {
+    const instAddress = dis.currentAddress; // save current address before we increment it
+    let inst: InstructionLike = dis.nextInstructionLine();
+    const tags = [
+      new Tag(TAG_ADDRESS, hex16(instAddress)),
+      new Tag(TAG_HEX, asHex(inst.getBytes())),
+      ...inst.disassemble(dialect, dis)
+    ];
+    detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
+  }
+  // TODO link up internal address references including jump targets and mark two-sided cross-references
+  const stats = dis.getStats();
+  // for now assuming there's no doubling up of stats keys
+  stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
+
+  detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
+  const timeTaken = Date.now() - startTime;
+  detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
+  return detail;
+}
+
 /** User action that disassembles the file. */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   let userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
     f: () => {
-      // start timer
-      const startTime = Date.now();
-      const dis = new Disassembler(Mos6502.ISA, fb, t.getMeta());
-      const detail = new Detail([TAG_LINE], new DataViewImpl([]))
-
-      // set the base address
-      const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
-      const tagSeq = assignPc.disassemble(dialect, dis);
-      detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
-      while (dis.hasNext()) {
-        const instAddress = dis.currentAddress; // save current address before we increment it
-        let inst: InstructionLike = dis.nextInstructionLine();
-        const tags = [
-          new Tag(TAG_ADDRESS, hex16(instAddress)),
-          new Tag(TAG_HEX, asHex(inst.getBytes())),
-          ...inst.disassemble(dialect, dis)
-        ];
-        detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
-      }
-      // TODO link up internal address references including jump targets and mark two-sided cross-references
-      const stats = dis.getStats();
-      // for now assuming there's no doubling up of stats keys
-      stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
-      detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
-      const timeTaken = Date.now() - startTime;
-      detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
-      return detail;
+      return disassembleActual(fb, dialect, t.getMeta());
     }
   }, hexDumper(fb)];
   return {
