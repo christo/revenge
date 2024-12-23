@@ -31,7 +31,10 @@ const C64_BASIC_PRG = new BlobType(
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = Petscii.codes("C64 CARTRIDGE   ");
 const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
-const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
+const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({
+  t: C64_CRT,
+  actions: [hexDumper(fileBlob)]
+});
 
 /**
  * The base address for all 8kb C64 carts.
@@ -74,6 +77,9 @@ const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
   [fb.read16(C64_WARM_VECTOR_OFFSET), mkLabels("nmi")]
 ]
 
+/**
+ * C64 Kernal routines as SymbolTable
+ */
 const C64_KERNAL = new SymbolTable("c64");
 C64_KERNAL.sub(0xffa5, "acptr", "Input byte from serial port");
 C64_KERNAL.sub(0xffc6, "chkin", "Open channel for input");
