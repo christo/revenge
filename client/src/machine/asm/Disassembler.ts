@@ -27,8 +27,10 @@ class Disassembler {
   private disMeta: DisassemblyMeta;
   private symbolDefinitions: Map<string, SymDef>;
 
+  // TODO should we take FileBlob or a more complete abstract binary memory?
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
+    // get the index from the start of the FileBlob to the actual binary
     const index = dm.contentStartOffset();
     const bytes: number[] = fb.getBytes();
     if (index >= bytes.length || index < 0) {
@@ -341,6 +343,13 @@ class Disassembler {
 
   getSegmentBaseAddress(): Addr {
     return this.segmentBaseAddress;
+  }
+
+  /**
+   * Return only the content bytes without any metadata like load address.
+   */
+  getContentBytes() {
+    return this.fb.getBytes().slice(this.disMeta.contentStartOffset());
   }
 }
 

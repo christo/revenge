@@ -23,6 +23,13 @@ interface Memory<T extends Endian> extends Byteable {
   submatch(seq: Uint8Array, atOffset: number): boolean;
 
   contains(location: Addr): boolean;
+
+  /**
+   * Loads the given data to the given address.
+   * @param data
+   * @param location
+   */
+  load(data: number[], location: Addr): void;
 }
 
 /**
@@ -115,7 +122,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
    * @param data
    * @param location
    */
-  load(data: number[], location: Addr) {
+  load(data: number[], location: Addr): void {
     if (data.length + location > this._bytes.length) {
       throw Error(`Not enough room to load ${data.length} bytes at ${location}`);
     }

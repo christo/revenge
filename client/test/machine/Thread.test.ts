@@ -9,7 +9,7 @@ describe("thread", () => {
   it("records executed instructions", () => {
     const contents = [0, 0, 0xea, 0xea]; // 0, 0, NOP, NOP
     const memory = new ArrayMemory(contents, LE, true, true);
-    const d = createDisassembler(contents, 2);
+    const d = createDisassembler(contents);
     const t = new Thread("test", d, 0, memory);
     t.step();
     expect(t.getExecuted().length).to.eq(1, "expected single step to have executed one instruction");
@@ -25,7 +25,7 @@ describe("thread", () => {
       brk               // 7
     ];
     const memory = new ArrayMemory(contents, LE, true, true);
-    const d = createDisassembler(contents, 2);
+    const d = createDisassembler(contents);
     const t = new Thread("test", d, 2, memory);
     expect(t.getPc()).to.eq(2, "start pc should be received by constructor");
     t.step(); // execute jump, should be at 6 NOP

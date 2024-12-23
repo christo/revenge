@@ -37,7 +37,7 @@ class Tracer {
    *
    * @param disasm used to interpret memory as instructions
    * @param pc program counter; absolute address in the memory of next instruction to execute.
-   * @param memory the Memory
+   * @param memory the Memory in which to load and execute the program
    */
   constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>) {
     const relativePc = pc - disasm.getSegmentBaseAddress();
@@ -48,6 +48,8 @@ class Tracer {
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }
+    // load the binary content at the load address of the given memory
+    memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
     this.threads.push(new Thread("root", disasm, pc, memory));
   }
 

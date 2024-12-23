@@ -9,6 +9,9 @@ import {LabelsComments, SymbolTable} from "./asm.ts";
  * Expect this interface to evolve dramatically.
  */
 interface DisassemblyMeta {
+
+
+
   /**
    * The address the file should be loaded into.
    * In the future, we need to support multiple segments loaded into
@@ -25,7 +28,7 @@ interface DisassemblyMeta {
   disassemblyStartOffset(fb: FileBlob): number;
 
   /**
-   * The offset from the start of the fileblob at which the constent starting address is located.
+   * The offset from the start of the fileblob at which the starting address is located.
    * This skips any header data that isn't real file content.
    */
   // TODO The base address is unjustifiably assumed to be present in the file.

@@ -22,8 +22,14 @@ export function mem(contents: number[], offset: number = 0) {
   return arrayMemory;
 }
 
-export function createDisassembler(bytes: number[], contentStartOffset: number) {
+/**
+ * Convenience for creating a little endian disassembler with base address at 0 and content at 2
+ * @param bytes
+ * @param contentStartOffset
+ * @deprecated
+ */
+export function createDisassembler(bytes: number[]) {
   const fb = FileBlob.fromBytes("testblob", bytes, LE);
-  const dm = new DisassemblyMetaImpl(0, 0, contentStartOffset);
+  const dm = new DisassemblyMetaImpl(0, 0, 2);
   return new Disassembler(Mos6502.ISA, fb, dm);
 }

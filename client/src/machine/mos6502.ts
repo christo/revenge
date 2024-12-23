@@ -514,9 +514,7 @@ class FullInstruction implements Byteable {
     }
   }
 
-  getLength(): number {
-    return this.instruction.getLength();
-  }
+  getLength = (): number => this.instruction.getLength();
 
   read8 = (offset: number): number => this.getBytes()[offset];
 
