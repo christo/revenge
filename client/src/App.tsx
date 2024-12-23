@@ -52,7 +52,7 @@ interface FileContents {
   loading: boolean
 }
 
-function SmolPanel({heading, children}: {heading: string, children: ReactNode }) {
+function SmolPanel({heading, children}: { heading: string, children: ReactNode }) {
   return <Box className="smolpanel">
     <Typography variant="h6">{heading}</Typography>
     {children}
@@ -160,49 +160,49 @@ function FileDetail({fb}: { fb: FileBlob }) {
     tabs are like menu items
     tabpanel is content area where selected tab content goes
   */
-  return <div>
+  return <Box>
 
-    <div className="dataMeta">
-      <div className="dataDetail">
+    <Box className="dataMeta">
+      <Box className="dataDetail">
         <span className="smell">Smells like</span>
         <span className="name">{t.name}</span>
         <span className="desc">{t.desc}</span>
         {t.tags.map((tag, i) => <HashChip tag={tag} key={`tag_${i}`}/>)}
-      </div>
-    </div>
+      </Box>
+    </Box>
 
-    <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => {
-      setAction(newValue);
-    }}>
+    <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => setAction(newValue)}>
       {typeActions.actions.map((a, i) => {
         return <Tab label={a.label} key={`tac_${i}`}/>
       })}
     </Tabs>
+
     {typeActions.actions.map((a, i) => (
         <TabPanel item={i} value={action} key={`tap_${i}`}>
           <DetailRenderer ae={a.f}/>
         </TabPanel>
     ))}
-  </div>;
+  </Box>;
 }
 
-function CurrentFileSummary(props: { file: File | FileLike }) {
+function CurrentFileSummary({file}: { file: File | FileLike }) {
   const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
-  useEffect(() => {
-    FileBlob.fromFile(props.file, LE).then(fb => setRendered({fb: fb, loading: false}));
-  }, [props.file]);
 
-  return <div className="fileSummary">
-        <span className="filename">
-            {props.file.name}
-        </span>
-    <span className="filesize">
-            {props.file.size} bytes
-        </span>
-    <div className="contents">
-      {!rendered.loading ? <FileDetail fb={rendered.fb}/> : (<p>loading...</p>)}
-    </div>
-  </div>;
+  useEffect(() => {
+    FileBlob.fromFile(file, LE).then(fb => setRendered({fb: fb, loading: false}));
+  }, [file]);
+
+  return <Box className="fileSummary">
+      <span className="filename">
+          {file.name}
+      </span>
+      <span className="filesize">
+          {file.size} bytes
+      </span>
+    <Box className="contents">
+      {!rendered.loading ? <FileDetail fb={rendered.fb}/> : <CircularProgress sx={{p:5}}/>}
+    </Box>
+  </Box>;
 }
 
 function MenuAppBar() {
