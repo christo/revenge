@@ -18,6 +18,6 @@ describe("disassembler integration", () => {
     while (d.hasNext()) {
       lines.push(d.nextInstructionLine());
     }
-    expect(lines.length).to.equal(1944);
+    expect(lines.length).to.equal(1944); // includes *=$a000 directive
   });
 })
