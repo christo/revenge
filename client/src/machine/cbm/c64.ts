@@ -10,7 +10,7 @@ import {Petscii} from "./petscii.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobType} from "../BlobType.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
-import {SymbolResolver, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
+import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {ArrayMemory} from "../Memory.ts";
 
 class C64 extends Computer {

@@ -7,7 +7,7 @@ import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {Mos6502} from "../mos6502";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
-import {SymbolResolver, LabelsComments, mkLabels, SymbolTable} from "../asm/asm.ts";
+import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";

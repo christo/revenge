@@ -6,8 +6,7 @@ import {Op} from "./Op.ts";
  * Represents the whole set of machine instructions.
  */
 class InstructionSet {
-  // note redundancy here, like all bad code, huddles behind the defense of performance,
-  // prematurely optimised as per root of all evil
+  // note redundancy here
   private mnemonicToByte = new Map<string, number>([]);
   private ops: Array<Op> = [];
   private modes: Array<AddressingMode> = [];
