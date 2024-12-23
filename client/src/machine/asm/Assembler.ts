@@ -1,4 +1,4 @@
-import {Addr, TODO} from "../core.ts";
+import {Addr} from "../core.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";
 import {ParserState} from "./DefaultDialect.ts";
@@ -10,10 +10,6 @@ import {InstructionSet} from "../InstructionSet.ts";
  */
 class Assembler {
   private currentAddress: Addr;
-  setCurrentAddress(addres: Addr) {
-      this.currentAddress = addres;
-  }
-
   private readonly isa: InstructionSet;
   private readonly dialect: Dialect;
 
@@ -23,10 +19,14 @@ class Assembler {
     this.currentAddress = 0;
   }
 
+  setCurrentAddress(addres: Addr) {
+    this.currentAddress = addres;
+  }
+
   /**
    * Emit bytes for the given instruction from the configured instruction set
    */
-  emit(instruction: InstructionLike): number[]  {
+  emit(instruction: InstructionLike): number[] {
     return instruction.getBytes();
   }
 

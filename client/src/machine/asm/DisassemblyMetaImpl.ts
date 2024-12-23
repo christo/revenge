@@ -1,4 +1,4 @@
-import {EMPTY_JUMP_TARGET_FETCHER, SymbolResolver, LabelsComments, SymbolTable} from "./asm.ts";
+import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver, SymbolTable} from "./asm.ts";
 import {Addr, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Edict, InstructionLike} from "./instructions.ts";

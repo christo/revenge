@@ -10,7 +10,6 @@ import {Memory} from "../Memory.ts";
 import {OpSemantics} from "../Op.ts";
 
 
-
 /**
  * Stateful translator of bytes to their parsed instruction line
  */
@@ -217,6 +216,50 @@ class Disassembler {
   }
 
   /**
+   * Disassemble one instruction from memory at given offset. Operands interpreted using endianness T.
+   * @param mem
+   * @param offset
+   * @return instruction
+   * @throws if instruction cannot be decoded at offset
+   */
+  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
+    // TODO should we fall back to byte declaration directive rather than throw?
+    const opcode = mem.read8(offset);
+    const instLen = Mos6502.ISA.numBytes(opcode) || 1
+    const bytesRemaining = mem.getLength() - offset;
+    if (instLen <= bytesRemaining) {
+      // default operands are 0
+      let firstOperandByte = 0;
+      let secondOperandByte = 0;
+      if (instLen >= 2) {
+        firstOperandByte = mem.read8(offset + 1);
+      }
+      if (instLen >= 3) {
+        secondOperandByte = mem.read8(offset + 2);
+      }
+      if (instLen >= 4) {
+        throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
+      }
+      // TODO ? what happens if instruction is only one byte?
+      const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
+      return inst;
+    } else {
+      throw Error("not enough bytes remaining to fit instruction");
+    }
+  }
+
+  getSegmentBaseAddress(): Addr {
+    return this.segmentBaseAddress;
+  }
+
+  /**
+   * Return only the content bytes without any metadata like load address.
+   */
+  getContentBytes() {
+    return this.fb.getBytes().slice(this.disMeta.contentStartOffset());
+  }
+
+  /**
    * @deprecated side effect
    * @private
    */
@@ -264,39 +307,6 @@ class Disassembler {
   }
 
   /**
-   * Disassemble one instruction from memory at given offset. Operands interpreted using endianness T.
-   * @param mem
-   * @param offset
-   * @return instruction
-   * @throws if instruction cannot be decoded at offset
-   */
-  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
-    // TODO should we fall back to byte declaration directive rather than throw?
-    const opcode = mem.read8(offset);
-    const instLen = Mos6502.ISA.numBytes(opcode) || 1
-    const bytesRemaining = mem.getLength() - offset;
-    if (instLen <= bytesRemaining) {
-      // default operands are 0
-      let firstOperandByte = 0;
-      let secondOperandByte = 0;
-      if (instLen >= 2) {
-        firstOperandByte = mem.read8(offset + 1);
-      }
-      if (instLen >= 3) {
-        secondOperandByte = mem.read8(offset + 2);
-      }
-      if (instLen >= 4) {
-        throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
-      }
-      // TODO ? what happens if instruction is only one byte?
-      const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-      return inst;
-    } else {
-      throw Error("not enough bytes remaining to fit instruction");
-    }
-  }
-
-  /**
    * Returns true iff the given address is within the memory range of the currently loaded file.
    *
    * @param addr the address to query.
@@ -336,17 +346,6 @@ class Disassembler {
       this.currentIndex += remainingBytes;
     }
     return undefined;
-  }
-
-  getSegmentBaseAddress(): Addr {
-    return this.segmentBaseAddress;
-  }
-
-  /**
-   * Return only the content bytes without any metadata like load address.
-   */
-  getContentBytes() {
-    return this.fb.getBytes().slice(this.disMeta.contentStartOffset());
   }
 }
 
