@@ -74,7 +74,10 @@ export const TAG_HEXBYTES = "hexbytes";
  */
 class LogicalLine {
 
-  /** Temporary transition encapsulation, future: migrate to dynamic generation. */
+  /**
+   * Temporary transition encapsulation
+   * TODO: use an abstraction that more closely models the domain, tags carry too much responsibility
+   */
   private readonly tags: Tag[];
   private readonly address: Addr;
   private readonly instruction?: InstructionLike;
