@@ -23,6 +23,7 @@ class FileBlob implements Byteable {
   }
 
   name: string;
+  // maybe swap out memory for array and endian - Memory probably shouldn't include load address
   private memory: ArrayMemory<Endian>;
 
   constructor(name: string, memory: ArrayMemory<Endian>) {
@@ -98,7 +99,6 @@ class FileLike {
     return this._size;
   }
 }
-
 
 export {FileBlob, FileLike};
 
