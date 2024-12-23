@@ -4,13 +4,43 @@ import {OpSemantics} from "./Op.ts";
 import {Memory} from "./Memory.ts";
 
 /**
+ * Length of instruction in bytes.
+ */
+type InstLen = 1|2|3;
+
+/**
+ * Models all addresses occupied by a single instruction.
+ */
+type InstRec = [Addr, InstLen];
+
+/**
+ * Take an instruction address and length and return each address the instruction occupies.
+ * @param ir the instruction address and length
+ */
+function enumInstAddr(ir: InstRec) {
+  const base = ir[0];
+  const len = ir[1];
+  if (len == 1) {
+    return [base];
+  } else if (len == 2) {
+    return [base, base + 1];
+  } else {
+    return [base, base + 1, base + 2]
+  }
+}
+
+/**
  * A single thread of execution which records all executed addresses and all written locations.
  */
 export class Thread {
   private readonly disasm: Disassembler;
   /** This should be immutable */
   private readonly memory: Memory<Endian>;
-  private readonly executed: Array<number>;
+  /**
+   * Track the instruction bytes executed
+   * @private
+   */
+  private readonly executed: Array<InstRec>;
   private readonly written: Array<number>;
   private pc: number;
   readonly descriptor: string;
@@ -80,8 +110,10 @@ export class Thread {
   private execute(): Thread | undefined {
     const inst = this.disasm.disassemble1(this.memory, this.pc);
     // by default, increment PC by length of this instruction
-    let nextPc = this.pc + inst.getLength();
-    if (this.executed.includes(this.pc)) {
+    const instLen = inst.getLength();
+    let nextPc = this.pc + instLen;
+    // have we executed an instruction that at the address of the pc before?
+    if (this.executed.flatMap(enumInstAddr).includes(this.pc)) {
       console.log(`already executed ${this.pc}, terminating thread ${this}`);
       this._running = false;
     } else {
@@ -104,13 +136,25 @@ export class Thread {
     //  instructions may be rare enough to simply report as anomalies at first and may even be more likely be a
     //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
     //  degenerate runtime state is represented.
-    this.executed.push(this.pc);
+    this.executed.push([this.pc, instLen as InstLen]);
     this.pc = nextPc; // increment PC by length of this instruction
     return undefined;
   }
 
-  getExecuted(): Array<number> {
-    return [...this.executed];
+  /**
+   * Returns the addresses of the instructions that have been executed. Does not include bytes belonging to operands.
+   */
+  getExecuted(): Array<Addr> {
+    // only return the address of the instruction itself since a theoretical non-self-mod program could reuse
+    // an operand as an instruction which is a different trace execution
+    return [...this.executed.map(il => il[0])];
+  }
+
+  /**
+   * Return all bytes (opcodes and operands) belonging to instructions that were executed.
+   */
+  getExecutedInstructionBytes(): Array<Addr> {
+    return this.executed.flatMap(enumInstAddr);
   }
 
   getWritten(): Array<number> {
