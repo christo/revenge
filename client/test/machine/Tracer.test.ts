@@ -69,15 +69,6 @@ describe("tracer", () => {
     expect(t.executed()).to.have.members([0, 4, 5]);
   });
 
-  // TODO decide how base address is supposed to work for a trace
-  //   a trace is an emulator so the code needs to be "loaded" at an address.
-  //   A binary expects to be loaded at a fixed address, otherwise the addresses are wrong.
-  //   But the FileBlob as interpreted by Disassembler is assumed to specify the 2-byte
-  //   load address at offset 0. Tracer needs to perform the load in a memory that is
-  //   possibly larger. Additionally it tracks memory writes to addresses which can be
-  //   outside the loaded binary address range. Therefore the FileBlob needs to be loaded
-  //   into a memory of a separately specified size by the Tracer, just like a full VM
-  //   would do.
   it("handles unconditional jump with base address", () => {
     const bytes: number[] = [
       0, 0x10,          // base address is $1000

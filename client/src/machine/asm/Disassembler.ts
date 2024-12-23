@@ -15,7 +15,6 @@ import {OpSemantics} from "../Op.ts";
  * Stateful translator of bytes to their parsed instruction line
  */
 class Disassembler {
-  // TODO make stateless core mechanism
   originalIndex: number;
   currentIndex: number;
   fb: FileBlob;
@@ -27,7 +26,6 @@ class Disassembler {
   private disMeta: DisassemblyMeta;
   private symbolDefinitions: Map<string, SymDef>;
 
-  // TODO should we take FileBlob or a more complete abstract binary memory?
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
     // get the index from the start of the FileBlob to the actual binary
@@ -273,7 +271,6 @@ class Disassembler {
    * @throws if instruction cannot be decoded at offset
    */
   disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
-    // TODO write unit test for this stateless single instruction disassembler
     // TODO should we fall back to byte declaration directive rather than throw?
     const opcode = mem.read8(offset);
     const instLen = Mos6502.ISA.numBytes(opcode) || 1

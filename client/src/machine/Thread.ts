@@ -78,8 +78,6 @@ export class Thread {
    * If an branching instruction occurs, the new {@link Thread} is returned, otherwise undefined.
    */
   private execute(): Thread | undefined {
-    // console.log(`executing: ${this.descriptor}/${this.pc}`);
-    // TODO confirm this.pc is the memory offset - what is the base address?
     const inst = this.disasm.disassemble1(this.memory, this.pc);
     // by default, increment PC by length of this instruction
     let nextPc = this.pc + inst.getLength();
