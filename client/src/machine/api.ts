@@ -182,8 +182,8 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
   label: "Hex Dump",
   f: () => {
     const elements: Tag[] = Array.from(fb.getBytes()).map((x) => new Tag(TAG_HEXBYTE, hex8(x)));
-    // TODO make hex dump have n bytes per line with addresses at beginning of each
-    // currently whole hex dump is a single logical line at no address with no instruction
+    // TODO make hex dump have n bytes per line with addresses at beginning of each;
+    //  currently whole hex dump is a single logical line at no address with no instruction
     const oldDataView: Tag[][] = [elements];
     const lls = oldDataView.map((ts: Tag[], i: number) => new LogicalLine(ts, i));
     const newDataView: DataView = new DataViewImpl(lls);
