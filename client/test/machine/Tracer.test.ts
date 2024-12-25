@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
-import {createDisassembler, mem} from "./util";
+import {mem} from "./util";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {LE} from "../../src/machine/core";
 import {FileBlob} from "../../src/machine/FileBlob";
@@ -17,7 +17,9 @@ describe("tracer", () => {
       0, 0, // base address 0x0000
       brk,
     ];
-    const d = createDisassembler(machineCode);
+    const fb = FileBlob.fromBytes("testblob", machineCode, LE);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Tracer(d, 0, mem(machineCode));
     expect(t.threads.length == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
