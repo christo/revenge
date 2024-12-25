@@ -1,6 +1,6 @@
 import {Disassembler} from "./asm/Disassembler";
 import {Addr, Endian} from "./core.ts";
-import {OpSemantics} from "./Op.ts";
+import {OpSemantics} from "./asm/Op.ts";
 import {Memory} from "./Memory.ts";
 
 /**

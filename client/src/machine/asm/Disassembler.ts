@@ -5,9 +5,9 @@ import {ByteDeclaration, Edict, FullInstructionLine, InstructionLike, SymDef} fr
 import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
-import {InstructionSet} from "../InstructionSet.ts";
+import {InstructionSet} from "./InstructionSet.ts";
 import {Memory} from "../Memory.ts";
-import {OpSemantics} from "../Op.ts";
+import {OpSemantics} from "./Op.ts";
 
 
 /**

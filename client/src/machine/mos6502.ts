@@ -10,8 +10,8 @@
  */
 
 import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
-import {InstructionSet} from "./InstructionSet.ts";
-import {Op, OpSemantics} from "./Op.ts";
+import {InstructionSet} from "./asm/InstructionSet.ts";
+import {Op, OpSemantics} from "./asm/Op.ts";
 
 type M6502OperandLength = 0 | 1 | 2;
 

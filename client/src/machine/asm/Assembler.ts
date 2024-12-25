@@ -2,7 +2,7 @@ import {Addr} from "../core.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";
 import {ParserState} from "./DefaultDialect.ts";
-import {InstructionSet} from "../InstructionSet.ts";
+import {InstructionSet} from "./InstructionSet.ts";
 
 /**
  * Syntax-independent stateful assembler, parametised by {@link InstructionSet}
