@@ -1,20 +1,26 @@
+/**
+ * Encapsulates important meaning of an instruction so that code can be simply analysed or approximately
+ * interpreted.
+ */
 export enum OpSemantics {
   IS_UNCONDITIONAL_JUMP,  // will modify PC
   IS_CONDITIONAL_JUMP,    // may modify PC
-  IS_BREAK,   // legit break
-  IS_JAM,     // illegal break
+  IS_BREAK,   // intentional stop of further processing
+  IS_JAM,     // undocumented stop of further processing
   IS_ILLEGAL, // undocumented but may execute
   IS_STORE,   // modifies memory
   IS_RETURN,  // return from subroutine or interrupt
 }
 
+/**
+ * Represents a machine instruction with a string mnemonic.
+ */
 export class Op {
   mnemonic: string;
   description: string;
-  /** mnemonic category */
+  /** instruction category */
   cat: string;
   private semantics: OpSemantics[] = [];
-
 
   constructor(mnemonic: string, description: string, cat: string, semantics: OpSemantics[] = []) {
     this.semantics = semantics;
