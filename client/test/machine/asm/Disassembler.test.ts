@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {LE} from "../../../src/machine/core";
 import {createDisassembler, niladicOpcodes} from "../util";
 import {MODE_ABSOLUTE} from "../../../src/machine/mos6502";
-import {OpSemantics} from "../../../src/machine/Op";
+import {OpSemantics} from "../../../src/machine/asm/Op";
 import {ArrayMemory} from "../../../src/machine/Memory";
 
 describe("disassembler", () => {
