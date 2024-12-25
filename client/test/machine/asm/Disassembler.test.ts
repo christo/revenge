@@ -1,16 +1,21 @@
 import {expect} from 'chai';
 import {LE} from "../../../src/machine/core";
-import {createDisassembler, niladicOpcodes} from "../util";
-import {MODE_ABSOLUTE} from "../../../src/machine/mos6502";
+import {niladicOpcodes} from "../util";
+import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502";
 import {OpSemantics} from "../../../src/machine/asm/Op";
 import {ArrayMemory} from "../../../src/machine/Memory";
+import {FileBlob} from "../../../src/machine/FileBlob";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
+import {Disassembler} from "../../../src/machine/asm/Disassembler";
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {
     const bytes = niladicOpcodes(["NOP"]);
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
-    const d = createDisassembler(code);
+    const fb = FileBlob.fromBytes("testblob", code, LE);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2);
     expect(disassembled.instruction.op.mnemonic).to.equal("NOP");
   });
@@ -20,7 +25,9 @@ describe("disassembler", () => {
     ];
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
-    const d = createDisassembler(bytes);
+    const fb = FileBlob.fromBytes("testblob", bytes, LE);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2);
     const instruction = disassembled.instruction;
     const op = instruction.op;
