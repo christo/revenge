@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import {LE} from "../../src/machine/core";
 import {Thread} from "../../src/machine/Thread";
-import {createDisassembler} from "./util";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";
 import {FileBlob} from "../../src/machine/FileBlob";
@@ -12,7 +11,9 @@ describe("thread", () => {
   it("records executed instructions", () => {
     const contents = [0, 0, 0xea, 0xea]; // 0, 0, NOP, NOP
     const memory = new ArrayMemory(contents, LE, true, true);
-    const d = createDisassembler(contents);
+    const fb = FileBlob.fromBytes("testblob", contents, LE);
+    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Thread("test", d, 0, memory);
     t.step();
     expect(t.getExecuted().length).to.eq(1, "expected single step to have executed one instruction");
