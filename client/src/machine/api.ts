@@ -10,6 +10,8 @@ import {Memory} from "./Memory.ts";
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  * A sequence of string tuples that represent a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
+ *
+ * TODO kill this crazy idea asap - too abstract
  */
 class Tag {
 
@@ -98,15 +100,11 @@ class LogicalLine {
 
   // noinspection JSUnusedGlobalSymbols
   /**
+   * Not all lines have instructions but if this line has one, it will be returned.
    * @return possibly undefined instruction for this line
    */
   getInstruction() {
     return this.instruction;
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  getAddress() {
-    return this.address;
   }
 }
 
