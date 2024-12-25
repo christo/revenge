@@ -1,6 +1,6 @@
 # TODO
 
-* [ ] remove excessive cleverness in low branches of front-end disassembly render call tree
+* [ ] remove excessive cleverness: replace Tag with closer domain model types
 * [ ] implement Tracer and tests
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
@@ -9,23 +9,6 @@
   * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
 * [ ] migrate to NodeNext in client to standardise on `.ts` extension in imports (vite config)
 
-* useful material icons:
-  * ManageHistory (reverse engineering)
-  * DragIndicator
-  * ForkLeft
-  * ForkRight
-  * Link (jump address)
-  * LocalOffer or Sell (hashtag)
-  * Message (annotation for binary)
-  * PlayArrow (entry point?)
-  * Radar
-  * Report
-  * ReportProblem
-  * RocketLaunch
-  * Science
-  * Star
-  * Tag
-  * Token (logo?)
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
 * check out Haskell Difference List datastructure
 * vic 20 / c64 hardware register detection
@@ -96,3 +79,20 @@
 * enable multiple people to do analysis of files, to store, share and collaborate on the analysis of files
 * Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will
   assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy or hard.
+* useful material icons:
+  * ManageHistory (reverse engineering)
+  * DragIndicator
+  * ForkLeft
+  * ForkRight
+  * Link (jump address)
+  * LocalOffer or Sell (hashtag)
+  * Message (annotation for binary)
+  * PlayArrow (entry point?)
+  * Radar
+  * Report
+  * ReportProblem
+  * RocketLaunch
+  * Science
+  * Star
+  * Tag
+  * Token (logo?)
