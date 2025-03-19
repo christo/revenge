@@ -1,6 +1,10 @@
 /*
- * Follows machine code execution flows of directed acyclic graphs in memory to build set of possible next instructions,
- * with some caveats such as no self-modified code or indexed addressing in jump/branch operands (where applicable).
+ * Semi-static analyser for identifying code in memory. Simpler than an emulator, follows executed instructions
+ * without modifying register state, memory state or producing io side effects.
+ *
+ * Follows machine code execution flows of directed acyclic graphs in memory to build set of possible next instructions.
+ *
+ * Note that code paths may be unreachable in practice because each side of a branch condition is always explored.
  *
  * Not initially intended to help with self-mod code. The most general form of that is famously intractable but case
  * analysis may help to contain certain examples. Two paths forward on that may be 1. monte-carlo simulation using full
