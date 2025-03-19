@@ -128,7 +128,7 @@ class SymbolTable {
   }
 
   /**
-   * Register a new symbol for the described subroutine. One must not exist with the same name or address.
+   * Register a new symbol for the described subroutine. One must not already exist with the same name or address.
    *
    * @param addr address the symbol refers to.
    * @param name name to be used instead of the address.
