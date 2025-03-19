@@ -39,7 +39,7 @@ class Tracer {
   // FUTURE: would also be nice to know if a memory location is writeable
 
   /**
-   * Create a Tracer with a single Memory and single thread of execution at startLocation.
+   * Create a Tracer with a single Memory and single thread of execution at pc.
    *
    * @param disasm used to interpret memory as instructions
    * @param pc program counter; absolute address in the memory of next instruction to execute.
@@ -48,9 +48,9 @@ class Tracer {
   constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>) {
     const relativePc = pc - disasm.getSegmentBaseAddress();
     if (Math.round(pc) !== pc) {
-      throw Error(`startLocation must be integral`);
+      throw Error(`pc must be integer`);
     } else if (relativePc < 0 || memory.getLength() <= relativePc) {
-      throw Error(`startLocation 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
+      throw Error(`pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }
