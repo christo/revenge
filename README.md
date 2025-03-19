@@ -127,14 +127,10 @@ can choose which
 suits the given part. Also, guesses should be smart.
 
 A command line required to assemble the file in a given assembler should be provided in a comment at
-the top of the
-generated output (this implies the filename must also be specified). CPU designation and, system
-symbol imports etc.
-can only be specified on the command line or by environment variables on some assemblers as opposed
-to having
-assembler directives for them. While trying not to get into OS-specifics, command-lines are
-necessarily going to be
-OS-specific.
+the top of the generated output (this implies the filename must also be specified). CPU designation
+and, system symbol imports etc. can only be specified on the command line or by environment
+variables on some assemblers as opposed to having assembler directives for them. While trying not to
+get into OS-specifics, command-lines are necessarily going to be OS-specific.
 
 Within a dialect, different options may be selectable in a config form, so preferred output
 styling can be tweaked.
@@ -189,8 +185,7 @@ scripting-language-like assembler directives and macros.
 
 * closed source
 * very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be
-  hand-coded
-  rather than generated.
+  hand-coded rather than generated.
 
 ### Others:
 
@@ -204,10 +199,8 @@ scripting-language-like assembler directives and macros.
 ### Common Dialect Variations
 
 Assemblers may accept a lot of syntax beyond the minimum required for generating disassembly, for
-example, macros
-and includes. Ultimately it would be great to be able to synthesise macros from binaries, but at
-first, only the
-minimum necessary syntax may be supported.
+example, macros and includes. Ultimately it would be great to be able to synthesise macros from
+binaries, but at first, only the minimum necessary syntax may be supported.
 
 * line comment prefix character
 * legal label rules, e.g.:
