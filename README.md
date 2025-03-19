@@ -1,11 +1,11 @@
 # Revenge
 
-Reverse Engineering Environment 
+Reverse Engineering Environment
 
 **Project Status**: _pre alpha_ (it does work on the various binaries I'm currently testing with)
 
-The idea is a web-based reverse engineering environment with very small 
-initial goals: binary file type detection and simple disassembly of 6502 machine code 
+The grand idea is a web-based reverse engineering environment with very small
+initial goals: binary file type detection and simple disassembly of 6502 machine code
 for the Vic-20 and C64.
 
 It's implemented in TypeScript as a first project for learning the language.
@@ -21,7 +21,7 @@ to confirm you have the relevant tools installed:
 ./sanity.sh
 ```
 
-## Features 
+## Features
 
 * drag and drop file loading
 * load file contents into summary view
@@ -30,29 +30,29 @@ to confirm you have the relevant tools installed:
 * file type recognition
   * basics - can recognise at least two types and offer to disassemble if it knows how
   * vic20 raw cartridge image recognition
-* representation of a syntax-independent assembler pseudo-op and Dialect can implement syntax-specifics
+* representation of a syntax-independent assembler pseudo-op and Dialect can implement
+  syntax-specifics
 * assembly syntax highlighting
 * Test suite
 * Decode BASIC programs on VIC-20 and C64
-* High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated 
-by [Michael Steil](https://pagetable.com/) of
-[The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
+* High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated
+  by [Michael Steil](https://pagetable.com/) of
+  [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
 * stats/summary of file interpretation action taken
   * execution time for disassembly
   * symbol detection count (disassembly)
 * System kernal subroutine symbol recognition (VIC-20, C64)
 
-
 ## System Support Status
 
-The design aims to reduce the effort of supporting multiple different systems, however at this stage only VIC-20 and C64
-carts, prg files and BASIC files have been tested and there is no comprehensive test suite yet. Also, I'm not sure
-how feasible it would be to support some systems. Within the communities of each system, different assembler tool 
-chains are more prevalent.
+The design aims to reduce the effort of supporting multiple different systems, however at this
+stage only VIC-20 and C64 carts, prg files and BASIC files have been tested and there is no
+comprehensive test suite yet. Also, I'm not sure how feasible it would be to support some systems.
+Within the communities of each system, different assembler tool chains are more prevalent.
 
-In general, project scope includes support for 6502-based and Z80-based 80s Microcomputers and a generous subset of the 
-more common assembler syntax dialects. The following table shows estimations, not promises.
-
+In general, project scope includes support for 6502-based and Z80-based 80s Microcomputers and a
+generous subset of the more common assembler syntax dialects. The following table shows
+estimations, not promises.
 
 | Machines                | Status      | CPU Family |
 |-------------------------|-------------|------------|
@@ -75,7 +75,6 @@ variable-length compression format.
 
 Peep-hole optimiser.
 See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
-
 
 Patchy comprehensions - in a given disassembly, is the byte literal treated as a
 zero-page address? If so, or if it is a 16-bit address for, say, a load or store,
@@ -123,13 +122,18 @@ options should be selectable by the user.
 
 ## Assembly Dialects
 
-Dialects should define equivalent alternative generation options for particular parts and the user can choose which 
+Dialects should define equivalent alternative generation options for particular parts and the user
+can choose which
 suits the given part. Also, guesses should be smart.
 
-A command line required to assemble the file in a given assembler should be provided in a comment at the top of the
-generated output (this implies the filename must also be specified). CPU designation and, system symbol imports etc.
-can only be specified on the command line or by environment variables on some assemblers as opposed to having
-assembler  directives for them. While trying not to get into OS-specifics, command-lines are necessarily going to be
+A command line required to assemble the file in a given assembler should be provided in a comment at
+the top of the
+generated output (this implies the filename must also be specified). CPU designation and, system
+symbol imports etc.
+can only be specified on the command line or by environment variables on some assemblers as opposed
+to having
+assembler directives for them. While trying not to get into OS-specifics, command-lines are
+necessarily going to be
 OS-specific.
 
 Within a dialect, different options may be selectable in a config form, so preferred output
@@ -141,7 +145,8 @@ Assembler dialects being considered:
 
 ### Vasm "Oldstyle"
 
-[Oldstyle](http://sun.hasenbraten.de/vasm/release/vasm_6.html) is one of the supported dialects in vasm, Ben Eater's choice.
+[Oldstyle](http://sun.hasenbraten.de/vasm/release/vasm_6.html) is one of the supported dialects in
+vasm, Ben Eater's choice.
 
 * Top of docs: http://sun.hasenbraten.de/vasm/release/vasm.html
 * Very simple syntax, like ancient 6502 source code
@@ -177,12 +182,14 @@ Some noteworthy features of Vasm "oldstyle":
 
 ### Kick Assembler
 
-[Kick Assembler](http://theweb.dk/KickAssembler/Main.html) by Mads Nielsen is free, although closed source, it
+[Kick Assembler](http://theweb.dk/KickAssembler/Main.html) by Mads Nielsen is free, although closed
+source, it
 is free to use and it one of the most popular assemblers in the C64 community mostly for its rich
 scripting-language-like assembler directives and macros.
 
 * closed source
-* very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be hand-coded
+* very complex, inconsistent and non-orthogonal syntax variations. The author claims parsers must be
+  hand-coded
   rather than generated.
 
 ### Others:
@@ -196,8 +203,10 @@ scripting-language-like assembler directives and macros.
 
 ### Common Dialect Variations
 
-Assemblers may accept a lot of syntax beyond the minimum required for generating disassembly, for example, macros
-and includes. Ultimately it would be great to be able to synthesise macros from binaries, but at first, only the
+Assemblers may accept a lot of syntax beyond the minimum required for generating disassembly, for
+example, macros
+and includes. Ultimately it would be great to be able to synthesise macros from binaries, but at
+first, only the
 minimum necessary syntax may be supported.
 
 * line comment prefix character
@@ -214,22 +223,26 @@ minimum necessary syntax may be supported.
   * word support etc.
   * block fill
 
-
 ## Reverse Engineering Tools
 
-* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and command-line toolset
-* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA (supports 6502 and dozens of more contemporary 
+* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and
+  command-line toolset
+* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA (supports 6502 and dozens of
+  more contemporary
   architectures)
 * [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
-* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to support 6502 (I couldn't
-  make it work) see my GH issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
+* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to
+  support 6502 (I couldn't
+  make it work) see my GH
+  issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
 * [IDA Pro](https://hex-rays.com/ida-pro/) classic, proprietary, native
 
 ## Useful Resources
 
 * [C64 cross-dev links](https://codebase64.org/doku.php?id=base:crossdev)
 * https://www.nesdev.org/wiki/Tools assemblers and disassemblers with a focus on NES
-* https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and examples
+* https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and
+  examples
 * ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
 * [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
 
