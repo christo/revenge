@@ -11,6 +11,7 @@ interface Memory<T extends Endian> extends Byteable {
 
   /**
    * Read from the offset a 16 bit word in the right {@link Endian Endianness}.
+   *
    * @param byteOffset
    */
   read16(byteOffset: Addr): number;
@@ -21,7 +22,8 @@ interface Memory<T extends Endian> extends Byteable {
   endianness(): T;
 
   /**
-   * Does the given array contain the same data as this array at our given offset
+   * Does the given array contain the same data as this array at our given offset.
+   *
    * @param seq the array to compare
    * @param atOffset index into our array to compare
    */
@@ -38,6 +40,7 @@ interface Memory<T extends Endian> extends Byteable {
 
   /**
    * Loads the given data to the given address.
+   *
    * @param data
    * @param location
    */
