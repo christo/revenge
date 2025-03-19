@@ -262,7 +262,7 @@ class Disassembler {
       if (instLen >= 4) {
         throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
       }
-      // TODO ? what happens if instruction is only one byte?
+      // TODO what happens if instruction is only one byte?
       const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
       return inst;
     } else {
