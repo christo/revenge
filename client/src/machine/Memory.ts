@@ -20,8 +20,20 @@ interface Memory<T extends Endian> extends Byteable {
    */
   endianness(): T;
 
+  /**
+   * Does the given array contain the same data as this array at our given offset
+   * @param seq the array to compare
+   * @param atOffset index into our array to compare
+   */
   submatch(seq: Uint8Array, atOffset: number): boolean;
 
+  /**
+   * Returns true iff the given location is in our address range.
+   *
+   * TODO clarify: does a memory know its address range and must it start at zero?
+   *
+   * @param location
+   */
   contains(location: Addr): boolean;
 
   /**
