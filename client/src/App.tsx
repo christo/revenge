@@ -26,11 +26,6 @@ const darkTheme = createTheme({
  */
 const MAX_SIZE_MB = 1;
 
-interface FileContents {
-  fb: FileBlob,
-  loading: boolean
-}
-
 export function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
   const {children, value, item} = props;
   return (
