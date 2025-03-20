@@ -1,14 +1,6 @@
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MenuIcon from '@mui/icons-material/Menu';
 import {Button, CircularProgress, Stack} from "@mui/material";
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 
@@ -18,6 +10,7 @@ import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
 import {FileBlob, FileLike} from "./machine/FileBlob.ts";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
+import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
 
 const darkTheme = createTheme({
@@ -44,72 +37,6 @@ export function TabPanel(props: { children: React.ReactNode, value: number, item
       <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
         {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
       </div>
-  );
-}
-
-function MenuAppBar() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-      <Box sx={{flexGrow: 1}}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{mr: 2}}
-            >
-              <MenuIcon/>
-            </IconButton>
-            <Typography variant="h4" component="div" sx={{flexGrow: 1, fontFamily: 'BebasNeueRegular'}}>
-              Revenge
-            </Typography>
-            <i className="byLine">retrocomputing reverse engineering environment</i>
-            {(
-                <div>
-                  <IconButton
-                      size="large"
-                      aria-label="account of current user"
-                      aria-controls="menu-appbar"
-                      aria-haspopup="true"
-                      onClick={handleMenu}
-                      color="inherit"
-                  >
-                    <AccountCircle/>
-                  </IconButton>
-                  <Menu
-                      id="menu-appbar"
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                  >
-                    <MenuItem onClick={handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleClose}>My account</MenuItem>
-                  </Menu>
-                </div>
-            )}
-          </Toolbar>
-        </AppBar>
-      </Box>
   );
 }
 
