@@ -573,6 +573,8 @@ class FullInstruction implements Byteable {
   }
 }
 
+// TODO introduce CPU abstraction for Z80 etc.
+
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 {
   static readonly ISA = I;
