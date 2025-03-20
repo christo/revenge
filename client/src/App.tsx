@@ -64,7 +64,7 @@ function InfoPanel({detail}: { detail: Detail }) {
     <SmolPanel heading="Options">
       <Typography>Options control panel will go here...</Typography>
     </SmolPanel>
-    <SmolPanel heading={`Stats for ${detail.name}`}>
+    <SmolPanel heading={`${detail.name} Stats`}>
       {detail.stats.map(([key, value], i) =>
         <Box key={`sp_${i}`} className="stat">
           <span className="skey">{key}</span> <span className="sval">{value}</span>
