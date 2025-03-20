@@ -134,8 +134,7 @@ form equivalent. In the case of code, the canonical form will have equivalences 
 use the y register instead of the x register, all else being equal. Canonical forms for code may
 execute in a different number of cycles or use a different number of bytes or have instructions
 in a different order (some design is required to analyse alternate orderings with preservation
-of semantics). Canonicalisation is a form of program transformation where the goal is to identify
-use-case-specific essence.
+of semantics).
 
 ## Interactive Disassembly
 
