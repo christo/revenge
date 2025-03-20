@@ -86,9 +86,9 @@ class BasicDecoder {
         console.error("byte no existo");
         finished = true;
       } else if (eol) {
-        const address = new Tag(TAG_ADDRESS, hex16(thisLineAddr));
-        const lineNum = new Tag(TAG_LINE_NUM, lineNumber.toString(10));
-        const lineText = new Tag(TAG_LINE, line);
+        const address = new Tag([TAG_ADDRESS], hex16(thisLineAddr));
+        const lineNum = new Tag([TAG_LINE_NUM], lineNumber.toString(10));
+        const lineText = new Tag([TAG_LINE], line);
         const tags = [address, lineNum, lineText];
         dataView.addLine(new LogicalLine(tags, thisLineAddr));
       } else {
@@ -113,10 +113,10 @@ class BasicDecoder {
     // "i" is pointing at the termination word
     const remainingBytes = fb.getLength() - i - 2;
     if (remainingBytes > 0) {
-      const note = new Tag(TAG_NOTE, `${remainingBytes} remaining bytes`);
+      const note = new Tag([TAG_NOTE], `${remainingBytes} remaining bytes`);
       // not really an address, a number of bytes
       const numBytes = baseAddress + i + 2;
-      const addr = new Tag(TAG_ADDRESS, hex16(numBytes));
+      const addr = new Tag([TAG_ADDRESS], hex16(numBytes));
       dataView.addLine(new LogicalLine([note, addr], numBytes));
     }
 

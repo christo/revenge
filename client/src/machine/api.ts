@@ -20,8 +20,8 @@ class Tag {
   data: [string, string][];
   value: string;
 
-  constructor(tags: string | string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
-    this.tags = (typeof tags === "string") ? [tags] : tags;
+  constructor(tags: string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
+    this.tags = tags;
     this.id = id;
     this.data = data;
     this.value = value;
@@ -179,7 +179,7 @@ class BooBoo {
   }
 }
 
-const hexTag = (x: number) => new Tag(TAG_HEXBYTE, hex8(x));
+const hexTag = (x: number) => new Tag([TAG_HEXBYTE], hex8(x));
 
 const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
   label: "Hex Dump",

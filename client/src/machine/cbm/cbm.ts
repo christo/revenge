@@ -47,8 +47,8 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta1: Disasse
     const instAddress = dis.currentAddress; // save current address before we increment it
     let inst: InstructionLike = dis.nextInstructionLine();
     const tags = [
-      new Tag(TAG_ADDRESS, hex16(instAddress)),
-      new Tag(TAG_HEX, asHex(inst.getBytes())),
+      new Tag([TAG_ADDRESS], hex16(instAddress)),
+      new Tag([TAG_HEX], asHex(inst.getBytes())),
       ...inst.disassemble(dialect, dis)
     ];
     detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));

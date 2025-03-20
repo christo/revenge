@@ -139,17 +139,17 @@ class DefaultDialect implements Dialect {
 
   bytes(x: FullInstructionLine, _dis: Disassembler): Tag[] {
     // future: context may give us rules about grouping, pattern detection etc.
-    const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(x.labelsComments.comments));
-    const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(x.labelsComments.labels));
-    const data: Tag = new Tag(TAG_DATA, this._env.indent() + tagText(this.byteDeclaration(x)));
+    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
+    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
+    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(this.byteDeclaration(x)));
     return [comments, labels, data];
   }
 
   words(words: number[], lc: LabelsComments, _dis: Disassembler): Tag[] {
-    const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(lc.comments));
-    const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(lc.labels));
+    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(lc.comments));
+    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(lc.labels));
     const tags: Tag[] = this.wordDeclaration(words)
-    const data: Tag = new Tag(TAG_DATA, this._env.indent() + tagText(tags));
+    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(tags));
     return [comments, labels, data];
   }
 
@@ -161,8 +161,8 @@ class DefaultDialect implements Dialect {
    * @param dis the Disassembler
    */
   code(fil: FullInstructionLine, dis: Disassembler): Tag[] {
-    const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(fil.labelsComments.comments));
-    const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(fil.labelsComments.labels));
+    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(fil.labelsComments.comments));
+    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(fil.labelsComments.labels));
     return [comments, labels, ...this.taggedCode(fil, dis)];
   }
 
@@ -172,17 +172,17 @@ class DefaultDialect implements Dialect {
   }
 
   pcAssign(pcAssign: PcAssign, _dis: Disassembler): Tag[] {
-    const comments = new Tag(TAG_COMMENT, this.renderComments(pcAssign.labelsComments.comments));
-    const labels = new Tag(TAG_LABEL, this.renderLabels(pcAssign.labelsComments.labels));
-    const pc = new Tag(TAG_CODE, "* =");
+    const comments = new Tag([TAG_COMMENT], this.renderComments(pcAssign.labelsComments.comments));
+    const labels = new Tag([TAG_LABEL], this.renderLabels(pcAssign.labelsComments.labels));
+    const pc = new Tag([TAG_CODE], "* =");
     const addr = new Tag([TAG_ABSOLUTE, TAG_OPERAND], this.hexWordText(pcAssign.address));
-    const dummy = new Tag(TAG_ADDRESS, "_");
+    const dummy = new Tag([TAG_ADDRESS], "_");
     return [comments, labels, dummy, pc, addr];
   }
 
   labelsComments(labelsComments: LabelsComments, _dis: Disassembler): Tag[] {
-    const labels: Tag = new Tag(TAG_LABEL, this.renderLabels(labelsComments.labels));
-    const comments: Tag = new Tag(TAG_COMMENT, this.renderComments(labelsComments.comments));
+    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(labelsComments.labels));
+    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(labelsComments.comments));
     return [comments, labels];
   }
 
@@ -240,14 +240,14 @@ class DefaultDialect implements Dialect {
     if (b.getLength() === 0) {
       throw Error("not entirely sure how to declare zero bytes");
     }
-    const kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_BYTE_DECLARATION);
-    const hexTag = new Tag(TAG_HEXARRAY, b.getBytes().map(this.hexByteText).join(", "));
+    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_BYTE_DECLARATION);
+    const hexTag = new Tag([TAG_HEXARRAY], b.getBytes().map(this.hexByteText).join(", "));
     return [kw, hexTag];
   }
 
   private wordDeclaration(words: number[]): Tag[] {
-    const kw: Tag = new Tag(TAG_KEYWORD, DefaultDialect.KW_WORD_DECLARATION);
-    const values: Tag = new Tag(TAG_HEXARRAY, words.map(this.hexWordText).join(", "));
+    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_WORD_DECLARATION);
+    const values: Tag = new Tag([TAG_HEXARRAY], words.map(this.hexWordText).join(", "));
     return [kw, values];
   }
 
