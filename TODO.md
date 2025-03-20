@@ -1,7 +1,7 @@
 # TODO
 
 * [ ] remove excessive cleverness: replace Tag with closer domain model types
-* [ ] implement Tracer and tests
+* [ ] implement Tracer to distinguish between code and data (excluding self-mod)
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
   * [ ] Disassemble line in tracer to identify conditional branches 
