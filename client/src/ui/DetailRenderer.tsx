@@ -23,6 +23,7 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
       const jumpTo = document.getElementById(id);
       if (jumpTo !== null) {
         jumpTo.scrollIntoView({behavior: "smooth"});
+        // TODO visible pulse on target address after it scrolls into view? cursor?
         history.pushState(`id-${id}`, `${window.document.title} ${addr}`, window.location.href);
       }
     }
