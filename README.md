@@ -2,34 +2,63 @@
 
 Reverse Engineering Environment
 
+The grand idea is a web-based reverse engineering environment for retro computers
+with very small initial goals: binary file type detection and simple disassembly of 
+6502 machine code for the Vic-20 and C64. Z80 is a likely future supported architecture.
+
 **Project Status**: _pre alpha_ (it does work on the various binaries I'm currently testing with)
 
-The grand idea is a web-based reverse engineering environment with very small
-initial goals: binary file type detection and simple disassembly of 6502 machine code
-for the Vic-20 and C64.
-
-It's implemented in TypeScript as a first project for learning the language.
+It's implemented in TypeScript as a first project for learning the language so the code may
+contain some baroque or nonidiomatic code due to overzealous exploration of language features.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ## Quick Start
 
 After checking out this repo, from a terminal shell in the root directory, run the sanity script
-to confirm you have the relevant tools installed:
+to check you have the relevant tools installed:
 
 ```shell
 ./sanity.sh
 ```
+
+The main system is a web app that runs in a browser and there is an optional server which provides
+access to retro binaries stored on the local filesystem a few are included in this distribution.
+Without the server, you can drag and drop files from your computer into the browser or click the
+upload button.
+
+To run the server in its own shell, make sure you're in the `server` dir:
+
+```shell
+cd server
+bun start
+```
+
+To run the client in its own shell, make sure you're in the `client` dir:
+
+```shell
+cd client
+bun dev
+```
+
+The URL to point your browser to is shown in the console.
+
+During development, `bun` is used for speed and convenience, and if you don't have it, the
+sanity script will alert you. While `bun` is recommended, it should work fine with a different
+js runtime like node or deno. To use `npm` or `pnpm`, check the `client/package.json` and
+`server/package.json` files to see what scripts are defined.
+
 
 ## Features
 
 * drag and drop file loading
 * load file contents into summary view
 * hex view (minimal)
-* dumb disassembly
+* dumb disassembly - detection of code vs data is a project goal
 * file type recognition
-  * basics - can recognise at least two types and offer to disassemble if it knows how
+  * can recognise at least two types and offer to disassemble if it knows how
   * vic20 raw cartridge image recognition
+  * BASIC programs
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement
   syntax-specifics
 * assembly syntax highlighting
