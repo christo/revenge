@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import {HashChip, TabPanel} from "../App.tsx";
+import {TabPanel} from "../App.tsx";
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
@@ -8,6 +8,12 @@ import { useState } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {DetailRenderer} from "./DetailRenderer.tsx";
+import Chip from "@mui/material/Chip";
+
+function HashChip({tag}: { tag: string }) {
+  return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="info"/>
+}
+
 
 /**
  * Main content showing interpreted file contents.
@@ -36,7 +42,10 @@ export function FileDetail({fb}: { fb: FileBlob }) {
         }}>Smells like</Typography>
         <Typography display="inline" sx={{mr: 1}}>{t.name}</Typography>
         <Typography display="inline" sx={{mr: 1}}>{t.desc}</Typography>
-        {t.tags.map((tag, i) => <HashChip tag={tag} key={`tag_${i}`}/>)}
+        {t.tags.map((tag, i) => {
+          return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="info"
+                       key={`tag_${i}`}/>;
+        })}
       </Box>
     </Box>
 

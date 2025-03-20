@@ -1,6 +1,6 @@
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
-import {Button, Chip, CircularProgress, Stack} from "@mui/material";
+import {Button, CircularProgress, Stack} from "@mui/material";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -16,11 +16,9 @@ import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
-import {LE} from "./machine/core.ts";
 import {FileBlob, FileLike} from "./machine/FileBlob.ts";
-import {FileDetail} from "./ui/FileDetail.tsx";
+import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
 
-const BASE_TITLE = window.document.title;
 
 const darkTheme = createTheme({
   palette: {
@@ -47,33 +45,6 @@ export function TabPanel(props: { children: React.ReactNode, value: number, item
         {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
       </div>
   );
-}
-
-export function HashChip({tag}: { tag: string }) {
-  return <Chip label={tag} size="small"
-               sx={{marginRight: 1}}
-               variant="outlined" color="info"/>
-
-}
-
-function CurrentFileSummary({file}: { file: File | FileLike }) {
-  const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
-
-  useEffect(() => {
-    FileBlob.fromFile(file, LE).then(fb => setRendered({fb: fb, loading: false}));
-  }, [file]);
-
-  return <Box className="fileSummary">
-      <span className="filename">
-          {file.name}
-      </span>
-      <span className="filesize">
-          {file.size} bytes
-      </span>
-    <Box className="contents">
-      {!rendered.loading ? <FileDetail fb={rendered.fb}/> : <CircularProgress sx={{p:5}}/>}
-    </Box>
-  </Box>;
 }
 
 function MenuAppBar() {
