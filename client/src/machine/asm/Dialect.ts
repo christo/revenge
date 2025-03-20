@@ -30,6 +30,7 @@ interface Dialect {
 
   /**
    * Return the start and end strings for multiline comments.
+   * TODO how to implement "unsupported" or multiple alternatives (like kickass)
    */
   multilineCommentDelimiters(): [string, string];
 
