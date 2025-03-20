@@ -7,12 +7,6 @@ import {FileBlob} from "../FileBlob.ts";
 import {SymDef} from "./instructions.ts";
 
 /**
- * Turns a tagSeq into plain text, discarding the tags.
- * @param ts
- */
-const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
-
-/**
  * Defines a semantic category for a line of assembly source.
  */
 const enum SourceType {
@@ -236,7 +230,6 @@ export {
   Environment,
   Section,
   SectionType,
-  tagText,
   mkLabels,
   mkComments,
   SymbolTable,

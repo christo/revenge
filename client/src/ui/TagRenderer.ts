@@ -5,12 +5,24 @@ export interface TagRenderer {
   /**
    * Unique key.
    */
-  key: string;
+  key(): string;
 
   /**
    * UI name.
    */
-  label: string;
+  label(): string;
 
-  getJsx(): JSX.Element;
+}
+
+export class HexDumpTagRenderer implements TagRenderer {
+
+
+  key(): string {
+    return "";
+  }
+
+  label(): string {
+    return "";
+  }
+
 }

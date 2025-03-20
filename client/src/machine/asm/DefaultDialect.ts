@@ -1,8 +1,7 @@
 import * as console from "node:console";
-import {Petscii} from "../cbm/petscii.ts";
-import {Dialect} from "./Dialect.ts";
 import {
   BooBoo,
+  KeywordTag,
   Tag,
   TAG_ABSOLUTE,
   TAG_ADDRESS,
@@ -11,12 +10,13 @@ import {
   TAG_DATA,
   TAG_HEXARRAY,
   TAG_IN_BINARY,
-  TAG_KEYWORD,
   TAG_LABEL,
   TAG_MNEMONIC,
   TAG_OPERAND,
-  TAG_OPERAND_VALUE, TAG_PETSCII
+  TAG_OPERAND_VALUE,
+  TAG_PETSCII
 } from "../api.ts";
+import {Petscii} from "../cbm/petscii.ts";
 import {Byteable, hex16, hex8, TODO, unToSigned} from "../core.ts";
 import {
   FullInstruction,
@@ -34,7 +34,9 @@ import {
   MODE_ZEROPAGE_X,
   MODE_ZEROPAGE_Y
 } from "../mos6502.ts";
-import {Environment, LabelsComments, tagText} from "./asm.ts";
+import {Environment, LabelsComments} from "./asm.ts";
+import {Dialect} from "./Dialect.ts";
+import {Disassembler} from "./Disassembler.ts";
 import {
   BLANK_LINE,
   Directive,
@@ -43,7 +45,6 @@ import {
   LabelsCommentsOnly,
   PcAssign
 } from "./instructions.ts";
-import {Disassembler} from "./Disassembler.ts";
 
 /**
  * Represents the state of a line-based parser
@@ -52,6 +53,14 @@ enum ParserState {
   READY,
   MID_MULTILINE_COMMENT,
 }
+
+
+/**
+ * Turns a tagSeq into plain text, discarding the tags.
+ *
+ * @param ts
+ */
+const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
 
 /**
  * Need to support options, possibly at specific memory locations.
@@ -152,13 +161,12 @@ class DefaultDialect implements Dialect {
     if (x.getLength() === 0) {
       throw Error("not entirely sure how to declare text for zero bytes");
     }
-    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_TEXT_DECLARATION);
+    const kw: Tag = new KeywordTag(DefaultDialect.KW_TEXT_DECLARATION);
     const petscii = x.getBytes().map(b => Petscii.C64.vice[b]).join("");
     const hexTag = new Tag([TAG_PETSCII], `"${petscii}"`); // TODO not sure if this is any dialect
-    const stuff= [kw, hexTag];
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
-    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(stuff));
+    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText([kw, hexTag]));
     return [comments, labels, data];
   }
 
@@ -257,13 +265,13 @@ class DefaultDialect implements Dialect {
     if (b.getLength() === 0) {
       throw Error("not entirely sure how to declare zero bytes");
     }
-    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_BYTE_DECLARATION);
+    const kw: Tag = new KeywordTag(DefaultDialect.KW_BYTE_DECLARATION);
     const hexTag = new Tag([TAG_HEXARRAY], b.getBytes().map(this.hexByteText).join(", "));
     return [kw, hexTag];
   }
 
   private wordDeclaration(words: number[]): Tag[] {
-    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_WORD_DECLARATION);
+    const kw: Tag = new KeywordTag(DefaultDialect.KW_WORD_DECLARATION);
     const values: Tag = new Tag([TAG_HEXARRAY], words.map(this.hexWordText).join(", "));
     return [kw, values];
   }

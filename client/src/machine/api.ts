@@ -27,7 +27,7 @@ class Tag {
   data: [string, string][];
   value: string;
 
-  constructor(tags: string[], value: string, id: string | undefined = undefined, data: [string, string][] = []) {
+  constructor(tags: string[], value: string, data: [string, string][] = [], id: string | undefined = undefined) {
     this.tags = tags;
     this.id = id;
     this.data = data;
@@ -43,6 +43,13 @@ class Tag {
   spacedTags = () => this.tags.join(" ");
 
   hasTags = (ts: string[]) => ts.every((t) => this.tags.includes(t));
+}
+
+export class KeywordTag extends Tag {
+
+  constructor(value: string) {
+    super([TAG_KEYWORD], value, [], undefined);
+  }
 }
 
 export const TAG_IN_BINARY = "inbinary";
