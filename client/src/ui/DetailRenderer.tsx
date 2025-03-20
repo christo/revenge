@@ -23,7 +23,6 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
       const jumpTo = document.getElementById(id);
       if (jumpTo !== null) {
         jumpTo.scrollIntoView({behavior: "smooth"});
-        // TODO navigate to anchor once scrolled so history holds locations and back buttons navigate properly
         history.pushState(`id-${id}`, `${window.document.title} ${addr}`, window.location.href);
       }
     }
