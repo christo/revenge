@@ -62,7 +62,7 @@ function SmolPanel({heading, children}: { heading: string, children: ReactNode }
 function InfoPanel({detail}: { detail: Detail }) {
   return <Box className="infopanel">
     <SmolPanel heading="Options">
-      <Typography>Options control panel will go here enabling assembly dialect selection etc</Typography>
+      <Typography>Options control panel will go here...</Typography>
     </SmolPanel>
     <SmolPanel heading={`Stats for ${detail.name}`}>
       {detail.stats.map(([key, value], i) =>
