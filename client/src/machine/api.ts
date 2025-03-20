@@ -56,9 +56,9 @@ export const TAG_HEX = "hex";
 export const TAG_LINE = "line";
 export const TAG_LINE_NUM = "lnum";
 export const TAG_NOTE = "note";
-export const TAG_LINE_NUMBER = "lnum";
 export const TAG_KEYWORD = 'kw';
 export const TAG_HEXARRAY = "hexarray";
+export const TAG_PETSCII = "hexarray";
 export const TAG_CODE = "code";
 export const TAG_MNEMONIC = "mn";
 export const TAG_OPERAND_VALUE = "opnd_val";
@@ -93,10 +93,10 @@ class LogicalLine {
    * Temporary transition encapsulation
    */
   private readonly tags: Tag[];
-  private readonly address: Addr;
+  private readonly address: Addr | undefined;
   private readonly instruction?: InstructionLike;
 
-  constructor(tags: Tag[], address: Addr, instruction?: InstructionLike) {
+  constructor(tags: Tag[], address: Addr | undefined, instruction?: InstructionLike) {
     this.tags = tags;
     this.address = address;
     this.instruction = instruction;
@@ -105,6 +105,10 @@ class LogicalLine {
   getTags(): Tag[] {
     // future: put address in tags dynamically and stop receiving it as a tag in constructor
     return this.tags;
+  }
+
+  getAddress(): Addr | undefined {
+    return this.address;
   }
 
   // noinspection JSUnusedGlobalSymbols

@@ -34,6 +34,7 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
 
     {detail.dataView.getLines().map((ll, i) => {
       const tl: Tag[] = ll.getTags();
+      // TODO use TagRenderer
       return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
         {tl.map((tup: Tag, j) => {
           // add id if this is an address

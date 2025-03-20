@@ -56,6 +56,8 @@ interface Dialect {
    */
   bytes(byteable: Directive | FullInstructionLine, dis: Disassembler): Tag[];
 
+  text(byteable: Directive | FullInstructionLine, dis: Disassembler): Tag[];
+
   /**
    * Render the given values as 16 bit words. If there is an odd number of bytes, the last will be forced to be
    * a byte definition.

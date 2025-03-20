@@ -12,4 +12,5 @@ export interface TagRenderer {
    */
   label: string;
 
+  getJsx(): JSX.Element;
 }

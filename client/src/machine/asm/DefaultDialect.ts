@@ -1,3 +1,5 @@
+import * as console from "node:console";
+import {Petscii} from "../cbm/petscii.ts";
 import {Dialect} from "./Dialect.ts";
 import {
   BooBoo,
@@ -13,7 +15,7 @@ import {
   TAG_LABEL,
   TAG_MNEMONIC,
   TAG_OPERAND,
-  TAG_OPERAND_VALUE
+  TAG_OPERAND_VALUE, TAG_PETSCII
 } from "../api.ts";
 import {Byteable, hex16, hex8, TODO, unToSigned} from "../core.ts";
 import {
@@ -61,6 +63,7 @@ enum ParserState {
 class DefaultDialect implements Dialect {
   private static readonly KW_BYTE_DECLARATION: string = '.byte';
   private static readonly KW_WORD_DECLARATION: string = '.word';
+  private static readonly KW_TEXT_DECLARATION: string = '.text';
   private readonly _env: Environment;
 
   constructor(env: Environment) {
@@ -142,6 +145,20 @@ class DefaultDialect implements Dialect {
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
     const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(this.byteDeclaration(x)));
+    return [comments, labels, data];
+  }
+
+  text(x: FullInstructionLine | Directive, _dis: Disassembler): Tag[] {
+    if (x.getLength() === 0) {
+      throw Error("not entirely sure how to declare text for zero bytes");
+    }
+    const kw: Tag = new Tag([TAG_KEYWORD], DefaultDialect.KW_TEXT_DECLARATION);
+    const petscii = x.getBytes().map(b => Petscii.C64.vice[b]).join("");
+    const hexTag = new Tag([TAG_PETSCII], `"${petscii}"`); // TODO not sure if this is any dialect
+    const stuff= [kw, hexTag];
+    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
+    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
+    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(stuff));
     return [comments, labels, data];
   }
 

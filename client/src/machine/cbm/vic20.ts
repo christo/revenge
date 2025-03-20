@@ -1,17 +1,19 @@
 // VIC-20 specific details
 
-import {Computer, LogicalLine, MemoryConfiguration, Tag, TAG_ADDRESS, TAG_LINE_NUMBER} from "../api";
-import {CBM_BASIC_2_0} from "./basic";
-import {CartSniffer, prg} from "./cbm";
+import {Computer, LogicalLine, MemoryConfiguration, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
+import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {Dialect} from "../asm/Dialect.ts";
+import {Disassembler} from "../asm/Disassembler.ts";
+import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
+import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
+import {ByteDeclaration, ByteDefinitionEdict, InstructionLike, VectorDefinitionEdict} from "../asm/instructions.ts";
+import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
-import {Mos6502} from "../mos6502";
-import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
-import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
-import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
-import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {BlobSniffer} from "../BlobSniffer.ts";
 import {ArrayMemory} from "../Memory.ts";
+import {Mos6502} from "../mos6502";
+import {CBM_BASIC_2_0} from "./basic";
+import {CartSniffer, prg} from "./cbm";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 
@@ -75,6 +77,7 @@ VIC20_KERNAL.reg(0x0286, "color_mode", "characters are multi-color or single col
  * CBM is in reverse video (&70).
  */
 const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
+// TODO where did this number come from?
 const MAGIC_OFFSET = 6;
 
 /** The loading address vector is in the image at this offset. */
@@ -89,6 +92,32 @@ const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
   [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
 
+class PetsciiDeclaration extends ByteDeclaration {
+  constructor(bytes: number[], lc: LabelsComments) {
+    super(bytes, lc);
+  }
+
+  disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => {
+    return dialect.text(this, dis);
+  };
+}
+
+class CartSigEdict extends ByteDefinitionEdict {
+
+  constructor() {
+    super(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format"));
+  }
+
+  create(fb: FileBlob): InstructionLike {
+    const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
+    return new PetsciiDeclaration(bytes, this.lc);
+  }
+
+  describe(): string {
+    return `VIC-20 cart signature`;
+  }
+}
+
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
@@ -102,7 +131,7 @@ const VIC20_CART = new CartSniffer(
         VIC20_CART_COLD_VECTOR_OFFSET,
         2,
         [
-          new ByteDefinitionEdict(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format")),
+          new CartSigEdict(),
           new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
           new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
           new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
@@ -160,7 +189,8 @@ export class Vic20Basic implements BlobSniffer {
       let lastAddr = -1;
       decoded.getLines().forEach((ll: LogicalLine) => {
         const i: Tag[] = ll.getTags();
-        const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUMBER));
+        // TODO Q: what decides if this has a line number?
+        const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUM));
         let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
         if (lnumStr !== undefined && addrStr !== undefined) {
           let thisNum = parseInt(lnumStr.value);

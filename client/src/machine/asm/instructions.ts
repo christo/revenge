@@ -319,7 +319,8 @@ interface Edict<T> {
   get length(): number;
 
   /**
-   * Creates the instance from the bytes at address
+   * Creates the instance from the bytes in the given fileblob at our configured offset
+   *
    * @param fb the binary.
    * @return the instance.
    */
