@@ -128,6 +128,11 @@ confirm simple hunches or heuristic interpretations.
 
 ### Canonicalisation
 
+There are different ways to represent data and code which are equivalent. A canonical form
+functions as a single representation into which any variation can be transformed for the
+purpose of deciding equivalence and should help in identifying behaviour, optimisation,
+deobfuscation and porting. 
+
 The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
 forms to be recognised. In the case of character data, the canonical form might make the reverse
 form equivalent. In the case of code, the canonical form will have equivalences that, for example
