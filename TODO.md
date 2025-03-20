@@ -1,6 +1,7 @@
 # TODO
 
 * [ ] remove excessive cleverness: replace Tag with closer domain model types
+  * [ ] augment Tag class, possibly generify to make rendering more explicit
 * [ ] implement Tracer to distinguish between code and data (excluding self-mod)
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
