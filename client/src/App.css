@@ -55,11 +55,6 @@ body {
   margin-right: 1em;
 }
 
-.smell {
-  font-style: italic;
-  opacity: 0.6;
-}
-
 .hexbytes {
   width: 64ch;
   margin-top: 1em;

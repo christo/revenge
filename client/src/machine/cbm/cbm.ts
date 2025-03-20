@@ -1,8 +1,8 @@
 // Shared Commodore 8-bit machine stuff
 
+import {Detail} from "../../ui/Detail.ts";
 import {
   ActionFunction,
-  Detail,
   hexDumper,
   LogicalLine,
   Tag,

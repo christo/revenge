@@ -1,17 +1,24 @@
-import {Addr, BigEndian, hex8, LittleEndian} from "./core";
-import {FileBlob} from "./FileBlob";
-import {Mos6502} from "./mos6502";
+import {Detail} from "../ui/Detail.ts";
+import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
-import {DataView, DataViewImpl} from "./DataView.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
+import {Addr, BigEndian, hex8, LittleEndian} from "./core";
+import {DataView, DataViewImpl} from "./DataView.ts";
+import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
+import {Mos6502} from "./mos6502";
+
+function getRenderers(_tag: Tag): TagRenderer[] {
+  // TODO implement this
+  return [];
+}
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  * A sequence of string tuples that represent a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  *
- * TODO kill this crazy idea asap - too abstract
+ * TODO kill this crazy idea via migration to "TagRenderer"
  */
 class Tag {
 
@@ -29,6 +36,10 @@ class Tag {
 
   hasTag = (s: string) => this.tags.includes(s);
 
+  /**
+   * These are currently used to generate class name lists for styling.
+   * @deprecated migrate to TagRenderer system
+   */
   spacedTags = () => this.tags.join(" ");
 
   hasTags = (ts: string[]) => ts.every((t) => this.tags.includes(t));
@@ -80,7 +91,6 @@ class LogicalLine {
 
   /**
    * Temporary transition encapsulation
-   *
    */
   private readonly tags: Tag[];
   private readonly address: Addr;
@@ -104,40 +114,6 @@ class LogicalLine {
    */
   getInstruction() {
     return this.instruction;
-  }
-}
-
-/**
- * Data interpretation output form. Tags represent top level "folksonomy". Stats relay generic summary information.
- * The {@link DataView} holds the data itself.
- */
-class Detail {
-  private readonly _tags: string[];
-  private readonly _stats: [string, string][];
-  private readonly _name: string;
-  private readonly _dataView: DataView;
-
-  constructor(name: string, tags: string[], dataView: DataView) {
-    this._name = name;
-    this._tags = tags;
-    this._dataView = dataView;
-    this._stats = [];
-  }
-
-  get name(): string {
-    return this._name;
-  }
-
-  get tags(): string[] {
-    return this._tags;
-  }
-
-  get stats(): [string, string][] {
-    return this._stats;
-  }
-
-  get dataView(): DataView {
-    return this._dataView;
   }
 }
 
@@ -264,7 +240,7 @@ abstract class Computer {
   }
 }
 
-export {BooBoo, Detail, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer};
+export {BooBoo, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer};
 export type {
   ActionExecutor,
   BlobToActions,
