@@ -56,6 +56,13 @@ interface Dialect {
    */
   bytes(byteable: Directive | FullInstructionLine, dis: Disassembler): Tag[];
 
+  /**
+   * Special form of byte declaration specifying with a string literal in configured encoding.
+   * Typically rendered in quotes.
+   *
+   * @param byteable
+   * @param dis
+   */
   text(byteable: Directive | FullInstructionLine, dis: Disassembler): Tag[];
 
   /**
