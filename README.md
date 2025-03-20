@@ -48,6 +48,12 @@ sanity script will alert you. While `bun` is recommended, it should work fine wi
 js runtime like node or deno. To use `npm` or `pnpm`, check the `client/package.json` and
 `server/package.json` files to see what scripts are defined.
 
+## System Design
+
+Build and execution environment is `vite` for the client and `bun` for both client and server.
+Node should also work with `npm` or `pnpm`. I'm not sure how to structure the project to be
+transparently agnostic about this but if you have opinions and skills, get in touch and I will
+accommodate any sane suggestions.
 
 ## Features
 
