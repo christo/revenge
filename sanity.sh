@@ -5,7 +5,9 @@
 
 all_good=1
 for e in npx node bun; do
-  if [[ ! $(which "$e") ]]; then
+  if [[ $(which "$e") ]]; then
+    echo checking PATH for $e
+  else
     echo missing required executable: $e
     echo "   you should install that"
     all_good=0
@@ -13,7 +15,9 @@ for e in npx node bun; do
 done
 
 for d in server/data server/data/preload; do
-  if [[ ! -d "$d" ]]; then
+  if [[ -d "$d" ]]; then
+    echo checking dir $d
+  else
     echo missing directory: $d
     echo "   you should create that"
     all_good=0
