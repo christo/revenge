@@ -158,9 +158,15 @@ class BooBoo {
   }
 }
 
+type UserFileAction = (fb: FileBlob) => UserAction;
+
 const hexTag = (x: number) => new Tag([TAG_HEXBYTE], hex8(x));
 
-const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
+/**
+ * Shows a hex dump for a {@link FileBlob}
+ * @param fb
+ */
+const hexDumper: UserFileAction = (fb: FileBlob) => ({
   label: "Hex Dump",
   f: () => {
     const elements: Tag[] = fb.getBytes().map(hexTag);
@@ -175,7 +181,6 @@ const hexDumper: (fb: FileBlob) => UserAction = (fb: FileBlob) => ({
 
 /**
  * Available memory, basic load addres etc.
- * FUTURE: highly CBM-specific
  */
 class MemoryConfiguration {
   readonly name: string;
