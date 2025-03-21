@@ -113,7 +113,7 @@ describe("tracer", () => {
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Tracer(d, 0x1000, mem64k);
     t.step(); // execute BCS, should split into two threads
-    expect(t.threads.length).to.eq(2);
+    expect(t.countActiveThreads()).to.eq(2);
     t.step(); // branched thread executes NOP, JMP thread executes BRK
     t.step(); // execute BRK
     expect(t.executed()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);

@@ -64,7 +64,11 @@ class Tracer {
    */
   running(): boolean {
     // delegate to threads
-    return 0 < this.threads.filter((thread: Thread) => thread.running).length;
+    return 0 < this.countActiveThreads();
+  }
+
+  countActiveThreads() {
+    return this.threads.filter((thread: Thread) => thread.running).length;
   }
 
   /**
