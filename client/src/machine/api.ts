@@ -170,7 +170,7 @@ type BlobToActions = (fileBlob: FileBlob) => TypeActions;
  * Error class for user-reportable problems, all the sensible names have been domain squatted by typescript/javascript.
  */
 class BooBoo {
-  mesg: string;
+  readonly mesg: string;
 
   constructor(mesg: string) {
     this.mesg = mesg;
