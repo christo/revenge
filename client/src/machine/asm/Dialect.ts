@@ -85,7 +85,7 @@ interface Dialect {
   directive(directive: Directive, dis: Disassembler): Tag[];
 
   /**
-   * PC Assignment directive. Typical variations include:
+   * PC Assignment, special case directive. Typical variations include:
    * ORG $abcd
    * * = $abcd
    * @param pcAssign
