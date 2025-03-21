@@ -88,9 +88,17 @@ class Tracer {
    * Advance all running threads by one instruction, ignoring the rest.
    */
   step() {
+    const newThreads: Thread[] = [];
     this.threads
         .filter((t) => t.running)
-        .forEach((t) => t.step());
+        .forEach((t) => {
+          const maybeThread = t.step();
+          if (maybeThread) {
+            newThreads.push(maybeThread);
+          }
+        });
+    // add any newly spawned threads to our list
+    newThreads.forEach(t => this.threads.push(t));
   }
 }
 

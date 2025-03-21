@@ -1,6 +1,6 @@
 import {Disassembler} from "./asm/Disassembler";
-import {Addr, Endian} from "./core.ts";
 import {OpSemantics} from "./asm/Op.ts";
+import {Addr, Endian} from "./core.ts";
 import {Memory} from "./Memory.ts";
 
 /**
@@ -92,11 +92,11 @@ export class Thread {
    * has already been executed, this thread is stopped (there are different types of non-running).
    * instruction at tgoes to next instruction and if it hasn't already been executed, executes the next instruction.
    */
-  step() {
+  step(): Thread | undefined {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    this.execute();
+    return this.execute();
   }
 
   /**
@@ -136,6 +136,7 @@ export class Thread {
     // by default, increment PC by length of this instruction
     const instLen = inst.getLength();
     let nextPc = this.pc + instLen;
+    let maybeThread: Thread | undefined = undefined;
     // have we executed an instruction that at the address of the pc before?
     if (this.executed.flatMap(enumInstAddr).includes(this.pc)) {
       console.log(`already executed ${this.pc}, terminating thread ${this}`);
@@ -146,11 +147,13 @@ export class Thread {
         this._running = false;
       } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
         nextPc = inst.operandValue();
+      } else if (op.has(OpSemantics.IS_CONDITIONAL_JUMP)) {
+        // spawned thread takes the jump
+        maybeThread = new Thread(this.descriptor, this.disasm, inst.resolveOperandAddress(nextPc), this.memory);
       }
     }
 
     // TODO handle join case, i.e. reaching already traced code
-    // TODO handle fork case, i.e. conditional branch
     // TODO handle tracing interrupt handlers - these are tricky - perhaps we can just always trace them
     // TODO edge case: execution at an address could be byte-misaligned with previous execution resulting in
     //  different instruction decoding, so execution records should hold the first byte of the decoded instruction
@@ -162,6 +165,6 @@ export class Thread {
     //  degenerate runtime state is represented.
     this.executed.push([this.pc, instLen as InstLen]);
     this.pc = nextPc; // increment PC by length of this instruction
-    return undefined;
+    return maybeThread;
   }
 }

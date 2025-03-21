@@ -1,12 +1,12 @@
 import {expect} from 'chai';
+import {Disassembler} from "../../src/machine/asm/Disassembler";
+import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
+import {LE} from "../../src/machine/core";
+import {FileBlob} from "../../src/machine/FileBlob";
+import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";
 import {Tracer} from "../../src/machine/Tracer";
 import {mem} from "./util";
-import {ArrayMemory} from "../../src/machine/Memory";
-import {LE} from "../../src/machine/core";
-import {FileBlob} from "../../src/machine/FileBlob";
-import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {Disassembler} from "../../src/machine/asm/Disassembler";
 
 const brk = Mos6502.ISA.byName("BRK").getBytes()[0];
 const nop = Mos6502.ISA.byName("NOP").getBytes()[0];
@@ -90,11 +90,33 @@ describe("tracer", () => {
     t.step(); // execute JMP
     t.step(); // execute NOP
     t.step(); // execute BRK
-    // currently fails because JMP is not implemented in Tracer
     const executed = t.executed();
     expect(executed[0]).to.not.equal(2, "base address was ignored");
     expect(t.executed()).to.not.have.members([0x1000, 0x1003]);
     expect(t.executed()).to.have.members([0x1000, 0x1004, 0x1005], "expected execution of jump");
+  });
+
+  it("handles simple conditional jump", () => {
+    const bytes: number[] = [
+      0, 0x10,          // base address is $1000
+      0xb0, 0x03,       // BCS #3    ; $1000
+      0x4c, 0x06, 0x10, // JMP $1006 ; $1002, $1003, $1004
+      nop,              // NOP       ; $1005  bcs target
+      brk,              // BRK       ; $1006  jmp target stop
+    ];
+    const mem64k = ArrayMemory.zeroes(0x10000, LE, true, true);
+    const fb = FileBlob.fromBytes("bcs test", bytes, LE);
+    const offsetBlobContent = 2;
+    const offsetOfLoadAddress = 0;
+    const offsetOfResetVector = 0;  // reset = entry point
+    const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, offsetOfResetVector, offsetBlobContent);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
+    const t = new Tracer(d, 0x1000, mem64k);
+    t.step(); // execute BCS, should split into two threads
+    expect(t.threads.length).to.eq(2);
+    t.step(); // branched thread executes NOP, JMP thread executes BRK
+    t.step(); // execute BRK
+    expect(t.executed()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);
   });
 });
 
