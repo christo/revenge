@@ -221,7 +221,7 @@ class MemoryConfiguration {
    * @param shortName short designation for UI
    */
   constructor(name: string, basicStart: Addr, shortName = "") {
-    // future: various independent block configurations, now: simple!
+    // future: various independent block configurations
     this.name = name;
     this.basicStart = basicStart;
     this.shortName = shortName;
