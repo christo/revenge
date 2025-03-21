@@ -10,7 +10,6 @@
   * [x] Disassemble line in tracer to identify conditional branches 
   * [ ] Tracer needs memory recorder (read, write, execute)
   * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
-* [ ] migrate to NodeNext in client to standardise on `.ts` extension in imports (vite config)
 
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
 * check out Haskell Difference List datastructure
