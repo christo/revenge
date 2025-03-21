@@ -10,6 +10,12 @@ class Detail {
   private readonly _name: string;
   private readonly _dataView: DataView;
 
+  /**
+   * Constructor with name, css class names and the contained view.
+   * @param name
+   * @param classNames to be applied on the whole view
+   * @param dataView contents.
+   */
   constructor(name: string, classNames: string[], dataView: DataView) {
     this._name = name;
     this._classNames = classNames;
