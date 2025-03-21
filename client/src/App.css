@@ -10,21 +10,27 @@
   url("./fonts/Martian_Mono/static/MartianMono/MartianMono-SemiBold.ttf") format("truetype");
 }
 
-.actionResult .lnum {
-  font-family: "Martian Mono", monospace;
-  margin-top: 3px;
-}
-
-.actionResult .line {
-  font-family: "Martian Mono", monospace;
-  margin-top: 3px;
-}
 
 /*
 ***********************
 classes for tags follow
 ***********************
 */
+
+/* qualified for actionResult defined in DetailRenderer */
+.actionResult .lnum {
+  /* BASIC line numbers */
+  font-family: "Martian Mono", monospace;
+  margin-top: 3px;
+  color: #8282e0;
+  display: inline-block
+}
+
+/* qualified for actionResult defined in DetailRenderer */
+.actionResult .line {
+  font-family: "Martian Mono", monospace;
+  margin-top: 3px;
+}
 
 /* for hex dump detail view */
 .hexbytes {
