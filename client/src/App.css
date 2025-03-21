@@ -55,25 +55,6 @@ body {
   margin-right: 1em;
 }
 
-.hexbytes {
-  width: 64ch;
-  margin-top: 1em;
-  display: grid;
-  gap: 0.12em;
-  grid-template-columns: repeat(16, 1fr);
-  grid-column-start: 1;
-  grid-column-end: 16;
-  align-items: center;
-  justify-content: center;
-}
-
-.hexbyte {
-  font-family: "Martian Mono", monospace;
-  font-weight: bold;
-  font-size: medium;
-  color: #e3d5c9;
-}
-
 .actionResult .lnum {
   font-family: "Martian Mono", monospace;
   margin-top: 3px;
@@ -95,7 +76,32 @@ body {
 }
 
 
-/* classes for tags follow */
+/*
+***********************
+classes for tags follow
+***********************
+*/
+
+/* for hex dump detail view */
+.hexbytes {
+  width: 64ch;
+  margin-top: 1em;
+  display: grid;
+  gap: 0.12em;
+  grid-template-columns: repeat(16, 1fr);
+  grid-column-start: 1;
+  grid-column-end: 16;
+  align-items: center;
+  justify-content: center;
+}
+
+/* for hex dump individual bytes */
+.hexbyte {
+  font-family: "Martian Mono", monospace;
+  font-weight: bold;
+  font-size: medium;
+  color: #e3d5c9;
+}
 
 /* Program counter token */
 .pct {
