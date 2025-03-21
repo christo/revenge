@@ -163,10 +163,11 @@ class DefaultDialect implements Dialect {
     }
     const kw: Tag = new KeywordTag(DefaultDialect.KW_TEXT_DECLARATION);
     const petscii = x.getBytes().map(b => Petscii.C64.vice[b]).join("");
-    const hexTag = new Tag([TAG_PETSCII], `"${petscii}"`); // TODO not sure if this is any dialect
+    // TODO TAG_PETSCII doesn't appear in html output
+    const textTag = new Tag([TAG_PETSCII], `"${petscii}"`); // TODO not sure if this is any dialect
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
-    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText([kw, hexTag]));
+    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText([kw, textTag]));
     return [comments, labels, data];
   }
 
