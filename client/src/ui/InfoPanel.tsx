@@ -1,8 +1,8 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 import {Detail} from "./Detail.ts";
 import {SmolPanel} from "./SmolPanel.tsx";
-import Typography from "@mui/material/Typography";
 import './InfoPanel.css';
 
 export function InfoPanel({detail}: { detail: Detail }) {
@@ -10,10 +10,11 @@ export function InfoPanel({detail}: { detail: Detail }) {
     <SmolPanel heading="Options">
       <Typography>Options control panel will go here...</Typography>
     </SmolPanel>
-    <SmolPanel heading={`${detail.name} Stats`}>
+    <SmolPanel heading={detail.name}>
       {detail.stats.map(([key, value], i) =>
           <Box key={`sp_${i}`} className="stat">
-            <span className="skey">{key}</span> <span className="sval">{value}</span>
+            <Typography display="inline" sx={{opacity: 0.7}}>{key}</Typography>
+            <Typography display="inline" sx={{color: "#9bd2cd"}}>{value}</Typography>
           </Box>
       )}
     </SmolPanel>
