@@ -3,6 +3,7 @@ import {ActionExecutor, Tag, TAG_ABSOLUTE, TAG_ADDRESS, TAG_IN_BINARY, TAG_NOTE,
 import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 import {InsertLink} from "@mui/icons-material";
+import Box from "@mui/material/Box";
 
 /**
  * Shows the detailed contents of a single file with a leading info summary specific to
@@ -25,7 +26,7 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
     }
   }
 
-  return <div className="actionResult">
+  return <Box className="actionResult">
     <InfoPanel detail={detail}/>
 
     {detail.dataView.getLines().map((ll, i) => {
@@ -53,5 +54,5 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
         })}
       </div>;
     })}
-  </div>;
+  </Box>;
 }
