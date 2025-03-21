@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import {Detail} from "./Detail.ts";
 import {SmolPanel} from "./SmolPanel.tsx";
 import Typography from "@mui/material/Typography";
+import './InfoPanel.css';
 
 export function InfoPanel({detail}: { detail: Detail }) {
   return <Box className="infopanel">

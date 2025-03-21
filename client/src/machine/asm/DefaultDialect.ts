@@ -232,7 +232,7 @@ class DefaultDialect implements Dialect {
         // future: check other addressing modes
         // check if the operand is an address inside the binary
         if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE && dis.isInBinary(opnd)) {
-          operandTag.tags.push(TAG_IN_BINARY)
+          operandTag.classNames.push(TAG_IN_BINARY)
         }
         // add operand hex value as data so front-end can always extract it
         operandTag.data = [[TAG_OPERAND_VALUE, hex16(opnd)]];

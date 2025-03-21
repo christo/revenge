@@ -1,0 +1,16 @@
+
+.infopanel {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: flex-start;
+  margin-bottom: 1em;
+}
+
+.stat .skey {
+  opacity: 70%;
+}
+
+.stat .sval {
+  color: #a3b3d5;
+}

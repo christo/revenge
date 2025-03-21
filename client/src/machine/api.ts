@@ -22,27 +22,27 @@ function getRenderers(_tag: Tag): TagRenderer[] {
  */
 class Tag {
 
-  tags: string[];
+  classNames: string[];
   id: string | undefined;
   data: [string, string][];
   value: string;
 
   constructor(tags: string[], value: string, data: [string, string][] = [], id: string | undefined = undefined) {
-    this.tags = tags;
+    this.classNames = tags;
     this.id = id;
     this.data = data;
     this.value = value;
   }
 
-  hasTag = (s: string) => this.tags.includes(s);
+  hasTag = (s: string) => this.classNames.includes(s);
 
   /**
    * These are currently used to generate class name lists for styling.
    * @deprecated migrate to TagRenderer system
    */
-  spacedTags = () => this.tags.join(" ");
+  spacedClassNames = () => this.classNames.join(" ");
 
-  hasTags = (ts: string[]) => ts.every((t) => this.tags.includes(t));
+  hasTags = (ts: string[]) => ts.every((t) => this.classNames.includes(t));
 }
 
 export class KeywordTag extends Tag {
@@ -52,13 +52,24 @@ export class KeywordTag extends Tag {
   }
 }
 
+// tag values representing css classes in DetailView
+
 export const TAG_IN_BINARY = "inbinary";
+
+/** a label in the source code */
 export const TAG_LABEL = "label";
+
+/** a human readable comment */
 export const TAG_COMMENT = "comment";
 export const TAG_DATA = "data";
+
+/** an instruction operand */
 export const TAG_OPERAND = "opnd";
 export const TAG_ABSOLUTE = "abs";
+
+/** an address */
 export const TAG_ADDRESS = "addr";
+/** in base 16 */
 export const TAG_HEX = "hex";
 export const TAG_LINE = "line";
 export const TAG_LINE_NUM = "lnum";

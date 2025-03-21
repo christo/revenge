@@ -5,14 +5,14 @@ import {DataView} from "../machine/DataView.ts";
  * The {@link DataView} holds the data itself.
  */
 class Detail {
-  private readonly _tags: string[];
+  private readonly _classNames: string[];
   private readonly _stats: [string, string][];
   private readonly _name: string;
   private readonly _dataView: DataView;
 
-  constructor(name: string, tags: string[], dataView: DataView) {
+  constructor(name: string, classNames: string[], dataView: DataView) {
     this._name = name;
-    this._tags = tags;
+    this._classNames = classNames;
     this._dataView = dataView;
     this._stats = [];
   }
@@ -21,8 +21,11 @@ class Detail {
     return this._name;
   }
 
-  get tags(): string[] {
-    return this._tags;
+  /**
+   * Classnames
+   */
+  get classNames(): string[] {
+    return this._classNames;
   }
 
   get stats(): [string, string][] {

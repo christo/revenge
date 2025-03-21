@@ -33,13 +33,14 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
     <InfoPanel detail={detail}/>
 
     {detail.dataView.getLines().map((ll, i) => {
-      const tl: Tag[] = ll.getTags();
+      const tagsForLine: Tag[] = ll.getTags();
       // TODO use TagRenderer
-      return <div className={detail.tags.join(" ")} key={`fb_${i}`}>
-        {tl.map((tup: Tag, j) => {
+      return <div className={detail.classNames.join(" ")} key={`fb_${i}`}>
+        {tagsForLine.map((tup: Tag, j) => {
           // add id if this is an address
           const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
-          const isNote = tup.tags.find(x => x === TAG_NOTE) !== undefined;
+          const isNote = tup.classNames.find(x => x === TAG_NOTE) !== undefined;
+          // set data- attributes for each item in the data
           const data: { [k: string]: string; } = {};
           tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
           if (isNote) {
@@ -47,7 +48,7 @@ export function DetailRenderer(props: { ae: ActionExecutor }) {
                           key={`fb_${i}_${j}`}>{tup.value}</Alert>;
           } else {
             const operand = tup.value;
-            return <div {...extra} {...data} className={tup.spacedTags()} key={`fb_${i}_${j}`}
+            return <div {...extra} {...data} className={tup.spacedClassNames()} key={`fb_${i}_${j}`}
                         onClick={() => handleClick(tup.data, operand)}>{tup.value}
               <div className="iconAnno">{tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]) ?
                   <InsertLink/> : ""}</div>
