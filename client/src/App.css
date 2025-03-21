@@ -252,6 +252,11 @@ classes for tags follow
   color: #92b1c7;
 }
 
+/* text literal */
+.tlit {
+  color: orange;
+}
+
 
 
 
