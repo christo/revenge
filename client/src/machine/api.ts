@@ -153,6 +153,11 @@ type Continuation = (fo: ActionExecutor) => void;
 type UserAction = { label: string, f: ActionExecutor };
 
 /**
+ * User action for a fileblob
+ */
+type UserFileAction = (fb: FileBlob) => UserAction;
+
+/**
  * Holds the sniffer and the set of actions that can be taken for this type. At least one action required.
  */
 type TypeActions = { t: BlobSniffer, actions: [UserAction, ...UserAction[]] };
@@ -177,7 +182,6 @@ class BooBoo {
   }
 }
 
-type UserFileAction = (fb: FileBlob) => UserAction;
 
 /**
  * Shows a hex dump for a {@link FileBlob}
