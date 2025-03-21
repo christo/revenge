@@ -65,22 +65,32 @@ export const TAG_DATA = "data";
 
 /** an instruction operand */
 export const TAG_OPERAND = "opnd";
+/** operand in absolute addressing mode is */
 export const TAG_ABSOLUTE = "abs";
 
 /** an address */
 export const TAG_ADDRESS = "addr";
 /** in base 16 */
 export const TAG_HEX = "hex";
+/** every logical line */
 export const TAG_LINE = "line";
+/** line number in basic */
 export const TAG_LINE_NUM = "lnum";
+/** displays an info/warning message instead of a content line */
 export const TAG_NOTE = "note";
 export const TAG_KEYWORD = 'kw';
 export const TAG_HEXARRAY = "hexarray";
-export const TAG_PETSCII = "hexarray";
+/** displays a literal text string such as in assembly source */
+export const TAG_PETSCII = "tlit";
+/** generic class of assembly source expressions */
 export const TAG_CODE = "code";
+/** assembly mnemonic */
 export const TAG_MNEMONIC = "mn";
+/** the right hand side of a machine instruction or assembler directive */
 export const TAG_OPERAND_VALUE = "opnd_val";
+/** single byte as hex digit pair */
 export const TAG_HEXBYTE = "hexbyte";
+/** entire hex dump */
 export const TAG_HEXBYTES = "hexbytes";
 
 /**
