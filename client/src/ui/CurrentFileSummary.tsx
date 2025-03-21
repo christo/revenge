@@ -11,6 +11,23 @@ interface FileContents {
   loading: boolean
 }
 
+/*
+
+.fileSummary .filename {
+  padding-right: 1em;
+  font-weight: bold;
+  font-size: 200%;
+  line-height: 1.8;
+  color: #a3b3d5;
+}
+
+.fileSummary .filesize {
+  padding-right: 1em;
+  font-family: "Martian Mono", monospace;
+}
+
+ */
+
 export function CurrentFileSummary({file}: { file: File | FileLike }) {
   const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
 
@@ -18,11 +35,11 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
     FileBlob.fromFile(file, LE).then(fb => setRendered({fb: fb, loading: false}));
   }, [file]);
 
-  return <Box className="fileSummary">
-    <Typography display="inline" className="filename">
+  return <Box sx={{p: 1, backgroundColor: "#333", m: 2, color: "antiquewhite"}} className="fileSummary">
+    <Typography display="inline" sx={{pr: 1, fontWeight: "bold", fontSize: "200%", lineHeight: 1.8, color: "#a3b3d5"}} className="filename">
       {file.name}
     </Typography>
-    <Typography display="inline" className="filesize">
+    <Typography display="inline" sx={{pr: 1, fontFamily: '"Martian Mono", monospace'}} >
       {file.size} bytes
     </Typography>
     <Box className="contents">

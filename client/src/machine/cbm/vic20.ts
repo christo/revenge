@@ -189,7 +189,7 @@ export class Vic20Basic implements BlobSniffer {
       let lastAddr = -1;
       decoded.getLines().forEach((ll: LogicalLine) => {
         const i: Tag[] = ll.getTags();
-        // TODO Q: what decides if this has a line number?
+        // BasicDecoder puts this tag on lines1
         const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUM));
         let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
         if (lnumStr !== undefined && addrStr !== undefined) {

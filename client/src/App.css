@@ -10,51 +10,6 @@
   url("./fonts/Martian_Mono/static/MartianMono/MartianMono-SemiBold.ttf") format("truetype");
 }
 
-body {
-  background-color: #282c34;
-  color: white;
-}
-
-.App {
-  margin: 0;
-}
-
-.byLine {
-  font-family: 'BebasNeueRegular', cursive;
-}
-
-.byLine {
-  color: rgba(255 255 255 / 25%);
-}
-
-.mainContent {
-  margin: 1em;
-}
-
-.fileSummary {
-  padding: 1em;
-  background-color: #333;
-  margin: 2em;
-  color: antiquewhite;
-}
-
-.fileSummary .filename {
-  padding-right: 1em;
-  font-weight: bold;
-  font-size: 200%;
-  line-height: 1.8;
-  color: #a3b3d5;
-}
-
-.fileSummary .filesize {
-  padding-right: 1em;
-  font-family: "Martian Mono", monospace;
-}
-
-.dataDetail > span {
-  margin-right: 1em;
-}
-
 .actionResult .lnum {
   font-family: "Martian Mono", monospace;
   margin-top: 3px;

@@ -36,9 +36,11 @@ export function MenuAppBar() {
             <Typography variant="h4" component="div" sx={{flexGrow: 1, fontFamily: 'BebasNeueRegular'}}>
               Revenge
             </Typography>
-            <i className="byLine">retrocomputing reverse engineering environment</i>
+            <Typography display="inline" sx={{color: "#fff", opacity: 0.25, fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
+              retrocomputing reverse engineering environment
+            </Typography>
             {(
-                <div>
+                <Box>
                   <IconButton
                       size="large"
                       aria-label="account of current user"
@@ -67,7 +69,7 @@ export function MenuAppBar() {
                     <MenuItem onClick={handleClose}>Profile</MenuItem>
                     <MenuItem onClick={handleClose}>My account</MenuItem>
                   </Menu>
-                </div>
+                </Box>
             )}
           </Toolbar>
         </AppBar>

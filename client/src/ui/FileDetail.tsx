@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import {TabPanel} from "../App.tsx";
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
@@ -10,10 +9,16 @@ import Tab from "@mui/material/Tab";
 import {DetailRenderer} from "./DetailRenderer.tsx";
 import Chip from "@mui/material/Chip";
 
-function HashChip({tag}: { tag: string }) {
-  return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="info"/>
-}
 
+function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
+  const {children, value, item} = props;
+
+  return (
+      <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
+        {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
+      </div>
+  );
+}
 
 /**
  * Main content showing interpreted file contents.
@@ -34,7 +39,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
   return <Box>
 
     <Box className="dataMeta">
-      <Box className="dataDetail">
+      <Box sx={{mr: 1}} >
         <Typography display="inline" sx={{
           mr: 1,
           fontStyle: "italic",

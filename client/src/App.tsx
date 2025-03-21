@@ -26,14 +26,6 @@ const darkTheme = createTheme({
  */
 const MAX_SIZE_MB = 1;
 
-export function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
-  const {children, value, item} = props;
-  return (
-      <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
-        {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
-      </div>
-  );
-}
 
 type Error = { message: string, name: string, code: string, config: string, request: Request, response: Response };
 
@@ -86,18 +78,18 @@ function App() {
   const [file, setFile] = useState<File | FileLike | null>(null);
   return (
       <ThemeProvider theme={darkTheme}>
-        <div className="App">
+        <Box sx={{m: 0}}>
           <MenuAppBar/>
-          <div className="mainContent">
+          <Box sx={{m: 1}}>
             <Box sx={{display: "flex", gap: 1, justifyContent: "right"}}>
               <QuickLoads setFile={(f) => setFile(f)}/>
-              <div className="dropZone">
+              <Box className="dropZone">
                 <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
-              </div>
+              </Box>
             </Box>
             {file ? <CurrentFileSummary file={file}/> : null}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </ThemeProvider>
   );
 }
