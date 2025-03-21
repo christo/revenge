@@ -1,7 +1,9 @@
 # TODO
 
 * [ ] remove excessive cleverness: replace Tag with closer domain model types
-  * [ ] augment Tag class, possibly generify to make rendering more explicit
+  * [ ] create Tag subclasses for each usage
+  * [ ] put some kind of render hints in the implementations
+  * [ ] decide how to switch front-end based on methods and properties of Tag instance
 * [ ] implement Tracer to distinguish between code and data (excluding self-mod)
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
