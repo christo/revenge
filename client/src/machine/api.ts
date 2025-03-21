@@ -45,6 +45,13 @@ class Tag {
   hasTags = (ts: string[]) => ts.every((t) => this.classNames.includes(t));
 }
 
+export class HexTag extends Tag {
+
+  constructor(value: string, data: [string, string][] = [], id: string | undefined = undefined) {
+    super([TAG_HEXBYTE], value, data, id);
+  }
+}
+
 export class KeywordTag extends Tag {
 
   constructor(value: string) {
@@ -172,8 +179,6 @@ class BooBoo {
 
 type UserFileAction = (fb: FileBlob) => UserAction;
 
-const hexTag = (x: number) => new Tag([TAG_HEXBYTE], hex8(x));
-
 /**
  * Shows a hex dump for a {@link FileBlob}
  * @param fb
@@ -184,8 +189,8 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
     // TODO make hex dump have n bytes per line with addresses at beginning of each;
     //  currently whole hex dump is a single logical line at no address with no instruction
     // add the classes for hex dump as a whole and for each byte
-    const oldDataView: Tag[][] = [fb.getBytes().map(hexTag)];
-    const lls = oldDataView.map((ts: Tag[], i: number) => new LogicalLine(ts, i));
+    const allData = fb.getBytes().map(x => new HexTag(hex8(x)));
+    const lls = [allData].map((ts: Tag[], i: number) => new LogicalLine(ts, i));
     const newDataView: DataView = new DataViewImpl(lls);
     return new Detail("Hex Dump", [TAG_HEXBYTES], newDataView);
   }
