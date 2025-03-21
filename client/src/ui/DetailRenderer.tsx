@@ -11,10 +11,6 @@ import {InsertLink} from "@mui/icons-material";
 export function DetailRenderer(props: { ae: ActionExecutor }) {
   const detail: Detail = props.ae();
 
-  window.addEventListener("popstate", (...args) => {
-    console.log(`popstate: ${args}`);
-    // debugger;
-  });
   // when an address operand is clicked, try to find its destination in the view and if present scroll to it
   const handleClick = (data: [string, string][], addr: string) => {
     const tup = data.find(t => t[0] === "opnd_val");
