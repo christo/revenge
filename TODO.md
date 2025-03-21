@@ -7,7 +7,7 @@
 * [ ] implement Tracer to distinguish between code and data (excluding self-mod)
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
-  * [ ] Disassemble line in tracer to identify conditional branches 
+  * [x] Disassemble line in tracer to identify conditional branches 
   * [ ] Tracer needs memory recorder (read, write, execute)
   * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
 * [ ] migrate to NodeNext in client to standardise on `.ts` extension in imports (vite config)
