@@ -95,7 +95,7 @@ describe("tracer", () => {
     expect(executed[0]).to.not.equal(2, "base address was ignored");
     expect(t.executed()).to.not.have.members([0x1000, 0x1003]);
     expect(t.executed()).to.have.members([0x1000, 0x1004, 0x1005], "expected execution of jump");
-  })
+  });
 });
 
 export {};
