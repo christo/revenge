@@ -107,9 +107,6 @@ export const TAG_HEXBYTES = "hexbytes";
  */
 class LogicalLine {
 
-  /**
-   * Temporary transition encapsulation
-   */
   private readonly tags: Tag[];
   private readonly address: Addr | undefined;
   private readonly instruction?: InstructionLike;
@@ -121,22 +118,9 @@ class LogicalLine {
   }
 
   getTags(): Tag[] {
-    // future: put address in tags dynamically and stop receiving it as a tag in constructor
     return this.tags;
   }
 
-  getAddress(): Addr | undefined {
-    return this.address;
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  /**
-   * Not all lines have instructions but if this line has one, it will be returned.
-   * @return possibly undefined instruction for this line
-   */
-  getInstruction() {
-    return this.instruction;
-  }
 }
 
 /**
@@ -189,6 +173,7 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
   f: () => {
     // TODO make hex dump have n bytes per line with addresses at beginning of each;
     //  currently whole hex dump is a single logical line at no address with no instruction
+    // add the classes for hex dump as a whole and for each byte
     const oldDataView: Tag[][] = [fb.getBytes().map(hexTag)];
     const lls = oldDataView.map((ts: Tag[], i: number) => new LogicalLine(ts, i));
     const newDataView: DataView = new DataViewImpl(lls);
