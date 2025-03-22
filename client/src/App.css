@@ -257,6 +257,8 @@ classes for tags follow
   color: orange;
 }
 
-
+.executed {
+  background-color: rgba(145, 37, 18, 0.8)
+}
 
 

@@ -77,6 +77,8 @@ export const TAG_ABSOLUTE = "abs";
 
 /** an address */
 export const TAG_ADDRESS = "addr";
+/** instruction that was executed during trace */
+export const TAG_EXECUTED = "executed";
 /** in base 16 */
 export const TAG_HEX = "hex";
 /** every logical line */
