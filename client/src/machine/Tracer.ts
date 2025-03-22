@@ -104,6 +104,12 @@ class Tracer {
     // add any newly spawned threads to our list
     newThreads.forEach(t => this.threads.push(t));
   }
+
+  trace() {
+    while(this.running()) {
+      this.step();
+    }
+  }
 }
 
 export {Tracer};
