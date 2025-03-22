@@ -29,11 +29,11 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
  */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
-function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta1: DisassemblyMeta) {
+function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: DisassemblyMeta) {
+
+
   // start timer
   const startTime = Date.now();
-
-  const meta = meta1;
 
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
