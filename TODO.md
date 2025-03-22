@@ -8,6 +8,7 @@
   * [x] Tracer can execute simplest instruction traces, recording executed indices
   * [x] Disassemble line in tracer to identify jumps
   * [x] Disassemble line in tracer to identify conditional branches 
+  * [ ] Tracer needs to load kernal and basic ROMs into a machine - basically almost an emulator
   * [ ] Tracer needs memory recorder (read, write, execute)
   * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
 
