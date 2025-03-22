@@ -5,7 +5,7 @@ import {Edict, InstructionLike} from "./instructions.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 
 /**
- * Encapsulates outer context for performing {@link Disassembler}.
+ * Encapsulates outer context for disassembling with a {@link Disassembler}.
  * FUTURE: this is very CBM 6502 oriented
  */
 class DisassemblyMetaImpl implements DisassemblyMeta {
