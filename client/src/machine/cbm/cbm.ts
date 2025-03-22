@@ -7,22 +7,25 @@ import {
   LogicalLine,
   Tag,
   TAG_ADDRESS,
+  TAG_EXECUTED,
   TAG_HEX,
   TAG_LINE,
   UserAction
 } from "../api.ts";
 import {Environment,} from "../asm/asm.ts";
-import {CBM_BASIC_2_0} from "./basic.ts";
-import {asHex, hex16, hex8} from "../core.ts";
-import {FileBlob} from "../FileBlob.ts";
-import {Mos6502} from "../mos6502.ts";
-import {DataViewImpl} from "../DataView.ts";
-import {BlobSniffer} from "../BlobSniffer.ts";
 import {DefaultDialect} from "../asm/DefaultDialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
-import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
-import {BlobType} from "../BlobType.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
+import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
+import {BlobSniffer} from "../BlobSniffer.ts";
+import {BlobType} from "../BlobType.ts";
+import {Addr, asHex, hex16, hex8, LE} from "../core.ts";
+import {DataViewImpl} from "../DataView.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {ArrayMemory} from "../Memory.ts";
+import {Mos6502} from "../mos6502.ts";
+import {Tracer} from "../Tracer.ts";
+import {CBM_BASIC_2_0} from "./basic.ts";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
@@ -30,7 +33,6 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
 function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: DisassemblyMeta) {
-
 
   // start timer
   const startTime = Date.now();
@@ -42,27 +44,58 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
   const tagSeq = assignPc.disassemble(dialect, dis);
 
+
+  // do trace to decide which is code
+  const [codeAddresses, traceTime] = trace(dis, fb, meta);
+
   detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress; // save current address before we increment it
     let inst: InstructionLike = dis.nextInstructionLine();
+    const addressTags = [TAG_ADDRESS];
+    if (codeAddresses.includes(instAddress)) {
+      addressTags.push(TAG_EXECUTED);
+    }
     const tags = [
-      new Tag([TAG_ADDRESS], hex16(instAddress)),
+      new Tag(addressTags, hex16(instAddress)),
       new Tag([TAG_HEX], asHex(inst.getBytes())),
       ...inst.disassemble(dialect, dis)
     ];
     detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
   }
+
+
   // TODO link up internal address references including jump targets and mark two-sided cross-references
   const stats = dis.getStats();
   // for now assuming there's no doubling up of stats keys
   stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
+  detail.stats.push(["traced in", `${traceTime}  ms`]);
 
   detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
   detail.stats.push(["dialect", dialect.name]);
   return detail;
+}
+
+
+/**
+ * Does full trace
+ * @param dis
+ * @param fb
+ * @param meta
+ * @return tuple of array of executed addresses and the number of milliseconds taken to trace
+ */
+function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [Addr[], number] {
+  // TODO decide what memory to use
+  // TODO what roms to load into memory to do a trace
+  const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
+  const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K);
+  const traceStart = Date.now();
+  tracer.trace();
+  const traceTime = Date.now() - traceStart;
+  const codeAddresses = [...tracer.executed()].sort();
+  return [codeAddresses, traceTime];
 }
 
 /** User action that disassembles the file. */
@@ -140,6 +173,11 @@ class CartSniffer implements BlobSniffer {
     this.disassemblyMeta = dm;
   }
 
+  /**
+   * If we match the magic number at the start of the file it's a pretty strong
+   * signal that this is a cart.
+   * @param fb fileblob to check for being a cart
+   */
   sniff(fb: FileBlob): number {
     return fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
   }
