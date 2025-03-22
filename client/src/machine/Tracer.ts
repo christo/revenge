@@ -50,7 +50,7 @@ class Tracer {
     if (Math.round(pc) !== pc) {
       throw Error(`pc must be integer`);
     } else if (relativePc < 0 || memory.getLength() <= relativePc) {
-      throw Error(`pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
+      throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }
