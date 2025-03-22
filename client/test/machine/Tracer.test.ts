@@ -118,6 +118,34 @@ describe("tracer", () => {
     t.step(); // execute BRK
     expect(t.executed()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);
   });
+
+  describe("tracer", () => {
+    it("constructor validates initial state", () => {
+      const mem64k = ArrayMemory.zeroes(0x10000, LE, true, true);
+      const bytes: number[] = [
+        0, 0x10,          // base address is $1000
+        0xde, 0xad, 0xbe, 0xef,       // $1000-$1003 random data 0xdeadbeef
+        0x08, 0x10,       // $1004-$1005 reset vector = $1008
+        0xaa, 0xaa,       // $1004-$1007 random data 0xaaaa
+        nop,              // NOP       ; $1008  nop
+        brk,              // BRK       ; $1006  brk
+      ];
+      const fb = FileBlob.fromBytes("constructor validation test", bytes, LE);
+      const offsetBlobContent = 2;
+      // reset vector = entry point found at this offset
+      const dm = new DisassemblyMetaImpl(0, 6, offsetBlobContent);
+      const d = new Disassembler(Mos6502.ISA, fb, dm);
+
+      const initialPc = 0x1000;
+      // TODO use the offsetOfResetVector to find the reset vector
+      // TODO start tracing at the reset vector
+      const entryPoint = dm.executionEntryPoint(fb);
+      console.log(`entry point address: 0x${entryPoint.toString(16)}`);
+      expect(entryPoint).to.eq(0x1008);
+      const t = new Tracer(d, initialPc, mem64k)
+
+    });
+  })
 });
 
 export {};

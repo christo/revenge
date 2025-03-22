@@ -44,14 +44,20 @@ export class Thread {
   private readonly executed: Array<InstRec>;
   private readonly written: Array<number>;
   private pc: number;
+  /**
+   * Address ignore list
+   * @private
+   */
+  private ignore: (addr: Addr) => boolean;
 
   /**
    * Starts in running mode.
    * @param disasm
    * @param pc address of next instruction to be executed
    * @param memory
+   * @param ignore whether to ignore the given address
    */
-  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>) {
+  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>, ignore = (_:Addr) => false) {
     const memorySize = memory.getLength();
     if (memorySize < 1) {
       throw new Error(`Memory length too small: ${memorySize}`);
@@ -63,9 +69,11 @@ export class Thread {
     this.memory = memory;
     this.executed = [];
     this.written = [];
+    this.ignore = ignore;
   }
 
   private _running: boolean;
+
 
   /**
    * We might have executed a break instruction previously, in which case we are no longer running.
@@ -96,6 +104,7 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
+    console.log(`Thread Step: ${this.descriptor} @ ${this.pc}`);
     return this.execute();
   }
 
@@ -149,7 +158,8 @@ export class Thread {
         nextPc = inst.operandValue();
       } else if (op.has(OpSemantics.IS_CONDITIONAL_JUMP)) {
         // spawned thread takes the jump
-        maybeThread = new Thread(this.descriptor, this.disasm, inst.resolveOperandAddress(nextPc), this.memory);
+        const jumpTarget = inst.resolveOperandAddress(nextPc);
+        maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.ignore);
       }
     }
 

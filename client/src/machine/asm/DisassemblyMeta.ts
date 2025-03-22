@@ -23,7 +23,7 @@ interface DisassemblyMeta {
    * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
    * @param fb the fileblob.
    */
-  disassemblyStartOffset(fb: FileBlob): number;
+  executionEntryPoint(fb: FileBlob): number;
 
   /**
    * The offset from the start of the fileblob at which the starting of the binary content is located.

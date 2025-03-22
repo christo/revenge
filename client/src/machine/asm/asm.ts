@@ -1,7 +1,5 @@
 // assembler / disassembler stuff - 6502-specific
-// noinspection JSUnusedGlobalSymbols
 
-import {Tag} from "../api.ts";
 import {Addr, toStringArray} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {SymDef} from "./instructions.ts";
@@ -24,7 +22,6 @@ const enum SourceType {
   BLANK
 }
 
-// noinspection JSUnusedGlobalSymbols
 
 /** Will have different types of data later (petscii, sid music, character) */
 const enum SectionType {
@@ -38,7 +35,6 @@ const enum SectionType {
   UNKNOWN
 }
 
-// noinspection JSUnusedGlobalSymbols
 
 /** Designates the dynamic meaning of a sequence of bytes in the binary. */
 class Section {
@@ -95,11 +91,11 @@ class Environment {
 
 /** There are different types of symbols duh. */
 enum SymbolType {
-  "reg",
+  reg,
   /**
    * Subroutine symbol.
    */
-      "sub"
+  sub
 }
 
 /**

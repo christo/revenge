@@ -87,7 +87,11 @@ const VIC20_CART_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const VIC20_CART_WARM_VECTOR_OFFSET = 4;
 
-const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
+/**
+ * SymbolResolver which supplies VIC-20 reset (cold) and nmi (warm) reset vectors declared in the
+ * cart image defined by fb.
+ */
+const VIC_20_CART_VECTORS: SymbolResolver = (fb: FileBlob) => [
   [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
   [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
@@ -135,7 +139,7 @@ const VIC20_CART = new CartSniffer(
           new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
           new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
           new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
-        ], jumpTargetFetcher,
+        ], VIC_20_CART_VECTORS,
         VIC20_KERNAL
     )
 );

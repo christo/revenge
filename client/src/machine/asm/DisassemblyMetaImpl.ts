@@ -1,8 +1,8 @@
-import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver, SymbolTable} from "./asm.ts";
-import {Addr, hex16} from "../core.ts";
+import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {Edict, InstructionLike} from "./instructions.ts";
+import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver, SymbolTable} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
+import {Edict, InstructionLike} from "./instructions.ts";
 
 /**
  * Encapsulates outer context for disassembling with a {@link Disassembler}.
@@ -25,7 +25,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    * Create context with minimalist defaults.
    *
    * @param baseAddressOffset binary image offset at which to find address to load into.
-   * @param resetVectorOffset reset vector, defaults to baseAddressOffset
+   * @param resetVectorOffset file offset at which the reset vector is defined, defaults to baseAddressOffset
    * @param contentStartOffset start of content, defaults to baseAddressOffset
    * @param edicts any predefined edicts for disassembly, defaults to empty, only one per address.
    * @param symbolResolver do find externally defined symbols, defaults to empty.
@@ -81,19 +81,15 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     return addr >= contentStartAddress && addr <= contentEndAddress - 1;
   }
 
-  disassemblyStartOffset(fb: FileBlob): number {
-    const resetAddr = fb.read16(this._resetVectorOffset);
-    // two bytes make an address
-    const resetMsb = resetAddr + 1;
-    // TODO how does this work? I forgot!
-    const resetVectorIsInBinary = this.inBinary(resetMsb, fb);
-    if (resetVectorIsInBinary) {
-      return resetAddr - fb.read16(this._baseAddressOffset);
-    } else {
-      // reset vector is outside binary, so start disassembly at content start?
-      console.log(`reset vector is outside binary ($${hex16(resetAddr)})`);
-      return this.contentStartOffset();
-    }
+  /**
+   * Determines the address of the assembly entry point defined by the fileblob.
+   * This could be any address but it would usually be inside the fileblob code
+   * with the assumption or explicit instruction of the load address.
+   *
+   * @param fb the FileBlob
+   */
+  executionEntryPoint(fb: FileBlob): number {
+    return fb.read16(this._resetVectorOffset);
   }
 
   getEdict(address: number): Edict<InstructionLike> | undefined {
