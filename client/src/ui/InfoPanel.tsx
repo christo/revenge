@@ -9,7 +9,7 @@ const STYLE = {
   flexDirection: "row",
   alignItems: "flex-start",
   w: "100%",
-  mb: 1,
+  mb: 2,
 };
 
 export function InfoPanel({detail}: { detail: Detail }) {
