@@ -2,10 +2,10 @@ import {Detail} from "../ui/Detail.ts";
 import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
-import {Addr, BigEndian, hex8, LittleEndian} from "./core";
+import {Addr, BigEndian, Endian, hex8, LittleEndian} from "./core";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {FileBlob} from "./FileBlob";
-import {Memory} from "./Memory.ts";
+import {ArrayMemory, Memory} from "./Memory.ts";
 import {Mos6502} from "./mos6502";
 
 function getRenderers(_tag: Tag): TagRenderer[] {
@@ -202,12 +202,36 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
   }
 });
 
+class RomImage {
+  private readonly name: string;
+  private readonly loadAt: Addr;
+  private readonly contents: number[];
+
+  constructor(name: string, loadAt: number, contents: number[]) {
+    this.name = name;
+    this.loadAt = loadAt;
+    this.contents = contents;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getLoadAddress(): Addr {
+    return this.loadAt;
+  }
+
+  getBytes(): number[] {
+    return this.contents;
+  }
+}
+
 /**
- * Available memory, basic load addres etc.
+ * Immutable config for available memory, basic load address etc.
  */
 class MemoryConfiguration {
   readonly name: string;
-  readonly basicStart: Addr;
+  readonly basicProgramStart: Addr;
 
   /**
    * A short UI string that uniquely annotates this memory configuration. In the case of C64 standard memory
@@ -219,19 +243,24 @@ class MemoryConfiguration {
    * Create a memory configuration.
    *
    * @param name for display
-   * @param basicStart 16 bit address where BASIC programs are loaded
+   * @param basicProgramStart 16 bit address where BASIC programs are loaded
    * @param shortName short designation for UI
    */
-  constructor(name: string, basicStart: Addr, shortName = "") {
+  constructor(name: string, basicProgramStart: Addr, shortName = "") {
     // future: various independent block configurations
     this.name = name;
-    this.basicStart = basicStart;
+    this.basicProgramStart = basicProgramStart;
     this.shortName = shortName;
   }
 }
 
+/**
+ * Stateful instance of a specific computer with memory, cpu, etc.
+ * TODO implement method to load ROMs
+ */
 abstract class Computer {
   private _memory: Memory<BigEndian | LittleEndian>;
+  private readonly roms: RomImage[];
   private readonly _memoryConfig: MemoryConfiguration;
   private readonly _name: string;
   private readonly _tags: string[];
@@ -242,7 +271,9 @@ abstract class Computer {
       cpu: Mos6502,
       memory: Memory<BigEndian | LittleEndian>,
       memoryConfig: MemoryConfiguration,
+      roms: RomImage[],
       tags: string[]) {
+    this.roms = roms;
     this._name = name;
     this._cpu = cpu;
     this._memory = memory;
@@ -272,7 +303,7 @@ abstract class Computer {
   }
 }
 
-export {BooBoo, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer};
+export {BooBoo, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer, RomImage};
 export type {
   ActionExecutor,
   BlobToActions,
