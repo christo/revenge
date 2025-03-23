@@ -163,7 +163,6 @@ export class Thread {
       }
     }
 
-    // TODO handle join case, i.e. reaching already traced code
     // TODO handle tracing interrupt handlers - these are tricky - perhaps we can just always trace them
     // TODO edge case: execution at an address could be byte-misaligned with previous execution resulting in
     //  different instruction decoding, so execution records should hold the first byte of the decoded instruction
