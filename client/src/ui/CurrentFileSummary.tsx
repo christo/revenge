@@ -11,23 +11,6 @@ interface FileContents {
   loading: boolean
 }
 
-/*
-
-.fileSummary .filename {
-  padding-right: 1em;
-  font-weight: bold;
-  font-size: 200%;
-  line-height: 1.8;
-  color: #a3b3d5;
-}
-
-.fileSummary .filesize {
-  padding-right: 1em;
-  font-family: "Martian Mono", monospace;
-}
-
- */
-
 export function CurrentFileSummary({file}: { file: File | FileLike }) {
   const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
 
