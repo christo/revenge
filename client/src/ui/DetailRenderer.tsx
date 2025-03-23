@@ -9,8 +9,8 @@ import Box from "@mui/material/Box";
  * Shows the detailed contents of a single file with a leading info summary specific to
  * the detailed view.
  */
-export function DetailRenderer(props: { ae: ActionExecutor }) {
-  const detail: Detail = props.ae();
+export function DetailRenderer({ae}: { ae: ActionExecutor }) {
+  const detail: Detail = ae();
 
   // when an address operand is clicked, try to find its destination in the view and if present scroll to it
   const handleClick = (data: [string, string][], addr: string) => {
