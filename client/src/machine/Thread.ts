@@ -62,7 +62,7 @@ export class Thread {
     if (memorySize < 1) {
       throw new Error(`Memory length too small: ${memorySize}`);
     }
-    this.descriptor = `[${creator}](@${pc})`;
+    this.descriptor = `${creator}/@${pc}`;
     this.disasm = disasm;
     this.pc = pc;
     this._running = true;

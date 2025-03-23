@@ -56,7 +56,7 @@ class Tracer {
     }
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
-    this.threads.push(new Thread("root", disasm, pc, memory));
+    this.threads.push(new Thread(`/@${pc}`, disasm, pc, memory, ignore));
   }
 
   /**
