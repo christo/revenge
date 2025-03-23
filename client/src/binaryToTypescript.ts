@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import {hex16} from "./machine/core.ts";
 
 /*
 code generation for binary file to typescript array literal
@@ -34,11 +35,9 @@ romFiles.forEach((rom: RomFile) => {
     let tsContent: string = `// Converted from ${rom.input}\n`;
     tsContent += `export const ${rom.varName}: number[] = [\n`;
 
-    const ITEMS_PER_LINE: number = 20;
-    for (let i = 0; i < byteArray.length; i += ITEMS_PER_LINE) {
-      const line: string = byteArray.slice(i, i + ITEMS_PER_LINE)
-          .map((b: number) => `0x${b.toString(16).padStart(2, '0')}`)
-          .join(', ');
+    const PER_LINE: number = 20;
+    for (let i = 0; i < byteArray.length; i += PER_LINE) {
+      const line: string = byteArray.slice(i, i + PER_LINE).map(hex16).join(', ');
       tsContent += `  ${line},\n`;
     }
 
