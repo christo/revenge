@@ -173,7 +173,7 @@ export class Thread {
     //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
     //  degenerate runtime state is represented.
     this.executed.push([this.pc, instLen as InstLen]);
-    this.pc = nextPc; // increment PC by length of this instruction
+    this.pc = nextPc;
     return maybeThread;
   }
 }
