@@ -12,6 +12,7 @@
   * [ ] Tracer needs memory write recorder to be able to trace indirect jump `JMP ($1337)`
 * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
+* [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
 
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
 * check out Haskell Difference List datastructure
