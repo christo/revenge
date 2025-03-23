@@ -1,5 +1,7 @@
 # TODO
 
+* [ ] show definitions for used kernal symbols
+* [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] remove excessive cleverness: replace Tag with closer domain model types
   * [ ] create Tag subclasses for each usage
   * [ ] put some kind of render hints in the implementations
