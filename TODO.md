@@ -9,8 +9,9 @@
   * [x] Disassemble line in tracer to identify jumps
   * [x] Disassemble line in tracer to identify conditional branches 
   * [ ] Tracer needs to load kernal and basic ROMs into a machine - basically almost an emulator
-  * [ ] Tracer needs memory recorder (read, write, execute)
-  * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets, read/write permissions, io mapping
+  * [ ] Tracer needs memory write recorder to be able to trace indirect jump `JMP ($1337)`
+* [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
+  read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
 * check out Haskell Difference List datastructure
