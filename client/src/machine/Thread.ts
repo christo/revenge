@@ -1,6 +1,6 @@
 import {Disassembler} from "./asm/Disassembler";
 import {OpSemantics} from "./asm/Op.ts";
-import {Addr, Endian} from "./core.ts";
+import {Addr, Endian, hex16} from "./core.ts";
 import {Memory} from "./Memory.ts";
 
 /**
@@ -104,7 +104,7 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    console.log(`Thread Step: ${this.descriptor} @ ${this.pc}`);
+    console.log(`Thread: 0x${hex16(this.pc)} ${this.pc} ${this.descriptor}`);
     return this.execute();
   }
 
