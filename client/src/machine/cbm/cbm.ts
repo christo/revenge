@@ -12,7 +12,7 @@ import {
   TAG_LINE,
   UserAction
 } from "../api.ts";
-import {Environment,} from "../asm/asm.ts";
+import {Environment, SymbolType,} from "../asm/asm.ts";
 import {DefaultDialect} from "../asm/DefaultDialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
@@ -90,9 +90,11 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [Addr[],
   // TODO decide what memory to use
   // TODO what roms to load into memory to do a trace
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
-  const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K);
+  const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
+  const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
-  tracer.trace();
+  // TODO max steps is half-arsed attempt to discover why this call locks up
+  // tracer.trace(20);
   const traceTime = Date.now() - traceStart;
   const codeAddresses = [...tracer.executed()].sort();
   return [codeAddresses, traceTime];

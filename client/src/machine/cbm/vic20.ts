@@ -1,6 +1,8 @@
 // VIC-20 specific details
 
-import {Computer, LogicalLine, MemoryConfiguration, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
+import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
+import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
+import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {Dialect} from "../asm/Dialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
@@ -182,8 +184,8 @@ export class Vic20Basic implements BlobSniffer {
 
   sniff(fb: FileBlob): number {
     // check if the start address bytes match the basic load address for our MemoryConfiguration
-    const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicStart);
-    const byte1Match = fb.getBytes()[1] === msb(this.memory.basicStart);
+    const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicProgramStart);
+    const byte1Match = fb.getBytes()[1] === msb(this.memory.basicProgramStart);
     let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
 
     // try decoding it as basic
@@ -224,6 +226,18 @@ export class Vic20Basic implements BlobSniffer {
   }
 }
 
+/** where kernal rom image is mapped */
+const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
+/** where basic rom image is mapped */
+const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
+
+// TODO need way to load rom image in browser or server
+//   maybe embed in client, later enable upload from browser
+let VIC_ROMS = [
+    new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
+    new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
+];
+
 const UNEXPANDED_VIC_BASIC = new Vic20Basic(VIC20_UNEX);
 const EXP03K_VIC_BASIC = new Vic20Basic(VIC20_EXP03K);
 const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
@@ -231,8 +245,8 @@ const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
 class Vic20 extends Computer {
-  constructor(memory: MemoryConfiguration) {
-    super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, ["vic20"]);
+  constructor(memory: MemoryConfiguration, roms: RomImage[] = []) {
+    super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, roms, ["vic20"]);
   }
 }
 

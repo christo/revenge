@@ -12,7 +12,7 @@
  * idioms may be recognised this same way across different code bases.
  */
 
-import {Endian, hex16} from "./core";
+import {Addr, Endian, hex16} from "./core";
 import {Disassembler} from "./asm/Disassembler";
 import {Thread} from "./Thread.ts";
 import {Memory} from "./Memory.ts";
@@ -45,7 +45,7 @@ class Tracer {
    * @param pc program counter; absolute address in the memory of next instruction to execute.
    * @param memory the Memory in which to load and execute the program
    */
-  constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>) {
+  constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>, ignore = (_:Addr) => false) {
     const relativePc = pc - disasm.getSegmentBaseAddress();
     if (Math.round(pc) !== pc) {
       throw Error(`pc must be integer`);
@@ -105,10 +105,14 @@ class Tracer {
     newThreads.forEach(t => this.threads.push(t));
   }
 
-  trace() {
-    while(this.running()) {
+  trace(maxSteps: number) {
+    let stepCount = 0;
+    // TODO consider spawned threads
+    while(this.running() && stepCount < maxSteps) {
       this.step();
+      stepCount += 1;
     }
+    console.log(`traced ${stepCount} steps`);
   }
 }
 

@@ -1,7 +1,7 @@
 // C64 specific details
 // noinspection JSUnusedLocalSymbols
 
-import {BlobToActions, Computer, hexDumper, MemoryConfiguration} from "../api.ts";
+import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
 import {CartSniffer} from "./cbm.ts";
 import {KB_64, LE} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -14,8 +14,8 @@ import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.
 import {ArrayMemory} from "../Memory.ts";
 
 class C64 extends Computer {
-  constructor(memoryConfig: MemoryConfiguration, tags: string[]) {
-    super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, tags);
+  constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
+    super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, roms, ["c64"]);
   }
 }
 
@@ -25,7 +25,7 @@ const C64_BASIC_PRG = new BlobType(
     "BASIC program",
     ["basic", "c64"],
     "prg",
-    LE.wordToByteArray(C64_MEMORY.basicStart)
+    LE.wordToByteArray(C64_MEMORY.basicProgramStart)
 );
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format

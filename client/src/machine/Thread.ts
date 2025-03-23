@@ -3,6 +3,8 @@ import {OpSemantics} from "./asm/Op.ts";
 import {Addr, Endian, hex16} from "./core.ts";
 import {Memory} from "./Memory.ts";
 
+import {MODE_INDIRECT} from "./mos6502.ts";
+
 /**
  * Length of instruction in bytes.
  */
@@ -42,6 +44,7 @@ export class Thread {
    * @private
    */
   private readonly executed: Array<InstRec>;
+  private readonly errors: Array<[Addr, string]>;
   private readonly written: Array<number>;
   private pc: number;
   /**
@@ -57,7 +60,7 @@ export class Thread {
    * @param memory
    * @param ignore whether to ignore the given address
    */
-  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>, ignore = (_:Addr) => false) {
+  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>, ignore = (_: Addr) => false) {
     const memorySize = memory.getLength();
     if (memorySize < 1) {
       throw new Error(`Memory length too small: ${memorySize}`);
@@ -69,6 +72,7 @@ export class Thread {
     this.memory = memory;
     this.executed = [];
     this.written = [];
+    this.errors = [];
     this.ignore = ignore;
   }
 
@@ -155,10 +159,23 @@ export class Thread {
       if (op.any([OpSemantics.IS_BREAK, OpSemantics.IS_JAM])) {
         this._running = false;
       } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
-        nextPc = inst.operandValue();
+        // TODO introduce OpSemantics for indirection to remove explicit dependency on 6502 addressing mode
+        if (inst.instruction.mode === MODE_INDIRECT) {
+          // JMP ($1337)
+          // TODO indirect jump support probably needs a more complete emulation because their use
+          //  implies the jump target is modified by running code updating the contents of memory at the address
+          //  pointed to by the operand
+          console.error(`unsupported indirect mode jump instruction at ${this.pc} 0x${this.pc.toString(16)}`);
+          this.errors.push([this.pc, "indirect mode jump is unsupported"])
+        } else {
+          const jumpTarget = inst.operandValue();
+          if (!this.ignore(jumpTarget)) {
+            nextPc = jumpTarget;
+          }
+        }
       } else if (op.has(OpSemantics.IS_CONDITIONAL_JUMP)) {
-        // spawned thread takes the jump
         const jumpTarget = inst.resolveOperandAddress(nextPc);
+        // spawned thread takes the jump
         maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.ignore);
       }
     }
