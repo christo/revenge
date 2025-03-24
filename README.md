@@ -25,7 +25,7 @@ accelerating reverse engineering on small retro systems.
 
 Using a combination of preemptive emulation, detailed machine architecture definitions and
 static analytic techniques like program transformation, escape analysis, peephole optimisation
-and dynamic techniques like preemptive partial execution, combined with a large cross-referenced
+and dynamic techniques like speculativeπ partial execution, combined with a large cross-referenced
 database built from a corpus of known software, I hope to give insight to a human reverse engineer
 about any software written for these enigmatic retro systems.
 
