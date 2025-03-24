@@ -1,21 +1,32 @@
 # TODO
 
-* [ ] make separate view components for hex, disassembly, basic 
+## Next Actions
+
+* [ ] make separate view components for hex, disassembly, basic
+  * [ ] migrate from overgeneralised `Tag` abstraction 
 * [ ] show definitions for used kernal symbols
+  * [ ] render source lines that have no address prefix - such as symbol definitions
+  * [ ] implement jumping to definition
+* [ ] top nav source index: jump to entry point and other important locations
 * [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
-* [ ] remove excessive cleverness: replace Tag with closer domain model types
-  * [ ] create Tag subclasses for each usage
-  * [ ] put some kind of render hints in the implementations
-  * [ ] decide how to switch front-end based on methods and properties of Tag instance
-* [ ] implement Tracer to distinguish between code and data (excluding self-mod)
-  * [x] Tracer can execute simplest instruction traces, recording executed indices
+* [ ] Distinguish between code and data mostly automatically
+  * [x] Implement a code path Tracer for a generous subset of instructions that follows
+        execution from detected entry point. 
+  * [x] Tracer can execute simplest instruction traces, recording executed instruction addresses
   * [x] Disassemble line in tracer to identify jumps
-  * [x] Disassemble line in tracer to identify conditional branches 
-  * [ ] Tracer needs to load kernal and basic ROMs into a machine - basically almost an emulator
-  * [ ] Tracer needs memory write recorder to be able to trace indirect jump `JMP ($1337)`
+  * [x] Disassemble line in tracer to identify conditional branches
+  * [ ] Tracer loads kernal and basic ROMs into locations based on detected machine memory map
+  * [ ] Tracer records path graph
+  * [ ] Tracer records memory read and write sequence
+  * [ ] Use read heuristics to detect evidence of data 
+  * [ ] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
 * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
+* view options - disassembly, basic, hex each should define their own config options
+* dialect options - layout handles for indenting
+
+## Long Term Ideas
 
 * check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
 * check out Haskell Difference List datastructure
@@ -24,9 +35,6 @@
 * Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte
   declarations on multiple physical lines.
 * Kernel subroutines: map the inputs, outputs and register effects of subroutines
-* render source lines that have no address prefix - such as symbol definitions
-* view options - disassembly, basic, hex each should define their own config options
-  * dialect options - layout handles for indenting
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
   * Sniffer / hybrid disassembler/basic decoder
 * better styling for BASIC decoder
