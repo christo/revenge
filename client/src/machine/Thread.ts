@@ -33,7 +33,7 @@ function enumInstAddr(ir: InstRec) {
 export class Thread {
   readonly descriptor: string;
   private readonly disasm: Disassembler;
-  /** This should be immutable */
+  /** This should be properly immutable */
   private readonly memory: Memory<Endian>;
   /**
    * Track the instruction bytes executed
@@ -41,20 +41,26 @@ export class Thread {
    */
   private readonly executed: Array<InstRec>;
   private readonly errors: Array<[Addr, string]>;
-  private readonly written: Array<number>;
+
+  /**
+   * Current program counter.
+   * @private
+   */
   private pc: number;
   /**
-   * Address ignore list
+   * Address ignore list, treated as no-ops
    * @private
    */
   private ignore: (addr: Addr) => boolean;
 
   /**
    * Starts in running mode.
-   * @param disasm
+   *
+   * @param creator descriptor of thread that created this
+   * @param disasm disassembler to identify instruction semantics
    * @param pc address of next instruction to be executed
-   * @param memory
-   * @param ignore whether to ignore the given address
+   * @param memory contains code to run
+   * @param ignore function to indicate whether to ignore a given address, defaults to ignoring none.
    */
   constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>, ignore = (_: Addr) => false) {
     const memorySize = memory.getLength();
