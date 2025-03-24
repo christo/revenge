@@ -23,22 +23,23 @@
 * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
-* view options - disassembly, basic, hex each should define their own config options
-* dialect options - layout handles for indenting
-* MOS 8502 C128 support github issue (#2)[https://github.com/christo/revenge/issues/2]
+* [ ] view options - disassembly, basic, hex each should define their own config options
+* [ ] dialect options - layout handles for indenting
+* [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
+* [ ] vic 20 / c64 hardware register detection
+* [ ] better styling for BASIC decoder
 
 ## Long Term Ideas
 
-* check out Ramda-Adjunct possible addition to Ramda https://char0n.github.io/ramda-adjunct/4.0.0/
+* check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to
+  Ramda
 * check out Haskell Difference List datastructure
-* vic 20 / c64 hardware register detection
 * Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
 * Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte
   declarations on multiple physical lines.
 * Kernel subroutines: map the inputs, outputs and register effects of subroutines
 * Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
   * Sniffer / hybrid disassembler/basic decoder
-* better styling for BASIC decoder
 * hovertools:
   * dynamically decorate
   * single instruction or selection
