@@ -25,6 +25,7 @@
 * [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
 * view options - disassembly, basic, hex each should define their own config options
 * dialect options - layout handles for indenting
+* MOS 8502 C128 support github issue (#2)[https://github.com/christo/revenge/issues/2]
 
 ## Long Term Ideas
 
