@@ -6,10 +6,11 @@ The grand idea is a web-based reverse engineering environment for retro computer
 with very small initial goals: binary file type detection and simple disassembly of 
 6502 machine code for the Vic-20 and C64. Z80 is a likely future supported architecture.
 
-**Project Status**: _pre alpha_ (it does work on the various binaries I'm currently testing with)
+**Project Status**: _pre alpha_ (it sort of works with plenty left [TODO](TODO.md))
 
-It's implemented in TypeScript as a first project for learning the language so the code may
-contain some baroque or nonidiomatic code due to overzealous exploration of language features.
+![revenge screenshot](docs/revenge-screenshot-20250324.png)
+
+Implemented in `TypeScript`, using `bun`, `vite`, `mocha`/`chai` for testing. 
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
