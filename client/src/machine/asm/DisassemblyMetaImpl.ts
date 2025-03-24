@@ -2,7 +2,8 @@ import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver, SymbolTable} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
-import {Edict, InstructionLike} from "./instructions.ts";
+import {Edict} from "./Edict.ts";
+import {InstructionLike} from "./instructions.ts";
 
 /**
  * Encapsulates outer context for disassembling with a {@link Disassembler}.

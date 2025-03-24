@@ -5,7 +5,7 @@ import {FullInstruction} from "../mos6502.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
 import {Disassembler} from "./Disassembler.ts";
-import {Assembler} from "./Assembler.ts";
+import {Edict} from "./Edict.ts";
 
 /** Convenience base class implementing comment and label properties. */
 export abstract class InstructionBase implements InstructionLike {
@@ -307,35 +307,6 @@ class VectorDefinitionEdict extends ByteDefinitionEdict {
 }
 
 /**
- * Rule for specifying the disassembly of a sequence of bytes at a binary offset. File formats or
- * user demand can require that a location be interpreted as code or a labeled address definition etc.
- * Examples include forced interpretation of bytes as code since the file format specifies code entry
- * points.
- */
-interface Edict<T> {
-
-  get offset(): number;
-
-  /**
-   * Number of bytes to be specified.
-   */
-  get length(): number;
-
-  /**
-   * Creates the instance from the bytes in the given fileblob at our configured offset
-   *
-   * @param fb the binary.
-   * @return the instance.
-   */
-  create(fb: FileBlob): T;
-
-  /**
-   * Description of the edict for referring to problems with it.
-   */
-  describe(): string;
-}
-
-/**
  * No code or data, just labels and comments.
  */
 class LabelsCommentsOnly extends InstructionBase {
@@ -366,4 +337,4 @@ export {
   LabelsCommentsOnly,
   BLANK_LINE
 };
-export type {Directive, InstructionLike, Edict};
+export type {Directive, InstructionLike};

@@ -1,5 +1,6 @@
 import {FileBlob} from "../FileBlob.ts";
-import {Edict, InstructionLike} from "./instructions.ts";
+import {Edict} from "./Edict.ts";
+import {InstructionLike} from "./instructions.ts";
 import {Addr} from "../core.ts";
 import {LabelsComments, SymbolTable} from "./asm.ts";
 

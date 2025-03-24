@@ -1,7 +1,8 @@
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction, Mos6502} from "../mos6502.ts";
 import {Addr, asByte, Endian} from "../core.ts";
-import {ByteDeclaration, Edict, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
+import {Edict} from "./Edict.ts";
+import {ByteDeclaration, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import * as R from "ramda";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
@@ -65,6 +66,9 @@ class Disassembler {
   /**
    * Decides which {@link InstructionLike} should be constructed at the current index point
    * and advances the index by the correct number of bytes.
+   *
+   * Incorporates configured edicts which can force some data to be interpreted as code or data.
+   *
    */
   nextInstructionLine(): InstructionLike {
 
@@ -340,7 +344,12 @@ class Disassembler {
     return notTooLow && notTooHigh;
   };
 
-  private maybeMkEdict(lc: LabelsComments) {
+  /**
+   * Makes any edict declared for the current offset.
+   * @param lc
+   * @private
+   */
+  private maybeMkEdict(lc: LabelsComments): InstructionLike | undefined {
     // see if edict is declared for currentIndex
     const declaredEdict: Edict<InstructionLike> | undefined = this.disMeta.getEdict(this.currentIndex);
     if (declaredEdict !== undefined) {
