@@ -41,7 +41,7 @@ Implemented in [TypeScript](https://www.typescriptlang.org/), using [React](http
 ## Quick Start
 
 After checking out this repo, from a shell in the root directory, run the sanity script
-to check you have the relevant tools installed:
+to check you have the relevant/recommended tools installed:
 
 ```shell
 ./sanity.sh
@@ -68,17 +68,15 @@ bun dev
 
 The URL to point your browser to is shown in the console.
 
-During development, `bun` is used for speed and convenience, and if you don't have it, the
-sanity script will alert you. While `bun` is recommended, it should work fine with a different
-js runtime like node or deno. To use `npm` or `pnpm`, check the `client/package.json` and
-`server/package.json` files to see what scripts are defined.
 
 ## System Design
 
 Build and execution environment is `vite` for the client and `bun` for both client and server.
 Node should also work with `npm` or `pnpm`. I'm not sure how to structure the project to be
 transparently agnostic about this but if you have opinions and skills, get in touch and I will
-accommodate any sane suggestions.
+accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/package.json` and
+`server/package.json` files to see what scripts are defined.
+
 
 ## Features
 
