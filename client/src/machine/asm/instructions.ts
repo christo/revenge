@@ -247,6 +247,9 @@ class SymDef<T> {
   }
 }
 
+/**
+ * Forces specific bytes to be interpreted as a plain byte definition.
+ */
 class ByteDefinitionEdict implements Edict<InstructionLike> {
   protected readonly lc: LabelsComments;
   private readonly _offset: number;
