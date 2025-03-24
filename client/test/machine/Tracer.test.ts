@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {Disassembler} from "../../src/machine/asm/Disassembler";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {LE} from "../../src/machine/core";
+import {Addr, LE} from "../../src/machine/core";
 import {FileBlob} from "../../src/machine/FileBlob";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";
@@ -20,12 +20,12 @@ describe("tracer", () => {
     const fb = FileBlob.fromBytes("testblob", machineCode, LE);
     const dm = new DisassemblyMetaImpl(0, 0, 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0, mem(machineCode));
-    expect(t.threads.length == 1, "should begin with 1 thread");
+    const t = new Tracer(d, 0, mem(machineCode), (_: Addr) => false);
+    expect(t.countActiveThreads() == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
     t.step();
     expect(!t.running(), "tracer should be stopped after hitting break");
-    expect(t.threads.length == 1, "should end with 1 thread");
+    expect(t.countActiveThreads() == 1, "should end with 1 thread");
   });
 
   it("records executed locations", () => {
