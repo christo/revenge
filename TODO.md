@@ -2,6 +2,9 @@
 
 ## Next Actions
 
+* [ ] disassembler should enforce reset vector address to align to instruction first byte
+      e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
+      as data
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
 * [ ] support importing with `.ts` extension in test source dir
