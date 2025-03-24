@@ -6,14 +6,10 @@ import {Memory} from "./Memory.ts";
 import {MODE_INDIRECT} from "./mos6502.ts";
 
 /**
- * Length of instruction in bytes.
+ * Models all addresses occupied by a single instruction and their length.
+ * Currently we only support instructions of length 1, 2 or 3.
  */
-type InstLen = 1 | 2 | 3;
-
-/**
- * Models all addresses occupied by a single instruction.
- */
-type InstRec = [Addr, InstLen];
+type InstRec = [Addr, 1 | 2 | 3];
 
 /**
  * Take an instruction address and length and return each address the instruction occupies.
