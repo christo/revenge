@@ -25,7 +25,7 @@ class Disassembler {
   private predefLc: [Addr, LabelsComments][];
 
   private disMeta: DisassemblyMeta;
-  private symbolDefinitions: Map<string, SymDef>;
+  private symbolDefinitions: Map<string, SymDef<Addr>>;
 
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
@@ -41,7 +41,7 @@ class Disassembler {
     this.segmentBaseAddress = dm.baseAddress(fb);
     this.predefLc = dm.resolveSymbols(fb);
     this.disMeta = dm;
-    this.symbolDefinitions = new Map<string, SymDef>();
+    this.symbolDefinitions = new Map<string, SymDef<Addr>>();
     this.stats = new Map<string, number>();
   }
 
@@ -207,10 +207,10 @@ class Disassembler {
         .filter(this.addressInRange);                       // only those in range of the loaded binary
   };
 
-  getSymbol = (addr: Addr): SymDef | undefined => this.disMeta.getSymbolTable().byAddress(addr);
+  getSymbol = (addr: Addr): SymDef<Addr> | undefined => this.disMeta.getSymbolTable().byAddress(addr);
 
   /** Keeps a record of a used symbol that must be added to the source output. */
-  addSymbolDefinition = (symbol: SymDef) => {
+  addSymbolDefinition = (symbol: SymDef<Addr>) => {
     this.symbolDefinitions.set(symbol.name, symbol);
   };
 

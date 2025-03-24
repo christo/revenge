@@ -105,13 +105,13 @@ class SymbolTable {
 
   // future: keep kernal symbols in a separate table from user-defined symbols, also can have multimap
 
-  private addressToSymbol: Map<Addr, SymDef> = new Map<Addr, SymDef>();
+  private addressToSymbol: Map<Addr, SymDef<Addr>> = new Map<Addr, SymDef<Addr>>();
   private readonly name: string;
   /**
    * string lookup
    * @private
    */
-  private nameToSymbol: Map<string, SymDef> = new Map<string, SymDef>();
+  private nameToSymbol: Map<string, SymDef<Addr>> = new Map<string, SymDef<Addr>>();
 
   constructor(name: string) {
     this.name = name;

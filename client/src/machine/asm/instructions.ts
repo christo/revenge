@@ -227,18 +227,18 @@ class FullInstructionLine extends InstructionBase {
 /**
  * Symbol definition.
  */
-class SymDef {
+class SymDef<T> {
   sType: SymbolType;
   /** Definitive canonical name, traditionally used, usually an overly obtuse contraction. */
   name: string;
   /** Numeric memory address for the symbol. */
-  value: Addr;
+  value: T;
   /** Short phrase to describe the meaning, more understandable than the canonical name */
   descriptor: string;
   /** Extended information */
   blurb: string;
 
-  constructor(sType: SymbolType, name: string, value: Addr, description: string, blurb = "") {
+  constructor(sType: SymbolType, name: string, value: T, description: string, blurb = "") {
     this.sType = sType;
     this.name = name;
     this.value = value;
