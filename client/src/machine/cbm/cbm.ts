@@ -87,9 +87,8 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
  * @return tuple of array of executed addresses and the number of milliseconds taken to trace
  */
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [Addr[], number] {
-  // TODO decide what memory to use
-  // TODO what roms to load into memory to do a trace
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
+  // TODO load system rom into memory
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
