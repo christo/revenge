@@ -33,6 +33,13 @@
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
 * [ ] vic 20 / c64 hardware register detection
 * [ ] better styling for BASIC decoder
+* [ ] Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
+  * [ ] if program is only rem and sys commands, interpret as machine code with comment that
+        the prelude is the basic loader
+* [ ] Sniffer / hybrid disassembler/basic decoder
+* [ ] Render generated comments on the line before if the line is too long to prevent comment and 
+      code layout clash. Also format long byte declarations on multiple physical lines.
+
 
 ## Long Term Ideas
 
@@ -40,11 +47,7 @@
   Ramda
 * check out Haskell Difference List datastructure
 * Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
-* Render comments on the line before if the line is too long to prevent comment and code clash. Also format long byte
-  declarations on multiple physical lines.
 * Kernel subroutines: map the inputs, outputs and register effects of subroutines
-* Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
-  * Sniffer / hybrid disassembler/basic decoder
 * hovertools:
   * dynamically decorate
   * single instruction or selection
