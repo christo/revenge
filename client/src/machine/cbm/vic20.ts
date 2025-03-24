@@ -20,24 +20,46 @@ import {CartSniffer, prg} from "./cbm";
 const VIC20_KERNAL = new SymbolTable("vic20");
 
 // kernal jump table, yes that's how they spell it
+// the underscore prefixed versions are often used though not officially recommended
+// equivalents because the main api is just a jump table, each entry contains a single
+// jmp $1234 and some programmers directly call a jsr to that instruction's address
+// they're listed here to aid reversing such calls
 VIC20_KERNAL.sub(0xff8a, "restor", "set KERNAL vectors to defaults", "contains jmp $fd52");
+VIC20_KERNAL.sub(0xfd52, "_restor", "internal set KERNAL vectors to defaults");
 VIC20_KERNAL.sub(0xff8d, "vector", "Change Vectors For User", "contains jmp $fd57");
+VIC20_KERNAL.sub(0xfd57, "_vector", "internal Change Vectors For User");
 VIC20_KERNAL.sub(0xff90, "setmsg", "Control OS Messages", "contains jmp $fe66");
+VIC20_KERNAL.sub(0xfe66, "_setmsg", "internal Control OS Messages");
 VIC20_KERNAL.sub(0xff93, "secnd", "Send SA After Listen", "contains jmp $eec0");
+VIC20_KERNAL.sub(0xeec0, "_secnd", "internal Send SA After Listen");
 VIC20_KERNAL.sub(0xff96, "tksa", "Send SA After Talk", "contains jmp $eece");
-VIC20_KERNAL.sub(0xff99, "memtop", "Set/Read System RAM Top", "contains jmp $fe73");
+VIC20_KERNAL.sub(0xeece, "_tksa", "internal Send SA After Talk");
+VIC20_KERNAL.sub(0xff99, "memtop", "internal Set/Read System RAM Top", "contains jmp $fe73");
+VIC20_KERNAL.sub(0xfe73, "_memtop", "internal Set/Read System RAM Top");
 VIC20_KERNAL.sub(0xff9c, "membot", "Set/Read System RAM Bottom", "contains jmp $fe82");
+VIC20_KERNAL.sub(0xfe82, "_membot", "internal Set/Read System RAM Bottom");
 VIC20_KERNAL.sub(0xff9f, "scnkey", "Scan Keyboard", "contains jmp $eb1e");
+VIC20_KERNAL.sub(0xeb1e, "_scnkey", "internal Scan Keyboard");
 VIC20_KERNAL.sub(0xffa2, "settmo", "Set Timeout In IEEE", "contains jmp $fe6f");
+VIC20_KERNAL.sub(0xfe6f, "_settmo", "internal Set Timeout In IEEE");
 VIC20_KERNAL.sub(0xffa5, "acptr", "Handshake Serial Byte In", "contains jmp $ef19");
+VIC20_KERNAL.sub(0xef19, "_acptr", "internal Handshake Serial Byte In");
 VIC20_KERNAL.sub(0xffa8, "ciout", "Handshake Serial Byte Out", "contains jmp $eee4");
+VIC20_KERNAL.sub(0xeee4, "_ciout", "internal Handshake Serial Byte Out");
 VIC20_KERNAL.sub(0xffab, "untalk", "Command Serial Bus UNTALK", "contains jmp $eef6");
+VIC20_KERNAL.sub(0xeef6, "_untalk", "internal Command Serial Bus UNTALK");
 VIC20_KERNAL.sub(0xffae, "unlsn", "Command Serial Bus UNLISTEN", "contains jmp $ef04");
+VIC20_KERNAL.sub(0xef04, "_unlsn", "internal Command Serial Bus UNLISTEN");
 VIC20_KERNAL.sub(0xffb1, "listn", "Command Serial Bus LISTEN", "contains jmp $ee17");
+VIC20_KERNAL.sub(0xee17, "_listn", "internal Command Serial Bus LISTEN");
 VIC20_KERNAL.sub(0xffb4, "talk", "Command Serial Bus TALK", "contains jmp $ee14");
+VIC20_KERNAL.sub(0xee14, "_talk", "internal Command Serial Bus TALK");
 VIC20_KERNAL.sub(0xffb7, "readss", "Read I/O Status Word", "contains jmp $fe57");
+VIC20_KERNAL.sub(0xfe57, "_readss", "internal Read I/O Status Word");
 VIC20_KERNAL.sub(0xffba, "setlfs", "Set Logical File Parameters", "contains jmp $fe50");
+VIC20_KERNAL.sub(0xfe50, "_setlfs", "internal Set Logical File Parameters");
 VIC20_KERNAL.sub(0xffbd, "setnam", "Set Filename", "contains jmp $fe49");
+VIC20_KERNAL.sub(0xfe49, "_setnam", "internal Set Filename");
 VIC20_KERNAL.sub(0xffc0, "iopen", "Open Vector [F40A] (indirect entry)", "contains jmp ($031a)");
 VIC20_KERNAL.sub(0xffc3, "iclose", "Close Vector [F34A] (indirect entry)", "contains jmp ($031c)");
 VIC20_KERNAL.sub(0xffc6, "ichkin", "Set Input [F2C7] (indirect entry)", "contains jmp ($031e)");
@@ -46,16 +68,24 @@ VIC20_KERNAL.sub(0xffcc, "iclrch", "Restore I/O Vector [F353] (indirect entry)",
 VIC20_KERNAL.sub(0xffcf, "ichrin", "Input Vector, chrin [F20E] (indirect entry)", "contains jmp ($0324)");
 VIC20_KERNAL.sub(0xffd2, "ichrout", "Output Vector, chrout [F27A] (indirect entry) (indirect entry)", "contains jmp ($0326)");
 VIC20_KERNAL.sub(0xffd5, "load", "Load RAM From Device", "contains jmp $f542");
+VIC20_KERNAL.sub(0xf542, "_load", "internal Load RAM From Device");
 VIC20_KERNAL.sub(0xffd8, "save", "Save RAM To Device", "contains jmp $f675");
+VIC20_KERNAL.sub(0xf675, "_save", "internal Save RAM To Device");
 VIC20_KERNAL.sub(0xffdb, "settim", "Set Real-Time Clock", "contains jmp $f767");
+VIC20_KERNAL.sub(0xf767, "_settim", "internal Set Real-Time Clock");
 VIC20_KERNAL.sub(0xffde, "rdtim", "Read Real-Time Clock", "contains jmp $f760");
+VIC20_KERNAL.sub(0xf760, "_rdtim", "internal Read Real-Time Clock");
 VIC20_KERNAL.sub(0xffe1, "istop", "Test-Stop Vector [F770] (indirect entry)", "contains jmp ($0328)");
 VIC20_KERNAL.sub(0xffe4, "igetin", "Get From Keyboad [F1F5] (indirect entry)", "contains jmp ($032a)");
 VIC20_KERNAL.sub(0xffe7, "iclall", "Close All Channels And Files [F3EF] (indirect entry)", "contains jmp ($032c)");
 VIC20_KERNAL.sub(0xffea, "udtim", "Increment Real-Time Clock", "contains jmp $f734");
+VIC20_KERNAL.sub(0xf73f, "_udtim", "internal Increment Real-Time Clock");
 VIC20_KERNAL.sub(0xffed, "screen", "Return Screen Organization", "contains jmp $e505");
+VIC20_KERNAL.sub(0xe505, "_screen", "internal Return Screen Organization");
 VIC20_KERNAL.sub(0xfff0, "plot", "Read / Set Cursor X/Y Position", "contains jmp $e50a");
+VIC20_KERNAL.sub(0xe50a, "_plot", "internal Read / Set Cursor X/Y Position");
 VIC20_KERNAL.sub(0xfff3, "iobase", "Return I/O Base Address", "contains jmp $e500");
+VIC20_KERNAL.sub(0xe500, "_iobase", "internal Return I/O Base Address");
 
 VIC20_KERNAL.sub(0xfd52, "restor_vector", "restore kernal vectors (direct vector)");
 VIC20_KERNAL.sub(0xfdf9, "ioinit_vector", "i/o initialisation (direct vector");
