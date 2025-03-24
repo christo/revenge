@@ -81,14 +81,6 @@ class Tracer {
   }
 
   /**
-   * All addresses that were possibly written to in all theoretical execution paths.
-   */
-  written(): Array<number> {
-    const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getWritten()]));
-    return Array.from(set.keys()).sort();
-  }
-
-  /**
    * Advance all running threads by one instruction, ignoring the rest.
    */
   step() {

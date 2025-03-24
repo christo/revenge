@@ -73,7 +73,6 @@ export class Thread {
     this._running = true;
     this.memory = memory;
     this.executed = [];
-    this.written = [];
     this.errors = [];
     this.ignore = ignore;
   }
@@ -128,10 +127,6 @@ export class Thread {
    */
   getExecutedInstructionBytes(): Array<Addr> {
     return this.executed.flatMap(enumInstAddr);
-  }
-
-  getWritten(): Array<number> {
-    return [...this.written];
   }
 
   getPc() {
