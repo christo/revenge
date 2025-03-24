@@ -18,13 +18,14 @@ interface DisassemblyMeta {
    *
    * @param fb the file to get the vector from
    */
-  baseAddress(fb: FileBlob): number;
+  baseAddress(fb: FileBlob): Addr;
 
   /**
    * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
+   * // TODO return array for multiple entry points (e.g. NMI)
    * @param fb the fileblob.
    */
-  executionEntryPoint(fb: FileBlob): number;
+  executionEntryPoint(fb: FileBlob): Addr;
 
   /**
    * The offset from the start of the fileblob at which the starting of the binary content is located.
@@ -52,6 +53,7 @@ interface DisassemblyMeta {
 
   /**
    * Returns true if the given address is present in the given FileBlob
+   *
    * @param addr the address
    * @param fb the fileblob
    */
