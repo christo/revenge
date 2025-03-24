@@ -192,9 +192,16 @@ class DefaultDialect implements Dialect {
     return [comments, labels, ...this.taggedCode(fil, dis)];
   }
 
-  directive(_directive: Directive, _dis: Disassembler): Tag[] {
-    TODO();
-    return [];
+  directive(dir: Directive, _dis: Disassembler): Tag[] {
+    if (dir.isSymbolDefinition()) {
+      // TODO don't have enough context to generate symbol
+      // if value is in predefined symbol table, use label from symbol table
+      TODO();
+      return [];
+    } else {
+      TODO();
+      return [];
+    }
   }
 
   pcAssign(pcAssign: PcAssign, _dis: Disassembler): Tag[] {
