@@ -7,6 +7,7 @@
 * [ ] show definitions for used kernal symbols
   * [ ] render source lines that have no address prefix - such as symbol definitions
   * [ ] implement jumping to definition
+* [ ] bigram plot view
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] Distinguish between code and data mostly automatically
