@@ -3,7 +3,7 @@
 ## Next Actions
 
 * [ ] make separate view components for hex, disassembly, basic
-  * [ ] migrate from overgeneralised `Tag` abstraction 
+* [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
 * [ ] show definitions for used kernal symbols
   * [ ] render source lines that have no address prefix - such as symbol definitions
   * [ ] implement jumping to definition
