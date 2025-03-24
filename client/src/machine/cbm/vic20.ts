@@ -25,7 +25,6 @@ const VIC20_KERNAL = new SymbolTable("vic20");
 // jmp $1234 and some programmers directly call a jsr to that instruction's address
 // they're listed here to aid reversing such calls
 VIC20_KERNAL.sub(0xff8a, "restor", "set KERNAL vectors to defaults", "contains jmp $fd52");
-VIC20_KERNAL.sub(0xfd52, "_restor", "internal set KERNAL vectors to defaults");
 VIC20_KERNAL.sub(0xff8d, "vector", "Change Vectors For User", "contains jmp $fd57");
 VIC20_KERNAL.sub(0xfd57, "_vector", "internal Change Vectors For User");
 VIC20_KERNAL.sub(0xff90, "setmsg", "Control OS Messages", "contains jmp $fe66");
