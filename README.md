@@ -34,7 +34,7 @@ such a system.
 
 ## Architecture
 
-Implemented in `TypeScript`, using `bun`, `vite`, `mocha`/`chai` for testing.
+Implemented in `TypeScript`, using `React`, `bun`, `vite`, `MUI` and `mocha`/`chai` for testing.
 
 ## Quick Start
 
