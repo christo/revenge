@@ -112,10 +112,10 @@ describe("tracer", () => {
     const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, offsetOfResetVector, offsetBlobContent);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Tracer(d, 0x1000, mem64k);
-    t.step(); // execute BCS, should split into two threads
+    t.stepAll(); // execute BCS, should split into two threads
     expect(t.countActiveThreads()).to.eq(2);
-    t.step(); // branched thread executes NOP, JMP thread executes BRK
-    t.step(); // execute BRK
+    t.stepAll(); // branched thread executes NOP, JMP thread executes BRK
+    t.stepAll(); // execute BRK
     expect(t.executed()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);
   });
 

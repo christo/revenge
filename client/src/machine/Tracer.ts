@@ -12,10 +12,16 @@
  * idioms may be recognised this same way across different code bases.
  */
 
-import {Addr, Endian, hex16} from "./core";
 import {Disassembler} from "./asm/Disassembler";
-import {Thread} from "./Thread.ts";
+import {Addr, Endian, hex16} from "./core";
 import {Memory} from "./Memory.ts";
+import {Thread} from "./Thread.ts";
+
+/**
+ * Models all addresses occupied by a single instruction and their length.
+ * Currently we only support instructions of length 1, 2 or 3.
+ */
+type InstRec = [Addr, 1 | 2 | 3];
 
 /**
  * Analyser that approximates code execution to some degree. Static analysis ignores register and memory contents,
@@ -24,7 +30,13 @@ import {Memory} from "./Memory.ts";
  * will return false.
  */
 class Tracer {
-  threads: Thread[] = [];
+  private threads: Thread[] = [];
+  private stepCount = 0;
+  /**
+   * Track the instruction bytes executed
+   * @private
+   */
+  private readonly executedAddresses: Array<InstRec>; // TODO maybe store set?
 
   // TODO: keep track of locations written to (data)
   // TODO: identify self-mod code and raise exception
@@ -37,15 +49,23 @@ class Tracer {
   //          jumps (forks) and subroutine jumps (deferred steps).
   // TODO: a list of contiguous memory regions which can contain executable code
   // FUTURE: would also be nice to know if a memory location is writeable
+  private getExecuted: () => InstRec[] = () => {
+    return [...this.executedAddresses];
+  };
 
   /**
    * Create a Tracer with a single Memory and single thread of execution at pc.
+   * Starts in a running state without having taken any step.
    *
    * @param disasm used to interpret memory as instructions
    * @param pc program counter; absolute address in the memory of next instruction to execute.
    * @param memory the Memory in which to load and execute the program
    */
-  constructor(disasm: Disassembler, pc: number, memory: Memory<Endian>, ignore = (_:Addr) => false) {
+  constructor(
+      disasm: Disassembler,
+      pc: number,
+      memory: Memory<Endian>,
+      ignore = (_: Addr) => false) {
     const relativePc = pc - disasm.getSegmentBaseAddress();
     if (Math.round(pc) !== pc) {
       throw Error(`pc must be integer`);
@@ -54,9 +74,10 @@ class Tracer {
     } else if (!memory.executable()) {
       throw Error("memory not marked for execution");
     }
+    this.executedAddresses = [];
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
-    this.threads.push(new Thread(`/@${pc}`, disasm, pc, memory, ignore));
+    this.threads.push(new Thread("Tracer", disasm, pc, memory, this.addExecuted, this.getExecuted, ignore));
   }
 
   /**
@@ -75,15 +96,34 @@ class Tracer {
    * All addresses of instructions that were executed. Does not include addresses of their operands.
    * Order is unspecified.
    */
-  executed(): Array<number> {
-    const set = new Set(this.threads.flatMap((thread: Thread) => [...thread.getExecuted()]));
-    return Array.from(set.keys()).sort();
+  executed(): Array<Addr> {
+    return this.executedAddresses.map(ir => ir[0]);
   }
 
   /**
-   * Advance all running threads by one instruction, ignoring the rest.
+   * Advance one running thread (if any exist) by one instruction. Dead threads don't step.
+   * There is no scheduling fairness, if many running threads exist, which one steps is
+   * unspecified.
    */
   step() {
+    const newThreads: Thread[] = [];
+    const aThread = this.threads.find((t) => t.running)
+    if (aThread) {
+      const maybeThread = aThread.step();
+      if (maybeThread) {
+        newThreads.push(maybeThread);
+      }
+    } else {
+      console.warn("found no running threads");
+    }
+    // add any newly spawned threads to our list
+    newThreads.forEach(t => this.threads.push(t));
+  }
+
+  /**
+   * Step all active threads
+   */
+  stepAll() {
     const newThreads: Thread[] = [];
     this.threads
         .filter((t) => t.running)
@@ -97,15 +137,23 @@ class Tracer {
     newThreads.forEach(t => this.threads.push(t));
   }
 
+  /**
+   * Run the trace for a maximum number of steps or until completion.
+   * @param maxSteps
+   */
   trace(maxSteps: number) {
-    let stepCount = 0;
+    const startCount = this.stepCount;
     // TODO consider spawned threads
-    while(this.running() && stepCount < maxSteps) {
+    while (this.running() && this.stepCount < maxSteps) {
       this.step();
-      stepCount += 1;
+      this.stepCount += 1;
     }
-    console.log(`traced ${stepCount} steps`);
+    console.log(`traced ${this.stepCount - startCount} steps`);
+  }
+
+  private addExecuted = (ir: InstRec) => {
+    this.executedAddresses.push(ir);
   }
 }
 
-export {Tracer};
+export {Tracer, type InstRec};

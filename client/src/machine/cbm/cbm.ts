@@ -44,10 +44,9 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
   const tagSeq = assignPc.disassemble(dialect, dis);
 
-
   // do trace to decide which is code
   const [codeAddresses, traceTime] = trace(dis, fb, meta);
-
+  meta.addCodeAddresses(codeAddresses);
   detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress; // save current address before we increment it
@@ -86,14 +85,19 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
  * @param meta
  * @return tuple of array of executed addresses and the number of milliseconds taken to trace
  */
-function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [Addr[], number] {
+function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [number[], number] {
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
   // TODO load system rom into memory
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
   // TODO max steps is half-arsed attempt to discover why this call locks up
-  // tracer.trace(20);
+  tracer.trace(10000);
+  if (tracer.running()) {
+    console.warn("tracer did not finish");
+  } else {
+    console.log("tracer finished");
+  }
   const traceTime = Date.now() - traceStart;
   const codeAddresses = [...tracer.executed()].sort();
   return [codeAddresses, traceTime];

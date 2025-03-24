@@ -21,13 +21,13 @@ class Disassembler {
   fb: FileBlob;
 
   private iset: InstructionSet;
-  private readonly segmentBaseAddress: number;
+  private readonly segmentBaseAddress: Addr;
   private readonly stats: Map<string, number>;
   private predefLc: [Addr, LabelsComments][];
 
   private disMeta: DisassemblyMeta;
   private symbolDefinitions: Map<string, SymDef<Addr>>;
-  private executionTargets: number[];
+
 
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
@@ -41,10 +41,7 @@ class Disassembler {
     this.currentIndex = index;
     this.fb = fb;
     this.segmentBaseAddress = dm.baseAddress(fb);
-    this.executionTargets = [
-        dm.executionEntryPoint(this.fb),
-        // TODO add all execution targets (e.g. nmi)
-      ];
+
     this.predefLc = dm.resolveSymbols(fb);
     this.disMeta = dm;
     this.symbolDefinitions = new Map<string, SymDef<Addr>>();
@@ -133,7 +130,10 @@ class Disassembler {
   edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike {
 
     // TODO refactor bigly, this is insane-o
-    const jumpTargetAhead = (n: number) => this.executionTargets.includes(this.currentAddress + n)
+    const jumpTargetAhead = (n: number) => {
+      const address = this.currentAddress + n;
+      return this.disMeta.executionEntryPoint(this.fb) === address || this.disMeta.getCodeAddresses().includes(address);
+    };
     // check if there's an edict n ahead of currentIndex
     const edictAhead= (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
@@ -147,6 +147,9 @@ class Disassembler {
 
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
+    // TODO edict creation here might be wrong because maybe we actually don't know if it should be a byte declaration?
+    //   problem is we start disassembling from the top but we don't know if these bytes are instructions and they
+    //   cause us to be out of step with what the tracer finds by starting from the entry point
     if (instLen === 2) {
       // only need to check one byte ahead
       if (edictAhead(1)) {
@@ -202,7 +205,6 @@ class Disassembler {
     return lc.reduce((p, c) => p.merge(c), new LabelsComments());
   }
 
-  // noinspection JSUnusedGlobalSymbols
   /**
    * Determine all jump targets both statically defined and implied by the given sequence of address,instruction
    * pairs. Only those targets that lie within the address range of our loaded binary are returned.

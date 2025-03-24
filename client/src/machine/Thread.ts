@@ -4,18 +4,13 @@ import {Addr, Endian, hex16} from "./core.ts";
 import {Memory} from "./Memory.ts";
 
 import {MODE_INDIRECT} from "./mos6502.ts";
-
-/**
- * Models all addresses occupied by a single instruction and their length.
- * Currently we only support instructions of length 1, 2 or 3.
- */
-type InstRec = [Addr, 1 | 2 | 3];
+import {InstRec} from "./Tracer.ts";
 
 /**
  * Take an instruction address and length and return each address the instruction occupies.
  * @param ir the instruction address and length
  */
-function enumInstAddr(ir: InstRec) {
+function enumInstAddr(ir: InstRec): Addr[] {
   const base = ir[0];
   const len = ir[1];
   if (len == 1) {
@@ -35,11 +30,7 @@ export class Thread {
   private readonly disasm: Disassembler;
   /** This should be properly immutable */
   private readonly memory: Memory<Endian>;
-  /**
-   * Track the instruction bytes executed
-   * @private
-   */
-  private readonly executed: Array<InstRec>;
+
   private readonly errors: Array<[Addr, string]>;
 
   /**
@@ -51,7 +42,13 @@ export class Thread {
    * Address ignore list, treated as no-ops
    * @private
    */
-  private ignore: (addr: Addr) => boolean;
+  private readonly ignore: (addr: Addr) => boolean;
+  private readonly addExecuted: (ir: InstRec) => void;
+  private readonly getExecuted: () => InstRec[];
+
+  /** Whether we are running. False iff we have reached a termination point. */
+  private _running: boolean;
+  private terminationReason: string;
 
   /**
    * Starts in running mode.
@@ -62,22 +59,26 @@ export class Thread {
    * @param memory contains code to run
    * @param ignore function to indicate whether to ignore a given address, defaults to ignoring none.
    */
-  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>, ignore = (_: Addr) => false) {
+  constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>,
+              addExecuted:(addr: InstRec) => void, getExecuted: () => InstRec[],
+              ignore = (_: Addr) => false) {
     const memorySize = memory.getLength();
     if (memorySize < 1) {
       throw new Error(`Memory length too small: ${memorySize}`);
     }
-    this.descriptor = `${creator}/@${pc}`;
+    this.descriptor = `${creator}/@${hex16(pc)}`;
     this.disasm = disasm;
     this.pc = pc;
-    this._running = true;
     this.memory = memory;
-    this.executed = [];
-    this.errors = [];
+    this.addExecuted = addExecuted;
+    this.getExecuted = getExecuted;
     this.ignore = ignore;
+    this._running = true;
+    this.terminationReason = '';
+
+    this.errors = [];
   }
 
-  private _running: boolean;
 
 
   /**
@@ -86,18 +87,6 @@ export class Thread {
    */
   get running(): boolean {
     return this._running;
-  }
-
-
-  /**
-   * Unconditional jump to new location.
-   * @param loc absolute memory location to jump to
-   */
-  jump(loc: number) {
-    if (!this.memory.contains(loc)) {
-      throw Error(`invalid jump location ${loc}`);
-    }
-    this.pc = loc;
   }
 
   /**
@@ -109,28 +98,32 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    console.log(`Thread: 0x${hex16(this.pc)} ${this.pc} ${this.descriptor}`);
+    //console.log(`Thread: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
     return this.execute();
   }
 
-  /**
-   * Returns the addresses of the instructions that have been executed. Does not include bytes belonging to operands.
-   */
-  getExecuted(): Array<Addr> {
-    // only return the address of the instruction itself since a theoretical non-self-mod program could reuse
-    // an operand as an instruction which is a different trace execution
-    return [...this.executed.map(il => il[0])];
-  }
+
 
   /**
    * Return all bytes (opcodes and operands) belonging to instructions that were executed.
    */
   getExecutedInstructionBytes(): Array<Addr> {
-    return this.executed.flatMap(enumInstAddr);
+    return this.getExecuted().flatMap(enumInstAddr);
   }
 
   getPc() {
     return this.pc;
+  }
+
+  getTerminationReason(): string {
+    return this.terminationReason;
+  }
+
+  private terminate(reason: string) {
+    const mesg = `${reason} @ ${this.renderPc()}`;
+    this.terminationReason = mesg;
+    this._running = false;
+    console.log(`${this.descriptor} terminated ${mesg}`);
   }
 
   /**
@@ -148,21 +141,23 @@ export class Thread {
     let nextPc = this.pc + instLen;
     let maybeThread: Thread | undefined = undefined;
     // have we executed an instruction that at the address of the pc before?
-    if (this.executed.flatMap(enumInstAddr).includes(this.pc)) {
-      console.log(`already executed ${this.pc}, terminating thread ${this}`);
-      this._running = false;
+    if (this.getExecuted().flatMap(enumInstAddr).includes(this.pc)) {
+      this.terminate("instruction already executed");
     } else {
       const op = inst.instruction.op;
-      if (op.any([OpSemantics.IS_BREAK, OpSemantics.IS_JAM])) {
-        this._running = false;
+      if (op.has(OpSemantics.IS_BREAK)) {
+        this.terminate("reached a break instruction");
+      } else if(op.has(OpSemantics.IS_JAM)) {
+        this.terminate("reached a jam")
+      } else if (op.has(OpSemantics.IS_RETURN)) {
+        this.terminate("reached a return")
       } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
         // TODO introduce OpSemantics for indirection to remove explicit dependency on 6502 addressing mode
         if (inst.instruction.mode === MODE_INDIRECT) {
           // JMP ($1337)
-          // TODO indirect jump support probably needs a more complete emulation because their use
-          //  implies the jump target is modified by running code updating the contents of memory at the address
-          //  pointed to by the operand
-          console.error(`unsupported indirect mode jump instruction at ${this.pc} 0x${this.pc.toString(16)}`);
+          // TODO indirect jump support probably needs a more complete emulation because the jump target
+          //  may have been modified and we do not currently calculate all memory modifications
+          console.error(`unsupported indirect mode jump instruction at ${this.renderPc()}`);
           this.errors.push([this.pc, "indirect mode jump is unsupported"])
         } else {
           const jumpTarget = inst.operandValue();
@@ -171,9 +166,13 @@ export class Thread {
           }
         }
       } else if (op.has(OpSemantics.IS_CONDITIONAL_JUMP)) {
+        // the program counter already advances before calculating relative offset
         const jumpTarget = inst.resolveOperandAddress(nextPc);
-        // spawned thread takes the jump
-        maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.ignore);
+        // don't bother spawning if we've already executed that instruction
+        if (!this.getExecuted().find(ir => ir[0] === jumpTarget)) {
+          // spawned thread takes the jump
+          maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.addExecuted, this.getExecuted, this.ignore);
+        }
       }
     }
 
@@ -186,8 +185,12 @@ export class Thread {
     //  instructions may be rare enough to simply report as anomalies at first and may even be more likely be a
     //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
     //  degenerate runtime state is represented.
-    this.executed.push([this.pc, instLen as InstLen]);
+    this.addExecuted([this.pc, instLen as 1 | 2 | 3]);
     this.pc = nextPc;
     return maybeThread;
+  }
+
+  private renderPc() {
+    return `0x${this.pc.toString(16)} (${this.pc})`
   }
 }

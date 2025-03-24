@@ -58,6 +58,14 @@ interface DisassemblyMeta {
    * @param fb the fileblob
    */
   isInBinary(addr: Addr, fb: FileBlob): boolean;
+
+  /** @deprecated temporary evil transient state */
+  addCodeAddresses(codeAddresses: Addr[]): void;
+
+  /**
+   * @deprecated temporary evil transient state
+   */
+  getCodeAddresses(): Addr[];
 }
 
 export {type DisassemblyMeta};

@@ -20,6 +20,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   private readonly edicts: { [id: number]: Edict<InstructionLike>; };
   private readonly symbolResolver: SymbolResolver;
   private readonly symbolTable: SymbolTable;
+  private codeAddresses: Addr[];
 
   /**
    * Create context with minimalist defaults.
@@ -44,6 +45,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     this._baseAddressOffset = baseAddressOffset;
     this._contentStartOffset = contentStartOffset;
     this.symbolTable = symbolTable;
+    this.codeAddresses = [];
 
     // keep the offsets
     this._resetVectorOffset = resetVectorOffset;
@@ -80,6 +82,14 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     const contentEndAddress = baseAddress + fb.getLength();
     // last address location is 1 below last byte
     return addr >= contentStartAddress && addr <= contentEndAddress - 1;
+  }
+
+  addCodeAddresses(codeAddresses: Addr[]): void {
+    this.codeAddresses.push(...codeAddresses);
+  }
+
+  getCodeAddresses(): Addr[] {
+    return this.codeAddresses;
   }
 
   /**
