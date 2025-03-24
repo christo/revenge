@@ -162,7 +162,7 @@ const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
 
 /**
- * Vic-20 BASIC
+ * Detects Vic-20 BASIC
  */
 export class Vic20Basic implements BlobSniffer {
 
