@@ -1,7 +1,7 @@
 import {expect} from "chai";
+import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder";
 import {Addr, LE} from "../../../src/machine/core";
 import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from "../../../src/machine/cbm/vic20";
-import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/basic";
 import {FileBlob} from "../../../src/machine/FileBlob";
 import {Petscii} from "../../../src/machine/cbm/petscii";
 

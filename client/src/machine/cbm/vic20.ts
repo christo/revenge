@@ -1,5 +1,6 @@
 // VIC-20 specific details
 
+import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
 import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
 import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
@@ -14,7 +15,6 @@ import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
-import {CBM_BASIC_2_0} from "./basic";
 import {CartSniffer, prg} from "./cbm";
 
 const VIC20_KERNAL = new SymbolTable("vic20");

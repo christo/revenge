@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import {expect} from "chai";
+import {CBM_BASIC_2_0} from "../../../src/machine/cbm/BasicDecoder";
 import {FileBlob} from "../../../src/machine/FileBlob";
 import {LE} from "../../../src/machine/core";
-import {CBM_BASIC_2_0} from "../../../src/machine/cbm/basic";
 
 describe("tracer", () => {
   it("performs simple linear trace", () => {

@@ -1,14 +1,92 @@
-/*
- Commodore BASIC
- */
-
-import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api";
-import {hex16} from "../core";
-import {FileBlob} from "../FileBlob";
-import {Petscii} from "./petscii";
+import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api.ts";
+import {hex16} from "../core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Petscii} from "./petscii.ts";
 
 type Token = [number, string];
+
+const TOKEN_PRINT = 153;
+const TOKEN_REM = 143;
+const TOKENS: Token[] = [
+  [32, " "],
+  [128, "END"],
+  [129, "FOR"],
+  [130, "NEXT"],
+  [131, "DATA"],
+  [132, "INPUT#"],
+  [133, "INPUT"],
+  [134, "DIM"],
+  [135, "READ"],
+  [136, "LET"],
+  [137, "GOTO"],
+  [138, "RUN"],
+  [139, "IF"],
+  [140, "RESTORE"],
+  [141, "GOSUB"],
+  [142, "RETURN"],
+  [TOKEN_REM, "REM"],
+  [144, "STOP"],
+  [145, "ON"],
+  [146, "WAIT"],
+  [147, "LOAD"],
+  [148, "SAVE"],
+  [149, "VERIFY"],
+  [150, "DEF"],
+  [151, "POKE"],
+  [152, "PRINT#"],
+  [TOKEN_PRINT, "PRINT"],
+  [154, "CONT"],
+  [155, "LIST"],
+  [156, "CLR"],
+  [157, "CMD"],
+  [158, "SYS"],
+  [159, "OPEN"],
+  [160, "CLOSE"],
+  [161, "GET"],
+  [162, "NEW"],
+  [163, "TAB("],
+  [164, "TO"],
+  [165, "FN"],
+  [166, "SPC("],
+  [167, "THEN"],
+  [168, "NOT"],
+  [169, "STEP"],
+  [170, "+"],
+  [171, "-"],
+  [172, "*"],
+  [173, "/"],
+  [174, "^"],
+  [175, "AND"],
+  [176, "OR"],
+  [177, ">"],
+  [178, "="],
+  [179, "<"],
+  [180, "SGN"],
+  [181, "INT"],
+  [182, "ABS"],
+  [183, "USR"],
+  [184, "FRE"],
+  [185, "POS"],
+  [186, "SQR"],
+  [187, "RND"],
+  [188, "LOG"],
+  [189, "EXP"],
+  [190, "COS"],
+  [191, "SIN"],
+  [192, "TAN"],
+  [193, "ATN"],
+  [194, "PEEK"],
+  [195, "LEN"],
+  [196, "STR$"],
+  [197, "VAL"],
+  [198, "ASC"],
+  [199, "CHR$"],
+  [200, "LEFT$"],
+  [201, "RIGHT$"],
+  [202, "MID$"],
+  [203, "GO"],
+  [255, "π"]];
 
 const isZilch = (x: number | undefined) => (x === undefined || x === 0);
 
@@ -18,6 +96,7 @@ const isZilch = (x: number | undefined) => (x === undefined || x === 0);
 class BasicDecoder {
   private static readonly LOAD_ADDRESS_OFFSET = 0;
   private static readonly CONTENT_START_OFFSET = 2;
+
   /**
    * BASIC program consisting of only the following line: 0 REM
    */
@@ -29,6 +108,7 @@ class BasicDecoder {
     0x00,           // line end byte
     0x00, 0x00     // terminating word (0)
   ]);
+
   private static MINIMUM_SIZE: number = BasicDecoder.MINIMAL_PROGRAM.length;
   private name: string;
   private minor: number;
@@ -126,87 +206,6 @@ class BasicDecoder {
 
 const CBM_BASIC_2_0 = new BasicDecoder("Commodore BASIC", 2, 0);
 
-const TOKEN_PRINT = 153;
-const TOKEN_REM = 143;
-const TOKENS: Token[] = [
-  [32, " "],
-  [128, "END"],
-  [129, "FOR"],
-  [130, "NEXT"],
-  [131, "DATA"],
-  [132, "INPUT#"],
-  [133, "INPUT"],
-  [134, "DIM"],
-  [135, "READ"],
-  [136, "LET"],
-  [137, "GOTO"],
-  [138, "RUN"],
-  [139, "IF"],
-  [140, "RESTORE"],
-  [141, "GOSUB"],
-  [142, "RETURN"],
-  [TOKEN_REM, "REM"],
-  [144, "STOP"],
-  [145, "ON"],
-  [146, "WAIT"],
-  [147, "LOAD"],
-  [148, "SAVE"],
-  [149, "VERIFY"],
-  [150, "DEF"],
-  [151, "POKE"],
-  [152, "PRINT#"],
-  [TOKEN_PRINT, "PRINT"],
-  [154, "CONT"],
-  [155, "LIST"],
-  [156, "CLR"],
-  [157, "CMD"],
-  [158, "SYS"],
-  [159, "OPEN"],
-  [160, "CLOSE"],
-  [161, "GET"],
-  [162, "NEW"],
-  [163, "TAB("],
-  [164, "TO"],
-  [165, "FN"],
-  [166, "SPC("],
-  [167, "THEN"],
-  [168, "NOT"],
-  [169, "STEP"],
-  [170, "+"],
-  [171, "-"],
-  [172, "*"],
-  [173, "/"],
-  [174, "^"],
-  [175, "AND"],
-  [176, "OR"],
-  [177, ">"],
-  [178, "="],
-  [179, "<"],
-  [180, "SGN"],
-  [181, "INT"],
-  [182, "ABS"],
-  [183, "USR"],
-  [184, "FRE"],
-  [185, "POS"],
-  [186, "SQR"],
-  [187, "RND"],
-  [188, "LOG"],
-  [189, "EXP"],
-  [190, "COS"],
-  [191, "SIN"],
-  [192, "TAN"],
-  [193, "ATN"],
-  [194, "PEEK"],
-  [195, "LEN"],
-  [196, "STR$"],
-  [197, "VAL"],
-  [198, "ASC"],
-  [199, "CHR$"],
-  [200, "LEFT$"],
-  [201, "RIGHT$"],
-  [202, "MID$"],
-  [203, "GO"],
-  [255, "π"]];
 TOKENS.forEach(t => CBM_BASIC_2_0.reg(t));
 
-export {CBM_BASIC_2_0, BasicDecoder, TOKEN_REM, TOKEN_PRINT}
+export {CBM_BASIC_2_0, TOKEN_REM, TOKEN_PRINT};

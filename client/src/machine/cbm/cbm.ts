@@ -25,7 +25,7 @@ import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
 import {Tracer} from "../Tracer.ts";
-import {CBM_BASIC_2_0} from "./basic.ts";
+import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
