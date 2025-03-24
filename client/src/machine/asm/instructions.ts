@@ -1,9 +1,10 @@
-import {Addr, assertByte, Byteable} from "../core.ts";
-import {Dialect} from "./Dialect.ts";
 import {Tag} from "../api.ts";
-import {FullInstruction} from "../mos6502.ts";
+import {assertByte, Byteable} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
+import {FullInstruction} from "../mos6502.ts";
 import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
+import {Assembler} from "./Assembler.ts";
+import {Dialect} from "./Dialect.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {Edict} from "./Edict.ts";
 
