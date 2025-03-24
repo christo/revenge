@@ -6,27 +6,49 @@ The grand idea is a web-based reverse engineering environment for retro computer
 with very small initial goals: binary file type detection and simple disassembly of 
 6502 machine code for the Vic-20 and C64. Z80 is a likely future supported architecture.
 
+Beyond the small initial goals lies a vast land of unfulfilled wishes.
+
 **Project Status**: _pre alpha_ (it sort of works with plenty left [TODO](TODO.md))
 
 ![revenge screenshot](docs/revenge-screenshot-20250324.png)
 
-Implemented in `TypeScript`, using `bun`, `vite`, `mocha`/`chai` for testing. 
+Using a hybrid approach to code detection, some parts of a binary can be confidently identified
+as code through a mixture of static and dynamic analysis. Currently I'm working on a `Tracer`
+which follows code execution paths, following both sides of conditional branches and records
+which addresses hold instructions. Solving this problem deterministically for all possible 
+programs is equivalent to solving
+[The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously
+proved to be impossible. Solving it deterministically for certain programs, constrained to a
+useful subset of possible instructions is at an early stage of implementation and further work
+to extend this with partial evaluation and probabilistic execution could be very useful for
+accelerating reverse engineering on small retro systems.
 
-Beyond the small initial goals lies a vast land of unfulfilled wishes.
+Using a combination of preemptive emulation, detailed machine architecture definitions and
+static analytic techniques like program transformation, escape analysis, peephole optimisation
+and dynamic techniques like preemptive partial execution, combined with a large cross-referenced
+database built from a corpus of known software, I hope to give insight to a human reverse engineer
+about any software written for these enigmatic retro systems.
+
+It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
+such a system.
+
+## Architecture
+
+Implemented in `TypeScript`, using `bun`, `vite`, `mocha`/`chai` for testing.
 
 ## Quick Start
 
-After checking out this repo, from a terminal shell in the root directory, run the sanity script
+After checking out this repo, from a shell in the root directory, run the sanity script
 to check you have the relevant tools installed:
 
 ```shell
 ./sanity.sh
 ```
 
-The main system is a web app that runs in a browser and there is an optional server which provides
-access to retro binaries stored on the local filesystem a few are included in this distribution.
-Without the server, you can drag and drop files from your computer into the browser or click the
-upload button.
+The main system is a single page web app with an optional server comonent which provides
+access to retro binaries stored on the local filesystem a few are included in this
+repo. Without the server, you can drag and drop files from your computer into the browser or click
+the upload button.
 
 To run the server in its own shell, make sure you're in the `server` dir:
 
