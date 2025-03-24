@@ -34,7 +34,9 @@ such a system.
 
 ## Architecture
 
-Implemented in `TypeScript`, using `React`, `bun`, `vite`, `MUI` and `mocha`/`chai` for testing.
+Implemented in [TypeScript](https://www.typescriptlang.org/), using [React](https://react.dev/), 
+[Bun](https://bun.sh/), [Vite](https://vite.dev/), [MUI](https://mui.com/) and 
+[Mocha](https://mochajs.org/)/[Chai](https://www.chaijs.com/) for testing.
 
 ## Quick Start
 
