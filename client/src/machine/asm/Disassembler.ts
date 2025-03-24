@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import {Addr, asByte, Endian} from "../core.ts";
+import {Addr, Endian} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Memory} from "../Memory.ts";
 import {FullInstruction, Mos6502} from "../mos6502.ts";
@@ -65,7 +65,7 @@ class Disassembler {
   readBytes(from: number, count = 1) {
     const i1 = R.max(0, from);
     const i2 = from + R.max(1, count);
-    return this.fb.getBytes().slice(i1, i2).map(asByte);
+    return this.fb.getBytes().slice(i1, i2).map(x => x & 0xff);
   }
 
   /**

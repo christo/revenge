@@ -1,4 +1,5 @@
 import {FileBlob} from "../FileBlob.ts";
+import {InstructionLike} from "./instructions.ts";
 
 /**
  * Rule for specifying the disassembly of a sequence of bytes at a binary offset. File formats or
@@ -6,7 +7,7 @@ import {FileBlob} from "../FileBlob.ts";
  * Examples include forced interpretation of bytes as code since the file format specifies code entry
  * points.
  */
-interface Edict<T> {
+interface Edict<T extends InstructionLike> {
 
   get offset(): number;
 

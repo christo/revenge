@@ -34,7 +34,9 @@ interface Byteable {
  */
 type Addr = number;
 
+/** Most significant byte from address */
 const msb = (addr: Addr): number => (addr & 0xff00) >> 8;
+/** Least significant byte from address */
 const lsb = (addr: Addr): number => addr & 0xff;
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
@@ -48,8 +50,6 @@ const assertByte = (value: number): number => {
   }
   return value & 0xff;
 };
-
-const asByte = lsb;
 
 
 /**
@@ -130,7 +130,6 @@ const asHex = (b: number[]) => b.map(hex8).join(" ")
 
 export {
   unToSigned,
-  asByte,
   assertByte,
   hex16,
   hex8,
