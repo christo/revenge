@@ -2,7 +2,7 @@
 
 ## Next Actions
 
-* [ ] disassembler should enforce reset vector address to align to instruction first byte
+* [x] disassembler should enforce reset vector address to align to instruction first byte
       e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
       as data
 * [ ] make separate view components for hex, disassembly, basic

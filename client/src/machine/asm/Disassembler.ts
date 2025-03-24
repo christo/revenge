@@ -1,13 +1,13 @@
-import {FileBlob} from "../FileBlob.ts";
-import {FullInstruction, Mos6502} from "../mos6502.ts";
-import {Addr, asByte, Endian} from "../core.ts";
-import {Edict} from "./Edict.ts";
-import {ByteDeclaration, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import * as R from "ramda";
+import {Addr, asByte, Endian} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Memory} from "../Memory.ts";
+import {FullInstruction, Mos6502} from "../mos6502.ts";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
+import {Edict} from "./Edict.ts";
+import {ByteDeclaration, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import {InstructionSet} from "./InstructionSet.ts";
-import {Memory} from "../Memory.ts";
 import {OpSemantics} from "./Op.ts";
 
 
@@ -27,6 +27,7 @@ class Disassembler {
 
   private disMeta: DisassemblyMeta;
   private symbolDefinitions: Map<string, SymDef<Addr>>;
+  private executionTargets: number[];
 
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
@@ -40,6 +41,10 @@ class Disassembler {
     this.currentIndex = index;
     this.fb = fb;
     this.segmentBaseAddress = dm.baseAddress(fb);
+    this.executionTargets = [
+        dm.executionEntryPoint(this.fb),
+        // TODO add all execution targets (e.g. nmi)
+      ];
     this.predefLc = dm.resolveSymbols(fb);
     this.disMeta = dm;
     this.symbolDefinitions = new Map<string, SymDef<Addr>>();
@@ -128,27 +133,37 @@ class Disassembler {
   edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike {
 
     // TODO refactor bigly, this is insane-o
-
+    const jumpTargetAhead = (n: number) => this.executionTargets.includes(this.currentAddress + n)
     // check if there's an edict n ahead of currentIndex
-    const edictAhead: (n: number) => boolean = (n: number) =>
-        this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+    const edictAhead= (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
     // make an edict-enforced byte declaration of the given length
-    const mkEdictInferredByteDec = (n: number) => {
-      lc.addComments(`inferred via edict@+${n}`); // need a better way of communicating this to the user
+    const mkEdictInferredByteDec = (n: number, mesg = `inferred via edict@+${n}`) => {
+      lc.addComments(mesg); // need a better way of communicating this to the user
       return new ByteDeclaration(this.eatBytes(n), lc);
     };
 
     const instLen = Mos6502.ISA.numBytes(currentByte);
+
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
-    if (instLen === 2 && edictAhead(1)) {
-      return mkEdictInferredByteDec(1);
+    if (instLen === 2) {
+      // only need to check one byte ahead
+      if (edictAhead(1)) {
+        return mkEdictInferredByteDec(1);
+      } else if (jumpTargetAhead(1)) {
+        return mkEdictInferredByteDec(1, "inferred by jump target below");
+      }
     } else if (instLen === 3) {
+      // need to check two bytes ahead
       if (edictAhead(2)) {
         return mkEdictInferredByteDec(2);
+      } else if (jumpTargetAhead(2)) {
+        return mkEdictInferredByteDec(2, "inferred by jump target below");
       } else if (edictAhead(3)) {
         return mkEdictInferredByteDec(3);
+      } else if (jumpTargetAhead(3)) {
+        return mkEdictInferredByteDec(2, "inferred by jump target below");
       }
     }
     // by now we know we must consume the current byte
