@@ -142,7 +142,7 @@ class SymbolTable {
       throw Error("name empty");
     }
     if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
-      // TODO should support multiple symbols at same address
+      // TODO support multiple symbols at same address
       throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`);
     }
     const symDef = new SymDef(sType, name, addr, desc.trim(), blurb.trim());
