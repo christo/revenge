@@ -14,7 +14,7 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 Using a hybrid approach to code detection, some parts of a binary can be confidently identified
 as code through a mixture of static and dynamic analysis. Currently I'm working on a `Tracer`
-which follows code execution paths, following both sides of conditional branches and records
+which follows code execution paths, including both sides of conditional branches and records
 which addresses hold instructions. Solving this problem deterministically for all possible 
 programs is equivalent to solving
 [The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously
