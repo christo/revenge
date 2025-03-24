@@ -11,7 +11,6 @@ import {InstructionLike} from "./instructions.ts";
  */
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
-  // noinspection JSUnusedLocalSymbols
   /** A bit stinky - should never be used and probably not exist. */
   static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (_fb) => [], new SymbolTable("null"));
 
