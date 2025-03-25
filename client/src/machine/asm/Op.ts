@@ -5,6 +5,7 @@
 export enum OpSemantics {
   IS_UNCONDITIONAL_JUMP,  // will modify PC
   IS_CONDITIONAL_JUMP,    // may modify PC
+  IS_RETURNABLE_JUMP,    // may modify PC
   IS_BREAK,   // intentional stop of further processing
   IS_JAM,     // undocumented stop of further processing
   IS_ILLEGAL, // undocumented but may execute

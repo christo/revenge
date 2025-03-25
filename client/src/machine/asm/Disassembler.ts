@@ -174,7 +174,7 @@ class Disassembler {
       } else if (this.edictAhead(3)) {
         return mkEdictInferredByteDec(3);
       } else if (this.instructionByteAhead(3)) {
-        return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 3)} (+3)`);
+        //return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 3)} (+3) currentAddress: ${hex16(this.currentAddress)}`);
       }
     }
     // by now we know we must consume the current byte
@@ -317,7 +317,7 @@ class Disassembler {
   }
 
   /**
-   * @deprecated side effect
+   * Side effect: increases currentIndex
    * @private
    */
   private eatBytes(count: number): number[] {

@@ -81,7 +81,7 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    //console.log(`Thread: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
+    console.log(`Thread step: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
     return this.execute();
   }
 
@@ -144,27 +144,30 @@ export class Thread {
         this.terminate("reached a jam")
       } else if (op.has(OpSemantics.IS_RETURN)) {
         this.terminate("reached a return")
+      } else if (op.any([OpSemantics.IS_CONDITIONAL_JUMP, OpSemantics.IS_RETURNABLE_JUMP])) {
+        // because we terminate at return, we fork at subroutine jumps (out-of-order execution)
+        // TODO strictly this may be wrong in case we never actually return - jsr may be used as shorthand for push?
+        // the program counter already advances before calculating any relative offset
+        const jumpTarget = inst.resolveOperandAddress(nextPc);
+        // don't bother spawning if we've already executed that instruction
+        if (!this.getExecuted().find(ir => ir[0] === jumpTarget)) {
+          // spawned thread takes the jump
+          maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.addExecuted, this.getExecuted, this.ignore);
+        }
       } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
-        // TODO introduce OpSemantics for indirection to remove explicit dependency on 6502 addressing mode
         if (inst.instruction.mode === MODE_INDIRECT) {
           // JMP ($1337)
           // TODO indirect jump support probably needs a more complete emulation because the jump target
           //  may have been modified and we do not currently calculate all memory modifications
-          console.error(`unsupported indirect mode jump instruction at ${this.renderPc()}`);
+          console.error(`unsupported indirect mode ${inst.instruction.op.mnemonic} instruction at ${this.renderPc()} [${inst.getBytes().map(hex16).join(", ")}]`);
+          inst.getBytes().map(hex16).join(" ");
+          console.dir(inst);
           this.errors.push([this.pc, "indirect mode jump is unsupported"])
         } else {
           const jumpTarget = inst.operandValue();
           if (!this.ignore(jumpTarget)) {
             nextPc = jumpTarget;
           }
-        }
-      } else if (op.has(OpSemantics.IS_CONDITIONAL_JUMP)) {
-        // the program counter already advances before calculating relative offset
-        const jumpTarget = inst.resolveOperandAddress(nextPc);
-        // don't bother spawning if we've already executed that instruction
-        if (!this.getExecuted().find(ir => ir[0] === jumpTarget)) {
-          // spawned thread takes the jump
-          maybeThread = new Thread(this.descriptor, this.disasm, jumpTarget, this.memory, this.addExecuted, this.getExecuted, this.ignore);
         }
       }
     }
