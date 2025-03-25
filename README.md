@@ -112,21 +112,22 @@ In general, project scope includes support for 6502-based and Z80-based 80s Micr
 generous subset of the more common assembler syntax dialects. The following table shows
 estimations, not promises.
 
-| Machines                | Status      | CPU Family |
-|-------------------------|-------------|------------|
-| VIC-20, C64             | In Progress | 6502       |
-| Apple II, BBC B         | Planned     | 6502       |
-| NES                     | Probable    | 6502       |
-| ZX Spectrum             | Planned     | Z80        |
-| SNES                    | ?           | 6502       |
-| Microbee, TRS-80        | ?           | Z80        |
-| Oric, Atari 8-bit       | ?           | 6502       | 
-| Gameboy series          | ?           | Z80*       |
-| VZ-200 / VZ-300 / Laser | ?           | Z80        |
+| Machines                     | Status      | CPU Family |
+|------------------------------|-------------|------------|
+| VIC-20, C64                  | In Progress | 6502       |
+| Apple II, BBC B              | Planned     | 6502       |
+| NES                          | Probable    | 6502       |
+| ZX Spectrum                  | Planned     | Z80        |
+| Microbee, TRS-80             | Probable    | Z80        |
+| Oric, Atari 8-bit            | Probable    | 6502       | 
+| VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
+| SNES                         | ?           | 6502       |
+| Gameboy series               | ?           | Z80 -ish   |
+| Vectrex, TRS-80 Coco, Dragon | ?           | 6809       |
 
 ## Design Notes
 
-Machine language basic loaders often use base 10 data sequences of bytes. This is a
+Machine language BASIC loaders often use base 10 data sequences of bytes. This is a
 low compression format. Higher radix formats can be used as strings, rem comments or
 some other transport format and the encoding of the instruction data can be a custom,
 variable-length compression format.
