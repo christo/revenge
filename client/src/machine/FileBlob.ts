@@ -38,7 +38,7 @@ class FileBlob implements Byteable {
     return this.memory.getLength();
   }
 
-  read16(byteOffset: Addr): number {
+  read16(byteOffset: number): number {
     return this.memory.read16(byteOffset);
   }
 
