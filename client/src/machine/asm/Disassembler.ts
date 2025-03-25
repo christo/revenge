@@ -1,8 +1,9 @@
 import * as R from "ramda";
-import {Addr, Endian} from "../core.ts";
+import {Addr, Endian, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Memory} from "../Memory.ts";
 import {FullInstruction, Mos6502} from "../mos6502.ts";
+import {InstRec} from "../Tracer.ts";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {Edict} from "./Edict.ts";
@@ -27,7 +28,7 @@ class Disassembler {
 
   private disMeta: DisassemblyMeta;
   private symbolDefinitions: Map<string, SymDef<Addr>>;
-
+  private executionPoints: InstRec[];
 
   constructor(iset: InstructionSet, fb: FileBlob, dm: DisassemblyMeta) {
     this.iset = iset;
@@ -46,6 +47,7 @@ class Disassembler {
     this.disMeta = dm;
     this.symbolDefinitions = new Map<string, SymDef<Addr>>();
     this.stats = new Map<string, number>();
+    this.executionPoints = [];
   }
 
   get currentAddress(): Addr {
@@ -120,6 +122,22 @@ class Disassembler {
   }
 
   /**
+   * Check if there's an edict n ahead of currentIndex
+   * @param n number of bytes ahead to peek
+   */
+  edictAhead= (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+
+  /**
+   * Peek ahead exactly n bytes and return true iff we know the byte belongs to an instruction
+   * @param n
+   */
+  instructionByteAhead = (n: number) => {
+    const address = this.currentAddress + n;
+    // TODO merge execution entry point into execution points
+    return this.disMeta.executionEntryPoint(this.fb) === address || this.executionPoints.map(ir => ir[0]).includes(address);
+  };
+
+  /**
    * If the current byte is interpreted as an instruction, checks the bytes ahead for any defined edicts that would
    * clash with it, if they exist, then make ByteDeclaration up to the edict instead. If there is no clash, return the
    * instruction.
@@ -128,14 +146,6 @@ class Disassembler {
    * @param lc labels and comments
    */
   edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike {
-
-    // TODO refactor bigly, this is insane-o
-    const jumpTargetAhead = (n: number) => {
-      const address = this.currentAddress + n;
-      return this.disMeta.executionEntryPoint(this.fb) === address || this.disMeta.getCodeAddresses().includes(address);
-    };
-    // check if there's an edict n ahead of currentIndex
-    const edictAhead= (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
     // make an edict-enforced byte declaration of the given length
     const mkEdictInferredByteDec = (n: number, mesg = `inferred via edict@+${n}`) => {
@@ -147,26 +157,24 @@ class Disassembler {
 
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
-    // TODO edict creation here might be wrong because maybe we actually don't know if it should be a byte declaration?
-    //   problem is we start disassembling from the top but we don't know if these bytes are instructions and they
-    //   cause us to be out of step with what the tracer finds by starting from the entry point
     if (instLen === 2) {
       // only need to check one byte ahead
-      if (edictAhead(1)) {
+      if (this.edictAhead(1)) {
         return mkEdictInferredByteDec(1);
-      } else if (jumpTargetAhead(1)) {
-        return mkEdictInferredByteDec(1, "inferred by jump target below");
+      } else if (this.instructionByteAhead(1)) {
+        // TODO is this is upposed ot mean our instruction length is 2 but there's an instruction byte ahead by 1?
+        return mkEdictInferredByteDec(1, `inferred by execution at $${hex16(this.currentAddress + 1)} (+1)`);
       }
     } else if (instLen === 3) {
       // need to check two bytes ahead
-      if (edictAhead(2)) {
+      if (this.edictAhead(2)) {
         return mkEdictInferredByteDec(2);
-      } else if (jumpTargetAhead(2)) {
-        return mkEdictInferredByteDec(2, "inferred by jump target below");
-      } else if (edictAhead(3)) {
+      } else if (this.instructionByteAhead(2)) {
+        return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 2)} (+2)`);
+      } else if (this.edictAhead(3)) {
         return mkEdictInferredByteDec(3);
-      } else if (jumpTargetAhead(3)) {
-        return mkEdictInferredByteDec(2, "inferred by jump target below");
+      } else if (this.instructionByteAhead(3)) {
+        return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 3)} (+3)`);
       }
     }
     // by now we know we must consume the current byte
@@ -192,6 +200,13 @@ class Disassembler {
     }
   }
 
+  addExecutionPoints(e: InstRec[]) {
+    this.executionPoints.push(...e);
+  }
+
+  /**
+   * Returns true only if end of binary has been reached.
+   */
   hasNext() {
     return this.currentIndex < this.fb.getBytes().length;
   }
@@ -241,8 +256,7 @@ class Disassembler {
    * @param x value to add, defaults to 1
    */
   addStat(name: string, x = 1) {
-    const existing = this.stats.get(name) || 0;
-    this.stats.set(name, x + existing);
+    this.setStat(name, x + (this.stats.get(name) || 0));
   }
 
   /**

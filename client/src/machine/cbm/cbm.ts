@@ -40,18 +40,19 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
 
-  // set the base address with a directive
-  const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
-  const tagSeq = assignPc.disassemble(dialect, dis);
-
   // do trace to decide which is code
   const traceResult: TraceResult = trace(dis, fb, meta);
+
   // TODO meta shouldn't hold this state
   meta.addCodeAddresses(traceResult.codeAddresses);
 
+  // set the base address with a directive
+  const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
+  const tagSeq = assignPc.disassemble(dialect, dis);
   detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
+  // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
-    const instAddress = dis.currentAddress; // save current address before we increment it
+    const instAddress = dis.currentAddress;
     let inst: InstructionLike = dis.nextInstructionLine();
     const addressTags = [TAG_ADDRESS];
     if (traceResult.codeAddresses.includes(instAddress)) {

@@ -94,7 +94,11 @@ class Tracer {
     this.executedAddresses = [];
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
-    this.threads.push(new Thread("Tracer", disasm, pc, memory, this.addExecuted, this.getExecuted, ignore));
+    const addExecuted = (ir: InstRec) => {
+      this.executedAddresses.push(ir);
+      disasm.addExecutionPoints([ir]);
+    };
+    this.threads.push(new Thread("Tracer", disasm, pc, memory, addExecuted, this.getExecuted, ignore));
   }
 
   /**
@@ -121,7 +125,7 @@ class Tracer {
    * Order is unspecified.
    */
   executed(): Array<Addr> {
-    return this.executedAddresses.map(ir => ir[0]);
+    return Array.from(new Set(this.executedAddresses.map(ir => ir[0])));
   }
 
   /**
@@ -179,9 +183,6 @@ class Tracer {
     return stepsTaken;
   }
 
-  private addExecuted = (ir: InstRec) => {
-    this.executedAddresses.push(ir);
-  }
 }
 
 export {Tracer, type InstRec, enumInstAddr};

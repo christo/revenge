@@ -6,6 +6,7 @@ import {Mos6502} from "../../src/machine/mos6502";
 import {FileBlob} from "../../src/machine/FileBlob";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
 import {Disassembler} from "../../src/machine/asm/Disassembler";
+import {enumInstAddr, InstRec} from "../../src/machine/Tracer";
 
 describe("thread", () => {
   it("records executed instructions", () => {
@@ -14,9 +15,18 @@ describe("thread", () => {
     const fb = FileBlob.fromBytes("testblob", contents, LE);
     const dm = new DisassemblyMetaImpl(0, 0, 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Thread("test", d, 0, memory);
+
+    const executed: InstRec[] = [];
+    const addExecuted = (ir: InstRec) => {
+      executed.push(ir);
+    }
+    const getExecuted: () => InstRec[] = () => {
+      return executed;
+    }
+
+    const t = new Thread("test", d, 0, memory, addExecuted, getExecuted);
     t.step();
-    expect(t.getExecuted().length).to.eq(1, "expected single step to have executed one instruction");
+    expect(getExecuted().length).to.eq(1, "expected single step to have executed one instruction");
   });
 
   it("executes JMP", () => {
@@ -32,7 +42,14 @@ describe("thread", () => {
     const fb = FileBlob.fromBytes("testblob", contents, LE);
     const dm = new DisassemblyMetaImpl(0, 0, 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Thread("test", d, 2, memory);
+    const executed: InstRec[] = [];
+    const addExecuted = (ir: InstRec) => {
+      executed.push(ir);
+    }
+    const getExecuted: () => InstRec[] = () => {
+      return executed;
+    }
+    const t = new Thread("test", d, 2, memory, addExecuted, getExecuted);
     expect(t.getPc()).to.eq(2, "start pc should be received by constructor");
     t.step(); // execute jump, should be at 6 NOP
     expect(t.getPc()).to.eq(6);
@@ -41,6 +58,6 @@ describe("thread", () => {
     t.step();
     expect(t.getPc()).to.eq(8);
     // check all bytes belonging to executed instructions, only excluding 0x0005
-    expect(t.getExecutedInstructionBytes()).to.have.members([2, 3, 4, 6, 7]);
+    expect(getExecuted().flatMap(enumInstAddr)).to.have.members([2, 3, 4, 6, 7]);
   });
 });

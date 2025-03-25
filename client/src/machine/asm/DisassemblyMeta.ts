@@ -59,11 +59,11 @@ interface DisassemblyMeta {
    */
   isInBinary(addr: Addr, fb: FileBlob): boolean;
 
-  /** @deprecated temporary evil transient state */
+  /** @deprecated disassembler should use its own method */
   addCodeAddresses(codeAddresses: Addr[]): void;
 
   /**
-   * @deprecated temporary evil transient state
+   * @deprecated disassembler should use its own method
    */
   getCodeAddresses(): Addr[];
 }
