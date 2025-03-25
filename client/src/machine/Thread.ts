@@ -147,7 +147,7 @@ export class Thread {
       } else if (op.any([OpSemantics.IS_CONDITIONAL_JUMP, OpSemantics.IS_RETURNABLE_JUMP])) {
         // because we terminate at return, we fork at subroutine jumps (out-of-order execution)
         // TODO strictly this may be wrong in case we never actually return - jsr may be used as shorthand for push?
-        // the program counter already advances before calculating any relative offset
+        // the program counter was already advanced before calculating any relative offset
         const jumpTarget = inst.resolveOperandAddress(nextPc);
         // don't bother spawning if we've already executed that instruction
         if (!this.getExecuted().find(ir => ir[0] === jumpTarget)) {
