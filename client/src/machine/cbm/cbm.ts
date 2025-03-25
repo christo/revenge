@@ -95,7 +95,7 @@ type TraceResult = {
  */
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
-  // TODO load system rom into memory
+  // TODO load system rom into memory instead of ignoring
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
