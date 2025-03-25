@@ -1,6 +1,7 @@
+import {AddressingMode} from "../AddressingMode.ts";
 import {assertByte} from "../core.ts";
-import {AddressingMode, Cycles, Instruction, InstructionCall} from "../mos6502.ts";
-import {Op} from "./Op.ts";
+import {Cycles, Instruction, InstructionCall} from "../mos6502.ts";
+import {Op, OpSemantics} from "./Op.ts";
 
 /**
  * Represents the whole set of machine instructions.

@@ -9,39 +9,10 @@
 
  */
 
-import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
+import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
-
-type M6502OperandLength = 0 | 1 | 2;
-
-class AddressingMode {
-  readonly code: string;
-  readonly desc: string;
-  readonly template: string;
-  readonly blurb: string
-  readonly numOperandBytes: M6502OperandLength;
-
-  /**
-   * Make an addressing mode using all the goodies.
-   *
-   * @param code the short code used to signify this addressing mode. Must contain no spaces.
-   * @param desc human readable description.
-   * @param template a semiformal documentation format.
-   * @param blurb additional clarifying description.
-   * @param numOperandBytes number of bytes in the expected operand.
-   */
-  constructor(code: string, desc: string, template: string, blurb: string, numOperandBytes: M6502OperandLength) {
-    if (!code.match(/^[A-Za-z_]+$/)) {
-      throw Error("Addressing mode code must contain only these chars: A-Za-z_");
-    }
-    this.code = code;
-    this.desc = desc;
-    this.template = template;
-    this.blurb = blurb;
-    this.numOperandBytes = numOperandBytes;
-  }
-}
+import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {
@@ -613,7 +584,7 @@ export {
   MODE_INDIRECT_Y,
   MODE_INDIRECT,
   MODE_ZEROPAGE_Y,
-  AddressingMode,
+
 };
 
-export type {M6502OperandLength, InstructionCall}
+export type {InstructionCall}
