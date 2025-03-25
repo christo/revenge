@@ -45,14 +45,16 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   const tagSeq = assignPc.disassemble(dialect, dis);
 
   // do trace to decide which is code
-  const [codeAddresses, traceTime] = trace(dis, fb, meta);
-  meta.addCodeAddresses(codeAddresses);
+  const traceResult: TraceResult = trace(dis, fb, meta);
+  // TODO meta shouldn't hold this state
+  meta.addCodeAddresses(traceResult.codeAddresses);
+
   detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress; // save current address before we increment it
     let inst: InstructionLike = dis.nextInstructionLine();
     const addressTags = [TAG_ADDRESS];
-    if (codeAddresses.includes(instAddress)) {
+    if (traceResult.codeAddresses.includes(instAddress)) {
       addressTags.push(TAG_EXECUTED);
     }
     const tags = [
@@ -63,18 +65,24 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
     detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
   }
 
-
   // TODO link up internal address references including jump targets and mark two-sided cross-references
   const stats = dis.getStats();
   // for now assuming there's no doubling up of stats keys
   stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
-  detail.stats.push(["traced in", `${traceTime}  ms`]);
+  detail.stats.push(["tracer", `${traceResult.steps} steps, ${traceResult.traceTime} ms (${traceResult.endState})`]);
 
-  detail.stats.push(["lines", detail.dataView.getLines().length.toString()]);
+  detail.stats.push(["assembly lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
   detail.stats.push(["dialect", dialect.name]);
   return detail;
+}
+
+type TraceResult = {
+  codeAddresses: Addr[],
+  traceTime: number,
+  endState: string,
+  steps: number,
 }
 
 
@@ -85,22 +93,23 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
  * @param meta
  * @return tuple of array of executed addresses and the number of milliseconds taken to trace
  */
-function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): [number[], number] {
+function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
   // TODO load system rom into memory
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
   // TODO max steps is half-arsed attempt to discover why this call locks up
-  tracer.trace(10000);
-  if (tracer.running()) {
-    console.warn("tracer did not finish");
-  } else {
-    console.log("tracer finished");
-  }
+  const stepsTaken = tracer.trace(10000);
+  const endMessage = tracer.running() ? "did not terminate" : "terminated";
   const traceTime = Date.now() - traceStart;
   const codeAddresses = [...tracer.executed()].sort();
-  return [codeAddresses, traceTime];
+  return {
+    codeAddresses: codeAddresses,
+    traceTime: traceTime,
+    endState: endMessage,
+    steps: stepsTaken
+  };
 }
 
 /** User action that disassembles the file. */

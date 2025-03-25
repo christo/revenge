@@ -164,15 +164,19 @@ class Tracer {
   /**
    * Run the trace for a maximum number of steps or until completion.
    * @param maxSteps
+   * @return number of steps taken
    */
-  trace(maxSteps: number) {
+  trace(maxSteps: number): number {
     const startCount = this.stepCount;
     // TODO consider spawned threads
     while (this.running() && this.stepCount < maxSteps) {
       this.step();
       this.stepCount += 1;
     }
-    console.log(`traced ${this.stepCount - startCount} steps`);
+    // we might not have started from zero
+    const stepsTaken = this.stepCount - startCount;
+    console.log(`traced ${stepsTaken} steps`);
+    return stepsTaken;
   }
 
   private addExecuted = (ir: InstRec) => {
