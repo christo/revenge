@@ -4,23 +4,8 @@ import {Addr, Endian, hex16} from "./core.ts";
 import {Memory} from "./Memory.ts";
 
 import {MODE_INDIRECT} from "./mos6502.ts";
-import {InstRec} from "./Tracer.ts";
+import {enumInstAddr, InstRec} from "./Tracer.ts";
 
-/**
- * Take an instruction address and length and return each address the instruction occupies.
- * @param ir the instruction address and length
- */
-function enumInstAddr(ir: InstRec): Addr[] {
-  const base = ir[0];
-  const len = ir[1];
-  if (len == 1) {
-    return [base];
-  } else if (len == 2) {
-    return [base, base + 1];
-  } else {
-    return [base, base + 1, base + 2]
-  }
-}
 
 /**
  * A single thread of execution which records all executed addresses and all written locations.
@@ -79,8 +64,6 @@ export class Thread {
     this.errors = [];
   }
 
-
-
   /**
    * We might have executed a break instruction previously, in which case we are no longer running.
    * @return true only if can take another step.
@@ -103,14 +86,6 @@ export class Thread {
   }
 
 
-
-  /**
-   * Return all bytes (opcodes and operands) belonging to instructions that were executed.
-   */
-  getExecutedInstructionBytes(): Array<Addr> {
-    return this.getExecuted().flatMap(enumInstAddr);
-  }
-
   getPc() {
     return this.pc;
   }
@@ -127,6 +102,15 @@ export class Thread {
   }
 
   /**
+   * Is the byte at the pc part of a single or multi-byte instruction that has already been executed?
+   * @param pc
+   * @private
+   */
+  private byteBelongsToExecutedInstruction(pc: number) {
+    return this.getExecuted().flatMap(enumInstAddr).includes(pc);
+  }
+
+  /**
    * Trace-execute the instruction. If it is a conditional branch it forks a thread. If it is a
    * jsr it pushes the appropriate address to the stack (6502 may not put return address), reaching
    * an already-traced address should cause the thread to stop, aka "join" and reaching a brk should
@@ -140,9 +124,18 @@ export class Thread {
     const instLen = inst.getLength();
     let nextPc = this.pc + instLen;
     let maybeThread: Thread | undefined = undefined;
+
+
     // have we executed an instruction that at the address of the pc before?
-    if (this.getExecuted().flatMap(enumInstAddr).includes(this.pc)) {
-      this.terminate("instruction already executed");
+    if (this.byteBelongsToExecutedInstruction(this.pc)) {
+      if (this.getExecuted().find(ir => ir[0] === this.pc)) {
+        this.terminate("instruction already executed");
+      } else {
+        // theoretically this kind of code may be legitimate obfuscation, optimisation, excess cleverness,
+        // dynamic code loading, selfmod or bugs. Until a software corpus is fully analysed, let's just
+        // distinguish it from simple repetition here
+        this.terminate("facing operand byte of instruction already executed");
+      }
     } else {
       const op = inst.instruction.op;
       if (op.has(OpSemantics.IS_BREAK)) {

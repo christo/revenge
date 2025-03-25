@@ -23,6 +23,23 @@ import {Thread} from "./Thread.ts";
  */
 type InstRec = [Addr, 1 | 2 | 3];
 
+
+/**
+ * Take an instruction address and length and return each address the instruction occupies.
+ * @param ir the instruction address and length
+ */
+function enumInstAddr(ir: InstRec): Addr[] {
+  const base = ir[0];
+  const len = ir[1];
+  if (len == 1) {
+    return [base];
+  } else if (len == 2) {
+    return [base, base + 1];
+  } else {
+    return [base, base + 1, base + 2]
+  }
+}
+
 /**
  * Analyser that approximates code execution to some degree. Static analysis ignores register and memory contents,
  * following all theoretically reachable code paths from the entry point.
@@ -78,6 +95,13 @@ class Tracer {
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
     this.threads.push(new Thread("Tracer", disasm, pc, memory, this.addExecuted, this.getExecuted, ignore));
+  }
+
+  /**
+   * Return all bytes (opcodes and operands) belonging to instructions that were executed.
+   */
+  getExecutedInstructionBytes(): Array<Addr> {
+    return this.getExecuted().flatMap(enumInstAddr);
   }
 
   /**
@@ -156,4 +180,4 @@ class Tracer {
   }
 }
 
-export {Tracer, type InstRec};
+export {Tracer, type InstRec, enumInstAddr};
