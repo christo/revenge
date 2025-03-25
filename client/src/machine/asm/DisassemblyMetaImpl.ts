@@ -49,7 +49,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
 
     // keep the offsets
     this._resetVectorOffset = resetVectorOffset;
-    // TODO make sure the reset vector is interpreted as the beginning of an instruction
     this.edicts = {};
     for (let i = 0; i < edicts.length; i++) {
       const edict = edicts[i];
