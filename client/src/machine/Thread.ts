@@ -163,7 +163,7 @@ export class Thread {
           //  may have been modified and we do not currently calculate all memory modifications
           //  conversely, depending on the location and machine architecture, if the address of the
           //  operand has not been modified by the program, we may decode the indirection faithfully
-          console.error(`Thread ${this.descriptor} unsupported indirect mode ${inst.instruction.op.mnemonic} instruction at ${this.renderPc()} [${inst.getBytes().map(hex16).join(", ")}]`);
+          console.warn(`Thread ${this.descriptor} unsupported indirect mode ${inst.instruction.op.mnemonic} instruction at ${this.renderPc()} [${inst.getBytes().map(hex16).join(", ")}]`);
           this.errors.push([this.pc, "indirect mode jump is unsupported"]);
           this.terminate("reached unsupported indirect jump");
         } else {
