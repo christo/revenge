@@ -60,6 +60,7 @@ classes for tags follow
 
 .addr {
   margin-right: 1em;
+  padding: 0.2rem;
   opacity: 60%;
 }
 
@@ -98,6 +99,7 @@ classes for tags follow
 
 .line {
   line-height: 1.5;
+  margin-bottom: 0.3rem;
   display: flex;
 }
 
