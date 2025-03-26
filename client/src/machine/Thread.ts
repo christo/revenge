@@ -126,16 +126,16 @@ export class Thread {
     let maybeThread: Thread | undefined = undefined;
 
 
-    // have we executed an instruction that at the address of the pc before?
-    if (this.byteBelongsToExecutedInstruction(this.pc)) {
-      if (this.getExecuted().find(ir => ir[0] === this.pc)) {
-        this.terminate("instruction already executed");
-      } else {
-        // theoretically this kind of code may be legitimate obfuscation, optimisation, excess cleverness,
-        // dynamic code loading, selfmod or bugs. Until a software corpus is fully analysed, let's just
-        // distinguish it from simple repetition here
-        this.terminate("facing operand byte of instruction already executed");
-      }
+    if (this.getExecuted().find(ir => ir[0] === this.pc)) {
+      // this exact instruction was already executed
+      this.terminate("instruction already executed");
+    } else if (this.byteBelongsToExecutedInstruction(this.pc)) {
+      // we haven't executed this instruction but have we executed an instruction that covers bytes
+      // at the address of the pc before, i.e. as an operand byte?
+      // theoretically this kind of code may be legitimate obfuscation, optimisation, excess cleverness,
+      // dynamic code loading, selfmod or bugs. Until a software corpus is fully analysed, let's just
+      // distinguish it from simple repetition here
+      this.terminate("facing operand byte of instruction already executed (smells but not a strict problem)");
     } else {
       // we haven't executed an instruction at this location
       const op = inst.instruction.op;
