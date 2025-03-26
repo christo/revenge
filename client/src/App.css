@@ -89,7 +89,7 @@ classes for tags follow
   cursor: pointer;
 }
 
-.opnd.abs.inbinary > .iconAnno {
+.opnd > .iconAnno {
   position: relative;
   display: inline-block;
   left: 0.4rem;
