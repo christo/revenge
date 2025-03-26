@@ -174,7 +174,6 @@ export class Thread {
       }
     }
 
-    // TODO handle tracing interrupt handlers - these are tricky - perhaps we can just always trace them
     // TODO edge case: execution at an address could be byte-misaligned with previous execution resulting in
     //  different instruction decoding, so execution records should hold the first byte of the decoded instruction
     //  and coverage measurements imply that coverage of any subsequent bytes of the instruction is predicated on
@@ -188,6 +187,7 @@ export class Thread {
     return maybeThread;
   }
 
+  /** Renders program counter as a string in both hex and decimal */
   private renderPc() {
     return `0x${this.pc.toString(16)} (${this.pc})`
   }
