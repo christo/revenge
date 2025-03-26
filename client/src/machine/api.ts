@@ -79,6 +79,8 @@ export const TAG_ABSOLUTE = "abs";
 export const TAG_ADDRESS = "addr";
 /** instruction that was executed during trace */
 export const TAG_EXECUTED = "executed";
+/** a declared start of execution */
+export const TAG_ENTRY_POINT = "entrypoint";
 /** in base 16 */
 export const TAG_HEX = "hex";
 /** every logical line */
