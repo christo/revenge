@@ -164,8 +164,9 @@ class Disassembler {
       if (this.edictAhead(1)) {
         return mkEdictInferredByteDec(1);
       } else if (this.instructionByteAhead(1)) {
-        // TODO is this is upposed ot mean our instruction length is 2 but there's an instruction byte ahead by 1?
-        return mkEdictInferredByteDec(1, `inferred by execution at $${hex16(this.currentAddress + 1)} (+1)`);
+        // Interpreting this as a two byte instruction consumes a byte from a known instruction,
+        // therefore our only option is to construct a single byte declaration
+        return mkEdictInferredByteDec(1, `inferred by instruction at $${hex16(this.currentAddress + 1)} (+1)`);
       }
     } else if (instLen === 3) {
       // need to check two bytes ahead
