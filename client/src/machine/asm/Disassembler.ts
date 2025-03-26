@@ -173,11 +173,8 @@ class Disassembler {
       if (this.edictAhead(2)) {
         return mkEdictInferredByteDec(2);
       } else if (this.instructionByteAhead(2)) {
-        return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 2)} (+2)`);
-      } else if (this.edictAhead(3)) {
-        return mkEdictInferredByteDec(3);
-      } else if (this.instructionByteAhead(3)) {
-        //return mkEdictInferredByteDec(2, `inferred by execution at $${hex16(this.currentAddress + 3)} (+3) currentAddress: ${hex16(this.currentAddress)}`);
+        // conservatively declaring a single byte so we still disassemble instruction after that
+        return mkEdictInferredByteDec(1, `inferred by instruction at $${hex16(this.currentAddress + 2)} (+2)`);
       }
     }
     // by now we know we must consume the current byte
