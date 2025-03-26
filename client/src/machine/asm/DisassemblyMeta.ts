@@ -59,13 +59,6 @@ interface DisassemblyMeta {
    */
   isInBinary(addr: Addr, fb: FileBlob): boolean;
 
-  /** @deprecated disassembler should use its own method */
-  addCodeAddresses(codeAddresses: Addr[]): void;
-
-  /**
-   * @deprecated disassembler should use its own method
-   */
-  getCodeAddresses(): Addr[];
 }
 
 export {type DisassemblyMeta};

@@ -88,14 +88,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     return addr >= contentStartAddress && addr <= contentEndAddress - 1;
   }
 
-  addCodeAddresses(codeAddresses: Addr[]): void {
-    this.codeAddresses.push(...codeAddresses);
-  }
-
-  getCodeAddresses(): Addr[] {
-    return this.codeAddresses;
-  }
-
   /**
    * Determines the address of the assembly entry point defined by the fileblob.
    * This could be any address but it would usually be inside the fileblob code

@@ -34,8 +34,6 @@ const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81"
 
 function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: DisassemblyMeta) {
 
-  // start timer
-  const startTime = Date.now();
 
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
@@ -43,8 +41,8 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   // do trace to decide which is code
   const traceResult: TraceResult = trace(dis, fb, meta);
 
-  // TODO meta shouldn't hold this state
-  meta.addCodeAddresses(traceResult.codeAddresses);
+  // start timer
+  const startTime = Date.now();
 
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
