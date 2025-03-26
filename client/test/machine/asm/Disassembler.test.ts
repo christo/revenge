@@ -14,7 +14,7 @@ describe("disassembler", () => {
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", code, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2);
     expect(disassembled.instruction.op.mnemonic).to.equal("NOP");
@@ -26,7 +26,7 @@ describe("disassembler", () => {
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", bytes, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2);
     const instruction = disassembled.instruction;
