@@ -6,6 +6,11 @@ import {Edict} from "./Edict.ts";
 import {InstructionLike} from "./instructions.ts";
 
 /**
+ * A named index into a binary sequence.
+ */
+type NamedOffset = [number, string];
+
+/**
  * Encapsulates outer context for disassembling with a {@link Disassembler}.
  * FUTURE: this is very CBM 6502 oriented
  */
