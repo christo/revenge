@@ -263,4 +263,9 @@ classes for tags follow
   background-color: rgba(145, 37, 18, 0.8)
 }
 
+.entrypoint {
+  outline: 3px solid yellow;
+  border-radius: 2px;
+}
+
 
