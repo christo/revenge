@@ -61,6 +61,9 @@ export class KeywordTag extends Tag {
 
 // tag values representing css classes in DetailView
 
+/**
+ * an operand address that is inside the range occupied by this binary
+ */
 export const TAG_IN_BINARY = "inbinary";
 
 /** a label in the source code */
