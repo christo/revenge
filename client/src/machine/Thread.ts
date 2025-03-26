@@ -2,7 +2,6 @@ import {Disassembler} from "./asm/Disassembler";
 import {OpSemantics} from "./asm/Op.ts";
 import {Addr, Endian, hex16} from "./core.ts";
 import {Memory} from "./Memory.ts";
-
 import {MODE_INDIRECT} from "./mos6502.ts";
 import {enumInstAddr, InstRec} from "./Tracer.ts";
 
@@ -85,7 +84,6 @@ export class Thread {
     return this.execute();
   }
 
-
   getPc() {
     return this.pc;
   }
@@ -124,7 +122,6 @@ export class Thread {
     const instLen = inst.getLength();
     let nextPc = this.pc + instLen;
     let maybeThread: Thread | undefined = undefined;
-
 
     if (this.getExecuted().find(ir => ir[0] === this.pc)) {
       // this exact instruction was already executed
