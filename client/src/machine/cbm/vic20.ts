@@ -154,8 +154,8 @@ class CartSigEdict extends ByteDefinitionEdict {
 }
 
 const JUMP_POINT_OFFSETS: NamedOffset[] = [
-    [VIC20_CART_COLD_VECTOR_OFFSET, "cold reset"],
-  [VIC20_CART_WARM_VECTOR_OFFSET, "warm reset"]
+    [VIC20_CART_COLD_VECTOR_OFFSET, "reset"],
+  [VIC20_CART_WARM_VECTOR_OFFSET, "nmi"]
 ];
 
 /**

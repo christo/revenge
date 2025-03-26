@@ -122,7 +122,7 @@ C64_KERNAL.sub(0xffab, "untlk", "Command serial bus to UNTALK");
 C64_KERNAL.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 
-const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "cold reset"], [C64_WARM_VECTOR_OFFSET, "warm reset"]];
+const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
