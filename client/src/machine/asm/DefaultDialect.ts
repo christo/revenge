@@ -9,7 +9,7 @@ import {
   TAG_COMMENT,
   TAG_DATA,
   TAG_HEXARRAY,
-  TAG_IN_BINARY,
+  TAG_IN_BINARY, TAG_KNOWN_SYMBOL,
   TAG_LABEL,
   TAG_MNEMONIC,
   TAG_OPERAND,
@@ -239,11 +239,21 @@ class DefaultDialect implements Dialect {
         const opnd = fil.fullInstruction.operandValue();
         // future: check other addressing modes
         // check if the operand is an address inside the binary
-        if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE && dis.isInBinary(opnd)) {
-          operandTag.classNames.push(TAG_IN_BINARY)
+        if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE) {
+          if (dis.isInBinary(opnd)) {
+            operandTag.classNames.push(TAG_IN_BINARY)
+          } else {
+            // for only deal with symbols outside of binary
+            const symDef = dis.getSymbol(opnd);
+            if (symDef) {
+              // we found a symbol for this
+              operandTag.data.push([`symdef-${symDef.name}`, symDef.descriptor]);
+              operandTag.classNames.push(TAG_KNOWN_SYMBOL);
+            }
+          }
         }
         // add operand hex value as data so front-end can always extract it
-        operandTag.data = [[TAG_OPERAND_VALUE, hex16(opnd)]];
+        operandTag.data.push([TAG_OPERAND_VALUE, hex16(opnd)]);
       }
       return [mnemonic, operandTag];
     } else {

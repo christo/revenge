@@ -1,8 +1,17 @@
 import Alert from "@mui/material/Alert";
-import {ActionExecutor, Tag, TAG_ABSOLUTE, TAG_ADDRESS, TAG_IN_BINARY, TAG_NOTE, TAG_OPERAND} from "../machine/api.ts";
+import {
+  ActionExecutor,
+  Tag,
+  TAG_ABSOLUTE,
+  TAG_ADDRESS,
+  TAG_IN_BINARY,
+  TAG_KNOWN_SYMBOL,
+  TAG_NOTE,
+  TAG_OPERAND
+} from "../machine/api.ts";
 import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
-import {InsertLink} from "@mui/icons-material";
+import {InsertLink, Bookmark} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 
 /**
@@ -40,16 +49,26 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
           // set data- attributes for each item in the data
           const data: { [k: string]: string; } = {};
           tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
+          if (tup.hasTag(TAG_KNOWN_SYMBOL)) {
+            console.log(`known symbol at line ${i}`);
+          }
           if (isNote) {
             // shown instead of normal line, represents a potential problem
             return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
                           key={`fb_${i}_${j}`}>{tup.value}</Alert>;
           } else {
             const operand = tup.value;
-            return <div {...extra} {...data} className={tup.spacedClassNames()} key={`fb_${i}_${j}`}
-                        onClick={() => handleClick(tup.data, operand)}>{tup.value}
-              <div className="iconAnno">{tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]) ?
-                  <InsertLink/> : ""}</div>
+            const internalLink = tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]);
+
+            return <div {...extra} {...data}
+                        className={tup.spacedClassNames()}
+                        key={`fb_${i}_${j}`}
+                        onClick={() => handleClick(tup.data, operand)}>
+              {tup.value}
+              <Box display="inline" className="iconAnno">
+                {internalLink ? <InsertLink/> : ""}
+                {tup.hasTag(TAG_KNOWN_SYMBOL) ? <Bookmark/> : ""}
+              </Box>
             </div>;
           }
         })}
