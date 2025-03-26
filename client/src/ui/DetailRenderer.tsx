@@ -11,7 +11,7 @@ import {
 } from "../machine/api.ts";
 import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
-import {InsertLink, Bookmark} from "@mui/icons-material";
+import {InsertLink, BookmarkBorder} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 
 /**
@@ -67,7 +67,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
               {tup.value}
               <Box display="inline" className="iconAnno">
                 {internalLink ? <InsertLink/> : ""}
-                {tup.hasTag(TAG_KNOWN_SYMBOL) ? <Bookmark/> : ""}
+                {tup.hasTag(TAG_KNOWN_SYMBOL) ? <BookmarkBorder/> : ""}
               </Box>
             </div>;
           }
