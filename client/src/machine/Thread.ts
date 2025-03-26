@@ -162,8 +162,6 @@ export class Thread {
           // TODO indirect jump support probably needs a more complete emulation because the jump target
           //  may have been modified and we do not currently calculate all memory modifications
           console.error(`unsupported indirect mode ${inst.instruction.op.mnemonic} instruction at ${this.renderPc()} [${inst.getBytes().map(hex16).join(", ")}]`);
-          inst.getBytes().map(hex16).join(" ");
-          console.dir(inst);
           this.errors.push([this.pc, "indirect mode jump is unsupported"])
         } else {
           const jumpTarget = inst.operandValue();
