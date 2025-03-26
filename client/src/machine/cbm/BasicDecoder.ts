@@ -134,10 +134,12 @@ class BasicDecoder {
     if (fb.getLength() < BasicDecoder.MINIMUM_SIZE) {
       throw Error("file is too small to be a valid basic program");
     }
+    // offset in file of actualy content
     const offset = BasicDecoder.CONTENT_START_OFFSET;
     // assuming the load address is the first two bytes.
     const baseAddress = fb.read16(BasicDecoder.LOAD_ADDRESS_OFFSET);
     let i = offset;
+    let lineOffsetStart = i;
     // read address of next BASIC line (may be the 0x0000 end marker)
     let nextLineAddr = baseAddress;
     let thisLineAddr = nextLineAddr;
@@ -147,8 +149,10 @@ class BasicDecoder {
     let line = "";
     let quoteMode = false;
     while (!finished) {
-      const newLine = i - offset + baseAddress === nextLineAddr;
-      if (newLine) {
+      // have we reached the byte offset of the next line?
+      const isNewLine = i - offset + baseAddress === nextLineAddr;
+      if (isNewLine) {
+        lineOffsetStart = i;
         quoteMode = false;
         thisLineAddr = nextLineAddr;
         nextLineAddr = fb.read16(i);
@@ -170,7 +174,8 @@ class BasicDecoder {
         const lineNum = new Tag([TAG_LINE_NUM], lineNumber.toString(10));
         const lineText = new Tag([TAG_LINE], line);
         const tags = [address, lineNum, lineText];
-        dataView.addLine(new LogicalLine(tags, thisLineAddr));
+        const byteSize = i - lineOffsetStart;
+        dataView.addLine(new LogicalLine(tags, byteSize, thisLineAddr));
       } else {
         // interpret as a token, falling back to petscii
         let token = this.tokens[b];
@@ -197,7 +202,7 @@ class BasicDecoder {
       // not really an address, a number of bytes
       const numBytes = baseAddress + i + 2;
       const addr = new Tag([TAG_ADDRESS], hex16(numBytes));
-      dataView.addLine(new LogicalLine([note, addr], numBytes));
+      dataView.addLine(new LogicalLine([note, addr], remainingBytes, numBytes));
     }
 
     return dataView;

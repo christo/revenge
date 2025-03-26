@@ -117,9 +117,15 @@ export class Thread {
    * If an branching instruction occurs, the new {@link Thread} is returned, otherwise undefined.
    */
   private execute(): Thread | undefined {
+
     const inst = this.disasm.disassemble1(this.memory, this.pc);
     // by default, increment PC by length of this instruction
-    const instLen = inst.getLength();
+    let instLen = 0;
+    try {
+      instLen = inst.getLength();
+    } catch(e) {
+      debugger;
+    }
     let nextPc = this.pc + instLen;
     let maybeThread: Thread | undefined = undefined;
 

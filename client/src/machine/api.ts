@@ -136,9 +136,11 @@ class LogicalLine {
 
   private readonly tags: Tag[];
   private readonly address: Addr | undefined;
+  private readonly byteSize: number;
   private readonly instruction?: InstructionLike;
 
-  constructor(tags: Tag[], address: Addr | undefined, instruction?: InstructionLike) {
+  constructor(tags: Tag[], byteSize: number, address: Addr | undefined, instruction?: InstructionLike) {
+    this.byteSize = byteSize;
     this.tags = tags;
     this.address = address;
     this.instruction = instruction;
@@ -146,6 +148,10 @@ class LogicalLine {
 
   getTags(): Tag[] {
     return this.tags;
+  }
+
+  getByteSize() {
+    return this.byteSize;
   }
 
 }
@@ -204,7 +210,7 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
     //  currently whole hex dump is a single logical line at no address with no instruction
     // add the classes for hex dump as a whole and for each byte
     const allData = fb.getBytes().map(x => new HexTag(hex8(x)));
-    const lls = [allData].map((ts: Tag[], i: number) => new LogicalLine(ts, i));
+    const lls = [allData].map((ts: Tag[], i: number) => new LogicalLine(ts, 1, i));
     const newDataView: DataView = new DataViewImpl(lls);
     return new Detail("Hex Dump", [TAG_HEXBYTES], newDataView);
   }

@@ -2,7 +2,7 @@
 
 import {hexDumper, TypeActions} from "./api.ts";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
-import {disassemble, printBasic} from "./cbm/cbm.ts";
+import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
 import {FileBlob} from "./FileBlob.ts";
 import {
   COMMON_MLPS,
@@ -36,8 +36,10 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     return typeActions;
   }
 
+  let maxBasicSmell = 0;
   for (let i = 0; i < BASICS.length; i++) {
     const basicSmell = BASICS[i].sniff(fileBlob);
+    maxBasicSmell = Math.max(maxBasicSmell, basicSmell);
     if (basicSmell > 1) {
       const ta = printBasic(BASICS[i], fileBlob);
       ta.actions.push(hd);
@@ -45,12 +47,23 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
   }
 
+  console.log(`maxBasicSmell: ${maxBasicSmell}`);
   // common cartridge prg loads
   for (let i = 0; i < COMMON_MLPS.length; i++) {
     const prg = COMMON_MLPS[i];
     if (prg.sniff(fileBlob) > 1) {
       return disassemble(prg, fileBlob);
     }
+  }
+  if (maxBasicSmell > 0.5) {
+    if (fileBlob.read16(0) === 0x1201) {
+      console.log("basic load address but probably only a sys call to machine code");
+      return {t: UNKNOWN_BLOB, actions: [hd]}
+    }
+    // we probably have a basic header with machine code following
+    // we need to decode the basic header, read a sys command and
+    // calculate the entry point
+    return disassemble(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);
   }
   return {t: UNKNOWN_BLOB, actions: [hd]};
 }

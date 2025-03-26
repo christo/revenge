@@ -47,7 +47,8 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
   const tagSeq = assignPc.disassemble(dialect, dis);
-  detail.dataView.addLine(new LogicalLine(tagSeq, dis.currentAddress));
+  // this line corresponds to zero bytes
+  detail.dataView.addLine(new LogicalLine(tagSeq, 0, dis.currentAddress));
   // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress;
@@ -64,7 +65,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
       new Tag([TAG_HEX], asHex(inst.getBytes())),
       ...inst.disassemble(dialect, dis)
     ];
-    detail.dataView.addLine(new LogicalLine(tags, instAddress, inst));
+    detail.dataView.addLine(new LogicalLine(tags, inst.getLength(), instAddress, inst));
   }
 
   // TODO link up internal address references including jump targets and mark two-sided cross-references

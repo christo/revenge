@@ -227,6 +227,7 @@ export class Vic20Basic implements BlobSniffer {
       const decoded = CBM_BASIC_2_0.decode(fb);
       let lastNum = -1;
       let lastAddr = -1;
+      let byteCount = 0;
       decoded.getLines().forEach((ll: LogicalLine) => {
         const i: Tag[] = ll.getTags();
         // BasicDecoder puts this tag on lines1
@@ -246,7 +247,22 @@ export class Vic20Basic implements BlobSniffer {
             isBasic *= 0.3;
           }
           lastNum = thisNum;
+          byteCount += ll.getByteSize();
         } else {
+          // maybe a machine language block that follows
+          const basicSize = byteCount;
+          // how much remains?
+          const remainingSize = fb.getLength() - basicSize;
+          // is the basic tiny?
+          if (basicSize < 20 && remainingSize > basicSize) {
+            // almost certain we should treat this as assembly at this point
+            // although it could be data that a basic program simply reads.
+            isBasic *= 0.001;
+          } else {
+            console.log(`basic decoder: basicSize ${basicSize} remainingSize: ${remainingSize}`);
+          }
+          // is it a simple sys command?
+
           // not a basic line
           // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
         }
