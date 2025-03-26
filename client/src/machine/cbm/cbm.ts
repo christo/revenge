@@ -6,7 +6,7 @@ import {
   hexDumper,
   LogicalLine,
   Tag,
-  TAG_ADDRESS,
+  TAG_ADDRESS, TAG_ENTRY_POINT,
   TAG_EXECUTED,
   TAG_HEX,
   TAG_LINE,
@@ -56,6 +56,9 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
     if (traceResult.codeAddresses.includes(instAddress)) {
       addressTags.push(TAG_EXECUTED);
     }
+    if (meta.executionEntryPoints(fb).map(as => as[0]).includes(instAddress)) {
+      addressTags.push(TAG_ENTRY_POINT);
+    }
     const tags = [
       new Tag(addressTags, hex16(instAddress)),
       new Tag([TAG_HEX], asHex(inst.getBytes())),
@@ -96,7 +99,9 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
   const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
   // TODO load system rom into memory instead of ignoring
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
-  const tracer = new Tracer(dis, meta.executionEntryPoint(fb), LE_64K, ignoreKernalSubroutines);
+  const entryPoints = meta.executionEntryPoints(fb);
+
+  const tracer = new Tracer(dis, entryPoints, LE_64K, ignoreKernalSubroutines);
   const traceStart = Date.now();
   // TODO max steps is half-arsed attempt to discover why this call locks up
   const stepsTaken = tracer.trace(10000);

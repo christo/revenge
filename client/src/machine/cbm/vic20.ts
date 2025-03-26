@@ -8,7 +8,7 @@ import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.
 import {Dialect} from "../asm/Dialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl";
+import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl";
 import {ByteDeclaration, ByteDefinitionEdict, InstructionLike, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, LE, lsb, msb} from "../core";
@@ -153,6 +153,11 @@ class CartSigEdict extends ByteDefinitionEdict {
   }
 }
 
+const JUMP_POINT_OFFSETS: NamedOffset[] = [
+    [VIC20_CART_COLD_VECTOR_OFFSET, "cold reset"],
+  [VIC20_CART_WARM_VECTOR_OFFSET, "warm reset"]
+];
+
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
@@ -163,7 +168,7 @@ const VIC20_CART = new CartSniffer(
     A0CBM, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
         VIC20_CART_BASE_ADDRESS_OFFSET,
-        VIC20_CART_COLD_VECTOR_OFFSET,
+        JUMP_POINT_OFFSETS,
         2,
         [
           new CartSigEdict(),

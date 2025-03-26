@@ -17,10 +17,10 @@ type NamedOffset = [number, string];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /** A bit stinky - should never be used and probably not exist. */
-  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, 0, 0, [], (_fb) => [], new SymbolTable("null"));
+  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, [[0, "NULL"]], 0, [], (_fb) => [], new SymbolTable("null"));
 
   private readonly _baseAddressOffset: number;
-  private readonly _resetVectorOffset: number;
+  private readonly _jumpVectorOffsets: NamedOffset[];
   private readonly _contentStartOffset: number;
   private readonly edicts: { [id: number]: Edict<InstructionLike>; };
   private readonly symbolResolver: SymbolResolver;
@@ -31,7 +31,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    * Create context with minimalist defaults.
    *
    * @param baseAddressOffset binary image offset at which to find address to load into.
-   * @param resetVectorOffset file offset at which the reset vector is defined, defaults to baseAddressOffset
+   * @param jumpVectorOffsets file offsets at which the execution vector start points are defined
    * @param contentStartOffset start of content, defaults to baseAddressOffset
    * @param edicts any predefined edicts for disassembly, defaults to empty, only one per address.
    * @param symbolResolver do find externally defined symbols, defaults to empty.
@@ -39,7 +39,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    */
   constructor(
       baseAddressOffset: number = 0,
-      resetVectorOffset: number = baseAddressOffset,
+      jumpVectorOffsets: Array<NamedOffset>,
       contentStartOffset: number = baseAddressOffset,
       edicts: Edict<InstructionLike>[] = [],
       symbolResolver: SymbolResolver = EMPTY_JUMP_TARGET_FETCHER,
@@ -53,7 +53,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     this.codeAddresses = [];
 
     // keep the offsets
-    this._resetVectorOffset = resetVectorOffset;
+    this._jumpVectorOffsets = jumpVectorOffsets;
     this.edicts = {};
     for (let i = 0; i < edicts.length; i++) {
       const edict = edicts[i];
@@ -89,14 +89,13 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   }
 
   /**
-   * Determines the address of the assembly entry point defined by the fileblob.
-   * This could be any address but it would usually be inside the fileblob code
-   * with the assumption or explicit instruction of the load address.
+   * Determines the addresses of the assembly entry points defined by the fileblob.
+   * These could be any address but it would often reference the fileblob code.
    *
    * @param fb the FileBlob
    */
-  executionEntryPoint(fb: FileBlob): number {
-    return fb.read16(this._resetVectorOffset);
+  executionEntryPoints(fb: FileBlob): [Addr, string][] {
+    return this._jumpVectorOffsets.map(il => ([fb.read16(il[0]), il[1]]));
   }
 
   getEdict(address: number): Edict<InstructionLike> | undefined {
@@ -117,4 +116,4 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   }
 }
 
-export {DisassemblyMetaImpl};
+export {DisassemblyMetaImpl, type NamedOffset};

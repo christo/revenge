@@ -8,12 +8,14 @@ import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
 import {Disassembler} from "../../src/machine/asm/Disassembler";
 import {enumInstAddr, InstRec} from "../../src/machine/Tracer";
 
+const ZERO_OFFSET: [number, string][] = [[0, "NULL"]];
+
 describe("thread", () => {
   it("records executed instructions", () => {
     const contents = [0, 0, 0xea, 0xea]; // 0, 0, NOP, NOP
     const memory = new ArrayMemory(contents, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", contents, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, ZERO_OFFSET, 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
 
     const executed: InstRec[] = [];
@@ -40,7 +42,7 @@ describe("thread", () => {
     ];
     const memory = new ArrayMemory(contents, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", contents, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, ZERO_OFFSET, 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const executed: InstRec[] = [];
     const addExecuted = (ir: InstRec) => {

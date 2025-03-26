@@ -12,7 +12,7 @@ describe("disassembler integration", () => {
   it("loads hesmon", () => {
     const hesmon = fs.readFileSync("../server/data/preload/HesMon.prg");
     const fb = FileBlob.fromBytes("hesmon", Array.from(hesmon), LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const lines: InstructionLike[] = [];
     while (d.hasNext()) {

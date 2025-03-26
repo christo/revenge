@@ -75,22 +75,26 @@ class Tracer {
    * Starts in a running state without having taken any step.
    *
    * @param disasm used to interpret memory as instructions
-   * @param pc program counter; absolute address in the memory of next instruction to execute.
+   * @param entryPoints each is a program counter and label for starting trace
    * @param memory the Memory in which to load and execute the program
    */
   constructor(
       disasm: Disassembler,
-      pc: number,
+      entryPoints: [pc: number, label: string][],
       memory: Memory<Endian>,
       ignore = (_: Addr) => false) {
-    const relativePc = pc - disasm.getSegmentBaseAddress();
-    if (Math.round(pc) !== pc) {
-      throw Error(`pc must be integer`);
-    } else if (relativePc < 0 || memory.getLength() <= relativePc) {
-      throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
-    } else if (!memory.executable()) {
-      throw Error("memory not marked for execution");
-    }
+
+    entryPoints.forEach(ep => {
+      const pc = ep[0];
+      const relativePc = pc - disasm.getSegmentBaseAddress();
+      if (Math.round(pc) !== pc) {
+        throw Error(`pc must be integer`);
+      } else if (relativePc < 0 || memory.getLength() <= relativePc) {
+        throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
+      } else if (!memory.executable()) {
+        throw Error("memory not marked for execution");
+      }
+    });
     this.executedAddresses = [];
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
@@ -98,7 +102,9 @@ class Tracer {
       this.executedAddresses.push(ir);
       disasm.addExecutionPoints([ir]);
     };
-    this.threads.push(new Thread("Tracer", disasm, pc, memory, addExecuted, this.getExecuted, ignore));
+    entryPoints.forEach(ep => {
+      this.threads.push(new Thread(ep[1], disasm, ep[0], memory, addExecuted, this.getExecuted, ignore));
+    })
   }
 
   /**

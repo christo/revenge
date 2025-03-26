@@ -18,9 +18,9 @@ describe("tracer", () => {
       brk,
     ];
     const fb = FileBlob.fromBytes("testblob", machineCode, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0, mem(machineCode), (_: Addr) => false);
+    const t = new Tracer(d, [[0, "root"]], mem(machineCode), (_: Addr) => false);
     expect(t.countActiveThreads() == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
     t.step();
@@ -34,9 +34,9 @@ describe("tracer", () => {
       nop, nop, brk
     ];
     const fb = FileBlob.fromBytes("testblob", bytes, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0, ArrayMemory.zeroes(0x1000, LE, true, true));
+    const t = new Tracer(d, [[0, "root"]], ArrayMemory.zeroes(0x1000, LE, true, true));
     expect(t.executed().length === 0, "should have executed none");
     t.step();
     expect(t.executed().length === 1);
@@ -60,9 +60,9 @@ describe("tracer", () => {
       brk,          // $0005      : BRK     ; intended stop
     ];
     const fb = FileBlob.fromBytes("testblob", bytes, LE);
-    const dm = new DisassemblyMetaImpl(0, 0, 2);
+    const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0, ArrayMemory.zeroes(0x1000, LE, true, true));
+    const t = new Tracer(d, [[0, "root"]], ArrayMemory.zeroes(0x1000, LE, true, true));
     t.step(); // execute JMP
     t.step(); // execute NOP
     t.step(); // execute BRK
@@ -83,10 +83,10 @@ describe("tracer", () => {
     const fb = FileBlob.fromBytes("jump test", bytes, LE);
     const offsetBlobContent = 2;
     const offsetOfLoadAddress = 0;
-    const offsetOfResetVector = 0;  // reset = entry point
-    const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, offsetOfResetVector, offsetBlobContent);
+      // reset = entry point
+    const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, [[0, "test"]], offsetBlobContent);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0x1000, mem64k);
+    const t = new Tracer(d, [[0x1000, "root"]], mem64k);
     t.step(); // execute JMP
     t.step(); // execute NOP
     t.step(); // execute BRK
@@ -108,10 +108,9 @@ describe("tracer", () => {
     const fb = FileBlob.fromBytes("bcs test", bytes, LE);
     const offsetBlobContent = 2;
     const offsetOfLoadAddress = 0;
-    const offsetOfResetVector = 0;  // reset = entry point
-    const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, offsetOfResetVector, offsetBlobContent);
+    const dm = new DisassemblyMetaImpl(offsetOfLoadAddress, [[0, "test"]], offsetBlobContent);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const t = new Tracer(d, 0x1000, mem64k);
+    const t = new Tracer(d, [[0x1000, "root"]], mem64k);
     t.stepAll(); // execute BCS, should split into two threads
     expect(t.countActiveThreads()).to.eq(2);
     t.stepAll(); // branched thread executes NOP, JMP thread executes BRK
@@ -133,16 +132,18 @@ describe("tracer", () => {
       const fb = FileBlob.fromBytes("constructor validation test", bytes, LE);
       const offsetBlobContent = 2;
       // reset vector = entry point found at this offset
-      const dm = new DisassemblyMetaImpl(0, 6, offsetBlobContent);
+      const dm = new DisassemblyMetaImpl(0, [[6, "test"]], offsetBlobContent);
       const d = new Disassembler(Mos6502.ISA, fb, dm);
 
       const initialPc = 0x1000;
       // TODO use the offsetOfResetVector to find the reset vector
       // TODO start tracing at the reset vector
-      const entryPoint = dm.executionEntryPoint(fb);
-      console.log(`entry point address: 0x${entryPoint.toString(16)}`);
-      expect(entryPoint).to.eq(0x1008);
-      const t = new Tracer(d, initialPc, mem64k)
+      const entryPoints = dm.executionEntryPoints(fb);
+      entryPoints.forEach(entryPoint => {
+        console.log(`entry point ${entryPoint[1]} address: 0x${entryPoint[0].toString(16)}`);
+        expect(entryPoint[0]).to.eq(0x1008);
+      })
+      const t = new Tracer(d, [[initialPc, "root"]], mem64k)
 
     });
   })

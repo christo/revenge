@@ -7,7 +7,7 @@ import {KB_64, LE} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {Petscii} from "./petscii.ts";
-import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
+import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobType} from "../BlobType.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
@@ -122,6 +122,7 @@ C64_KERNAL.sub(0xffab, "untlk", "Command serial bus to UNTALK");
 C64_KERNAL.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 
+const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "cold reset"], [C64_WARM_VECTOR_OFFSET, "warm reset"]];
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64",
@@ -129,7 +130,7 @@ const C64_8K_CART = new CartSniffer(
     CBM80, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
         C64_8K_BASE_ADDRESS,
-        C64_COLD_VECTOR_OFFSET,
+        ENTRY_POINT_OFFSETS,
         2, [
           C64_CART_MAGIC,
           C64_CART_RESET_VECTOR,

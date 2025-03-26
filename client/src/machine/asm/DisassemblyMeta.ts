@@ -21,11 +21,11 @@ interface DisassemblyMeta {
   baseAddress(fb: FileBlob): Addr;
 
   /**
-   * Address of start of code for a warm boot; i.e. when RESTORE is hit (?)
-   * // TODO return array for multiple entry points (e.g. NMI)
+   * Addresses of start of code entry points. Each is an address/label tuple.
+   *
    * @param fb the fileblob.
    */
-  executionEntryPoint(fb: FileBlob): Addr;
+  executionEntryPoints(fb: FileBlob): [Addr, string][];
 
   /**
    * The offset from the start of the fileblob at which the starting of the binary content is located.
