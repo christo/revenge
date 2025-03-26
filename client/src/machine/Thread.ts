@@ -81,7 +81,7 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    console.log(`Thread step: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
+    //console.log(`Thread step: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
     return this.execute();
   }
 
@@ -137,16 +137,18 @@ export class Thread {
         this.terminate("facing operand byte of instruction already executed");
       }
     } else {
+      // we haven't executed an instruction at this location
       const op = inst.instruction.op;
       if (op.has(OpSemantics.IS_BREAK)) {
         this.terminate("reached a break instruction");
-      } else if(op.has(OpSemantics.IS_JAM)) {
+      } else if (op.has(OpSemantics.IS_JAM)) {
         this.terminate("reached a jam")
       } else if (op.has(OpSemantics.IS_RETURN)) {
         this.terminate("reached a return")
       } else if (op.any([OpSemantics.IS_CONDITIONAL_JUMP, OpSemantics.IS_RETURNABLE_JUMP])) {
         // because we terminate at return, we fork at subroutine jumps (out-of-order execution)
         // TODO strictly this may be wrong in case we never actually return - jsr may be used as shorthand for push?
+        //   to fix it threads need a return stack
         // the program counter was already advanced before calculating any relative offset
         const jumpTarget = inst.resolveOperandAddress(nextPc);
         // don't bother spawning if we've already executed that instruction
