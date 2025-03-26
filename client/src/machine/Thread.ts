@@ -45,7 +45,7 @@ export class Thread {
    * @param ignore function to indicate whether to ignore a given address, defaults to ignoring none.
    */
   constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>,
-              addExecuted:(addr: InstRec) => void, getExecuted: () => InstRec[],
+              addExecuted: (addr: InstRec) => void, getExecuted: () => InstRec[],
               ignore = (_: Addr) => false) {
     const memorySize = memory.getLength();
     if (memorySize < 1) {
