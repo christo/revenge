@@ -37,10 +37,10 @@
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
 * [ ] vic 20 / c64 hardware register detection
 * [ ] better styling for BASIC decoder
-* [ ] Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
-  * [ ] if program is only rem and sys commands, interpret as machine code with comment that
+* [x] Handle trailing machine code in hybrid BASIC/machine code (e.g. Myriad)
+  * [x] if program is only rem and sys commands, interpret as machine code with comment that
         the prelude is the basic loader
-* [ ] Sniffer / hybrid disassembler/basic decoder
+* [x] Sniffer / hybrid disassembler/basic decoder
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and 
       code layout clash. Also format long byte declarations on multiple physical lines.
 
