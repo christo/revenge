@@ -86,11 +86,11 @@ class Tracer {
 
     entryPoints.forEach(ep => {
       const pc = ep[0];
-      const relativePc = pc - disasm.getSegmentBaseAddress();
       if (Math.round(pc) !== pc) {
         throw Error(`pc must be integer`);
-      } else if (relativePc < 0 || memory.getLength() <= relativePc) {
-        throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} at base 0x${hex16(disasm.getSegmentBaseAddress())}`);
+      } else if (pc < 0 || memory.getLength() <= pc) {
+        const imageSize = disasm.fb.getLength();
+        throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} binary size: ${imageSize} seg base 0x${hex16(disasm.getSegmentBaseAddress())}`);
       } else if (!memory.executable()) {
         throw Error("memory not marked for execution");
       }

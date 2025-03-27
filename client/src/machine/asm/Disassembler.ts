@@ -74,11 +74,11 @@ class Disassembler {
    * Incorporates configured edicts which can force some data to be interpreted as code or data.
    *
    */
-  nextInstructionLine(): InstructionLike {
+  nextInstructionLine(): InstructionLike | undefined {
 
     const lc = this.mkPredefLabelsComments(this.currentAddress);
 
-    let instLike: InstructionLike;
+    let instLike: InstructionLike | undefined;
 
     // TODO merge edict check for 0-n bytes ahead where n is the instruction size with opcode = current byte
 
@@ -109,6 +109,7 @@ class Disassembler {
           lc.addComments("instruction won't fit");
           instLike = new ByteDeclaration(this.eatBytes(1), lc);
         } else {
+          // normal instruction disassembly
           // console.log(`bytes left: ${bytesLeft} instruction len: ${instLen}`);
           instLike = this.edictAwareInstruction(opcode, lc);
         }
@@ -147,7 +148,7 @@ class Disassembler {
    * @param currentByte the byte already read
    * @param lc labels and comments
    */
-  edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike {
+  edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike | undefined{
 
     // make an edict-enforced byte declaration of the given length
     const mkEdictInferredByteDec = (n: number, mesg = `inferred via edict@+${n}`) => {
@@ -156,7 +157,6 @@ class Disassembler {
     };
 
     const instLen = Mos6502.ISA.numBytes(currentByte);
-
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
     if (instLen === 2) {
@@ -188,11 +188,17 @@ class Disassembler {
         if (numInstructionBytes === 2) {
           firstOperandByte = this.fb.read8(this.currentIndex + 1);
         } else if (numInstructionBytes === 3) {
+          firstOperandByte = this.fb.read8(this.currentIndex + 1);
           secondOperandByte = this.fb.read8(this.currentIndex + 2);
         }
-        const il = new FullInstruction(this.iset.instruction(currentByte), firstOperandByte, secondOperandByte);
-        this.currentIndex += (numInstructionBytes); // already consumed opcode
-        return new FullInstructionLine(il, lc);
+        const instruction = this.iset.instruction(currentByte);
+        if (instruction) {
+          const il = new FullInstruction(instruction, firstOperandByte, secondOperandByte);
+          this.currentIndex += (numInstructionBytes); // already consumed opcode
+          return new FullInstructionLine(il, lc);
+        } else {
+          return undefined;
+        }
       } else {
         console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
         throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
@@ -276,10 +282,10 @@ class Disassembler {
    * Disassemble one instruction from memory at given offset. Operands interpreted using endianness T.
    * @param mem
    * @param offset
-   * @return instruction
-   * @throws if instruction cannot be decoded at offset
+   * @return instruction if it can be decoded at the offset
+   * @throws if illegal state
    */
-  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction {
+  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction | undefined {
     // TODO should we fall back to byte declaration directive rather than throw?
     const opcode = mem.read8(offset);
     const instLen = Mos6502.ISA.numBytes(opcode) || 1
@@ -298,13 +304,20 @@ class Disassembler {
         throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
       }
       // TODO what happens if instruction is only one byte?
-      const inst = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-      return inst;
+      const instruction = this.iset.instruction(opcode);
+      if (instruction) {
+        return new FullInstruction(instruction, firstOperandByte, secondOperandByte);
+      } else {
+        return undefined;
+      }
     } else {
-      throw Error("not enough bytes remaining to fit instruction");
+      return undefined;
     }
   }
 
+  /**
+   * In the simplest case, the address the file was loaded into.
+   */
   getSegmentBaseAddress(): Addr {
     return this.segmentBaseAddress;
   }
@@ -343,7 +356,7 @@ class Disassembler {
    * For a known instruction opcode, construct the instruction with the {@link LabelsComments} and consume the
    * requisite bytes.
    */
-  private mkInstruction(opcode: number, labelsComments: LabelsComments) {
+  private mkInstructionLine(opcode: number, labelsComments: LabelsComments): FullInstructionLine | undefined {
     const numInstructionBytes = Mos6502.ISA.numBytes(opcode) || 1
     const bytesRemaining = this.fb.getBytes().length - this.currentIndex;
     if (numInstructionBytes <= bytesRemaining) {
@@ -355,9 +368,14 @@ class Disassembler {
       } else if (numInstructionBytes === 3) {
         secondOperandByte = this.fb.read8(this.currentIndex + 2);
       }
-      const il = new FullInstruction(this.iset.instruction(opcode), firstOperandByte, secondOperandByte);
-      this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
-      return new FullInstructionLine(il, labelsComments);
+      const instruction = this.iset.instruction(opcode);
+      if (instruction) {
+        const il = new FullInstruction(instruction, firstOperandByte, secondOperandByte);
+        this.currentIndex += (numInstructionBytes - 1); // already consumed opcode
+        return new FullInstructionLine(il, labelsComments);
+      } else {
+        return undefined;
+      }
     } else {
       console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
       throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);

@@ -243,7 +243,7 @@ type InstructionCall = (args: string[]) => void;
 type MachineCodeBuilder = { bytes: number[]; add: { [n: string]: InstructionCall } };
 
 // build the instruction set
-const I = new InstructionSet();
+const I = new InstructionSet("MOS 6502");
 
 const FIXED = Cycles.FIXED;
 const BRANCH = Cycles.BRANCH;

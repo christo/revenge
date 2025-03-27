@@ -1,8 +1,5 @@
 // VIC-20 specific details
 
-import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
-import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
-import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
 import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {Dialect} from "../asm/Dialect.ts";
@@ -15,7 +12,10 @@ import {KB_64, LE, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
+import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 import {CartSniffer, prg} from "./cbm";
+import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
+import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
 
 const VIC20_KERNAL = new SymbolTable("vic20");
 
@@ -154,7 +154,7 @@ class CartSigEdict extends ByteDefinitionEdict {
 }
 
 const JUMP_POINT_OFFSETS: NamedOffset[] = [
-    [VIC20_CART_COLD_VECTOR_OFFSET, "reset"],
+  [VIC20_CART_COLD_VECTOR_OFFSET, "reset"],
   [VIC20_CART_WARM_VECTOR_OFFSET, "nmi"]
 ];
 
@@ -194,6 +194,18 @@ const VIC20_EXP03K = new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k")
 const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k");
 const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
+
+const VIC20_MEMORY_CONFIGS = [
+  VIC20_UNEX,
+  VIC20_EXP03K,
+  VIC20_EXP08K,
+  VIC20_EXP16K,
+  VIC20_EXP24K,
+]
+
+const BASIC_LOAD_PRGS = VIC20_MEMORY_CONFIGS.map(mc => {
+  prg(mc.basicProgramStart)
+});
 
 /**
  * Detects Vic-20 BASIC
@@ -284,8 +296,8 @@ const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
 // TODO need way to load rom image in browser or server
 //   maybe embed in client, later enable upload from browser
 let VIC_ROMS = [
-    new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
-    new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
+  new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
+  new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
 ];
 
 const UNEXPANDED_VIC_BASIC = new Vic20Basic(VIC20_UNEX);
@@ -295,6 +307,13 @@ const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
 class Vic20 extends Computer {
+  static MEMORY_CONFIGS = [
+      VIC20_UNEX,
+      VIC20_EXP03K,
+      VIC20_EXP08K,
+      VIC20_EXP16K,
+      VIC20_EXP24K,
+  ]
   constructor(memory: MemoryConfiguration, roms: RomImage[] = []) {
     super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, roms, ["vic20"]);
   }

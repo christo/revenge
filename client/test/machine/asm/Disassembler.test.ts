@@ -37,4 +37,5 @@ describe("disassembler", () => {
     expect(disassembled.getBytes().length).to.equal(3);
     expect(disassembled.operandValue()).to.equal(0x6502);
   });
+  // TODO try to reproduce bug where instruction is undefined after calling disassemble1()
 });

@@ -1,7 +1,7 @@
 import {AddressingMode} from "../AddressingMode.ts";
 import {assertByte} from "../core.ts";
 import {Cycles, Instruction, InstructionCall} from "../mos6502.ts";
-import {Op, OpSemantics} from "./Op.ts";
+import {Op} from "./Op.ts";
 
 /**
  * Represents the whole set of machine instructions.
@@ -16,6 +16,12 @@ class InstructionSet {
   // noinspection JSMismatchedCollectionQueryUpdate
   private cycles: Array<Cycles> = [];
   private instructions: Array<Instruction> = [];
+  private name: string;
+
+
+  constructor(name: string) {
+    this.name = name;
+  }
 
   add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
     const o = assertByte(opcode);
@@ -48,8 +54,9 @@ class InstructionSet {
 
   /**
    * Gets the instruction with the given opcode.
+   * @return undefined if there is no instruction with the given opcode
    */
-  instruction(opcode: number): Instruction {
+  instruction(opcode: number): Instruction | undefined {
     return this.instructions[assertByte(opcode)];
   }
 

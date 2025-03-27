@@ -52,20 +52,25 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress;
-    let inst: InstructionLike = dis.nextInstructionLine();
-    const addressTags = [TAG_ADDRESS];
-    if (traceResult.codeAddresses.includes(instAddress)) {
-      addressTags.push(TAG_EXECUTED);
+    let inst: InstructionLike | undefined = dis.nextInstructionLine();
+    if (!inst) {
+      // TODO decide how this can happen and what to do instead (byte declaration?)
+      throw Error(`cannot disassemble at ${instAddress}`);
+    } else {
+      const addressTags = [TAG_ADDRESS];
+      if (traceResult.codeAddresses.includes(instAddress)) {
+        addressTags.push(TAG_EXECUTED);
+      }
+      if (meta.executionEntryPoints(fb).map(as => as[0]).includes(instAddress)) {
+        addressTags.push(TAG_ENTRY_POINT);
+      }
+      const tags = [
+        new Tag(addressTags, hex16(instAddress)),
+        new Tag([TAG_HEX], asHex(inst.getBytes())),
+        ...inst.disassemble(dialect, dis)
+      ];
+      detail.dataView.addLine(new LogicalLine(tags, inst.getLength(), instAddress, inst));
     }
-    if (meta.executionEntryPoints(fb).map(as => as[0]).includes(instAddress)) {
-      addressTags.push(TAG_ENTRY_POINT);
-    }
-    const tags = [
-      new Tag(addressTags, hex16(instAddress)),
-      new Tag([TAG_HEX], asHex(inst.getBytes())),
-      ...inst.disassemble(dialect, dis)
-    ];
-    detail.dataView.addLine(new LogicalLine(tags, inst.getLength(), instAddress, inst));
   }
 
   // TODO link up internal address references including jump targets and mark two-sided cross-references
@@ -117,7 +122,9 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
   };
 }
 
-/** User action that disassembles the file. */
+/**
+ * User action that disassembles the file.
+ */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   let userActions: [UserAction, ...UserAction[]] = [{
@@ -150,15 +157,23 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 };
 
 /**
- * PRG refers to the Commodore program binary file format which merely prefixes the content with the load address.
+ * Makes a BlobType representing a Commodore program binary file format with the first two bytes of the load address
+ * in LSB,MSB format (little endian).
  *
  * @param prefix
  */
-function prg(prefix: ArrayLike<number>) {
+function prg(prefix: ArrayLike<number> | number) {
   // prg has a two byte load address
-  const addr = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
-  return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", prefix);
+  if (typeof prefix == "number") {
+    let addr: string = hex16(prefix);
+    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", LE.wordToTwoBytes(prefix));
+  } else {
+    let addr: string = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
+    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", prefix);
+  }
 }
+
+
 
 /**
  * Cart ROM dumps without any emulator metadata file format stuff.

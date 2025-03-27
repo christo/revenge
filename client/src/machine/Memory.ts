@@ -73,7 +73,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
       if (bytes < 0 || bytes > ArrayMemory.MAX) {
         throw Error(`Memory size ${bytes} is not supported`);
       }
-      this._bytes = new Array<number>(bytes);
+      this._bytes = new Array<number>(bytes as number);
       // arbitrary conspicuous (0b1010 = 0xa = 10) double-endian fill constant to aid debugging
       this._bytes.fill(0b1010);
     } else {
