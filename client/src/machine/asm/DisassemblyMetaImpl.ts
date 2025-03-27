@@ -95,6 +95,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    * @param fb the FileBlob
    */
   executionEntryPoints(fb: FileBlob): [Addr, string][] {
+    // transform offsets into addresses
     return this._jumpVectorOffsets.map(il => ([fb.read16(il[0]), il[1]]));
   }
 
