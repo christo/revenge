@@ -3,6 +3,7 @@
 ## Next Actions
 
 * [ ] Myriad throws errors
+* [ ] bigram plot view
 * [x] disassembler should enforce reset vector address to align to instruction first byte
       e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
       as data
@@ -16,7 +17,6 @@
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
 * [ ] support importing with `.ts` extension in test source dir
-* [ ] bigram plot view
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] Distinguish between code and data mostly automatically
