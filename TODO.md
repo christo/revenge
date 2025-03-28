@@ -43,7 +43,7 @@
         the prelude is the basic loader
 * [x] Sniffer / hybrid disassembler/basic decoder
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and 
-      code layout clash. Also format long byte declarations on multiple physical lines.
+      code layout clash.
 
 
 ## Long Term Ideas
