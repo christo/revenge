@@ -80,8 +80,6 @@ class Disassembler {
 
     let instLike: InstructionLike | undefined;
 
-    // TODO merge edict check for 0-n bytes ahead where n is the instruction size with opcode = current byte
-
     const maybeInstruction: InstructionLike | undefined = this.maybeMkEdict(lc);
     if (maybeInstruction !== undefined) {
       instLike = maybeInstruction;
