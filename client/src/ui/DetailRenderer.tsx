@@ -13,6 +13,7 @@ import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 import {InsertLink, BookmarkBorder} from "@mui/icons-material";
 import Box from "@mui/material/Box";
+import { Tooltip } from "@mui/material";
 
 /**
  * Shows the detailed contents of a single file with a leading info summary specific to
@@ -40,11 +41,9 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
 
     {detail.dataView.getLines().map((ll, i) => {
       const tagsForLine: Tag[] = ll.getTags();
-      // TODO use TagRenderer
       return <div className={detail.classNames.join(" ")} key={`fb_${i}`}>
         {tagsForLine.map((tup: Tag, j) => {
           // add id if this is an address
-          const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
           const isNote = tup.classNames.find(x => x === TAG_NOTE) !== undefined;
           // set data- attributes for each item in the data
           const data: { [k: string]: string; } = {};
@@ -59,6 +58,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
           } else {
             const operand = tup.value;
             const internalLink = tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]);
+            const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
 
             return <div {...extra} {...data}
                         className={tup.spacedClassNames()}
@@ -66,7 +66,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
                         onClick={() => handleClick(tup.data, operand)}>
               {tup.value}
               <Box display="inline" className="iconAnno">
-                {internalLink ? <InsertLink/> : ""}
+                {internalLink ? <Tooltip title="Jump in binary"><InsertLink/></Tooltip> : ""}
                 {tup.hasTag(TAG_KNOWN_SYMBOL) ? <BookmarkBorder/> : ""}
               </Box>
             </div>;
