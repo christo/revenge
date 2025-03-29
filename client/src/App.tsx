@@ -74,6 +74,10 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
   }
 }
 
+function Logo() {
+  return <img src="revenge-logo512.png" width={512} height={512} className="logo" />; ;
+}
+
 function App() {
   const [file, setFile] = useState<File | FileLike | null>(null);
   return (
@@ -87,7 +91,7 @@ function App() {
                 <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
               </Box>
             </Box>
-            {file ? <CurrentFileSummary file={file}/> : null}
+            {file ? <CurrentFileSummary file={file}/> : <Logo/>}
           </Box>
         </Box>
       </ThemeProvider>

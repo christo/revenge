@@ -23,7 +23,7 @@ export function MenuAppBar() {
   return (
       <Box sx={{flexGrow: 1}}>
         <AppBar position="static">
-          <Toolbar>
+          <Toolbar sx={{backgroundColor: "#1B0420", borderBottom: "#0AE0E3 thin dashed"}}>
             <IconButton
                 size="large"
                 edge="start"
@@ -31,12 +31,16 @@ export function MenuAppBar() {
                 aria-label="menu"
                 sx={{mr: 2}}
             >
-              <MenuIcon/>
+              <MenuIcon sx={{color:"#0AE0E3"}}/>
             </IconButton>
-            <Typography variant="h4" component="div" sx={{flexGrow: 1, fontFamily: 'BebasNeueRegular'}}>
+            <Typography variant="h4" component="div" sx={{
+              flexGrow: 1,
+              fontFamily: 'BebasNeueRegular',
+              color: '#E346A5'
+            }}>
               Revenge
             </Typography>
-            <Typography display="inline" sx={{color: "#fff", opacity: 0.25, fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
+            <Typography display="inline" sx={{color: "#E346A5", fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
               retrocomputing reverse engineering environment
             </Typography>
             {(
@@ -49,7 +53,7 @@ export function MenuAppBar() {
                       onClick={handleMenu}
                       color="inherit"
                   >
-                    <AccountCircle/>
+                    <AccountCircle sx={{color: "#0AE0E3"}}/>
                   </IconButton>
                   <Menu
                       id="menu-appbar"

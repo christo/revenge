@@ -10,6 +10,18 @@
   url("./fonts/Martian_Mono/static/MartianMono/MartianMono-SemiBold.ttf") format("truetype");
 }
 
+.logo {
+  margin: 0 auto;
+  display: block;
+  border-radius: 16px;
+}
+
+/*
+logo colours:
+dark purple background 1B0420
+neon pink: #E346A5
+cyan: 0AE0E3
+ */
 
 /*
 ***********************
