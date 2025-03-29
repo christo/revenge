@@ -6,7 +6,7 @@ import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {Edict} from "./asm/Edict.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobType, UNKNOWN_BLOB} from "./BlobType";
-import {TOKEN_SYS} from "./cbm/BasicDecoder.ts";
+import {TOKEN_SPACE, TOKEN_SYS} from "./cbm/BasicDecoder.ts";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
 import {Petscii} from "./cbm/petscii.ts";
@@ -84,8 +84,12 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
       // line number length: 2 =
       // 6
       if (fileBlob.read8(6) === TOKEN_SYS) {
-        // read petscii decimal address until space or end of line
         let i= 7;
+        // skip any spaces
+        while (fileBlob.read8(i) === TOKEN_SPACE) {
+          i++;
+        }
+        // read petscii decimal address until space or end of line
         let intString = "";
         let byteRead = fileBlob.read8(i);
         while (i < fileBlob.getLength() && Petscii.C64.unicode[byteRead] >= '0' && Petscii.C64.unicode[byteRead] <= '9') {
