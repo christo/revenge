@@ -19,7 +19,7 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
     FileBlob.fromFile(file, LE).then(fb => setRendered({fb: fb, loading: false}));
   }, [file]);
 
-  return <Box sx={{p: 1, backgroundColor: darkPurple, m: 2, color: "antiquewhite"}} className="fileSummary">
+  return <Box sx={{p: 1, m: 2, color: "antiquewhite"}} className="fileSummary">
     <Typography display="inline" sx={{pr: 1, fontWeight: "bold", fontSize: "200%", lineHeight: 1.8, color: neonYellow}} className="filename">
       {file.name}
     </Typography>

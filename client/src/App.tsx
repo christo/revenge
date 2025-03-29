@@ -1,6 +1,6 @@
 import {Button, CircularProgress, Stack} from "@mui/material";
 import Box from '@mui/material/Box';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 
@@ -8,16 +8,11 @@ import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
-import {FileBlob, FileLike} from "./machine/FileBlob.ts";
+import {FileLike} from "./machine/FileBlob.ts";
+import {darkTheme} from "./neonColourScheme.ts";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
 import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
 
 /**
  * Maximum allowed size for file uploads.
@@ -66,7 +61,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
         <Stack direction="row" spacing={2}>
           {items.map((item, i) => {
             // TODO make neon
-            return <Button onClick={() => handleFile(item)} size="small" variant="outlined"
+            return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
                            key={`ql_${i}`}>{item.name}</Button>
           })}
         </Stack>
