@@ -93,6 +93,9 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         console.log(`intString is ${intString}`);
         try {
           const startAddress = parseInt(intString, 10);
+          if (isNaN(startAddress)) {
+            throw Error(`could not parse start address "${intString}"`)
+          }
           console.log(`startAddress is ${startAddress} 0x${hex16(startAddress)}`);
           //
           const prefixWtf = [
