@@ -58,7 +58,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
   }
 
-  console.log(`maxBasicSmell: ${maxBasicSmell}`);
+  // console.log(`maxBasicSmell: ${maxBasicSmell}`);
   // common cartridge prg loads
   for (let i = 0; i < COMMON_MLPS.length; i++) {
     const prg = COMMON_MLPS[i];
@@ -67,6 +67,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
       return disassemble(prg, fileBlob);
     }
   }
+  // detect machine code with basic stub
   if (maxBasicSmell > 0.5) {
     // TODO move this hairball into a sniffer
     const loadAddress = fileBlob.read16(0);
