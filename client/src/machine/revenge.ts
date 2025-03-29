@@ -68,6 +68,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
   }
   if (maxBasicSmell > 0.5) {
+    // TODO move this hairball into a sniffer
     const loadAddress = fileBlob.read16(0);
     const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
     // TODO tighten up this rough heuristic
