@@ -8,9 +8,10 @@ type Token = [number, string];
 
 const TOKEN_PRINT = 153;
 const TOKEN_REM = 143;
+const TOKEN_SPACE = 32;
 const TOKEN_SYS = 158;
 const TOKENS: Token[] = [
-  [32, " "],
+  [TOKEN_SPACE, " "],
   [128, "END"],
   [129, "FOR"],
   [130, "NEXT"],
@@ -214,4 +215,4 @@ const CBM_BASIC_2_0 = new BasicDecoder("Commodore BASIC", 2, 0);
 
 TOKENS.forEach(t => CBM_BASIC_2_0.reg(t));
 
-export {CBM_BASIC_2_0, TOKEN_REM, TOKEN_PRINT, TOKEN_SYS};
+export {CBM_BASIC_2_0, TOKEN_REM, TOKEN_PRINT, TOKEN_SYS, TOKEN_SPACE};
