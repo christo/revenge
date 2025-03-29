@@ -132,7 +132,6 @@ class Disassembler {
    */
   instructionByteAhead = (n: number) => {
     const address = this.currentAddress + n;
-    // TODO merge execution entry point into execution points
     const entries = this.disMeta.executionEntryPoints(this.fb);
     const isEntryPoint = entries.find(ar => ar[0] === address) !== undefined;
     return isEntryPoint || this.executionPoints.map(ir => ir[0]).includes(address);
