@@ -2,7 +2,7 @@
 
 ## Next Actions
 
-* [ ] Myriad throws errors
+* [x] Myriad throws errors
 * [ ] bigram plot view
 * [x] disassembler should enforce reset vector address to align to instruction first byte
       e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
