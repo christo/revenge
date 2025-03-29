@@ -65,6 +65,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
       <Stack direction="row" spacing={2}><p>Quickload:</p>
         <Stack direction="row" spacing={2}>
           {items.map((item, i) => {
+            // TODO make neon
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined"
                            key={`ql_${i}`}>{item.name}</Button>
           })}

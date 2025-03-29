@@ -8,6 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import React from "react";
+import {background, neonCyan, neonPink} from "../neonColourScheme.ts";
 
 export function MenuAppBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,7 +24,7 @@ export function MenuAppBar() {
   return (
       <Box sx={{flexGrow: 1}}>
         <AppBar position="static">
-          <Toolbar sx={{backgroundColor: "#1B0420", borderBottom: "#0AE0E3 thin dashed"}}>
+          <Toolbar sx={{backgroundColor: background, borderBottom: `${neonCyan} thin dashed`}}>
             <IconButton
                 size="large"
                 edge="start"
@@ -31,16 +32,16 @@ export function MenuAppBar() {
                 aria-label="menu"
                 sx={{mr: 2}}
             >
-              <MenuIcon sx={{color:"#0AE0E3"}}/>
+              <MenuIcon sx={{color:neonCyan}}/>
             </IconButton>
             <Typography variant="h4" component="div" sx={{
               flexGrow: 1,
               fontFamily: 'BebasNeueRegular',
-              color: '#E346A5'
+              color: neonPink
             }}>
               Revenge
             </Typography>
-            <Typography display="inline" sx={{color: "#E346A5", fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
+            <Typography display="inline" sx={{color: neonPink, fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
               retrocomputing reverse engineering environment
             </Typography>
             {(
@@ -53,7 +54,7 @@ export function MenuAppBar() {
                       onClick={handleMenu}
                       color="inherit"
                   >
-                    <AccountCircle sx={{color: "#0AE0E3"}}/>
+                    <AccountCircle sx={{color: neonCyan}}/>
                   </IconButton>
                   <Menu
                       id="menu-appbar"
