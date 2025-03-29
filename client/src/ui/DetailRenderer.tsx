@@ -48,9 +48,6 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
           // set data- attributes for each item in the data
           const data: { [k: string]: string; } = {};
           tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
-          if (tup.hasTag(TAG_KNOWN_SYMBOL)) {
-            console.log(`known symbol at line ${i}`);
-          }
           if (isNote) {
             // shown instead of normal line, represents a potential problem
             return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}

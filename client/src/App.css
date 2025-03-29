@@ -70,7 +70,7 @@ classes for tags follow
   margin-right: 1em;
   margin-bottom: 0.2em;
   padding: 0.1rem 0.2rem;
-  opacity: 60%;
+  /*opacity: 60%;*/
 }
 
 .basic > .line {
@@ -278,7 +278,7 @@ classes for tags follow
 
 .entrypoint {
   color: #f8ff22;
-  outline: #f8ff22 solid 2px;
+  /*outline: #f8ff22 solid 2px;*/
   border-radius: 2px;
 }
 

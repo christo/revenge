@@ -177,7 +177,7 @@ class Tracer {
    * @return number of steps taken
    */
   trace(maxSteps: number): number {
-    console.log(`starting trace with max steps ${maxSteps}`);
+    // console.log(`starting trace with max steps ${maxSteps}`);
     const startCount = this.stepCount;
     // TODO consider spawned threads
     while (this.running() && this.stepCount < maxSteps) {
@@ -186,7 +186,7 @@ class Tracer {
     }
     // we might not have started from zero
     const stepsTaken = this.stepCount - startCount;
-    console.log(`traced ${stepsTaken} steps`);
+    // console.log(`traced ${stepsTaken} steps`);
     return stepsTaken;
   }
 

@@ -1,4 +1,4 @@
-import {Button, CircularProgress, Stack} from "@mui/material";
+import {Button, CircularProgress, Stack, Typography} from "@mui/material";
 import Box from '@mui/material/Box';
 import {ThemeProvider} from '@mui/material/styles';
 import axios from "axios";
@@ -56,17 +56,17 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
   } else if (!isLoaded) {
     return <CircularProgress/>;
   } else {
-    return <div className="quickloads">
-      <Stack direction="row" spacing={2}><p>Quickload:</p>
+    return <Box>
+      <Stack direction="row" spacing={2} justifyItems="middle">
+        <Typography >Quickload:</Typography>
         <Stack direction="row" spacing={2}>
           {items.map((item, i) => {
-            // TODO make neon
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
                            key={`ql_${i}`}>{item.name}</Button>
           })}
         </Stack>
       </Stack>
-    </div>;
+    </Box>;
   }
 }
 

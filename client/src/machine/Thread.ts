@@ -96,7 +96,7 @@ export class Thread {
     const mesg = `${reason} @ ${this.renderPc()}`;
     this.terminationReason = mesg;
     this._running = false;
-    console.log(`${this.descriptor} terminated ${mesg}`);
+    // console.log(`${this.descriptor} terminated ${mesg}`);
   }
 
   /**
