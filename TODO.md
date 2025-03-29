@@ -3,12 +3,14 @@
 ## Next Actions
 
 * [x] Myriad throws errors
+* [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] bigram plot view
 * [x] disassembler should enforce reset vector address to align to instruction first byte
       e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
       as data
 * [ ] If a trace is available, all executed instructions should be disassembled consistently
   with the execution trace - maybe store all disassembled instructions as a result of the trace?
+  looks like this is not working for all example cases.
 * [ ] disassembler should be able to stat at any point in the binary and resolve updates
   to bytes, changing their interpretation at any time
 * [ ] show definitions for used kernal symbols
