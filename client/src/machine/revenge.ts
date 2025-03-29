@@ -21,6 +21,7 @@ import {
 } from "./cbm/vic20.ts";
 import {Addr, asHex, hex16} from "./core.ts";
 import {FileBlob} from "./FileBlob.ts";
+import {Mos6502} from "./mos6502.ts";
 
 function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
@@ -131,7 +132,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
 
           }
           const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)} with basic loader SYS ${renderAddrDecHex(startAddress)}`;
-          const basicPrefixType = new BlobType(`ML, entry@${hex16(startAddress)}`, desc, ["prg"], "prg", prefixWtf, dm);
+          const basicPrefixType = new BlobType(`${Mos6502.name} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
         } catch (e) {
           console.error("died trying to parse sys arg", e);

@@ -548,6 +548,7 @@ class FullInstruction implements Byteable {
 
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 {
+  static readonly name = "Mos 6502";
   static readonly ISA = I;
 
   static readonly STACK_LO = 0x0100;
