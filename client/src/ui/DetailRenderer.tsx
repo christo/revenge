@@ -50,7 +50,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
           tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
           if (isNote) {
             // shown instead of normal line, represents a potential problem
-            return <Alert severity="info" {...data} sx={{mt: 2, width: "50%"}}
+            return <Alert severity="warning" {...data} sx={{mt: 2, width: "50%"}}
                           key={`fb_${i}_${j}`}>{tup.value}</Alert>;
           } else {
             const operand = tup.value;
