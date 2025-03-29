@@ -71,7 +71,12 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
 }
 
 function Logo() {
-  return <img src="revenge-logo512.png" width={512} height={512} className="logo" />; ;
+  const sx = {
+    margin: "0 auto",
+    display: "block",
+    borderRadius: "1em",
+  }
+  return <img src="revenge-logo512.png" width={512} height={512} style={sx} />;
 }
 
 function App() {
