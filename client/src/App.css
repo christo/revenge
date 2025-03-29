@@ -18,9 +18,10 @@
 
 /*
 logo colours:
-dark purple background 1B0420
+dark purple background #1B0420
 neon pink: #E346A5
-cyan: 0AE0E3
+neon cyan: #0AE0E3
+neon yellow: #f8ff22;
  */
 
 /*
@@ -72,7 +73,8 @@ classes for tags follow
 
 .addr {
   margin-right: 1em;
-  padding: 0.2rem;
+  margin-bottom: 0.2em;
+  padding: 0.1rem 0.2rem;
   opacity: 60%;
 }
 
@@ -119,7 +121,8 @@ classes for tags follow
   display: inline-block;
   min-width: 9ch;
   width: 9ch;
-  background-color: #282c34;
+  /*background-color: #292638;*/
+  color: #928d9a;
   border-radius: 4px;
   padding: 2px 4px;
 }
@@ -127,6 +130,7 @@ classes for tags follow
 .label {
   position: absolute;
   left: 23ch;
+  color: #0AE0E3;
 }
 
 .data {
@@ -272,11 +276,14 @@ classes for tags follow
 }
 
 .executed {
-  background-color: rgba(145, 37, 18, 0.8)
+  color: #E346A5;
+  /*outline: #E346A5 solid 2px;*/
+  border-radius: 2px;
 }
 
 .entrypoint {
-  outline: 3px solid yellow;
+  color: #f8ff22;
+  outline: #f8ff22 solid 2px;
   border-radius: 2px;
 }
 
