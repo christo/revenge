@@ -76,7 +76,8 @@ function Logo() {
     display: "block",
     borderRadius: "1em",
   }
-  return <img src="revenge-logo512.png" width={512} height={512} style={sx} />;
+  // noinspection HtmlUnknownTarget
+  return <img src="revenge-logo512.png" width={512} height={512} style={sx} alt="revenge logo" />;
 }
 
 function App() {
