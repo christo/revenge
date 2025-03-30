@@ -85,7 +85,7 @@ class Disassembler {
     if (maybeInstruction !== undefined) {
       instLike = maybeInstruction;
     } else {
-      const isIllegal = (n: number) => Mos6502.ISA.op(n) === undefined;
+      const isIllegal = (n: number) => this.iset.op(n) === undefined;
       const opcode = this.peekByte();
       // TODO fix: opcode will not be undefined, peekByte will throw error beyond eof
       if (opcode === undefined) {
@@ -154,7 +154,7 @@ class Disassembler {
       return new ByteDeclaration(this.eatBytes(n), lc);
     };
 
-    const instLen = Mos6502.ISA.numBytes(currentByte);
+    const instLen = this.iset.numBytes(currentByte);
     // current index is the byte following the opcode which we've already checked for an edict
     // check for edict inside the bytes this instruction would need
     if (instLen === 2) {
@@ -355,7 +355,7 @@ class Disassembler {
    * requisite bytes.
    */
   private mkInstructionLine(opcode: number, labelsComments: LabelsComments): FullInstructionLine | undefined {
-    const numInstructionBytes = Mos6502.ISA.numBytes(opcode) || 1
+    const numInstructionBytes = this.iset.numBytes(opcode) || 1
     const bytesRemaining = this.fb.getBytes().length - this.currentIndex;
     if (numInstructionBytes <= bytesRemaining) {
       // default operands are 0

@@ -1,3 +1,4 @@
+import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Endian} from "./Endian.ts";
 
 /**
@@ -6,4 +7,6 @@ import {Endian} from "./Endian.ts";
  */
 export interface Cpu {
   endianness: () => Endian;
+  name: () => string;
+  isa: () => InstructionSet;
 }

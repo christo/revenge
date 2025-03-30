@@ -135,7 +135,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
 
           }
           const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via basic loader stub: SYS ${startAddress}`;
-          const basicPrefixType = new BlobTypeSniffer(`${Mos6502.name} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+          const basicPrefixType = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
         } catch (e) {
           console.error("died trying to parse sys arg", e);

@@ -551,7 +551,7 @@ class FullInstruction implements Byteable {
 
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 implements Cpu {
-  static readonly name = "Mos 6502";
+  static readonly NAME = "Mos 6502";
   static readonly ISA = I;
 
   static readonly STACK_LO = 0x0100;
@@ -569,7 +569,10 @@ class Mos6502 implements Cpu {
   static readonly VECTOR_IRQ_LB = 0xfffe;
   static readonly VECTOR_IRQ_HB = 0xffff;
   static readonly ENDIANNESS = LE;
+  // implement Cpu
   endianness = () => Mos6502.ENDIANNESS;
+  name = () => Mos6502.NAME;
+  isa = () => Mos6502.ISA;
 }
 
 export {
