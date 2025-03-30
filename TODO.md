@@ -4,7 +4,7 @@
 
 * [x] Myriad throws errors
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
-* [ ] bigram plot view
+* [x] bigram plot view
 * [x] disassembler should enforce reset vector address to align to instruction first byte
       e.g. `PharaohsCurse-a000.prg` which requires some earlier bytes to be interpreted
       as data
