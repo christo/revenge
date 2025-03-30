@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {Disassembler} from "../../../src/machine/asm/Disassembler";
+import {LE} from "../../../src/machine/Endian";
 import {Mos6502} from "../../../src/machine/mos6502";
 import * as fs from "fs";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
 import {FileBlob} from "../../../src/machine/FileBlob";
-import {LE} from "../../../src/machine/core";
 import {InstructionLike} from "../../../src/machine/asm/instructions";
 
 

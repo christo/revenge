@@ -2,8 +2,9 @@
 // noinspection JSUnusedLocalSymbols
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
+import {LE} from "../Endian.ts";
 import {CartSniffer} from "./cbm.ts";
-import {KB_64, LE} from "../core.ts";
+import {KB_64} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {Petscii} from "./petscii.ts";

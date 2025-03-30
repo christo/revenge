@@ -1,5 +1,6 @@
 import {useEffect, useState } from "react";
-import {LE} from "../machine/core.ts";
+
+import {LE} from "../machine/Endian.ts";
 import {FileBlob, FileLike} from "../machine/FileBlob.ts";
 import {Mos6502} from "../machine/mos6502.ts";
 import {darkPurple, neonYellow} from "../neonColourScheme.ts";

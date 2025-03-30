@@ -1,5 +1,5 @@
+import {LE} from "../../src/machine/Endian";
 import {Mos6502} from "../../src/machine/mos6502";
-import {LE} from "../../src/machine/core";
 import {ArrayMemory} from "../../src/machine/Memory";
 
 /**

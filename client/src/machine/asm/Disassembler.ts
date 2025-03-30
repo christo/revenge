@@ -1,5 +1,6 @@
 import * as R from "ramda";
-import {Addr, Endian, hex16} from "../core.ts";
+import {Addr, hex16} from "../core.ts";
+import {Endian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Memory} from "../Memory.ts";
 import {FullInstruction, Mos6502} from "../mos6502.ts";

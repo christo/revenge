@@ -1,5 +1,6 @@
 import {Byteable} from "./Byteable.ts";
-import {Addr, BE, Endian} from "./core";
+import {Addr} from "./core";
+import {BE, Endian} from "./Endian.ts";
 import {ArrayMemory} from "./Memory.ts";
 
 /**

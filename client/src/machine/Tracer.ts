@@ -13,7 +13,8 @@
  */
 
 import {Disassembler} from "./asm/Disassembler";
-import {Addr, Endian, hex16} from "./core";
+import {Addr, hex16} from "./core";
+import {Endian} from "./Endian.ts";
 import {Memory} from "./Memory.ts";
 import {Thread} from "./Thread.ts";
 

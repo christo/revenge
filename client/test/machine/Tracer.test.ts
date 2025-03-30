@@ -1,7 +1,8 @@
 import {expect} from 'chai';
 import {Disassembler} from "../../src/machine/asm/Disassembler";
 import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {Addr, LE} from "../../src/machine/core";
+import {Addr} from "../../src/machine/core";
+import {LE} from "../../src/machine/Endian";
 import {FileBlob} from "../../src/machine/FileBlob";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";

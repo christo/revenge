@@ -1,4 +1,4 @@
-import {Endian} from "./core.ts";
+import {Endian} from "./Endian.ts";
 
 /**
  * Represents the CPU of a machine. Tentative minimal definition until more implementations

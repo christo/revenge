@@ -1,5 +1,6 @@
 import {expect} from 'chai';
-import {LE} from "../../../src/machine/core";
+
+import {LE} from "../../../src/machine/Endian";
 import {niladicOpcodes} from "../util";
 import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502";
 import {OpSemantics} from "../../../src/machine/asm/Op";

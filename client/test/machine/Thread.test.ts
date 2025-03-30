@@ -1,5 +1,6 @@
 import {expect} from 'chai';
-import {LE} from "../../src/machine/core";
+
+import {LE} from "../../src/machine/Endian";
 import {Thread} from "../../src/machine/Thread";
 import {ArrayMemory} from "../../src/machine/Memory";
 import {Mos6502} from "../../src/machine/mos6502";
