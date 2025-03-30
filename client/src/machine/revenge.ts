@@ -71,7 +71,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
       return disassemble(prg, fileBlob);
     }
   }
-  // detect machine code with basic stub
+  // detect VIC20 machine code with basic stub
   if (maxBasicSmell > 0.5) {
     // TODO move this hairball into a sniffer
     const loadAddress = fileBlob.read16(0);
