@@ -16,8 +16,8 @@ function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
 
   const bigram = new Bigram(fb);
   const max = bigram.getMax();
-  // TODO can/should we set size like this in here?
-  console.log(`bigram max is ${max}`);
+
+  // TODO make canvas resizable, draw proportionally
 
   const context = canvas.getContext("2d");
   if (context) {
