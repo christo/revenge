@@ -1,13 +1,14 @@
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Typography from "@mui/material/Typography";
+import {useState} from "react";
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
-import Typography from "@mui/material/Typography";
-import { useState } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
-import Chip from "@mui/material/Chip";
 
 
 function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
@@ -38,8 +39,10 @@ export function FileDetail({fb}: { fb: FileBlob }) {
   */
   return <Box>
 
-    <Box className="dataMeta">
-      <Box sx={{mr: 1}} >
+    <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+      <Box sx={{
+        mr: 1,
+      }}>
         <Typography display="inline" sx={{
           mr: 1,
           fontStyle: "italic",
@@ -51,6 +54,17 @@ export function FileDetail({fb}: { fb: FileBlob }) {
           return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="info"
                        key={`tag_${i}`}/>;
         })}
+      </Box>
+      <Box sx={{display: 'flex', justifyContent: "space-between", flexGap: 5}}>
+        <Box sx={{mr: 2, ml: 5}}>
+          <Typography variant="h4">
+            Bigram
+          </Typography>
+          <Typography sx={{fontStyle: "italic", opacity: 0.6}}>
+            (Byte<sub>n</sub>,&nbsp;Byte<sub>n+1</sub>)
+          </Typography>
+        </Box>
+        <BigramPlot fb={fb}/>
       </Box>
     </Box>
 

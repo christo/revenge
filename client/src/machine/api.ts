@@ -2,10 +2,10 @@ import {Detail} from "../ui/Detail.ts";
 import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
-import {Addr, BigEndian, Endian, hex8, LittleEndian} from "./core";
+import {Addr, BigEndian, hex8, LittleEndian} from "./core";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {FileBlob} from "./FileBlob";
-import {ArrayMemory, Memory} from "./Memory.ts";
+import {Memory} from "./Memory.ts";
 import {Mos6502} from "./mos6502";
 
 function getRenderers(_tag: Tag): TagRenderer[] {
@@ -200,7 +200,7 @@ class BooBoo {
 
 
 /**
- * Shows a hex dump for a {@link FileBlob}
+ * Shows a hex dump for a {@link FileBlob}.
  * @param fb
  */
 const hexDumper: UserFileAction = (fb: FileBlob) => ({
@@ -320,9 +320,10 @@ abstract class Computer {
 export {BooBoo, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer, RomImage};
 export type {
   ActionExecutor,
-  BlobToActions,
   ActionFunction,
-  UserAction,
+  BlobToActions,
+  Continuation,
   TypeActions,
-  Continuation
+  UserAction,
+  UserFileAction
 };

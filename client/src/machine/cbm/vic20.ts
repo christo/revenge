@@ -180,7 +180,10 @@ const VIC20_CART = new CartSniffer(
     )
 );
 
-/** Common load addresses for machine language programs. */
+/**
+ * Common load addresses for machine language cartridge images on VIC-20.
+ * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
+ */
 const COMMON_MLPS = [
   prg([0x00, 0x40]),  // 0x4000
   prg([0x00, 0x60]),  // 0x6000

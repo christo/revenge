@@ -38,6 +38,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   for (let i = 0; i < carts.length; i++) {
     const cart = carts[i];
     if (cart.sniff(fileBlob) > 1) {
+      // TODO get rid of early return
       return disassemble(cart, fileBlob);
     }
   }
@@ -45,6 +46,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   if (C64_CRT.sniff(fileBlob) > 1) {
     const typeActions = crt64Actions(fileBlob);
     typeActions.actions.push(hd);
+    // TODO get rid of early return
     return typeActions;
   }
 
@@ -55,16 +57,17 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     if (basicSmell > 1) {
       const ta = printBasic(BASICS[i], fileBlob);
       ta.actions.push(hd);
+      // TODO get rid of early return
       return ta;
     }
   }
 
-  // console.log(`maxBasicSmell: ${maxBasicSmell}`);
-  // common cartridge prg loads
+  // common cartridge image load addresses
   for (let i = 0; i < COMMON_MLPS.length; i++) {
     const prg = COMMON_MLPS[i];
     if (prg.sniff(fileBlob) > 1) {
       console.log(`sniffed common prg blob type`);
+      // TODO get rid of early return
       return disassemble(prg, fileBlob);
     }
   }
@@ -97,13 +100,13 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
           intString += Petscii.C64.unicode[byteRead];
           byteRead = fileBlob.read8(++i);
         }
-        console.log(`intString is ${intString}`);
+        // console.log(`intString is ${intString}`);
         try {
           const startAddress = parseInt(intString, 10);
           if (isNaN(startAddress)) {
             throw Error(`could not parse start address "${intString}"`)
           }
-          console.log(`startAddress is ${startAddress} 0x${hex16(startAddress)}`);
+          //console.log(`startAddress is ${startAddress} 0x${hex16(startAddress)}`);
           //
           const prefixWtf = [
             startAddress && 0x00ff,
@@ -131,7 +134,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
             }
 
           }
-          const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)} with basic loader SYS ${renderAddrDecHex(startAddress)}`;
+          const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via basic loader stub: SYS ${startAddress}`;
           const basicPrefixType = new BlobType(`${Mos6502.name} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
         } catch (e) {
