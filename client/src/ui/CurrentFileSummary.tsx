@@ -1,6 +1,7 @@
 import {useEffect, useState } from "react";
 import {LE} from "../machine/core.ts";
 import {FileBlob, FileLike} from "../machine/FileBlob.ts";
+import {Mos6502} from "../machine/mos6502.ts";
 import {darkPurple, neonYellow} from "../neonColourScheme.ts";
 import {FileDetail} from "./FileDetail.tsx";
 import Box from "@mui/material/Box";
@@ -16,7 +17,7 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
   const [rendered, setRendered] = useState<FileContents>({fb: FileBlob.NULL_FILE_BLOB, loading: true});
 
   useEffect(() => {
-    FileBlob.fromFile(file, LE).then(fb => setRendered({fb: fb, loading: false}));
+    FileBlob.fromFile(file, Mos6502.ENDIANNESS).then(fb => setRendered({fb: fb, loading: false}));
   }, [file]);
 
   return <Box sx={{p: 1, m: 2, color: "antiquewhite"}} className="fileSummary">

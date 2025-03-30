@@ -320,8 +320,8 @@ class Vic20 extends Computer {
       VIC20_EXP16K,
       VIC20_EXP24K,
   ]
-  constructor(memory: MemoryConfiguration, roms: RomImage[] = []) {
-    super("vic-20", new Mos6502(), new ArrayMemory(KB_64, LE), memory, roms, ["vic20"]);
+  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = []) {
+    super("vic-20", new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, ["vic20"]);
   }
 }
 

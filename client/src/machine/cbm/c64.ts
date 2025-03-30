@@ -15,7 +15,7 @@ import {ArrayMemory} from "../Memory.ts";
 
 class C64 extends Computer {
   constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
-    super("C64", new Mos6502(), new ArrayMemory(KB_64, LE), memoryConfig, roms, ["c64"]);
+    super("C64", new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
 
@@ -25,7 +25,7 @@ const C64_BASIC_PRG = new BlobTypeSniffer(
     "BASIC program",
     ["basic", "c64"],
     "prg",
-    LE.wordToByteArray(C64_MEMORY.basicProgramStart)
+    Mos6502.ENDIANNESS.wordToByteArray(C64_MEMORY.basicProgramStart)
 );
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format

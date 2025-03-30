@@ -13,7 +13,7 @@ import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";
-import {Addr, assertByte, unToSigned} from "./core.ts";
+import {Addr, assertByte, LE, unToSigned} from "./core.ts";
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {
@@ -566,7 +566,8 @@ class Mos6502 {
   //  IRQ (Interrupt Request) vector, 16-bit (LB, HB)
   static readonly VECTOR_IRQ_LB = 0xfffe;
   static readonly VECTOR_IRQ_HB = 0xffff;
-
+  static readonly ENDIANNESS = LE;
+  ENDIANNESS = Mos6502.ENDIANNESS;
 }
 
 export {

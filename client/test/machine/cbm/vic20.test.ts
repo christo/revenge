@@ -45,7 +45,7 @@ describe("vic20", () => {
     bline.forEach((i) => ba.push(i));
     ba.push(0x00, 0x00); // end of program
 
-    const fb: FileBlob = FileBlob.fromBytes("basic-test", ba, LE);
+    const fb: FileBlob = FileBlob.fromBytes("basic-test", ba, VIC.cpu.ENDIANNESS);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).gte(1);   // this is a well-formed minimal basic program
   });

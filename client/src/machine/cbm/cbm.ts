@@ -102,7 +102,7 @@ type TraceResult = {
  * @return tuple of array of executed addresses and the number of milliseconds taken to trace
  */
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
-  const LE_64K = ArrayMemory.zeroes(0x10000, LE, true, true);
+  const LE_64K = ArrayMemory.zeroes(0x10000, Mos6502.ENDIANNESS, true, true);
   // TODO load system rom into memory instead of ignoring
   const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const entryPoints = meta.executionEntryPoints(fb);
@@ -164,7 +164,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
  */
 function prg(prefix: ArrayLike<number> | number) {
   // prg has a two byte load address
-  const prefixPair = (typeof prefix === "number") ? LE.wordToTwoBytes(prefix) : prefix;
+  const prefixPair = (typeof prefix === "number") ? Mos6502.ENDIANNESS.wordToTwoBytes(prefix) : prefix;
   let addr: string = `${hex8(prefixPair[1])}${hex8(prefixPair[0])}`; // little-endian rendition
   const desc = `program binary to load at $${addr}`;
   return new BlobTypeSniffer(`prg@${addr}`, desc, ["prg"], "prg", prefixPair);
