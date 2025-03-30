@@ -38,7 +38,9 @@ type Addr = number;
 const msb = (addr: Addr): number => (addr & 0xff00) >> 8;
 /** Least significant byte from address */
 const lsb = (addr: Addr): number => addr & 0xff;
+/** Hexadecimal four-digit string */
 const hex16 = (x: number): string => (0xffff & x).toString(16).padStart(4, "0").toLowerCase();
+/** Hexadecimal two-digit string */
 const hex8 = (x: number): string => (0xff & x).toString(16).padStart(2, "0").toLowerCase();
 const toStringArray = (xs: string[] | string) => ((typeof xs === "string") ? [xs] : xs);
 const toNumberArray = (xs: number[] | number) => ((typeof xs === "number") ? [xs] : xs);
