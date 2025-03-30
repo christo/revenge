@@ -3,6 +3,7 @@ import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
 import {Addr, hex8} from "./core";
+import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {BigEndian, LittleEndian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
@@ -279,11 +280,11 @@ abstract class Computer {
   private readonly _memoryConfig: MemoryConfiguration;
   private readonly _name: string;
   private readonly _tags: string[];
-  private readonly _cpu: Mos6502;
+  private readonly _cpu: Cpu;
 
   protected constructor(
       name: string,
-      cpu: Mos6502,
+      cpu: Cpu,
       memory: Memory<BigEndian | LittleEndian>,
       memoryConfig: MemoryConfiguration,
       roms: RomImage[],
