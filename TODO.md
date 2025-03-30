@@ -3,6 +3,9 @@
 ## Next Actions
 
 * [x] Myriad throws errors
+* [ ] show definitions for used kernal symbols
+  * [ ] render source lines that have no address prefix - such as symbol definitions
+  * [ ] implement jumping to definition
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [x] bigram plot view
 * [x] disassembler should enforce reset vector address to align to instruction first byte
@@ -11,15 +14,10 @@
 * [ ] If a trace is available, all executed instructions should be disassembled consistently
   with the execution trace - maybe store all disassembled instructions as a result of the trace?
   looks like this is not working for all example cases.
-* [ ] disassembler should be able to stat at any point in the binary and resolve updates
-  to bytes, changing their interpretation at any time
-* [ ] show definitions for used kernal symbols
-  * [ ] render source lines that have no address prefix - such as symbol definitions
-  * [ ] implement jumping to definition
-* [ ] make separate view components for hex, disassembly, basic
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
-* [ ] support importing with `.ts` extension in test source dir
+* [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
+* [ ] support importing with `.ts` extension in test source dir
 * [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] Distinguish between code and data mostly automatically
   * [x] Implement a code path Tracer for a generous subset of instructions that follows
