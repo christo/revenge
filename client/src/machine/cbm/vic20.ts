@@ -164,7 +164,7 @@ const JUMP_POINT_OFFSETS: NamedOffset[] = [
  */
 const VIC20_CART = new CartSniffer(
     "VIC-20 cart image",
-    "ROM dump from VIC-20",
+    "ROM dump from VIC-20 cartridge",
     ["cart", "vic20"],
     A0CBM, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
