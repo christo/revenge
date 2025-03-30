@@ -12,7 +12,8 @@
 import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
-import {Addr, assertByte, Byteable, unToSigned} from "./core.ts";
+import {Byteable} from "./Byteable.ts";
+import {Addr, assertByte, unToSigned} from "./core.ts";
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {

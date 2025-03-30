@@ -16,8 +16,9 @@ import {
   TAG_OPERAND_VALUE,
   TAG_PETSCII
 } from "../api.ts";
+import {Byteable} from "../Byteable.ts";
 import {Petscii} from "../cbm/petscii.ts";
-import {Byteable, hex16, hex8, TODO, unToSigned} from "../core.ts";
+import {hex16, hex8, TODO, unToSigned} from "../core.ts";
 import {
   FullInstruction,
   MODE_ABSOLUTE,

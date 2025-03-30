@@ -1,4 +1,5 @@
-import {Addr, Byteable, Endian, MB_8} from "./core.ts";
+import {Byteable} from "./Byteable.ts";
+import {Addr, Endian, MB_8} from "./core.ts";
 
 /**
  * Contiguous, fixed-sized 0-based Memory with {@link Endian Endianness}.

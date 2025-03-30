@@ -1,4 +1,4 @@
-import {Byteable} from "../machine/core.ts";
+import {Byteable} from "../machine/Byteable.ts";
 
 /**
  * Implements a frequency distribution for byte pair occurrences in the

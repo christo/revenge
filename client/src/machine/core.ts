@@ -17,18 +17,6 @@ const TODO = (mesg = "") => {
   throw Error(`Not Implemented ${mesg}`)
 };
 
-/** Can produce zero or more bytes of a known length. */
-interface Byteable {
-  /** The possibly empty array of byte values. Its length must be equal to {@link getLength} */
-  getBytes(): number[];
-
-  /** Length in bytes, must equal the number of bytes returned from {@link getBytes} . */
-  getLength(): number;
-
-  /** Get a single byte from the given offset */
-  read8(offset: number): number;
-}
-
 /**
  * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
  */
@@ -52,7 +40,6 @@ const assertByte = (value: number): number => {
   }
   return value & 0xff;
 };
-
 
 /**
  * Abstraction to hold all endian-specific utilities. See {@link LittleEndian} and {@link BigEndian}
@@ -148,5 +135,5 @@ export {
   MB_8,
 }
 
-export type {Byteable, Addr, Endian};
+export type {Addr, Endian};
 export {msb, lsb};
