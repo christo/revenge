@@ -5,7 +5,7 @@ import {LabelsComments, SymbolTable} from "./asm/asm.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {Edict} from "./asm/Edict.ts";
 import {InstructionLike} from "./asm/instructions.ts";
-import {BlobType, UNKNOWN_BLOB} from "./BlobType";
+import {BlobTypeSniffer, UNKNOWN_BLOB} from "./BlobTypeSniffer.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./cbm/BasicDecoder.ts";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
@@ -135,7 +135,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
 
           }
           const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via basic loader stub: SYS ${startAddress}`;
-          const basicPrefixType = new BlobType(`${Mos6502.name} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+          const basicPrefixType = new BlobTypeSniffer(`${Mos6502.name} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
         } catch (e) {
           console.error("died trying to parse sys arg", e);

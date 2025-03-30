@@ -7,7 +7,7 @@ import {FileBlob} from "./FileBlob.ts";
  * Represents a file type where file type detection heuristics such as
  * file name extension, magic number prefixes detect file contents.
  */
-class BlobType implements BlobSniffer {
+class BlobTypeSniffer implements BlobSniffer {
 
   name: string;
   desc: string;
@@ -16,6 +16,15 @@ class BlobType implements BlobSniffer {
   prefix: Uint8Array;
   dm: DisassemblyMeta;
 
+  /**
+   * Make a sniffer for detecting binaries using stuff like prefix bytes and file extension.
+   * @param name unique identifier used to report a detected binary type to the user
+   * @param desc elaboration, longer detail about the detection
+   * @param tags
+   * @param ext
+   * @param prefix the first bytes
+   * @param dm
+   */
   constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
     this.desc = desc;
     this.name = name;
@@ -42,6 +51,6 @@ class BlobType implements BlobSniffer {
   }
 }
 
-const UNKNOWN_BLOB = new BlobType("unknown", "type not detected", []);
+const UNKNOWN_BLOB = new BlobTypeSniffer("unknown", "type not detected", []);
 
-export {BlobType, UNKNOWN_BLOB};
+export {BlobTypeSniffer, UNKNOWN_BLOB};

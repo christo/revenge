@@ -8,7 +8,7 @@ import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {Petscii} from "./petscii.ts";
 import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
-import {BlobType} from "../BlobType.ts";
+import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {ArrayMemory} from "../Memory.ts";
@@ -20,7 +20,7 @@ class C64 extends Computer {
 }
 
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
-const C64_BASIC_PRG = new BlobType(
+const C64_BASIC_PRG = new BlobTypeSniffer(
     "C64 basic prg",
     "BASIC program",
     ["basic", "c64"],
@@ -30,7 +30,7 @@ const C64_BASIC_PRG = new BlobType(
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
 const prefix = Petscii.codes("C64 CARTRIDGE   ");
-const C64_CRT = new BlobType("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
+const C64_CRT = new BlobTypeSniffer("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
 const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({
   t: C64_CRT,
   actions: [hexDumper(fileBlob)]

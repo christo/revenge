@@ -18,7 +18,7 @@ import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
-import {BlobType} from "../BlobType.ts";
+import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8, LE} from "../core.ts";
 import {DataViewImpl} from "../DataView.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -160,24 +160,17 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
  * Makes a BlobType representing a Commodore program binary file format with the first two bytes of the load address
  * in LSB,MSB format (little endian).
  *
- * @param prefix
+ * @param prefix either an array of prefix bytes or a 16 bit word
  */
 function prg(prefix: ArrayLike<number> | number) {
   // prg has a two byte load address
-  if (typeof prefix == "number") {
-    let addr: string = hex16(prefix);
-    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", LE.wordToTwoBytes(prefix));
-  } else {
-    let addr: string = hex8(prefix[1]) + hex8(prefix[0]); // little-endian rendition
-    return new BlobType("prg@" + addr, "program binary to load at $" + addr, ["prg"], "prg", prefix);
-  }
+  const prefixPair = (typeof prefix === "number") ? LE.wordToTwoBytes(prefix) : prefix;
+  let addr: string = hex8(prefixPair[1]) + hex8(prefixPair[0]); // little-endian rendition
+  return new BlobTypeSniffer(`prg@${addr}`, `program binary to load at $${addr}`, ["prg"], "prg", prefixPair);
 }
 
-
-
 /**
- * Cart ROM dumps without any emulator metadata file format stuff.
- * Currently very VIC-20-biased.
+ * Detects raw cartridge ROM dumps. Currently very VIC-20-biased.
  */
 class CartSniffer implements BlobSniffer {
 
