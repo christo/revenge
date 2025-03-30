@@ -14,6 +14,7 @@ import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";
 import {Addr, assertByte, LE, unToSigned} from "./core.ts";
+import {Cpu} from "./Cpu.ts";
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {
@@ -548,7 +549,7 @@ class FullInstruction implements Byteable {
 // TODO introduce CPU abstraction for Z80 etc.
 
 // noinspection JSUnusedGlobalSymbols
-class Mos6502 {
+class Mos6502 implements Cpu {
   static readonly name = "Mos 6502";
   static readonly ISA = I;
 
@@ -567,7 +568,7 @@ class Mos6502 {
   static readonly VECTOR_IRQ_LB = 0xfffe;
   static readonly VECTOR_IRQ_HB = 0xffff;
   static readonly ENDIANNESS = LE;
-  ENDIANNESS = Mos6502.ENDIANNESS;
+  endianness = () => Mos6502.ENDIANNESS;
 }
 
 export {

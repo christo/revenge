@@ -315,6 +315,17 @@ abstract class Computer {
   pushWordBytes(ba: number[], word: number) {
     return this._memory.endianness().pushWordBytes(ba, word);
   }
+
+  /**
+   * Load configured ROM images into their respective locations.
+   */
+  loadRoms() {
+    if (this._memory.writeable()) {
+      this.roms.forEach(rom => this._memory.load(rom.getBytes(), rom.getLoadAddress()));
+    } else {
+      throw Error("Memory is not writeable");
+    }
+  }
 }
 
 export {BooBoo, hexDumper, Tag, LogicalLine, MemoryConfiguration, Computer, RomImage};
