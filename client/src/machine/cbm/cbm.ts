@@ -165,8 +165,9 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 function prg(prefix: ArrayLike<number> | number) {
   // prg has a two byte load address
   const prefixPair = (typeof prefix === "number") ? LE.wordToTwoBytes(prefix) : prefix;
-  let addr: string = hex8(prefixPair[1]) + hex8(prefixPair[0]); // little-endian rendition
-  return new BlobTypeSniffer(`prg@${addr}`, `program binary to load at $${addr}`, ["prg"], "prg", prefixPair);
+  let addr: string = `${hex8(prefixPair[1])}${hex8(prefixPair[0])}`; // little-endian rendition
+  const desc = `program binary to load at $${addr}`;
+  return new BlobTypeSniffer(`prg@${addr}`, desc, ["prg"], "prg", prefixPair);
 }
 
 /**
