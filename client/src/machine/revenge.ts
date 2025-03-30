@@ -11,7 +11,7 @@ import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
 import {Petscii} from "./cbm/petscii.ts";
 import {
-  COMMON_MLPS,
+  POPULAR_CART_LOAD_ADDRS,
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
@@ -63,8 +63,8 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   }
 
   // common cartridge image load addresses
-  for (let i = 0; i < COMMON_MLPS.length; i++) {
-    const prg = COMMON_MLPS[i];
+  for (let i = 0; i < POPULAR_CART_LOAD_ADDRS.length; i++) {
+    const prg = POPULAR_CART_LOAD_ADDRS[i];
     if (prg.sniff(fileBlob) > 1) {
       console.log(`sniffed common prg blob type`);
       // TODO get rid of early return

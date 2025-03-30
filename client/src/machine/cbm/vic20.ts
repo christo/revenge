@@ -184,7 +184,7 @@ const VIC20_CART = new CartSniffer(
  * Common load addresses for machine language cartridge images on VIC-20.
  * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
  */
-const COMMON_MLPS = [
+const POPULAR_CART_LOAD_ADDRS = [
   prg([0x00, 0x40]),  // 0x4000
   prg([0x00, 0x60]),  // 0x6000
   prg([0x00, 0x80]),  // 0x8000
@@ -197,6 +197,8 @@ const VIC20_EXP03K = new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k")
 const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k");
 const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
 const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
+/** Some new games require this max config */
+const VIC20_EXP35K = new MemoryConfiguration("VIC-20 35k expansion", 0x1201, "35k");
 
 const VIC20_MEMORY_CONFIGS = [
   VIC20_UNEX,
@@ -204,6 +206,7 @@ const VIC20_MEMORY_CONFIGS = [
   VIC20_EXP08K,
   VIC20_EXP16K,
   VIC20_EXP24K,
+  VIC20_EXP35K,
 ]
 
 const BASIC_LOAD_PRGS = VIC20_MEMORY_CONFIGS.map(mc => {
@@ -324,7 +327,7 @@ class Vic20 extends Computer {
 
 export {
   Vic20,
-  COMMON_MLPS,
+  POPULAR_CART_LOAD_ADDRS,
   VIC20_CART,
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,
