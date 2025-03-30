@@ -314,7 +314,7 @@ class DefaultDialect implements Dialect {
         if (symbol !== undefined) {
           operand = symbol.name;
           dis.addSymbolDefinition(symbol);
-          dis.addStat("symbol definition");
+          dis.addStat("symbol definitions");
         } else {
           operand = this.hexWordText(x);
         }
