@@ -106,24 +106,20 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
           if (isNaN(startAddress)) {
             throw Error(`could not parse start address "${intString}"`)
           }
-          //console.log(`startAddress is ${startAddress} 0x${hex16(startAddress)}`);
-          //
-          const prefixWtf = [
-            startAddress && 0x00ff,
-            startAddress >> 2,
-          ];
+
           const CONTENT_OFFSET = 2; // header contains just the 16 bit load address
           const sysCall = `SYS ${startAddress}`
           // TODO tidy this up
+          const entryPointDesc = `BASIC loader stub ${sysCall}`;
           const dm: DisassemblyMeta = {
             baseAddress(_fb: FileBlob): number {
               return memoryConfig.basicProgramStart;
             }, contentStartOffset(): number {
               return 2;
             }, executionEntryPoints(_fb: FileBlob): [number, string][] {
-              return [[startAddress, `BASIC header ${sysCall}`]];
+              return [[startAddress, entryPointDesc]];
             }, getEdict(_offset: number): Edict<InstructionLike> | undefined {
-              // TODO make edict about basic header definition
+              // TODO make edict(?) about basic header definition
               return undefined;
             }, getSymbolTable(): SymbolTable {
               return VIC20_KERNAL;
@@ -134,7 +130,8 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
             }
 
           }
-          const desc = `VIC20 ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via basic loader stub: SYS ${startAddress}`;
+          const desc = `${Vic20.NAME} ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+          const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
           const basicPrefixType = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
         } catch (e) {
