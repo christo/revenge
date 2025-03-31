@@ -10,7 +10,6 @@ import {ArrayMemory} from "./Memory.ts";
 class FileBlob implements Byteable {
   public static NULL_FILE_BLOB: FileBlob = FileBlob.fromBytes("null", 0, BE);
   name: string;
-  // maybe swap out memory for array and endian - Memory probably shouldn't include load address
   private memory: ArrayMemory<Endian>;
 
   constructor(name: string, memory: ArrayMemory<Endian>) {

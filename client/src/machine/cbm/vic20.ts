@@ -209,15 +209,15 @@ class Vic20 extends Computer {
     Vic20.MEMORY_CONFIG.EXP35K,
   ];
 
+  static BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
+    prg(mc.basicProgramStart)
+  });
+
   constructor(memConfig: MemoryConfiguration, roms: RomImage[] = VIC_ROMS) {
     super(Vic20.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, [Vic20.NAME]);
   }
 }
 
-
-const BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
-  prg(mc.basicProgramStart)
-});
 
 /**
  * Detects Vic-20 BASIC
@@ -298,7 +298,6 @@ class Vic20BasicSniffer implements BlobSniffer {
     return isBasic;
   }
 }
-
 
 const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.UNEX);
 const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP03K);

@@ -1,9 +1,8 @@
 import * as R from "ramda";
+import {Byteable} from "../Byteable.ts";
 import {Addr, hex16} from "../core.ts";
-import {Endian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {Memory} from "../Memory.ts";
-import {FullInstruction, Mos6502} from "../mos6502.ts";
+import {FullInstruction} from "../mos6502.ts";
 import {InstRec} from "../Tracer.ts";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
@@ -125,7 +124,7 @@ class Disassembler {
    * Check if there's an edict n ahead of currentIndex
    * @param n number of bytes ahead to peek
    */
-  edictAhead= (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
+  edictAhead = (n: number) => this.disMeta.getEdict(this.currentIndex + n) !== undefined;
 
   /**
    * Peek ahead exactly n bytes and return true iff we know the byte belongs to an instruction
@@ -146,7 +145,7 @@ class Disassembler {
    * @param currentByte the byte already read
    * @param lc labels and comments
    */
-  edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike | undefined{
+  edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike | undefined {
 
     // make an edict-enforced byte declaration of the given length
     const mkEdictInferredByteDec = (n: number, mesg = `inferred via edict@+${n}`) => {
@@ -277,16 +276,17 @@ class Disassembler {
   }
 
   /**
-   * Disassemble one instruction from memory at given offset. Operands interpreted using endianness T.
+   * Disassemble one instruction from memory at given offset.
+   *
    * @param mem
    * @param offset
    * @return instruction if it can be decoded at the offset
    * @throws if illegal state
    */
-  disassemble1<T extends Endian>(mem: Memory<T>, offset: number): FullInstruction | undefined {
+  disassemble1(mem: Byteable, offset: number): FullInstruction | undefined {
     // TODO should we fall back to byte declaration directive rather than throw?
     const opcode = mem.read8(offset);
-    const instLen = Mos6502.ISA.numBytes(opcode) || 1
+    const instLen = this.iset.numBytes(opcode) || 1
     const bytesRemaining = mem.getLength() - offset;
     if (instLen <= bytesRemaining) {
       // default operands are 0
@@ -295,13 +295,12 @@ class Disassembler {
       if (instLen >= 2) {
         firstOperandByte = mem.read8(offset + 1);
       }
-      if (instLen >= 3) {
+      if (instLen === 3) {
         secondOperandByte = mem.read8(offset + 2);
       }
-      if (instLen >= 4) {
+      if (instLen > 3) {
         throw Error(`Illegal state: number of instruction bytes > 3: ${instLen}`);
       }
-      // TODO what happens if instruction is only one byte?
       const instruction = this.iset.instruction(opcode);
       if (instruction) {
         return new FullInstruction(instruction, firstOperandByte, secondOperandByte);

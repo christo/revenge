@@ -20,6 +20,7 @@ import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
+import {Cpu} from "../Cpu.ts";
 import {DataViewImpl} from "../DataView.ts";
 import {LE} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -158,7 +159,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 };
 
 /**
- * Makes a BlobType representing a Commodore program binary file format with
+ * Makes a BlobType representing a 6502 Commodore program binary file format with
  * the first two bytes of the load address in LSB,MSB format (little endian).
  *
  * @param prefix either an array of prefix bytes or a 16 bit word
