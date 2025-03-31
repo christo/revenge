@@ -16,14 +16,13 @@ import {Disassembler} from "./asm/Disassembler";
 import {Addr, hex16} from "./core";
 import {Endian} from "./Endian.ts";
 import {Memory} from "./Memory.ts";
+import {FullInstruction} from "./mos6502.ts";
 import {Thread} from "./Thread.ts";
 
 /**
- * Models all addresses occupied by a single instruction and their length.
- * Currently we only support instructions of length 1, 2 or 3.
+ * A record of all executed instructions and their addresses.
  */
-type InstRec = [Addr, 1 | 2 | 3];
-
+type InstRec = [Addr, FullInstruction];
 
 /**
  * Take an instruction address and length and return each address the instruction occupies.
@@ -31,7 +30,8 @@ type InstRec = [Addr, 1 | 2 | 3];
  */
 function enumInstAddr(ir: InstRec): Addr[] {
   const base = ir[0];
-  const len = ir[1];
+  const inst = ir[1];
+  const len = inst.getLength();
   if (len == 1) {
     return [base];
   } else if (len == 2) {
@@ -54,7 +54,7 @@ class Tracer {
    * Track the instruction bytes executed
    * @private
    */
-  private readonly executedAddresses: Array<InstRec>; // TODO maybe store set?
+  private readonly executedList: Array<InstRec>; // TODO maybe store set?
 
   // TODO: keep track of locations written to (data)
   // TODO: identify self-mod code and raise exception
@@ -65,10 +65,9 @@ class Tracer {
   //          maybe we can only afford to do this for empty stacks? maybe certain small stacks of say 1 or 2 size?
   //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
   //          jumps (forks) and subroutine jumps (deferred steps).
-  // TODO: a list of contiguous memory regions which can contain executable code
   // FUTURE: would also be nice to know if a memory location is writeable
   private getExecuted: () => InstRec[] = () => {
-    return [...this.executedAddresses];
+    return [...this.executedList];
   };
 
   /**
@@ -97,11 +96,11 @@ class Tracer {
         throw Error("memory not marked for execution");
       }
     });
-    this.executedAddresses = [];
+    this.executedList = [];
     // load the binary content at the load address of the given memory
     memory.load(disasm.getContentBytes(), disasm.getSegmentBaseAddress())
     const addExecuted = (ir: InstRec) => {
-      this.executedAddresses.push(ir);
+      this.executedList.push(ir);
       disasm.addExecutionPoints([ir]);
     };
     entryPoints.forEach(ep => {
@@ -132,8 +131,8 @@ class Tracer {
    * All addresses of instructions that were executed. Does not include addresses of their operands.
    * Order is unspecified.
    */
-  executed(): Array<Addr> {
-    return Array.from(new Set(this.executedAddresses.map(ir => ir[0])));
+  executedAddresses(): Array<Addr> {
+    return Array.from(new Set(this.executedList.map(ir => ir[0])));
   }
 
   /**
@@ -142,11 +141,13 @@ class Tracer {
    * unspecified.
    */
   step() {
+    // console.log(`stepping thread count: ${this.threads.length}`);
     const newThreads: Thread[] = [];
     const aThread = this.threads.find((t) => t.running)
     if (aThread) {
       const maybeThread = aThread.step();
       if (maybeThread) {
+        // console.log(`creating thread`);
         newThreads.push(maybeThread);
       }
     } else {
@@ -179,9 +180,8 @@ class Tracer {
    * @return number of steps taken
    */
   trace(maxSteps: number): number {
-    // console.log(`starting trace with max steps ${maxSteps}`);
+    console.log(`starting trace with max steps ${maxSteps}`);
     const startCount = this.stepCount;
-    // TODO consider spawned threads
     while (this.running() && this.stepCount < maxSteps) {
       this.step();
       this.stepCount += 1;
@@ -192,6 +192,9 @@ class Tracer {
     return stepsTaken;
   }
 
+  executedInstructions() {
+    return this.executedList;
+  }
 }
 
 export {Tracer, type InstRec, enumInstAddr};

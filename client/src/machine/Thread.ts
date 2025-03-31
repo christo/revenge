@@ -3,7 +3,7 @@ import {OpSemantics} from "./asm/Op.ts";
 import {Addr, hex16} from "./core.ts";
 import {Endian} from "./Endian.ts";
 import {Memory} from "./Memory.ts";
-import {MODE_INDIRECT} from "./mos6502.ts";
+import {FullInstruction, MODE_INDIRECT} from "./mos6502.ts";
 import {enumInstAddr, InstRec} from "./Tracer.ts";
 
 
@@ -81,7 +81,7 @@ export class Thread {
     if (!this.running) {
       throw new Error("cannot step if stopped");
     }
-    //console.log(`Thread step: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
+    // console.log(`Thread step: ${this.descriptor} @ 0x${hex16(this.pc)} (${this.pc})`);
     return this.execute();
   }
 
@@ -120,7 +120,7 @@ export class Thread {
   private execute(): Thread | undefined {
     let maybeThread: Thread | undefined = undefined;
 
-    const inst = this.disasm.disassemble1(this.memory, this.pc);
+    const inst: FullInstruction | undefined = this.disasm.disassemble1(this.memory, this.pc);
     if (inst === undefined) {
       this.terminate(`cannot disassemble instruction at ${this.renderPc()}`)
     } else {
@@ -130,7 +130,6 @@ export class Thread {
         instLen = inst.getLength();
       } catch(e) {
         console.error(e);
-        //debugger;
       }
       let nextPc = this.pc + instLen;
 
@@ -191,7 +190,7 @@ export class Thread {
       //  instructions may be rare enough to simply report as anomalies at first and may even be more likely be a
       //  theoretical bug in the analysed code. This tracer will not detect all unreachable code paths since only a
       //  degenerate runtime state is represented.
-      this.addExecuted([this.pc, instLen as 1 | 2 | 3]);
+      this.addExecuted([this.pc, inst]);
       this.pc = nextPc;
     }
     return maybeThread;

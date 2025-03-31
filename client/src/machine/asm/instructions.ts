@@ -49,6 +49,46 @@ interface Directive extends InstructionLike {
   isPragma(): boolean;
 }
 
+class SymbolDefinition extends InstructionBase implements Directive {
+  private readonly _symDef: SymDef<number>;
+
+  // TODO handle generic argument correctly
+  constructor(symDef: SymDef<number>) {
+    super(new LabelsComments([], [symDef.descriptor]), SourceType.PSEUDO);
+    this._symDef = symDef;
+  }
+
+  get symDef(): SymDef<number> {
+    return this._symDef;
+  }
+
+  isMacroDefinition(): boolean {
+    return false;
+  }
+
+  isPragma(): boolean {
+    return false;
+  }
+
+  isSymbolDefinition(): boolean {
+    return true;
+  }
+
+  disassemble(dialect: Dialect, dis: Disassembler): Tag[] {
+    return dialect.symbolDefinition(this, dis);
+    ;
+  }
+
+  getBytes(): number[] {
+    return [];
+  }
+
+  getLength(): number {
+    return 0;
+  }
+
+}
+
 /**
  * Assembly directive representing setting the program counter.
  * Often represented like this: 'org = $f000' or '* = $f000'
@@ -343,6 +383,7 @@ export {
   SymDef,
   FullInstructionLine,
   PcAssign,
+  SymbolDefinition,
   LabelsCommentsOnly,
   BLANK_LINE
 };

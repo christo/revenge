@@ -38,17 +38,17 @@ describe("tracer", () => {
     const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const t = new Tracer(d, [[0, "root"]], ArrayMemory.zeroes(0x1000, LE, true, true));
-    expect(t.executed().length === 0, "should have executed none");
+    expect(t.executedAddresses().length === 0, "should have executed none");
     t.step();
-    expect(t.executed().length === 1);
-    expect(t.executed()).to.have.members([0]);
+    expect(t.executedAddresses().length === 1);
+    expect(t.executedAddresses()).to.have.members([0]);
     t.step();
-    expect(t.executed().length === 2);
-    expect(t.executed()).to.have.members([0, 1]);
+    expect(t.executedAddresses().length === 2);
+    expect(t.executedAddresses()).to.have.members([0, 1]);
     expect(t.running());
     t.step();
     expect(!t.running());
-    expect(t.executed()).to.have.members([0, 1, 2]);
+    expect(t.executedAddresses()).to.have.members([0, 1, 2]);
   });
 
   it("handles unconditional jump", () => {
@@ -68,8 +68,8 @@ describe("tracer", () => {
     t.step(); // execute NOP
     t.step(); // execute BRK
 
-    expect(t.executed()).to.not.have.members([0, 3], "JMP was ignored");
-    expect(t.executed()).to.have.members([0, 4, 5]);
+    expect(t.executedAddresses()).to.not.have.members([0, 3], "JMP was ignored");
+    expect(t.executedAddresses()).to.have.members([0, 4, 5]);
   });
 
   it("handles unconditional jump with base address", () => {
@@ -91,10 +91,10 @@ describe("tracer", () => {
     t.step(); // execute JMP
     t.step(); // execute NOP
     t.step(); // execute BRK
-    const executed = t.executed();
+    const executed = t.executedAddresses();
     expect(executed[0]).to.not.equal(2, "base address was ignored");
-    expect(t.executed()).to.not.have.members([0x1000, 0x1003]);
-    expect(t.executed()).to.have.members([0x1000, 0x1004, 0x1005], "expected execution of jump");
+    expect(t.executedAddresses()).to.not.have.members([0x1000, 0x1003]);
+    expect(t.executedAddresses()).to.have.members([0x1000, 0x1004, 0x1005], "expected execution of jump");
   });
 
   it("handles simple conditional jump", () => {
@@ -116,7 +116,7 @@ describe("tracer", () => {
     expect(t.countActiveThreads()).to.eq(2);
     t.stepAll(); // branched thread executes NOP, JMP thread executes BRK
     t.stepAll(); // execute BRK
-    expect(t.executed()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);
+    expect(t.executedAddresses()).to.have.members([0x1000, 0x1002, 0x1005, 0x1006]);
   });
 
   describe("tracer", () => {

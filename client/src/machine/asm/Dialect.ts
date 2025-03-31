@@ -1,6 +1,6 @@
 import {BooBoo, Tag} from "../api.ts";
 import {Environment, LabelsComments} from "./asm.ts";
-import {Directive, FullInstructionLine, InstructionLike, PcAssign} from "./instructions.ts";
+import {Directive, FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {ParserState} from "./DefaultDialect.ts";
 
@@ -92,6 +92,8 @@ interface Dialect {
    * @param dis
    */
   pcAssign(pcAssign: PcAssign, dis: Disassembler): Tag[];
+
+  symbolDefinition(symDef: SymbolDefinition, dis: Disassembler): Tag[];
 
   labelsComments(labelsComments: LabelsComments, dis: Disassembler): Tag[];
 

@@ -6,7 +6,8 @@ import {
   hexDumper,
   LogicalLine,
   Tag,
-  TAG_ADDRESS, TAG_ENTRY_POINT,
+  TAG_ADDRESS,
+  TAG_ENTRY_POINT,
   TAG_EXECUTED,
   TAG_HEX,
   TAG_LINE,
@@ -16,17 +17,15 @@ import {Environment, SymbolType,} from "../asm/asm.ts";
 import {DefaultDialect} from "../asm/DefaultDialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {Directive, InstructionLike, PcAssign} from "../asm/instructions.ts";
+import {Directive, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
-import {Cpu} from "../Cpu.ts";
 import {DataViewImpl} from "../DataView.ts";
-import {LE} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
-import {Tracer} from "../Tracer.ts";
+import {InstRec, Tracer} from "../Tracer.ts";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 
 /**
@@ -45,6 +44,13 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
 
   // start timer
   const startTime = Date.now();
+  console.log(`kernal symbols used: ${traceResult.kernalSymbolsUsed.length}`);
+  // add the kernal symbol definitions first
+  traceResult.kernalSymbolsUsed.forEach(symbol => {
+    const symbolDefinition = new SymbolDefinition(symbol);
+    detail.dataView.addLine(new LogicalLine(symbolDefinition.disassemble(dialect, dis), 0, undefined))
+  });
+
 
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], []);
@@ -93,6 +99,8 @@ type TraceResult = {
   traceTime: number,
   endState: string,
   steps: number,
+  kernalSymbolsUsed: SymDef<Addr>[],
+  executedInstructions: InstRec[]
 }
 
 
@@ -106,18 +114,44 @@ type TraceResult = {
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
   const LE_64K = ArrayMemory.zeroes(0x10000, Mos6502.ENDIANNESS, true, true);
   // TODO load system rom into memory instead of ignoring
-  const kernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
+  const symbolTable = meta.getSymbolTable();
+  const isKernalSubroutine = (addr: Addr) => SymbolType.sub === symbolTable.byAddress(addr)?.sType;
   const entryPoints = meta.executionEntryPoints(fb);
 
-  const tracer = new Tracer(dis, entryPoints, LE_64K, kernalSubroutines);
+  const tracer = new Tracer(dis, entryPoints, LE_64K, isKernalSubroutine);
   const traceStart = Date.now();
   // TODO max steps is half-arsed attempt to discover why this call locks up
   const stepsTaken = tracer.trace(10000);
   const endMessage = tracer.running() ? "did not terminate" : "completed";
   const traceTime = Date.now() - traceStart;
-  const codeAddresses = [...tracer.executed()].sort();
+  const executedInstructions = tracer.executedInstructions();
+  const codeAddresses = [...tracer.executedAddresses()].sort();
+
+  const kernalSymbolsUsed: SymDef<number>[] = [];
+  executedInstructions.forEach(ir => {
+    const addr = ir[0];
+    // get the address of the operand and figure out if it is a symbol needing a definition
+    const instruction = ir[1];
+    // does instruction have an operand?
+    if (instruction.getLength() > 1) {
+      // can we resolve the operand?
+      const gotOperand = instruction.staticallyResolvableOperand();
+      if (gotOperand) {
+        const operandValue = instruction.operandValue();
+        const symDef = symbolTable.byAddress(operandValue);
+        if (operandValue && symDef) {
+          kernalSymbolsUsed.push(symDef);
+        }
+      } else {
+        console.warn(`no operand for ${instruction.instruction.op.mnemonic} instruction at ${addr} ${hex16(addr)}`);
+      }
+    }
+  });
+
   return {
     codeAddresses: codeAddresses,
+    kernalSymbolsUsed: kernalSymbolsUsed,
+    executedInstructions: executedInstructions,
     traceTime: traceTime,
     endState: endMessage,
     steps: stepsTaken
@@ -217,4 +251,4 @@ class CartSniffer implements BlobSniffer {
   }
 }
 
-export {CartSniffer, prg, printBasic, fileTypes};
+export {CartSniffer, prg, printBasic, fileTypes, trace};

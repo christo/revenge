@@ -1,4 +1,3 @@
-import * as console from "node:console";
 import {
   BooBoo,
   KeywordTag,
@@ -14,7 +13,7 @@ import {
   TAG_MNEMONIC,
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
-  TAG_PETSCII
+  TAG_PETSCII, TAG_SYM_DEF
 } from "../api.ts";
 import {Byteable} from "../Byteable.ts";
 import {Petscii} from "../cbm/petscii.ts";
@@ -44,7 +43,7 @@ import {
   FullInstructionLine,
   InstructionLike,
   LabelsCommentsOnly,
-  PcAssign
+  PcAssign, SymbolDefinition
 } from "./instructions.ts";
 
 /**
@@ -209,9 +208,19 @@ class DefaultDialect implements Dialect {
     const labels = new Tag([TAG_LABEL], this.renderLabels(pcAssign.labelsComments.labels));
     const pc = new Tag([TAG_CODE], "* =");
     const addr = new Tag([TAG_ABSOLUTE, TAG_OPERAND], this.hexWordText(pcAssign.address));
-    const dummy = new Tag([TAG_ADDRESS], "_");
+    const dummy = new Tag([TAG_ADDRESS], "."); // TODO fix this hack
     return [comments, labels, dummy, pc, addr];
   }
+
+  symbolDefinition(symDef: SymbolDefinition, _dis: Disassembler): Tag[] {
+    const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
+    const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));
+    const symbolDefinition = new Tag([TAG_SYM_DEF], `${symDef.symDef.name} = ${this.hexWordText(symDef.symDef.value)}`);
+    const dummy = new Tag([TAG_ADDRESS], "."); // TODO fix this hack
+    return [comments, labels, dummy, symbolDefinition]
+  }
+
+
 
   labelsComments(labelsComments: LabelsComments, _dis: Disassembler): Tag[] {
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(labelsComments.labels));
