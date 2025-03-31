@@ -16,16 +16,17 @@ export const neonYellow = "#ccd044";
 
 export const background = darkPurple;
 export const primaryBright = neonPink;
-export const secondaryBright = neonCyan;
+export const secondaryBright = neonYellow;
+export const infoBright = neonCyan;
 
 export const darkTheme = createTheme({
   palette: {
 
     mode: 'dark',
-    background: {paper: darkPurple},
-    info: {main: neonCyan},
-    secondary: {main: neonYellow},
-    primary: {main: neonPink},
+    background: {paper: background},
+    info: {main: infoBright},
+    secondary: {main: secondaryBright},
+    primary: {main: primaryBright},
 
   },
 });

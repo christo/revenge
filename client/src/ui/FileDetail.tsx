@@ -7,6 +7,7 @@ import {useState} from "react";
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
+import {neonYellow, primaryBright, infoBright, secondaryBright} from "../neonColourScheme.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
 
@@ -57,7 +58,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
       </Box>
       <Box sx={{display: 'flex', justifyContent: "space-between", flexGap: 5}}>
         <Box sx={{mr: 2, ml: 5}}>
-          <Typography variant="h4">
+          <Typography variant="h4" color={secondaryBright}>
             Bigram
           </Typography>
           <Typography sx={{fontStyle: "italic", opacity: 0.6}}>

@@ -1,15 +1,15 @@
-import { Box } from "@mui/material";
+import {Box} from "@mui/material";
+import {useEffect, useRef} from "react";
 import {Bigram} from "../analysis/Bigram.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
-import {useEffect, useRef } from "react";
-import {background} from "../neonColourScheme.ts";
+import {background, neonYellow, secondaryBright} from "../neonColourScheme.ts";
 
 
 function intensity(value: number, max: number) {
   const linear = value / max;
-  const normalised = Math.pow(linear, 1/3); // 0 - 1
+  const normalised = Math.pow(linear, 1/4); // 0 - 1
   const result = (normalised * 255).toFixed(0);
-  return `rgb(${result},${result},${result})`;
+  return `rgb(${result},${result},${((normalised * 128).toFixed(0))})`;
 }
 
 function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
@@ -33,7 +33,7 @@ function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
         context.fillStyle = intensity(value, max);
 
         // first will be x, second will be y
-        context.fillRect(first*2, second*2, 2, 2);
+        context.fillRect(first, second, 1, 1);
       }
     });
   }
@@ -50,7 +50,7 @@ function BigramPlot({fb}: {fb: FileBlob}) {
   }, [fb]);
 
 
-  return <Box >
+  return <Box sx={{border: `dashed thin ${secondaryBright}`, p: "1px"}}>
     <canvas id="bigramcanvas" ref={canvasRef} width="256" height="256"></canvas>
   </Box>;
 }
