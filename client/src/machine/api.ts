@@ -85,6 +85,8 @@ export const TAG_ABSOLUTE = "abs";
 
 /** an address */
 export const TAG_ADDRESS = "addr";
+/** there is no address for this line */
+export const TAG_NO_ADDRESS = "noaddr";
 /** instruction that was executed during trace */
 export const TAG_EXECUTED = "executed";
 /** a declared start of execution */

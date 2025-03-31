@@ -10,7 +10,7 @@ import {
   TAG_HEXARRAY,
   TAG_IN_BINARY, TAG_KNOWN_SYMBOL,
   TAG_LABEL,
-  TAG_MNEMONIC,
+  TAG_MNEMONIC, TAG_NO_ADDRESS,
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
   TAG_PETSCII, TAG_SYM_DEF
@@ -208,7 +208,7 @@ class DefaultDialect implements Dialect {
     const labels = new Tag([TAG_LABEL], this.renderLabels(pcAssign.labelsComments.labels));
     const pc = new Tag([TAG_CODE], "* =");
     const addr = new Tag([TAG_ABSOLUTE, TAG_OPERAND], this.hexWordText(pcAssign.address));
-    const dummy = new Tag([TAG_ADDRESS], "."); // TODO fix this hack
+    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack
     return [comments, labels, dummy, pc, addr];
   }
 
@@ -216,7 +216,7 @@ class DefaultDialect implements Dialect {
     const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));
     const symbolDefinition = new Tag([TAG_SYM_DEF], `${symDef.symDef.name} = ${this.hexWordText(symDef.symDef.value)}`);
-    const dummy = new Tag([TAG_ADDRESS], "."); // TODO fix this hack
+    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack
     return [comments, labels, dummy, symbolDefinition]
   }
 

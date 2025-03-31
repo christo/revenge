@@ -73,6 +73,12 @@ classes for tags follow
   /*opacity: 60%;*/
 }
 
+.noaddr {
+  margin-left: 18ch;
+  margin-bottom: 1.5em;
+  display: inline-block;
+}
+
 .basic > .line {
   margin-left: 0;
   display: inline;
