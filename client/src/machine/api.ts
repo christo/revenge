@@ -216,6 +216,9 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
   }
 });
 
+/**
+ * A machine ROM with a known load address.
+ */
 class RomImage implements Byteable {
   private readonly name: string;
   private readonly loadAt: Addr;
