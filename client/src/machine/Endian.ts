@@ -1,5 +1,5 @@
 /**
- * Abstraction to hold all endian-specific utilities. See {@link LittleEndian} and {@link BigEndian}
+ * Abstraction to hold all endian-specific functions. See {@link LittleEndian} and {@link BigEndian}
  * implementations.
  */
 interface Endian {
