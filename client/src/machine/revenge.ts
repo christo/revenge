@@ -109,8 +109,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
           try {
             const startAddress = parseInt(intString, 10);
             if (!isNaN(startAddress)) {
-              const sysCall = `SYS ${startAddress}`
-              const entryPointDesc = `BASIC loader stub ${sysCall}`;
+              const entryPointDesc = `BASIC loader stub SYS ${startAddress}`;
               const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_KERNAL, startAddress, entryPointDesc)
               const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
               const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
