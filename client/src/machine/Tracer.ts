@@ -78,6 +78,7 @@ class Tracer {
    * @param disasm used to interpret memory as instructions
    * @param entryPoints each is a program counter and label for starting trace
    * @param memory the Memory in which to load and execute the program
+   * @param ignore function to decide whether to ignore an address at a location
    */
   constructor(
       disasm: Disassembler,
