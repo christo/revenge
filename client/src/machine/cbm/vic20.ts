@@ -87,7 +87,7 @@ VIC20_KERNAL.sub(0xfff3, "iobase", "Return I/O Base Address", "contains jmp $e50
 VIC20_KERNAL.sub(0xe500, "_iobase", "internal Return I/O Base Address");
 
 VIC20_KERNAL.sub(0xfd52, "restor_vector", "restore kernal vectors (direct vector)");
-VIC20_KERNAL.sub(0xfdf9, "ioinit_vector", "i/o initialisation (direct vector");
+VIC20_KERNAL.sub(0xfdf9, "ioinit_vector", "i/o initialisation (direct vector)");
 VIC20_KERNAL.sub(0xe518, "screeninit_vector", "screen initialisation (direct vector)");
 
 VIC20_KERNAL.sub(0xfd8d, "ram_init", "initialise and test RAM");
