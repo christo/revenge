@@ -199,7 +199,6 @@ class BooBoo {
   }
 }
 
-
 /**
  * Shows a hex dump for a {@link FileBlob}.
  * @param fb
