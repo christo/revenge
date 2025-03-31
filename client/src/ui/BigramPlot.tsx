@@ -44,7 +44,7 @@ function BigramPlot({fb}: {fb: FileBlob}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (canvasRef.current) {
-      console.log("about to render bigram on canvas")
+      // console.log("about to render bigram on canvas")
       bigrams(canvasRef.current, fb, background);
     }
   }, [fb]);
