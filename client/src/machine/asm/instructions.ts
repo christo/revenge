@@ -257,6 +257,13 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
   private readonly _offset: number;
   private readonly numBytes: number;
 
+  /**
+   * Create an edict that defines bytes with an assembler directive.
+   *
+   * @param offset offset in bytes of the edict
+   * @param length length of the edict
+   * @param lc labels and comments
+   */
   constructor(offset: number, length: number, lc: LabelsComments) {
     this._offset = offset;
     this.numBytes = length;
