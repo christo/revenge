@@ -206,7 +206,7 @@ const BASIC_LOAD_PRGS = VIC20_MEMORY_CONFIGS.map(mc => {
 /**
  * Detects Vic-20 BASIC
  */
-export class Vic20Basic implements BlobSniffer {
+class Vic20Basic implements BlobSniffer {
 
   desc: string;
   name: string;
