@@ -127,7 +127,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
   const executedInstructions = tracer.executedInstructions();
   const codeAddresses = [...tracer.executedAddresses()].sort();
 
-  const kernalSymbolsUsed: SymDef<number>[] = [];
+  const kernalSymbolsUsed: Set<SymDef<number>> = new Set<SymDef<number>>();
   executedInstructions.forEach(ir => {
     const addr = ir[0];
     // get the address of the operand and figure out if it is a symbol needing a definition
@@ -140,7 +140,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
         const operandValue = instruction.operandValue();
         const symDef = symbolTable.byAddress(operandValue);
         if (operandValue && symDef) {
-          kernalSymbolsUsed.push(symDef);
+          kernalSymbolsUsed.add(symDef);
         }
       } else {
         console.warn(`no operand for ${instruction.instruction.op.mnemonic} instruction at ${addr} ${hex16(addr)}`);
@@ -150,7 +150,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 
   return {
     codeAddresses: codeAddresses,
-    kernalSymbolsUsed: kernalSymbolsUsed,
+    kernalSymbolsUsed: Array.from(kernalSymbolsUsed),
     executedInstructions: executedInstructions,
     traceTime: traceTime,
     endState: endMessage,
