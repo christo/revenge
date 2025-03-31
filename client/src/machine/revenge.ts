@@ -83,6 +83,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     }
   }
   // detect VIC20 machine code with basic stub
+  // we have already detected some basicness
   if (maxBasicSmell > 0.5) {
     const loadAddress = fileBlob.read16(0);
     const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
