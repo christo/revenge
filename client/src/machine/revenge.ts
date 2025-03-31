@@ -5,7 +5,7 @@ import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {BlobTypeSniffer, UNKNOWN_BLOB} from "./BlobTypeSniffer.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./cbm/BasicDecoder.ts";
 import {BasicStubDisassemblyMeta} from "./cbm/BasicStubDisassemblyMeta.ts";
-import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
+import {C64_8K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
 import {Petscii} from "./cbm/petscii.ts";
 import {
@@ -50,7 +50,7 @@ function readPetsciiInteger(fileBlob: FileBlob, offset: number) {
  */
 const sniff = (fileBlob: FileBlob): TypeActions => {
   // run through various detection matchers, falling through to unknown
-  const carts = [VIC20_CART_SNIFFER, C64_8K_CART];
+  const carts = [VIC20_CART_SNIFFER, C64_8K_CART_SNIFFER];
   for (let i = 0; i < carts.length; i++) {
     const cart = carts[i];
     if (cart.sniff(fileBlob) > 1) {
