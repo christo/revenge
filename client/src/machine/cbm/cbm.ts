@@ -106,10 +106,10 @@ type TraceResult = {
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
   const LE_64K = ArrayMemory.zeroes(0x10000, Mos6502.ENDIANNESS, true, true);
   // TODO load system rom into memory instead of ignoring
-  const ignoreKernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
+  const kernalSubroutines = (addr: Addr) => SymbolType.sub === meta.getSymbolTable().byAddress(addr)?.sType;
   const entryPoints = meta.executionEntryPoints(fb);
 
-  const tracer = new Tracer(dis, entryPoints, LE_64K, ignoreKernalSubroutines);
+  const tracer = new Tracer(dis, entryPoints, LE_64K, kernalSubroutines);
   const traceStart = Date.now();
   // TODO max steps is half-arsed attempt to discover why this call locks up
   const stepsTaken = tracer.trace(10000);
