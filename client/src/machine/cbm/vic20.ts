@@ -100,28 +100,34 @@ VIC20_KERNAL.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_KERNAL.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
 VIC20_KERNAL.reg(0x0286, "color_mode", "characters are multi-color or single color");
 
+/** The loading address vector is in the image at this offset. */
+const CART_BASE_ADDRESS_OFFSET = 0;
+/** The cold reset vector is stored at this offset. */
+const CART_COLD_VECTOR_OFFSET = 2;
+/** The warm reset vector (NMI) is stored at this offset. */
+const CART_WARM_VECTOR_OFFSET = 4;
+
+/**
+ * Offset of the cartridge signature.
+ * 2 bytes for the load address,
+ * 2 for the reset vector,
+ * 2 for the nmi vector.
+ */
+const CART_SIG_OFFSET = 6;
+
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
  * CBM is in reverse video (&70).
  */
 const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
-// TODO where did this number come from?
-const MAGIC_OFFSET = 6;
-
-/** The loading address vector is in the image at this offset. */
-const VIC20_CART_BASE_ADDRESS_OFFSET = 0;
-/** The cold reset vector is stored at this offset. */
-const VIC20_CART_COLD_VECTOR_OFFSET = 2;
-/** The warm reset vector (NMI) is stored at this offset. */
-const VIC20_CART_WARM_VECTOR_OFFSET = 4;
 
 /**
  * SymbolResolver which supplies VIC-20 reset (cold) and nmi (warm) reset vectors declared in the
  * cart image defined by fb.
  */
 const VIC_20_CART_VECTORS: SymbolResolver = (fb: FileBlob) => [
-  [fb.readVector(VIC20_CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
-  [fb.readVector(VIC20_CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
+  [fb.readVector(CART_COLD_VECTOR_OFFSET), new LabelsComments("reset", "main entry point")],
+  [fb.readVector(CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
 
 class PetsciiDeclaration extends ByteDeclaration {
@@ -137,7 +143,7 @@ class PetsciiDeclaration extends ByteDeclaration {
 class CartSigEdict extends ByteDefinitionEdict {
 
   constructor() {
-    super(MAGIC_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format"));
+    super(CART_SIG_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format"));
   }
 
   create(fb: FileBlob): InstructionLike {
@@ -150,9 +156,9 @@ class CartSigEdict extends ByteDefinitionEdict {
   }
 }
 
-const JUMP_POINT_OFFSETS: NamedOffset[] = [
-  [VIC20_CART_COLD_VECTOR_OFFSET, "reset"],
-  [VIC20_CART_WARM_VECTOR_OFFSET, "nmi"]
+const CART_JUMP_POINT_OFFSETS: NamedOffset[] = [
+  [CART_COLD_VECTOR_OFFSET, "reset"],
+  [CART_WARM_VECTOR_OFFSET, "nmi"]
 ];
 
 /**
@@ -167,34 +173,43 @@ const POPULAR_CART_LOAD_ADDRS = [
   prg([0x00, 0xc0]),  // 0xc000
 ];
 
-const VIC20_UNEX = new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded");
-const VIC20_EXP03K = new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k");
-const VIC20_EXP08K = new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k");
-const VIC20_EXP16K = new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k");
-const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k");
-/** Some new games require this max config */
-const VIC20_EXP35K = new MemoryConfiguration("VIC-20 35k expansion", 0x1201, "35k");
+/** where kernal rom image is mapped */
+const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
+/** where basic rom image is mapped */
+const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
+
+// TODO need way to load rom image in browser or server
+//   maybe embed in client, later enable upload from browser
+let VIC_ROMS = [
+  new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
+  new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
+];
 
 class Vic20 extends Computer {
   static NAME = "VIC-20";
-  static MEMORY_CONFIGS = [
-    VIC20_UNEX,
-    VIC20_EXP03K,
-    VIC20_EXP08K,
-    VIC20_EXP16K,
-    VIC20_EXP24K,
-    VIC20_EXP35K,
-  ];
+
   static MEMORY_CONFIG = {
-    UNEX: VIC20_UNEX,
-    EXP03K: VIC20_EXP03K,
-    EXP08K: VIC20_EXP08K,
-    EXP16K: VIC20_EXP16K,
-    EXP24K: VIC20_EXP24K,
-    EXP35K: VIC20_EXP35K,
+    UNEX: new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded"),
+    EXP03K: new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k"),
+    EXP08K: new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k"),
+    EXP16K: new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k"),
+    EXP24K: new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k"),
+    EXP35K: new MemoryConfiguration("VIC-20 35k expansion", 0x1201, "35k"),
   };
 
-  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = []) {
+  /**
+   * Common memory configs.
+   */
+  static MEMORY_CONFIGS = [
+    Vic20.MEMORY_CONFIG.UNEX,
+    Vic20.MEMORY_CONFIG.EXP03K,
+    Vic20.MEMORY_CONFIG.EXP08K,
+    Vic20.MEMORY_CONFIG.EXP16K,
+    Vic20.MEMORY_CONFIG.EXP24K,
+    Vic20.MEMORY_CONFIG.EXP35K,
+  ];
+
+  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = VIC_ROMS) {
     super(Vic20.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, [Vic20.NAME]);
   }
 }
@@ -284,41 +299,30 @@ class Vic20Basic implements BlobSniffer {
   }
 }
 
-/** where kernal rom image is mapped */
-const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
-/** where basic rom image is mapped */
-const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
 
-// TODO need way to load rom image in browser or server
-//   maybe embed in client, later enable upload from browser
-let VIC_ROMS = [
-  new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
-  new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
-];
-
-const UNEXPANDED_VIC_BASIC = new Vic20Basic(VIC20_UNEX);
-const EXP03K_VIC_BASIC = new Vic20Basic(VIC20_EXP03K);
-const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
-const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
-const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
+const UNEXPANDED_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.UNEX);
+const EXP03K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP03K);
+const EXP08K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP08K);
+const EXP16K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP16K);
+const EXP24K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP24K);
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
-const VIC20_CART = new CartSniffer(
+const VIC20_CART_SNIFFER = new CartSniffer(
     "VIC-20 cart image",
     "ROM dump from VIC-20 cartridge",
     ["cart", Vic20.NAME],
-    A0CBM, MAGIC_OFFSET,
+    A0CBM, CART_SIG_OFFSET,
     new DisassemblyMetaImpl(
-        VIC20_CART_BASE_ADDRESS_OFFSET,
-        JUMP_POINT_OFFSETS,
+        CART_BASE_ADDRESS_OFFSET,
+        CART_JUMP_POINT_OFFSETS,
         2,
         [
           new CartSigEdict(),
-          new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-          new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-          new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+          new VectorDefinitionEdict(CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+          new VectorDefinitionEdict(CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+          new VectorDefinitionEdict(CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], VIC_20_CART_VECTORS,
         VIC20_KERNAL
     )
@@ -328,7 +332,7 @@ const VIC20_CART = new CartSniffer(
 export {
   Vic20,
   POPULAR_CART_LOAD_ADDRS,
-  VIC20_CART,
+  VIC20_CART_SNIFFER,
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,

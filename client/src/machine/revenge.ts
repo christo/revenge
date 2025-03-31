@@ -16,7 +16,7 @@ import {
   POPULAR_CART_LOAD_ADDRS,
   UNEXPANDED_VIC_BASIC,
   Vic20,
-  VIC20_CART,
+  VIC20_CART_SNIFFER,
   VIC20_KERNAL
 } from "./cbm/vic20.ts";
 import {Addr, asHex, hex16} from "./core.ts";
@@ -50,7 +50,7 @@ function readPetsciiInteger(fileBlob: FileBlob, offset: number) {
  */
 const sniff = (fileBlob: FileBlob): TypeActions => {
   // run through various detection matchers, falling through to unknown
-  const carts = [VIC20_CART, C64_8K_CART];
+  const carts = [VIC20_CART_SNIFFER, C64_8K_CART];
   for (let i = 0; i < carts.length; i++) {
     const cart = carts[i];
     if (cart.sniff(fileBlob) > 1) {
