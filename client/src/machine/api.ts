@@ -103,6 +103,8 @@ export const TAG_HEXARRAY = "hexarray";
 export const TAG_PETSCII = "tlit";
 /** generic class of assembly source expressions */
 export const TAG_CODE = "code";
+/** definition of a symbol */
+export const TAG_SYM_DEF = "symdef";
 /** assembly mnemonic */
 export const TAG_MNEMONIC = "mn";
 /** the right hand side of a machine instruction or assembler directive */
