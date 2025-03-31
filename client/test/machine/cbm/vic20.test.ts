@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder";
 import {Addr} from "../../../src/machine/core";
-import {UNEXPANDED_VIC_BASIC, Vic20, VIC20_UNEX} from "../../../src/machine/cbm/vic20";
+import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20";
 import {LE} from "../../../src/machine/Endian";
 import {FileBlob} from "../../../src/machine/FileBlob";
 import {Petscii} from "../../../src/machine/cbm/petscii";
@@ -36,10 +36,12 @@ function basicLine(addr: Addr, lineNumber: number, lineContents: number[]): [Add
 }
 
 describe("vic20", () => {
+  const unexpanded = Vic20.MEMORY_CONFIG.UNEX;
   it("sniff basic program consisting only of line: 0 PRINT", () => {
-    const VIC = new Vic20(VIC20_UNEX);
+    const memConfig = unexpanded;
+    const VIC = new Vic20(memConfig);
     const ba: number[] = [];
-    const baseAddr = VIC20_UNEX.basicProgramStart;
+    const baseAddr = memConfig.basicProgramStart;
     VIC.pushWordBytes(ba, baseAddr);
     const [, bline] = basicLine(baseAddr, 0, [TOKEN_PRINT]);
     // don't need next line address on last and only basic line
@@ -52,10 +54,10 @@ describe("vic20", () => {
   });
 
   it("sniff basic program with non-ascending line numbers", () => {
-    const VIC = new Vic20(VIC20_UNEX);
+    const VIC = new Vic20(unexpanded);
     const ba: number[] = [];
-    VIC.pushWordBytes(ba, VIC20_UNEX.basicProgramStart);
-    let [addr, line] = basicLine(VIC20_UNEX.basicProgramStart, 10, [TOKEN_PRINT]);
+    VIC.pushWordBytes(ba, unexpanded.basicProgramStart);
+    let [addr, line] = basicLine(unexpanded.basicProgramStart, 10, [TOKEN_PRINT]);
     line.forEach(i => ba.push(i));
     [addr, line] = basicLine(addr, 9, [TOKEN_REM, ...Petscii.codes(" lower line number")]);
     line.forEach(i => ba.push(i));

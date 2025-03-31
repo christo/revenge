@@ -175,15 +175,6 @@ const VIC20_EXP24K = new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24
 /** Some new games require this max config */
 const VIC20_EXP35K = new MemoryConfiguration("VIC-20 35k expansion", 0x1201, "35k");
 
-const VIC20_MEMORY_CONFIGS = [
-  VIC20_UNEX,
-  VIC20_EXP03K,
-  VIC20_EXP08K,
-  VIC20_EXP16K,
-  VIC20_EXP24K,
-  VIC20_EXP35K,
-];
-
 class Vic20 extends Computer {
   static NAME = "VIC-20";
   static MEMORY_CONFIGS = [
@@ -192,14 +183,24 @@ class Vic20 extends Computer {
     VIC20_EXP08K,
     VIC20_EXP16K,
     VIC20_EXP24K,
-  ]
+    VIC20_EXP35K,
+  ];
+  static MEMORY_CONFIG = {
+    UNEX: VIC20_UNEX,
+    EXP03K: VIC20_EXP03K,
+    EXP08K: VIC20_EXP08K,
+    EXP16K: VIC20_EXP16K,
+    EXP24K: VIC20_EXP24K,
+    EXP35K: VIC20_EXP35K,
+  };
+
   constructor(memConfig: MemoryConfiguration, roms: RomImage[] = []) {
     super(Vic20.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, [Vic20.NAME]);
   }
 }
 
 
-const BASIC_LOAD_PRGS = VIC20_MEMORY_CONFIGS.map(mc => {
+const BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
   prg(mc.basicProgramStart)
 });
 
@@ -334,9 +335,4 @@ export {
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
   VIC20_KERNAL,
-  VIC20_UNEX,
-  VIC20_EXP03K,
-  VIC20_EXP08K,
-  VIC20_EXP16K,
-  VIC20_EXP24K,
 }
