@@ -55,7 +55,6 @@ enum ParserState {
   MID_MULTILINE_COMMENT,
 }
 
-
 /**
  * Turns a tagSeq into plain text, discarding the tags.
  *
