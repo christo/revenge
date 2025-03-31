@@ -9,7 +9,6 @@ import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl";
 import {ByteDeclaration, ByteDefinitionEdict, InstructionLike, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
-import {LE} from "../Endian.ts";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
@@ -101,9 +100,6 @@ VIC20_KERNAL.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_KERNAL.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
 VIC20_KERNAL.reg(0x0286, "color_mode", "characters are multi-color or single color");
 
-
-// vic-20 cartridge image definition:
-
 /**
  * VIC-20 cartridge magic signature A0CBM in petscii where
  * CBM is in reverse video (&70).
@@ -160,28 +156,6 @@ const JUMP_POINT_OFFSETS: NamedOffset[] = [
 ];
 
 /**
- * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
- */
-const VIC20_CART = new CartSniffer(
-    "VIC-20 cart image",
-    "ROM dump from VIC-20 cartridge",
-    ["cart", "vic20"],
-    A0CBM, MAGIC_OFFSET,
-    new DisassemblyMetaImpl(
-        VIC20_CART_BASE_ADDRESS_OFFSET,
-        JUMP_POINT_OFFSETS,
-        2,
-        [
-          new CartSigEdict(),
-          new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-          new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-          new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
-        ], VIC_20_CART_VECTORS,
-        VIC20_KERNAL
-    )
-);
-
-/**
  * Common load addresses for machine language cartridge images on VIC-20.
  * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
  */
@@ -208,7 +182,22 @@ const VIC20_MEMORY_CONFIGS = [
   VIC20_EXP16K,
   VIC20_EXP24K,
   VIC20_EXP35K,
-]
+];
+
+class Vic20 extends Computer {
+  static NAME = "VIC-20";
+  static MEMORY_CONFIGS = [
+    VIC20_UNEX,
+    VIC20_EXP03K,
+    VIC20_EXP08K,
+    VIC20_EXP16K,
+    VIC20_EXP24K,
+  ]
+  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = []) {
+    super(Vic20.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, [Vic20.NAME]);
+  }
+}
+
 
 const BASIC_LOAD_PRGS = VIC20_MEMORY_CONFIGS.map(mc => {
   prg(mc.basicProgramStart)
@@ -313,18 +302,28 @@ const EXP08K_VIC_BASIC = new Vic20Basic(VIC20_EXP08K);
 const EXP16K_VIC_BASIC = new Vic20Basic(VIC20_EXP16K);
 const EXP24K_VIC_BASIC = new Vic20Basic(VIC20_EXP24K);
 
-class Vic20 extends Computer {
-  static MEMORY_CONFIGS = [
-      VIC20_UNEX,
-      VIC20_EXP03K,
-      VIC20_EXP08K,
-      VIC20_EXP16K,
-      VIC20_EXP24K,
-  ]
-  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = []) {
-    super("VIC-20", new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, ["vic20"]);
-  }
-}
+/**
+ * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
+ */
+const VIC20_CART = new CartSniffer(
+    "VIC-20 cart image",
+    "ROM dump from VIC-20 cartridge",
+    ["cart", Vic20.NAME],
+    A0CBM, MAGIC_OFFSET,
+    new DisassemblyMetaImpl(
+        VIC20_CART_BASE_ADDRESS_OFFSET,
+        JUMP_POINT_OFFSETS,
+        2,
+        [
+          new CartSigEdict(),
+          new VectorDefinitionEdict(VIC20_CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+          new VectorDefinitionEdict(VIC20_CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+          new VectorDefinitionEdict(VIC20_CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+        ], VIC_20_CART_VECTORS,
+        VIC20_KERNAL
+    )
+);
+
 
 export {
   Vic20,

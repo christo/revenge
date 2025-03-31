@@ -127,7 +127,7 @@ const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [
 const C64_8K_CART = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64 cartridge",
-    ["cart", "c64"],
+    ["cart", C64.name],
     CBM80, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
         C64_8K_BASE_ADDRESS,
