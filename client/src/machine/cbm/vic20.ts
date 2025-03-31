@@ -250,7 +250,6 @@ export class Vic20Basic implements BlobSniffer {
           }
           if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
             // next line address is allegedly lower? This ain't basic
-            // eslint-disable-next-line no-template-curly-in-string
             console.log(`lower next line address for ${fb.name}`)
             isBasic *= 0.3;
           }
@@ -263,7 +262,7 @@ export class Vic20Basic implements BlobSniffer {
           const remainingSize = fb.getLength() - basicSize;
           // is the basic tiny?
           if (basicSize < 20 && remainingSize > basicSize) {
-            // almost certain we should treat this as assembly at this point
+            // almost certain we should treat this as machine code at this point
             // although it could be data that a basic program simply reads.
             isBasic *= 0.001;
           } else {
