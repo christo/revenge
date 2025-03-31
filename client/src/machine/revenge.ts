@@ -1,23 +1,23 @@
 // application-level stuff to tie user interface and domain model
 
-import {hexDumper, MemoryConfiguration, TypeActions} from "./api.ts";
-import {LabelsComments, SymbolTable} from "./asm/asm.ts";
+import {hexDumper, TypeActions} from "./api.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
-import {Edict} from "./asm/Edict.ts";
-import {InstructionLike} from "./asm/instructions.ts";
 import {BlobTypeSniffer, UNKNOWN_BLOB} from "./BlobTypeSniffer.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./cbm/BasicDecoder.ts";
+import {BasicStubDisassemblyMeta} from "./cbm/BasicStubDisassemblyMeta.ts";
 import {C64_8K_CART, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disassemble, prg, printBasic} from "./cbm/cbm.ts";
 import {Petscii} from "./cbm/petscii.ts";
 import {
-  POPULAR_CART_LOAD_ADDRS,
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
-  UNEXPANDED_VIC_BASIC, Vic20,
-  VIC20_CART, VIC20_KERNAL
+  POPULAR_CART_LOAD_ADDRS,
+  UNEXPANDED_VIC_BASIC,
+  Vic20,
+  VIC20_CART,
+  VIC20_KERNAL
 } from "./cbm/vic20.ts";
 import {Addr, asHex, hex16} from "./core.ts";
 import {FileBlob} from "./FileBlob.ts";
@@ -27,31 +27,20 @@ function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
 }
 
-const PRG_CONTENT_OFFSET = 2;
-
 /**
- * Temporary extraction
+ * Reads integer characters at the offset
+ * @param fileBlob
+ * @param offset
  */
-function mkDisassemblyMeta(memoryConfig: MemoryConfiguration, startAddress: number, entryPointDesc: string, lc: LabelsComments) {
-  return {
-    baseAddress(_fb: FileBlob): number {
-      return memoryConfig.basicProgramStart;
-    }, contentStartOffset(): number {
-      return 2;
-    }, executionEntryPoints(_fb: FileBlob): [number, string][] {
-      return [[startAddress, entryPointDesc]];
-    }, getEdict(_offset: number): Edict<InstructionLike> | undefined {
-      // TODO make edict(?) about basic header definition
-      return undefined;
-    }, getSymbolTable(): SymbolTable {
-      return VIC20_KERNAL;
-    }, isInBinary(addr: number, fb: FileBlob): boolean {
-      return addr > memoryConfig.basicProgramStart && addr < (fb.getLength() - PRG_CONTENT_OFFSET);
-    }, resolveSymbols(_fb: FileBlob): [number, LabelsComments][] {
-      return [[startAddress, lc]];
-    }
-
-  };
+function readPetsciiInteger(fileBlob: FileBlob, offset: number) {
+  let intString = "";
+  let i = offset;
+  let byteRead = fileBlob.read8(i);
+  while (i < fileBlob.getLength() && Petscii.C64.unicode[byteRead] >= '0' && Petscii.C64.unicode[byteRead] <= '9') {
+    intString += Petscii.C64.unicode[byteRead];
+    byteRead = fileBlob.read8(++i);
+  }
+  return intString;
 }
 
 /**
@@ -100,12 +89,11 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   }
   // detect VIC20 machine code with basic stub
   if (maxBasicSmell > 0.5) {
-    // TODO move this hairball into a sniffer
     const loadAddress = fileBlob.read16(0);
     const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
     // TODO tighten up this rough heuristic
     if (fileBlob.getLength() > 20 && memoryConfig) {
-      console.log("basic load address but probably only a sys call to machine code");
+      console.log("got basic load address, checking simple sys call to machine code");
       // we probably have a basic header with machine code following
       // we need to decode the basic header, read a sys command and
       // calculate the entry point
@@ -115,19 +103,13 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
       // line number length: 2 =
       // 6
       if (fileBlob.read8(6) === TOKEN_SYS) {
-        let i= 7;
+        let i = 7;
         // skip any spaces
         while (fileBlob.read8(i) === TOKEN_SPACE) {
           i++;
         }
         // read petscii decimal address until space or end of line
-        let intString = "";
-        let byteRead = fileBlob.read8(i);
-        while (i < fileBlob.getLength() && Petscii.C64.unicode[byteRead] >= '0' && Petscii.C64.unicode[byteRead] <= '9') {
-          intString += Petscii.C64.unicode[byteRead];
-          byteRead = fileBlob.read8(++i);
-        }
-        // console.log(`intString is ${intString}`);
+        let intString = readPetsciiInteger(fileBlob, i);
         try {
           const startAddress = parseInt(intString, 10);
           if (isNaN(startAddress)) {
@@ -135,17 +117,15 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
           }
 
           const sysCall = `SYS ${startAddress}`
-          // TODO tidy this up
           const entryPointDesc = `BASIC loader stub ${sysCall}`;
-          const lc = new LabelsComments("entry", `called from ${entryPointDesc}`);
-          const dm: DisassemblyMeta = mkDisassemblyMeta(memoryConfig, startAddress, entryPointDesc, lc)
+          const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_KERNAL, startAddress, entryPointDesc)
           const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
           const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
           const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
           const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
           const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
-          const basicPrefixType = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
-          return disassemble(basicPrefixType, fileBlob);
+          const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+          return disassemble(sniffer, fileBlob);
         } catch (e) {
           console.error("died trying to parse sys arg", e);
         }
