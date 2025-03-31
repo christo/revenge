@@ -25,7 +25,7 @@
   * [ ] Tracer records path graph
   * [ ] Tracer records memory read and write sequence
   * [ ] Use read heuristics to detect evidence of data 
-  * [ ] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
+  * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
 * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
