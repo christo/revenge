@@ -2,13 +2,13 @@ import {Detail} from "../ui/Detail.ts";
 import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
+import {Byteable} from "./Byteable.ts";
 import {Addr, hex8} from "./core";
 import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {BigEndian, LittleEndian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
-import {Mos6502} from "./mos6502";
 
 function getRenderers(_tag: Tag): TagRenderer[] {
   // TODO implement this
@@ -163,7 +163,6 @@ class LogicalLine {
  */
 type ActionExecutor = () => Detail;
 
-// noinspection JSUnusedGlobalSymbols
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo: ActionExecutor) => void;
 
@@ -218,7 +217,7 @@ const hexDumper: UserFileAction = (fb: FileBlob) => ({
   }
 });
 
-class RomImage {
+class RomImage implements Byteable {
   private readonly name: string;
   private readonly loadAt: Addr;
   private readonly contents: number[];
@@ -239,6 +238,14 @@ class RomImage {
 
   getBytes(): number[] {
     return this.contents;
+  }
+
+  getLength(): number {
+    return this.contents.length;
+  }
+
+  read8(offset: number): number {
+    return this.contents[offset] && 0xff;
   }
 }
 
