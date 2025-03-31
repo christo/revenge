@@ -1,3 +1,5 @@
+import {Byteable} from "../Byteable.ts";
+
 class Petscii {
 
   static C64: Petscii = Petscii.makeC64();
@@ -16,6 +18,22 @@ class Petscii {
    * Description of the character or the Unicode if .
    */
   description: string[] = [];
+
+  /**
+   * Reads zero or more digits as a string from the source at the offset.
+   * @param source
+   * @param offset
+   */
+  static readDigits(source: Byteable, offset: number): string {
+    let intString = "";
+    let i = offset;
+    let byteRead = source.read8(i);
+    while (i < source.getLength() && Petscii.C64.unicode[byteRead] >= '0' && Petscii.C64.unicode[byteRead] <= '9') {
+      intString += Petscii.C64.unicode[byteRead];
+      byteRead = source.read8(++i);
+    }
+    return intString;
+  }
 
   /**
    * Returns the given string as an array of petscii codes. All chars must exist in petscii or asplode.

@@ -27,21 +27,16 @@ function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
 }
 
-/**
- * Reads integer characters at the offset
- * @param fileBlob
- * @param offset
- */
-function readPetsciiInteger(fileBlob: FileBlob, offset: number) {
-  let intString = "";
-  let i = offset;
-  let byteRead = fileBlob.read8(i);
-  while (i < fileBlob.getLength() && Petscii.C64.unicode[byteRead] >= '0' && Petscii.C64.unicode[byteRead] <= '9') {
-    intString += Petscii.C64.unicode[byteRead];
-    byteRead = fileBlob.read8(++i);
-  }
-  return intString;
-}
+
+// Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
+const BASIC_SNIFFERS = [
+  UNEXPANDED_VIC_BASIC,
+  EXP03K_VIC_BASIC,
+  EXP08K_VIC_BASIC,
+  EXP16K_VIC_BASIC,
+  EXP24K_VIC_BASIC,
+  C64_BASIC_PRG,
+];
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.
@@ -67,11 +62,11 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   }
 
   let maxBasicSmell = 0;
-  for (let i = 0; i < BASICS.length; i++) {
-    const basicSmell = BASICS[i].sniff(fileBlob);
+  for (let i = 0; i < BASIC_SNIFFERS.length; i++) {
+    const basicSmell = BASIC_SNIFFERS[i].sniff(fileBlob);
     maxBasicSmell = Math.max(maxBasicSmell, basicSmell);
     if (basicSmell > 1) {
-      const ta = printBasic(BASICS[i], fileBlob);
+      const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
       ta.actions.push(hd);
       // TODO get rid of early return
       return ta;
@@ -108,26 +103,30 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         while (fileBlob.read8(i) === TOKEN_SPACE) {
           i++;
         }
-        // read petscii decimal address until space or end of line
-        let intString = readPetsciiInteger(fileBlob, i);
-        try {
-          const startAddress = parseInt(intString, 10);
-          if (isNaN(startAddress)) {
-            throw Error(`could not parse start address "${intString}"`)
+        // read decimal address
+        let intString = Petscii.readDigits(fileBlob, i);
+        if (intString.length > 0) {
+          try {
+            const startAddress = parseInt(intString, 10);
+            if (!isNaN(startAddress)) {
+              const sysCall = `SYS ${startAddress}`
+              const entryPointDesc = `BASIC loader stub ${sysCall}`;
+              const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_KERNAL, startAddress, entryPointDesc)
+              const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
+              const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
+              const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+              const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
+              const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
+              const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+              return disassemble(sniffer, fileBlob);
+            } else {
+              console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
+            }
+          } catch (e) {
+            console.error("died trying to disassemble during sniff", e);
           }
-
-          const sysCall = `SYS ${startAddress}`
-          const entryPointDesc = `BASIC loader stub ${sysCall}`;
-          const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_KERNAL, startAddress, entryPointDesc)
-          const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
-          const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
-          const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
-          const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
-          const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
-          const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
-          return disassemble(sniffer, fileBlob);
-        } catch (e) {
-          console.error("died trying to parse sys arg", e);
+        } else {
+          console.warn(`couldn't find sys command argument`);
         }
       } else {
         const b = fileBlob.getBytes().slice(0, 20);
@@ -135,6 +134,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
         const hex = asHex(b);
         console.warn(`basic header didn't start with sys command\n${hex}`);
       }
+
       return {t: UNKNOWN_BLOB, actions: [hd]}
     }
     console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
@@ -143,14 +143,5 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   return {t: UNKNOWN_BLOB, actions: [hd]};
 }
 
-// Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
-const BASICS = [
-  UNEXPANDED_VIC_BASIC,
-  EXP03K_VIC_BASIC,
-  EXP08K_VIC_BASIC,
-  EXP16K_VIC_BASIC,
-  EXP24K_VIC_BASIC,
-  C64_BASIC_PRG,
-]
 
 export {sniff};

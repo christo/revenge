@@ -222,7 +222,7 @@ const BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
 /**
  * Detects Vic-20 BASIC
  */
-class Vic20Basic implements BlobSniffer {
+class Vic20BasicSniffer implements BlobSniffer {
 
   desc: string;
   name: string;
@@ -300,11 +300,11 @@ class Vic20Basic implements BlobSniffer {
 }
 
 
-const UNEXPANDED_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.UNEX);
-const EXP03K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP03K);
-const EXP08K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP08K);
-const EXP16K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP16K);
-const EXP24K_VIC_BASIC = new Vic20Basic(Vic20.MEMORY_CONFIG.EXP24K);
+const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.UNEX);
+const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP03K);
+const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP08K);
+const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP16K);
+const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP24K);
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
