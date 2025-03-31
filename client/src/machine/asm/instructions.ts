@@ -76,7 +76,6 @@ class SymbolDefinition extends InstructionBase implements Directive {
 
   disassemble(dialect: Dialect, dis: Disassembler): Tag[] {
     return dialect.symbolDefinition(this, dis);
-    ;
   }
 
   getBytes(): number[] {
