@@ -1,6 +1,6 @@
 // application-level stuff to tie user interface and domain model
 
-import {hexDumper, TypeActions} from "./api.ts";
+import {hexDumper, MemoryConfiguration, TypeActions} from "./api.ts";
 import {LabelsComments, SymbolTable} from "./asm/asm.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {Edict} from "./asm/Edict.ts";
@@ -25,6 +25,33 @@ import {Mos6502} from "./mos6502.ts";
 
 function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
+}
+
+const PRG_CONTENT_OFFSET = 2;
+
+/**
+ * Temporary extraction
+ */
+function mkDisassemblyMeta(memoryConfig: MemoryConfiguration, startAddress: number, entryPointDesc: string, lc: LabelsComments) {
+  return {
+    baseAddress(_fb: FileBlob): number {
+      return memoryConfig.basicProgramStart;
+    }, contentStartOffset(): number {
+      return 2;
+    }, executionEntryPoints(_fb: FileBlob): [number, string][] {
+      return [[startAddress, entryPointDesc]];
+    }, getEdict(_offset: number): Edict<InstructionLike> | undefined {
+      // TODO make edict(?) about basic header definition
+      return undefined;
+    }, getSymbolTable(): SymbolTable {
+      return VIC20_KERNAL;
+    }, isInBinary(addr: number, fb: FileBlob): boolean {
+      return addr > memoryConfig.basicProgramStart && addr < (fb.getLength() - PRG_CONTENT_OFFSET);
+    }, resolveSymbols(_fb: FileBlob): [number, LabelsComments][] {
+      return [[startAddress, lc]];
+    }
+
+  };
 }
 
 /**
@@ -107,30 +134,15 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
             throw Error(`could not parse start address "${intString}"`)
           }
 
-          const CONTENT_OFFSET = 2; // header contains just the 16 bit load address
           const sysCall = `SYS ${startAddress}`
           // TODO tidy this up
           const entryPointDesc = `BASIC loader stub ${sysCall}`;
-          const dm: DisassemblyMeta = {
-            baseAddress(_fb: FileBlob): number {
-              return memoryConfig.basicProgramStart;
-            }, contentStartOffset(): number {
-              return 2;
-            }, executionEntryPoints(_fb: FileBlob): [number, string][] {
-              return [[startAddress, entryPointDesc]];
-            }, getEdict(_offset: number): Edict<InstructionLike> | undefined {
-              // TODO make edict(?) about basic header definition
-              return undefined;
-            }, getSymbolTable(): SymbolTable {
-              return VIC20_KERNAL;
-            }, isInBinary(addr: number, fb: FileBlob): boolean {
-              return addr > memoryConfig.basicProgramStart && addr < (fb.getLength() - CONTENT_OFFSET);
-            }, resolveSymbols(_fb: FileBlob): [number, LabelsComments][] {
-              return [[startAddress, new LabelsComments("entry", `called from BASIC with ${sysCall}`)]];
-            }
-
-          }
-          const desc = `${Vic20.NAME} ${memoryConfig.shortName} program binary loaded at ${renderAddrDecHex(memoryConfig.basicProgramStart)}, entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+          const lc = new LabelsComments("entry", `called from ${entryPointDesc}`);
+          const dm: DisassemblyMeta = mkDisassemblyMeta(memoryConfig, startAddress, entryPointDesc, lc)
+          const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
+          const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
+          const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+          const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
           const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
           const basicPrefixType = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
           return disassemble(basicPrefixType, fileBlob);
