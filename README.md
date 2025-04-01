@@ -24,8 +24,8 @@ whole day to find the cause.
 
 ## Architecture
 
-Implemented in [TypeScript](https://www.typescriptlang.org/), using [React](https://react.dev/), 
-[Bun](https://bun.sh/), [Vite](https://vite.dev/), [MUI](https://mui.com/) and 
+Implemented in [TypeScript](https://www.typescriptlang.org/), using [Bun](https://bun.sh/),
+[Vite](https://vite.dev/), [MUI](https://mui.com/), [React](https://react.dev/) and 
 [Mocha](https://mochajs.org/)/[Chai](https://www.chaijs.com/) for testing.
 
 ## Quick Start
