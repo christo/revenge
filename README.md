@@ -96,6 +96,8 @@ and dynamic techniques like speculative partial execution, combined with a large
 database built from a corpus of known software, I hope to give insight to a human reverse engineer
 about any software written for these enigmatic retro systems.
 
+Read more notes about [Dynamic Analysis](docs/dynamic-analysis.md).
+
 It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
 such a system.
 
@@ -109,18 +111,24 @@ such a system.
   * can recognise at least two types and offer to disassemble if it knows how
   * vic20 raw cartridge image recognition
   * BASIC programs
+  * Machine code programs with a [Basic Stub](docs/basic-headers.md).
 * representation of a syntax-independent assembler pseudo-op and Dialect can implement
   syntax-specifics
 * assembly syntax highlighting
-* Test suite
+* Trace code paths to build call graph for detecting code vs data.
 * Decode BASIC programs on VIC-20 and C64
+* Test suite
 * High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated
   by [Michael Steil](https://pagetable.com/) of
   [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
 * stats/summary of file interpretation action taken
   * execution time for disassembly
+  * trace time
   * symbol detection count (disassembly)
 * System kernal subroutine symbol recognition (VIC-20, C64)
+* Visual plot of bi-gram frequency analysis of overlapping byte pairs in a binary. These
+  are pretty good at visually distinguishing encrypted or compressed binaries. Machine code looks
+  pretty different to BASIC.
 
 ## System Support Status
 
