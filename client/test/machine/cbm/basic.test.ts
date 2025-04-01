@@ -4,8 +4,8 @@ import {CBM_BASIC_2_0} from "../../../src/machine/cbm/BasicDecoder";
 import {LE} from "../../../src/machine/Endian";
 import {FileBlob} from "../../../src/machine/FileBlob";
 
-describe("tracer", () => {
-  it("performs simple linear trace", () => {
+describe("basic decoder", () => {
+  it("performs simple linear decode", () => {
     const fname = "data/Killer Comet.prg";
     const buffer = fs.readFileSync(fname);
 
