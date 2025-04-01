@@ -14,26 +14,6 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ![revenge screenshot](docs/revenge-screenshot-20250324.png)
 
-Using a hybrid approach to code detection, some parts of a binary can be confidently identified
-as code through a mixture of static and dynamic analysis. Currently I'm working on a `Tracer`
-which follows code execution paths, including both sides of conditional branches and records
-which addresses hold instructions. Solving this problem deterministically for all possible 
-programs is equivalent to solving
-[The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously
-proved to be impossible. Solving it deterministically for certain programs, constrained to a
-useful subset of possible instructions is at an early stage of implementation and further work
-to extend this with partial evaluation and probabilistic execution could be very useful for
-accelerating reverse engineering on small retro systems.
-
-Using a combination of preemptive emulation, detailed machine architecture definitions and
-static analytic techniques like program transformation, escape analysis, peephole optimisation
-and dynamic techniques like speculativeπ partial execution, combined with a large cross-referenced
-database built from a corpus of known software, I hope to give insight to a human reverse engineer
-about any software written for these enigmatic retro systems.
-
-It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
-such a system.
-
 ## Architecture
 
 Implemented in [TypeScript](https://www.typescriptlang.org/), using [React](https://react.dev/), 
@@ -79,6 +59,37 @@ transparently agnostic about this but if you have opinions and skills, get in to
 accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/package.json` and
 `server/package.json` files to see what scripts are defined.
 
+## Code Detection
+
+It's not hard to make good guesses about what parts of a binary are code or data but it is
+harder to do reliably and automatically. Therefore, most reverse engineering tools are 
+interactive; the user must get involved to interpret and understand the binary and to dictate
+what is code, text data, image data, audio etc. and this is even trickier when code is
+self-modifying, compressed, encrypted, obfuscated or when bytes are treated as both code and data.
+
+Using a hybrid approach to code detection, some parts of a binary can be confidently identified
+as code through a mixture of static and dynamic analysis. A `Tracer` is implemented 
+which follows code execution paths, including both sides of conditional branches and records
+which addresses hold instructions. In many cases this approach can determine parts which are
+almost certainly code and also to identify regions of almost certain data.
+
+Work on this is ongoing.
+
+Solving this problem deterministically for all possible programs is equivalent to solving
+[The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously
+proved to be impossible. Solving it deterministically for certain programs, constrained to a
+useful subset of possible instructions is at an early stage of implementation and further work
+to extend this with partial evaluation and probabilistic execution could be very useful for
+accelerating reverse engineering on small retro systems.
+
+Using a combination of preemptive emulation, detailed machine architecture definitions and
+static analytic techniques like program transformation, escape analysis, peephole optimisation
+and dynamic techniques like speculative partial execution, combined with a large cross-referenced
+database built from a corpus of known software, I hope to give insight to a human reverse engineer
+about any software written for these enigmatic retro systems.
+
+It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
+such a system.
 
 ## Features
 
