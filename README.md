@@ -14,6 +14,14 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ![revenge screenshot](docs/revenge-screenshot-20250324.png)
 
+## Performance Problems April 2025
+
+There is currently a terrible performance bottleneck in the front-end rendering causing
+page loads to take a few seconds. Fixing it is a priority as soon as work-in-progress
+for kernal symbol definitions and non-address resident source lines is complete. It's
+something dumb and will probably be quick to fix although I can imagine it taking a
+whole day to find the cause. 
+
 ## Architecture
 
 Implemented in [TypeScript](https://www.typescriptlang.org/), using [React](https://react.dev/), 
