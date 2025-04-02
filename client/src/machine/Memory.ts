@@ -53,6 +53,11 @@ interface Memory<T extends Endian> extends Byteable {
  * Represents a contiguous, {@link Endian} Memory, backed by an array.
  */
 class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
+
+  static zeroes<T extends Endian>(size: number, endian: T, writeable: boolean, executable: boolean): ArrayMemory<T> {
+    return new ArrayMemory(Array(size).fill(0), endian, writeable, executable);
+  }
+
   /** Arbitrary size, plenty for retro computers. */
   private static MAX: number = MB_8;
   private readonly _bytes: number[];
@@ -85,10 +90,6 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
       this._bytes = bytes;
     }
     this.endian = endian;
-  }
-
-  static zeroes<T extends Endian>(size: number, endian: T, writeable: boolean, executable: boolean): ArrayMemory<T> {
-    return new ArrayMemory(Array(size).fill(0), endian, writeable, executable);
   }
 
   executable = (): boolean => this._executable;
