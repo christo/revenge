@@ -1,7 +1,9 @@
 import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api.ts";
 import {hex16} from "../core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
+import {LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
+import {Memory} from "../Memory.ts";
 import {Petscii} from "./petscii.ts";
 
 type Token = [number, string];
@@ -90,7 +92,26 @@ const TOKENS: Token[] = [
   [203, "GO"],
   [255, "π"]];
 
-const isZilch = (x: number | undefined) => (x === undefined || x === 0);
+/**
+ * Zero or undefined?
+ * @param x
+ */
+const isZeroish = (x: number | undefined) => (x === undefined || x === 0);
+
+/**
+ * Constructs the LogicalLine representing a line of BASIC code
+ * @param length
+ * @param addr
+ * @param basicLineNumber
+ * @param lineContents
+ */
+const mkBasicLine = (length: number, addr: number, basicLineNumber: number, lineContents: string) => {
+  const addressTag = new Tag([TAG_ADDRESS], hex16(addr));
+  const lineNumberTag = new Tag([TAG_LINE_NUM], basicLineNumber.toString(10));
+  const lineContentsTag = new Tag([TAG_LINE], lineContents);
+  const ts = [addressTag, lineNumberTag, lineContentsTag]
+  return new LogicalLine(ts, length, addr);
+};
 
 /**
  * Decodes a BASIC {@link FileBlob} into its program structure.
@@ -132,16 +153,15 @@ class BasicDecoder {
     this.tokens[tok[0]] = tok[1];
   }
 
-  decode(fb: FileBlob): DataView {
-    if (fb.getLength() < BasicDecoder.MINIMUM_SIZE) {
+  decode(source: Memory<LittleEndian>): DataView {
+    if (source.getLength() < BasicDecoder.MINIMUM_SIZE) {
       throw Error("file is too small to be a valid basic program");
     }
     // offset in file of actualy content
     const offset = BasicDecoder.CONTENT_START_OFFSET;
     // assuming the load address is the first two bytes.
-    const baseAddress = fb.read16(BasicDecoder.LOAD_ADDRESS_OFFSET);
-    let i = offset;
-    let lineOffsetStart = i;
+    const baseAddress = source.read16(BasicDecoder.LOAD_ADDRESS_OFFSET);
+
     // read address of next BASIC line (may be the 0x0000 end marker)
     let nextLineAddr = baseAddress;
     let thisLineAddr = nextLineAddr;
@@ -150,6 +170,9 @@ class BasicDecoder {
     let dataView: DataView = new DataViewImpl([]);
     let line = "";
     let quoteMode = false;
+
+    let i = offset;
+    let lineOffsetStart = i;
     while (!finished) {
       // have we reached the byte offset of the next line?
       const isNewLine = i - offset + baseAddress === nextLineAddr;
@@ -157,34 +180,26 @@ class BasicDecoder {
         lineOffsetStart = i;
         quoteMode = false;
         thisLineAddr = nextLineAddr;
-        nextLineAddr = fb.read16(i);
+        nextLineAddr = source.read16(i);
         if (nextLineAddr === 0) {
           throw Error("tripped end of program unexpectedly"); // shouldn't happen
         }
-        i += 2;
-        lineNumber = fb.read16(i);
-        i += 2;
+        i += 2; // advance after next line link pointer
+        lineNumber = source.read16(i);
+        i += 2; // advance after basic line number
         line = " "; // the space after the line number
       }
-      let b = fb.getBytes().at(i++);
+      let b = source.getBytes().at(i++);
       const eol = b === 0;
       if (b === undefined) {
         console.error("byte no existo");
         finished = true;
       } else if (eol) {
-        const address = new Tag([TAG_ADDRESS], hex16(thisLineAddr));
-        const lineNum = new Tag([TAG_LINE_NUM], lineNumber.toString(10));
-        const lineText = new Tag([TAG_LINE], line);
-        const tags = [address, lineNum, lineText];
         const byteSize = i - lineOffsetStart;
-        dataView.addLine(new LogicalLine(tags, byteSize, thisLineAddr));
+        dataView.addLine(mkBasicLine(byteSize, thisLineAddr, lineNumber, line));
       } else {
-        // interpret as a token, falling back to petscii
-        let token = this.tokens[b];
-        if (quoteMode || token === undefined) {
-          // in quotemode we never want the basic keyword to appear
-          token = Petscii.C64.vice[b];
-        }
+        // interpret as a character in quoteMode, otherwise a BASIC token
+        let token = quoteMode ? Petscii.C64.vice[b] : this.decodeToken(b);
         // toggle quotemode
         if (token === '"') {
           quoteMode = !quoteMode;
@@ -193,21 +208,26 @@ class BasicDecoder {
       }
       // two zero bytes mark the end, if we are out of bytes, same thing.
       // i has already been incremented, so i and i+1 peek ahead for a zero-terminating word
-      const eof = isZilch(fb.read8(i)) && isZilch(fb.read8(i + 1));
+      const eof = isZeroish(source.read8(i)) && isZeroish(source.read8(i + 1));
       finished = finished || (eol && eof);
     }
 
     // "i" is pointing at the termination word
-    const remainingBytes = fb.getLength() - i - 2;
+    const remainingBytes = source.getLength() - i - 2;
     if (remainingBytes > 0) {
+      // TODO consider how better to show this - hexdump?
       const note = new Tag([TAG_NOTE], `${remainingBytes} remaining bytes`);
-      // not really an address, a number of bytes
       const numBytes = baseAddress + i + 2;
       const addr = new Tag([TAG_ADDRESS], hex16(numBytes));
       dataView.addLine(new LogicalLine([note, addr], remainingBytes, numBytes));
     }
 
     return dataView;
+  }
+
+  /** Interprets the given byte as a token, which just equals the Petscii if bit 7 is 0 */
+  private decodeToken(b: number) {
+    return this.tokens[b] || Petscii.C64.vice[b];
   }
 }
 
