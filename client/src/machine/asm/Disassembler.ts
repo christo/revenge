@@ -287,7 +287,6 @@ class Disassembler {
    * @throws if illegal state
    */
   disassemble1(mem: Byteable, offset: number): FullInstruction | undefined {
-    // TODO should we fall back to byte declaration directive rather than throw?
     const opcode = mem.read8(offset);
     const instLen = this.iset.numBytes(opcode) || 1
     const bytesRemaining = mem.getLength() - offset;
