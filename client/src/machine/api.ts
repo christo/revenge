@@ -21,6 +21,10 @@ function getRenderers(_tag: Tag): TagRenderer[] {
  * the name as a className and the value as the text content of a span element.
  *
  * TODO kill this crazy idea via migration to "TagRenderer"
+ *   it's an overly desperate attempt to not use tsx by holding a fence-sitting abstraction that is
+ *   ultimately just hard to use - it would be more ergonomic to have separate front-end components
+ *   for semantically rich front-end rendering. This gets in the way of that. Introduce api with
+ *   types and methods for dispatching to the correct component (yes this is a mega duplicated comment)
  */
 class Tag {
 
