@@ -46,7 +46,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       symbolTable: SymbolTable = new SymbolTable("default")
   ) {
 
-    // TODO to what extent is this an unjustified assumption about the load address living in the FileBlob?
+    // future: not all systems specify load address in a file
     this._baseAddressOffset = baseAddressOffset;
     this._contentStartOffset = contentStartOffset;
     this.symbolTable = symbolTable;
