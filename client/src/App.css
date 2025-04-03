@@ -132,6 +132,10 @@ classes for tags follow
   color: #0AE0E3;
 }
 
+.symdef {
+  color: #0AE0E3;
+}
+
 .data {
   position: absolute;
   left: 40ch;
