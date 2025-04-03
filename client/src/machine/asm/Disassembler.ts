@@ -19,7 +19,7 @@ class Disassembler {
 
   readonly contentStartIndex: number;
   currentIndex: number;
-  fb: FileBlob;
+  readonly fb: FileBlob;
 
   private iset: InstructionSet;
   private readonly segmentBaseAddress: Addr;
