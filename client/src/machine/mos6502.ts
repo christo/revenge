@@ -10,6 +10,7 @@
  */
 
 import {AddressingMode} from "./AddressingMode.ts";
+import {InstructionBase} from "./asm/instructions.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";
