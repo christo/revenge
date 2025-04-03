@@ -57,14 +57,10 @@ class Tracer {
   private readonly executedList: Array<InstRec>; // TODO maybe store set?
 
   // TODO: keep track of locations written to (data)
-  // TODO: identify self-mod code and raise exception
+  // future: identify self-mod code and raise exception
   //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
   //    * if a written to address is disassembled as opcode or operand byte
   // TODO: identify code vs data. Data may be written to without causing self-mod.
-  // TODO: a history of executed locations and their stacks(!), when revisiting with the same stack, kill that thread
-  //          maybe we can only afford to do this for empty stacks? maybe certain small stacks of say 1 or 2 size?
-  //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
-  //          jumps (forks) and subroutine jumps (deferred steps).
 
   /**
    * Create a Tracer with a single Memory and single thread of execution at pc.
