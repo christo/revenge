@@ -9,8 +9,8 @@ import {ArrayMemory, Memory} from "./Memory.ts";
  */
 class FileBlob implements Byteable {
   public static NULL_FILE_BLOB: FileBlob = FileBlob.fromBytes("null", 0, BE);
-  name: string;
-  private memory: ArrayMemory<Endian>;
+  readonly name: string;
+  private readonly memory: ArrayMemory<Endian>;
 
   constructor(name: string, memory: ArrayMemory<Endian>) {
     this.name = name;
