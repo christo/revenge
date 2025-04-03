@@ -465,7 +465,8 @@ class FullInstruction implements Byteable {
   readonly secondByte: number;              // literal if defined by instruction
 
   constructor(instruction: Instruction, lobyte: number, hibyte: number) {
-    // TODO make operands optional to support niladics better
+    // ideally we wouldn't take operand bytes because niladics are a thing,
+    // but it doesn't currently cause much trouble
     this.instruction = instruction;
     this.firstByte = assertByte(lobyte);
     this.secondByte = assertByte(hibyte);
