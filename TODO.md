@@ -37,6 +37,21 @@
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] dialect options - layout handles for indenting
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
+* [ ] BASIC data statements embedded machine code detection/designation
+* 
+* [ ] Kernel subroutines: map the inputs, outputs and register effects of subroutines
+* [ ] hovertools for exploration and interactive reversing:
+  * dynamically decorate
+  * single instruction or selection
+  * selection lollypop handles can be expanded using tools (drag extend up or down)
+  * extra info
+  * edit options
+  * branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
+* [ ] bulk back-end corpus
+  * test-time analysis for tuning detectors
+  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
+* [ ] petscii view (views abstraction)
+  * UI: render text data in machine-original font, derived directly from the character ROM
 
 
 ## Long Term Ideas
@@ -51,14 +66,6 @@
   Ramda
 * check out Haskell Difference List datastructure
 * Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
-* Kernel subroutines: map the inputs, outputs and register effects of subroutines
-* hovertools:
-  * dynamically decorate
-  * single instruction or selection
-  * selection lollypop handles can be expanded using tools (drag extend up or down)
-  * extra info
-  * edit options
-  * branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
 * functional data structure for byte interpretation
   * what is that fp datastructure for strings
   * make random access and modification to disassembled instruction list (lenses?)
@@ -82,11 +89,7 @@
 * introduce user abstraction well before multiple user accounts or permissions
 * database persistence
 * interactive choice of data/code regions
-* BASIC data statement embedded machine code detection/designation
-* bulk back-end corpus
-  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
 * multiple disassembly dialect support
-* Test suite coverage measurement / build script
 * type possibility list with probabilities etc.
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
   natch)
@@ -97,8 +100,6 @@
     * keep db details of uploads anyway
   * store file-level notes and byte-offset / byte-range notes
   * unified back-end between bootstrap filetree and uploaded stuff
-* petscii view (views abstraction)
-  * UI: render text data in machine-original font, derived directly from the character ROM
 * content recognition:
   * common data fragments identified between files
   * build database of file content recognition.
