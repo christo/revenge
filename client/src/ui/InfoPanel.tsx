@@ -14,9 +14,6 @@ const STYLE = {
 
 export function InfoPanel({detail}: { detail: Detail }) {
   return <Box sx={STYLE}>
-    <SmolPanel heading="Options">
-      <Typography>Control panel will go here...</Typography>
-    </SmolPanel>
     <SmolPanel heading={detail.name}>
       {detail.stats.map(([key, value], i) =>
           <Box key={`sp_${i}`} className="stat">
@@ -24,6 +21,9 @@ export function InfoPanel({detail}: { detail: Detail }) {
             <Typography display="inline" sx={{color: "#e3e0bd", fontWeight: "bold"}}>{value}</Typography>
           </Box>
       )}
+    </SmolPanel>
+    <SmolPanel heading="Options">
+      <Typography>Control panel will go here...</Typography>
     </SmolPanel>
   </Box>;
 }
