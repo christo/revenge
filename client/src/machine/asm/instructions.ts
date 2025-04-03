@@ -56,7 +56,7 @@ interface Directive extends InstructionLike {
 class SymbolDefinition extends InstructionBase implements Directive {
   private readonly _symDef: SymDef<number>;
 
-  // TODO handle generic argument correctly
+  // TODO handle generic argument correctly, not all definitions are of type number
   constructor(symDef: SymDef<number>) {
     super(new LabelsComments([], [symDef.descriptor]), SourceType.PSEUDO);
     this._symDef = symDef;
