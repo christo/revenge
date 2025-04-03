@@ -3,11 +3,12 @@
 ## Next Actions
 
 * [x] tidy up revenge.ts a bit
+* [ ] fix mega slow ui rendering
 * [ ] show definitions for used kernal symbols
-  * [ ] collect used symbols from trace before rendering disassembly 
+  * [x] collect used symbols from trace before rendering disassembly 
   * [x] render source lines that have no address prefix - such as symbol definitions
   * [ ] implement jumping to definition
-* [ ] fix mega slow ui rendering
+  * [ ] consistent syntax rendering of kernal symbols
 * [ ] vic 20 / c64 hardware register detection
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
