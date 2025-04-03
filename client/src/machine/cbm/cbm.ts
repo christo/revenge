@@ -14,7 +14,7 @@ import {
   UserAction
 } from "../api.ts";
 import {Environment, SymbolType,} from "../asm/asm.ts";
-import {DefaultDialect} from "../asm/DefaultDialect.ts";
+import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {Directive, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
@@ -33,7 +33,7 @@ import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
  */
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
-function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: DisassemblyMeta) {
+function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: DisassemblyMeta) {
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
 
@@ -160,7 +160,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
  * User action that disassembles the file.
  */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
-  const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
+  const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   let userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
     f: async () => {

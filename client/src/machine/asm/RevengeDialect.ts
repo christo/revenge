@@ -1,5 +1,4 @@
 import {
-  BooBoo,
   KeywordTag,
   Tag,
   TAG_ABSOLUTE,
@@ -37,7 +36,7 @@ import {
   MODE_ZEROPAGE_Y
 } from "../mos6502.ts";
 import {Environment, LabelsComments} from "./asm.ts";
-import {Dialect} from "./Dialect.ts";
+import {BaseDialect, C_COMMENT_MULTILINE, Dialect, SEMICOLON_PREFIX} from "./Dialect.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {
   BLANK_LINE,
@@ -71,30 +70,17 @@ const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
  * Some assembler dialects have other ways of rendering addressing modes (e.g. suffix on mnemonic).
  * Can support use of symbols instead of numbers - user may prefer to autolabel kernal addresses.
  */
-class DefaultDialect implements Dialect {
+class RevengeDialect extends BaseDialect implements Dialect {
   private static readonly KW_BYTE_DECLARATION: string = '.byte';
   private static readonly KW_WORD_DECLARATION: string = '.word';
   private static readonly KW_TEXT_DECLARATION: string = '.text';
-  private readonly _env: Environment;
 
   constructor(env: Environment) {
-    this._env = env;
-  }
-
-  get name(): string {
-    return "Revenge MOS 6502";
-  }
-
-  get description(): string {
-    return "Example assembly syntax with all dialect features implemented."
-  }
-
-  get env(): Environment {
-    return this._env;
+    super("Revenge MOS 6502", "Vaguely standard modern syntax with all supported features.", env);
   }
 
   multilineCommentDelimiters(): [string, string] {
-    return ["/*", "*/"];
+    return C_COMMENT_MULTILINE;
   }
 
   parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState] {
@@ -129,22 +115,12 @@ class DefaultDialect implements Dialect {
     }
   }
 
-  checkLabel(l: string): BooBoo[] {
-    // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
-    const regExpMatchArrays = l.matchAll(/(^\d|\s)/g);
-    if (regExpMatchArrays) {
-      return [new BooBoo(`Label must not start with digit or contain whitespace: ${l}`)];
-    } else {
-      return [];
-    }
-  }
-
   lineCommentPrefix() {
-    return ["; "];
+    return SEMICOLON_PREFIX;
   }
 
-  formatLabel(s: string) {
-    return s + ": ";
+  formatLabel(s: string): string {
+    return `${s}: `;
   }
 
   hexByteText(b: number) {
@@ -159,7 +135,7 @@ class DefaultDialect implements Dialect {
     // future: context may give us rules about grouping, pattern detection etc.
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
-    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(this.byteDeclaration(x)));
+    const data: Tag = new Tag([TAG_DATA], this.env.indent() + tagText(this.byteDeclaration(x)));
     return [comments, labels, data];
   }
 
@@ -167,13 +143,13 @@ class DefaultDialect implements Dialect {
     if (x.getLength() === 0) {
       throw Error("not entirely sure how to declare text for zero bytes");
     }
-    const kw: Tag = new KeywordTag(DefaultDialect.KW_TEXT_DECLARATION);
+    const kw: Tag = new KeywordTag(RevengeDialect.KW_TEXT_DECLARATION);
     const petscii = x.getBytes().map(b => Petscii.C64.vice[b]).join("");
     // TODO TAG_PETSCII doesn't appear in html output
     const textTag = new Tag([TAG_PETSCII], `"${petscii}"`); // TODO not sure if this is any dialect
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(x.labelsComments.labels));
-    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText([kw, textTag]));
+    const data: Tag = new Tag([TAG_DATA], this.env.indent() + tagText([kw, textTag]));
     return [comments, labels, data];
   }
 
@@ -181,7 +157,7 @@ class DefaultDialect implements Dialect {
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(lc.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(lc.labels));
     const tags: Tag[] = this.wordDeclaration(words)
-    const data: Tag = new Tag([TAG_DATA], this._env.indent() + tagText(tags));
+    const data: Tag = new Tag([TAG_DATA], this.env.indent() + tagText(tags));
     return [comments, labels, data];
   }
 
@@ -220,20 +196,14 @@ class DefaultDialect implements Dialect {
   }
 
   symbolDefinition(symDef: SymbolDefinition, _dis: Disassembler): Tag[] {
-    // TODO add jump target like M_ prefixed numeric addresses
     const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));
-    const symbolDefinition = new Tag([TAG_SYM_DEF], `${symDef.symDef.name} = ${this.hexWordText(symDef.symDef.value)}`);
-    symbolDefinition.data.push(['symname', symDef.symDef.name])
+    const symName = symDef.symDef.name;
+    const symVal = `${this.hexWordText(symDef.symDef.value)}`;
+    const symbolDefinition = new Tag([TAG_SYM_DEF], `${symName} = ${symVal}`);
+    symbolDefinition.data.push(['symname', symName])
     const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, symbolDefinition, comments];
-  }
-
-
-  labelsComments(labelsComments: LabelsComments, _dis: Disassembler): Tag[] {
-    const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(labelsComments.labels));
-    const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(labelsComments.comments));
-    return [comments, labels];
   }
 
   /**
@@ -279,18 +249,6 @@ class DefaultDialect implements Dialect {
     }
   }
 
-  private renderLabels(labels: string[]): string {
-    const le = this._env.targetLineEndings();
-    return labels.map(s => this.formatLabel(s)).join(le);
-  }
-
-  private renderComments(comments: string[]): string {
-    const le = this._env.targetLineEndings();
-    const cp = this.lineCommentPrefix();
-    // transform all lines in the comment to line comments
-    return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
-  }
-
   /**
    * Creates byte declaration source for the given byteable.
    *
@@ -301,13 +259,13 @@ class DefaultDialect implements Dialect {
     if (b.getLength() === 0) {
       throw Error("not entirely sure how to declare zero bytes");
     }
-    const kw: Tag = new KeywordTag(DefaultDialect.KW_BYTE_DECLARATION);
+    const kw: Tag = new KeywordTag(RevengeDialect.KW_BYTE_DECLARATION);
     const hexTag = new Tag([TAG_HEXARRAY], b.getBytes().map(this.hexByteText).join(", "));
     return [kw, hexTag];
   }
 
   private wordDeclaration(words: number[]): Tag[] {
-    const kw: Tag = new KeywordTag(DefaultDialect.KW_WORD_DECLARATION);
+    const kw: Tag = new KeywordTag(RevengeDialect.KW_WORD_DECLARATION);
     const values: Tag = new Tag([TAG_HEXARRAY], words.map(this.hexWordText).join(", "));
     return [kw, values];
   }
@@ -376,4 +334,4 @@ class DefaultDialect implements Dialect {
   }
 }
 
-export {DefaultDialect, ParserState};
+export {RevengeDialect, ParserState};

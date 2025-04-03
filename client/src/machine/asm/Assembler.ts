@@ -1,5 +1,5 @@
 import {Addr} from "../core.ts";
-import {ParserState} from "./DefaultDialect.ts";
+import {ParserState} from "./RevengeDialect.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";
 import {InstructionSet} from "./InstructionSet.ts";
