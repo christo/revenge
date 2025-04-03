@@ -10,6 +10,10 @@
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
   * [ ] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
+* [ ] consult published reverse engineering work on retro binaries I have as relevant ground truth
+  * [ ] https://github.com/mwenge/gridrunner
+  * [ ] Matson Dawson's published version of Lee Davison's VIC-20 
+      [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] support importing with `.ts` extension in test source dir
@@ -62,8 +66,14 @@
   * automate the similarity detection of files - need an indexing system, maybe use common sub-sequence - ask/research.
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
-* improve cart sniffers and basic stub machine code PRGsπ
+* improve cart sniffers and basic stub machine code PRGs
   * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
+
+## Reading List
+
+* [x] [Solving BIT Magic](https://rosenzweig.io/blog/solving-bit-magic.html) by Alyssa Rosenzweig
+* [ ] [Statically Recompiling NES Games into Native Executables with LLVM and Go](https://andrewkelley.me/post/jamulator.html)
+  by Andrew Kelley
 
 
 ## Long Term Ideas

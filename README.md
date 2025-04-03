@@ -324,15 +324,5 @@ binaries, but at first, only the minimum necessary syntax may be supported.
 
 ## Useful Resources
 
-* [C64 cross-dev links](https://codebase64.org/doku.php?id=base:crossdev)
-* https://www.nesdev.org/wiki/Tools assemblers and disassemblers with a focus on NES
-* https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and
-  examples
-* ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
-* [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
+* [Reverse Engineering](docs/references.md) references
 
-## Reading List
-
-* [x] [Solving BIT Magic](https://rosenzweig.io/blog/solving-bit-magic.html) by Alyssa Rosenzweig
-* [ ] [Statically Recompiling NES Games into Native Executables with LLVM and Go](https://andrewkelley.me/post/jamulator.html)
-  by Andrew Kelley

@@ -4,6 +4,12 @@ Last checked: April 2025
 
 If these links go dead please create an issue on the repo or submit a pull request.
 
+* [C64 cross-dev links](https://codebase64.org/doku.php?id=base:crossdev)
+* https://www.nesdev.org/wiki/Tools assemblers and disassemblers with a focus on NES
+* https://www.nesdev.org/wiki/Programming_guide good array of NES-focused programming links and
+  examples
+* ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
+* [Reverse Engineering Reading List](https://github.com/onethawt/reverseengineering-reading-list)
 * Bugs and Quirks in the VIC-20 Kernal (also applies to C64)
    https://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?t=10804
 * Reverse engineered C64 source code by the awesome mist64 (Michael Steil)
