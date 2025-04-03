@@ -89,7 +89,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
     // TODO tighten up this rough heuristic
     if (fileBlob.getLength() > 20 && memoryConfig) {
-      console.log("got basic load address, checking simple sys call to machine code");
+      //console.log("got basic load address, checking simple sys call to machine code");
       // we probably have a basic header with machine code following
       // we need to decode the basic header, read a sys command and
       // calculate the entry point
