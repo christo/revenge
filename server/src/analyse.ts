@@ -13,27 +13,27 @@ const incM = <K>(map: Map<K, number>, key: K) => {
 };
 
 /**
- * Represents frequencies of adjacent byte pairs as well as first bytes and last bytes in the file.
+ * Represents frequencies of adjacent byte ngrams as well as first bytes and last bytes in the file.
  * Binary formats are expected to exhibit frequency distribution clustering, as per cryptanalysis.
  */
-interface Markov {
+interface Markov<T> {
   incStart: (i: number) => void;
   incStop: (i: number) => void;
-  incPair: (i: BytePair) => void;
+  incNgram: (i: T) => void;
 
   /** Implementation-specific file format. */
   write(file: string): Promise<void>;
 
-  readPairs(file: string): Promise<string>;
+  readNgrams(file: string): Promise<string>;
 }
 
-abstract class BaseMarkov implements Markov {
+abstract class BaseMarkov implements Markov<BytePair> {
   abstract incStart: (i: number) => void;
   abstract incStop: (i: number) => void;
-  abstract incPair: (i: BytePair) => void;
+  abstract incNgram: (i: BytePair) => void;
   abstract write: (file: string) => Promise<void>;
 
-  async readPairs(file: string): Promise<string> {
+  async readNgrams(file: string): Promise<string> {
     let bufLen = 0;
     try {
       let prev: number = -1;
@@ -43,9 +43,9 @@ abstract class BaseMarkov implements Markov {
         if (i === 0) {
           this.incStart(val);
         } else {
-          let pair: BytePair = [prev, val];
+          const pair: BytePair = [prev, val];
           try {
-            this.incPair(pair);
+            this.incNgram(pair);
           } catch (err) {
             console.error(`pair error for ${pair}`);
             console.error(err);
@@ -65,28 +65,28 @@ abstract class BaseMarkov implements Markov {
 }
 
 /** More efficient storage of sparse frequency distributions. */
-class MapMarkov extends BaseMarkov implements Markov {
+class MapMarkov extends BaseMarkov implements Markov<BytePair> {
   private readonly starts: Map<number, number>;
   private readonly stops: Map<number, number>;
-  private readonly pairs: Map<BytePair, number>;
+  private readonly ngrams: Map<BytePair, number>;
 
   constructor() {
     super();
     this.starts = new Map<number, number>();
     this.stops = new Map<number, number>();
-    this.pairs = new Map<BytePair, number>();
+    this.ngrams = new Map<BytePair, number>();
   }
 
   incStart = (startByte: number) => incM<number>(this.starts, startByte);
   incStop = (stopByte: number) => incM<number>(this.stops, stopByte);
-  incPair = (pair: BytePair) => incM<BytePair>(this.pairs, pair);
+  incNgram = (pair: BytePair) => incM<BytePair>(this.ngrams, pair);
 
   /** writes this as json */
   write = async (file: string): Promise<void> => {
     const obj = {
       starts: this.starts,
       stops: this.stops,
-      pairs: this.pairs
+      pairs: this.ngrams
     };
     const mapToJson = (key: any, value: any) => {
       if (value instanceof Map) {
@@ -103,21 +103,20 @@ class MapMarkov extends BaseMarkov implements Markov {
 
 }
 
-// noinspection JSUnusedLocalSymbols
 /**
  * Implementation using big, mostly empty arrays
  */
-class ArrayMarkov extends BaseMarkov implements Markov {
+class ArrayMarkov extends BaseMarkov implements Markov<BytePair> {
 
   starts: number[];
   stops: number[];
-  pairs: number[];
+  ngrams: number[];
 
   constructor() {
     super();
     this.starts = new Array<number>(256).fill(0);
     this.stops = new Array<number>(256).fill(0);
-    this.pairs = new Array<number>(256 * 256).fill(0);
+    this.ngrams = new Array<number>(256 * 256).fill(0);
   }
 
   incStart = (val: number) => {
@@ -128,9 +127,9 @@ class ArrayMarkov extends BaseMarkov implements Markov {
     this.stops[val] = this.stops[val] + 1
   };
 
-  incPair = (pair: BytePair) => {
+  incNgram = (pair: BytePair) => {
     const index = pair[0] << 8 + pair[1];
-    this.pairs[index] = this.pairs[index] + 1;
+    this.ngrams[index] = this.ngrams[index] + 1;
   };
 
   /**
@@ -144,7 +143,7 @@ class ArrayMarkov extends BaseMarkov implements Markov {
     try {
       await addRow(this.starts);
       for (let i = 0; i <= 0xffff; i += 256) {
-        await addRow(this.pairs.slice(i, i + 256));
+        await addRow(this.ngrams.slice(i, i + 256));
       }
       await addRow(this.stops);
     } catch (err) {
@@ -153,18 +152,18 @@ class ArrayMarkov extends BaseMarkov implements Markov {
   };
 }
 
-async function* walk(dir: string, m: Markov): any {
+async function* walk(dir: string, m: Markov<BytePair>): any {
   for await (const d of await fs.promises.opendir(dir)) {
     const entry = path.join(dir, d.name);
     if (d.isDirectory()) {
       yield * walk(entry, m);
     } else if (d.isFile() && d.name.toLowerCase().endsWith('.prg')) {
-      yield m.readPairs(entry);
+      yield m.readNgrams(entry);
     }
   }
 }
 
-async function main(markov: Markov, root: string, file: string) {
+async function main(markov: Markov<BytePair>, root: string, file: string) {
   let startTime = Date.now();
   for await (const p of walk(root, markov)) {
     console.log(p);
