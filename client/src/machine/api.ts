@@ -3,7 +3,7 @@ import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
 import {Byteable} from "./Byteable.ts";
-import {Addr, hex8} from "./core";
+import {Addr, hex16, hex8} from "./core";
 import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
 import {BigEndian, LittleEndian} from "./Endian.ts";

@@ -248,7 +248,7 @@ class Vic20BasicSniffer implements BlobSniffer {
 
     // try decoding it as basic
     try {
-      const decoded = CBM_BASIC_2_0.decode(fb);
+      const decoded = CBM_BASIC_2_0.decode(fb.asEndian());
       let lastNum = -1;
       let lastAddr = -1;
       let byteCount = 0;
