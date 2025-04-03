@@ -77,7 +77,11 @@ class FileBlob implements Byteable {
   }
 }
 
+/**
+ * It's like... like a file, but, like... not actually a file?
+ */
 class FileLike {
+  // TODO why does this exist? Remind me.
   private readonly _name: string;
   private readonly _data: Uint8Array;
   private readonly _size: number;
