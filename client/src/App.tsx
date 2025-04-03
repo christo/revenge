@@ -54,7 +54,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     console.log(`error getting a response from the server: ${error}`);
     return null;
   } else if (!isLoaded) {
-    return <CircularProgress/>;
+    return <CircularProgress color="secondary" />;
   } else {
     return <Box>
       <Stack direction="row" spacing={2} justifyItems="middle">
