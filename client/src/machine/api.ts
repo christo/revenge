@@ -22,10 +22,10 @@ import {Memory} from "./Memory.ts";
  */
 class Tag {
 
-  classNames: string[];
-  id: string | undefined;
-  data: [string, string][];
-  value: string;
+  private readonly classNames: string[];
+  private readonly id: string | undefined;
+  readonly data: [string, string][];
+  private readonly value: string;
 
   constructor(tags: string[], value: string, data: [string, string][] = [], id: string | undefined = undefined) {
     this.classNames = tags;
@@ -52,6 +52,7 @@ class Tag {
   isAddress = () => this.classNames.includes(TAG_ADDRESS);
 
   isKnownSymbol = () => this.classNames.includes(TAG_KNOWN_SYMBOL);
+
   isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF)
 }
 
