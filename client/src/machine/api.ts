@@ -10,11 +10,6 @@ import {BigEndian, LittleEndian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
 
-function getRenderers(_tag: Tag): TagRenderer[] {
-  // TODO implement this
-  return [];
-}
-
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  * A sequence of string tuples that represent a name-value pair that will be rendered with

@@ -62,7 +62,6 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
   // try to find its destination in the view and if present scroll to it
   const handleClick = (data: [string, string][], operand: string) => {
     // first look for an operand value, either it's an address or a symbol, used identically for id attribute
-    // TODO ensure opnd_val is set to the symbol so we can construct the symbol definition id
     const tup = data.find(t => t[0] === TAG_OPERAND_VALUE || t[0] == 'symname');
     console.log(`handleClick: operand is ${operand}`);
     if (tup !== undefined) {
