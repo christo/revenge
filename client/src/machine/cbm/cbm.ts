@@ -143,6 +143,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
           kernalSymbolsUsed.add(symDef);
         }
       } else {
+        // TODO this is spamming - why?
         console.warn(`no operand for ${instruction.instruction.op.mnemonic} instruction at ${addr} ${hex16(addr)}`);
       }
     }
