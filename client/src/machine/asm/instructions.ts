@@ -1,6 +1,6 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
-import {assertByte} from "../core.ts";
+import {assertByte, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
