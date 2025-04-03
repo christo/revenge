@@ -8,36 +8,36 @@
   * [x] render source lines that have no address prefix - such as symbol definitions
   * [ ] implement jumping to definition
 * [ ] fix mega slow ui rendering
+* [ ] vic 20 / c64 hardware register detection
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
-* [ ] If a trace is available, all executed instructions should be disassembled consistently
-  with the execution trace - maybe store all disassembled instructions as a result of the trace?
-  looks like this is not working for all example cases.
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] support importing with `.ts` extension in test source dir
-* [ ] show symbols instead of address values for JSR to kernal symbols (direct mode only)
+* [x] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] Distinguish between code and data mostly automatically
   * [x] Implement a code path Tracer for a generous subset of instructions that follows
-        execution from detected entry point. 
+    execution from detected entry point.
   * [x] Tracer can execute simplest instruction traces, recording executed instruction addresses
   * [x] Disassemble line in tracer to identify jumps
   * [x] Disassemble line in tracer to identify conditional branches
+  * [ ] If a trace is available, all executed instructions should be disassembled consistently
+    with the execution trace - maybe store all disassembled instructions as a result of the trace?
+    looks like this is not working for all example cases.
   * [ ] Tracer loads kernal and basic ROMs into locations based on detected machine memory map
   * [ ] Tracer records path graph
   * [ ] Tracer records memory read and write sequence
-  * [ ] Use read heuristics to detect evidence of data 
+  * [ ] Use read heuristics to detect evidence of data
   * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
+* [ ] view options - disassembly, basic, hex each should define their own config options
+* [ ] better styling for BASIC decoder
+* [ ] Render generated comments on the line before if the line is too long to prevent comment and
+  code layout clash.
 * [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
-* [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts 
-* [ ] view options - disassembly, basic, hex each should define their own config options
 * [ ] dialect options - layout handles for indenting
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
-* [ ] vic 20 / c64 hardware register detection
-* [ ] better styling for BASIC decoder
-* [ ] Render generated comments on the line before if the line is too long to prevent comment and 
-      code layout clash.
+* [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts
 
 
 ## Long Term Ideas
