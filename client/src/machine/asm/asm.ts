@@ -155,8 +155,12 @@ class SymbolTable {
     return this.nameToSymbol.get(name);
   }
 
-  byAddress(addr: Addr) {
-    return this.addressToSymbol.get(addr);
+  /**
+   * Returns the name of the symbol defined for the given value, may not be an address
+   * @param addr value assigned to the symbol
+   */
+  byValue(value: number) {
+    return this.addressToSymbol.get(value);
   }
 }
 

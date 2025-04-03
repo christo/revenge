@@ -249,7 +249,7 @@ class Disassembler {
         .filter(this.addressInRange);                       // only those in range of the loaded binary
   };
 
-  getSymbol = (addr: Addr): SymDef<Addr> | undefined => this.disMeta.getSymbolTable().byAddress(addr);
+  getSymbol = (addr: Addr): SymDef<Addr> | undefined => this.disMeta.getSymbolTable().byValue(addr);
 
   /** Keeps a record of a used symbol that must be added to the source output. */
   addSymbolDefinition = (symbol: SymDef<Addr>) => {

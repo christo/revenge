@@ -115,7 +115,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
   const LE_64K = ArrayMemory.zeroes(0x10000, Mos6502.ENDIANNESS, true, true);
   // TODO load system rom into memory instead of ignoring
   const symbolTable = meta.getSymbolTable();
-  const isKernalSubroutine = (addr: Addr) => SymbolType.sub === symbolTable.byAddress(addr)?.sType;
+  const isKernalSubroutine = (addr: Addr) => SymbolType.sub === symbolTable.byValue(addr)?.sType;
   const entryPoints = meta.executionEntryPoints(fb);
 
   const tracer = new Tracer(dis, entryPoints, LE_64K, isKernalSubroutine);
@@ -136,7 +136,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
       const gotOperand = instruction.staticallyResolvableOperand();
       if (gotOperand) {
         const operandValue = instruction.operandValue();
-        const symDef = symbolTable.byAddress(operandValue);
+        const symDef = symbolTable.byValue(operandValue);
         if (operandValue && symDef) {
           kernalSymbolsUsed.add(symDef);
         }
