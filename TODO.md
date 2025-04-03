@@ -37,11 +37,16 @@
   read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] dialect options - layout handles for indenting
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
-* [ ] check out MIT licensed typescript 6502 emulator core https://github.com/6502ts/6502.ts
 
 
 ## Long Term Ideas
 
+* [ ] Broaden code detection to fuller emulation
+  * [ ] check out MIT licensed typescript 6502 emulator
+    core https://github.com/6502ts/6502.ts
+  * [ ] check out full js/ts system emulators - need to be able to support multiple emulators
+    at some point so ensure the multi-emulator context exists in the speculative binary detection
+    and code detection code path 
 * check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to
   Ramda
 * check out Haskell Difference List datastructure
