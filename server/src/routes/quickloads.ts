@@ -13,20 +13,22 @@ interface FileLike {
 // init the preloads dir
 const PRELOADS_DIR = "data/preload";
 let PLDIR = path.join(".", PRELOADS_DIR);
-const PRELOADS: FileLike[] = fs.readdirSync(PLDIR).map(fname => {
-  let data = Array.from(fs.readFileSync(path.join(".", PRELOADS_DIR, fname)));
-  let fl: FileLike = {
-    name: fname,
-    data: data,
-    size: data.length
-  };
-  return fl;
-});
-
-console.log(`loaded ${PRELOADS.length} blobs`);
 
 router.get('/', async (req, res) => {
-  res.json(PRELOADS);
+  // TODO static cache when not in dev move
+  const preloads: FileLike[] = fs.readdirSync(PLDIR).filter(f => !f.startsWith(".")).map(fname => {
+    let data = Array.from(fs.readFileSync(path.join(".", PRELOADS_DIR, fname)));
+    console.log(`preparing preload blob ${fname}`);
+
+    let fl: FileLike = {
+      name: fname,
+      data: data,
+      size: data.length
+    };
+    return fl;
+  });
+
+  res.json(preloads);
 });
 
 export default router;
