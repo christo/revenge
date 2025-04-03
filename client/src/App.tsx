@@ -45,7 +45,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     });
 
   }, []);
-  const handleFile = (item: FileLike) => {
+  const handleFile = async (item: FileLike) => {
     props.setFile(item);
   };
 
@@ -54,12 +54,12 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     console.log(`error getting a response from the server: ${error}`);
     return null;
   } else if (!isLoaded) {
-    return <CircularProgress color="secondary" />;
+    return <Box sx={{w: "100%"}}><CircularProgress color="secondary" /></Box>;
   } else {
-    return <Box>
-      <Stack direction="row" spacing={2} justifyItems="middle">
+    return <Box sx={{w: "100%", p: 1}}>
+      <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="center" >
         <Typography>Quickload:</Typography>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" gap="0.5rem 2rem" flexWrap="wrap" display="flex" justifyContent="flex-start" alignContent="flex-start">
           {items.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
                            key={`ql_${i}`}>{item.name}</Button>
@@ -86,8 +86,12 @@ function App() {
       <ThemeProvider theme={darkTheme}>
         <Box sx={{m: 0}}>
           <MenuAppBar/>
-          <Box sx={{m: 1}}>
-            <Box sx={{display: "flex", gap: 1, justifyContent: "right"}}>
+          <Box sx={{m: 1, w: '100%'}}>
+            <Box sx={{
+              display: "flex",
+              justifyContent: "right",
+              alignItems: "center",
+            }}>
               <QuickLoads setFile={(f) => setFile(f)}/>
               <Box className="dropZone">
                 <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
