@@ -5,7 +5,7 @@ Reverse Engineering Environment
 ![revenge-logo](client/public/revenge-logo192.png)
 
 The grand idea is a web-based reverse engineering environment for retro computers
-with very small initial goals: binary file type detection and simple disassembly of 
+with very small initial goals: binary file type detection and simple disassembly of
 6502 machine code for the Vic-20 and C64. Z80 is a likely future supported architecture.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
@@ -20,12 +20,12 @@ There is currently a terrible performance bottleneck in the front-end rendering 
 page loads to take a few seconds. Fixing it is a priority as soon as work-in-progress
 for kernal symbol definitions and non-address-resident source lines is complete. It's
 something dumb and will probably be quick to fix although I can imagine it taking a
-whole day to find the cause. 
+whole day to find the cause.
 
 ## Architecture
 
 Implemented in [TypeScript](https://www.typescriptlang.org/), using [Bun](https://bun.sh/),
-[Vite](https://vite.dev/), [MUI](https://mui.com/), [React](https://react.dev/) and 
+[Vite](https://vite.dev/), [MUI](https://mui.com/), [React](https://react.dev/) and
 [Mocha](https://mochajs.org/)/[Chai](https://www.chaijs.com/) for testing.
 
 ## Quick Start
@@ -58,7 +58,6 @@ bun dev
 
 The URL to point your browser to is shown in the console.
 
-
 ## System Design
 
 Build and execution environment is `vite` for the client and `bun` for both client and server.
@@ -70,13 +69,13 @@ accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/pack
 ## Code Detection
 
 It's not hard to make good guesses about what parts of a binary are code or data but it is
-harder to do reliably and automatically. Therefore, most reverse engineering tools are 
+harder to do reliably and automatically. Therefore, most reverse engineering tools are
 interactive; the user must get involved to interpret and understand the binary and to dictate
 what is code, text data, image data, audio etc. and this is even trickier when code is
 self-modifying, compressed, encrypted, obfuscated or when bytes are treated as both code and data.
 
 Using a hybrid approach to code detection, some parts of a binary can be confidently identified
-as code through a mixture of static and dynamic analysis. A `Tracer` is implemented 
+as code through a mixture of static and dynamic analysis. A `Tracer` is implemented
 which follows code execution paths, including both sides of conditional branches and records
 which addresses hold instructions. In many cases this approach can determine parts which are
 almost certainly code and also to identify regions of almost certain data.
@@ -154,6 +153,14 @@ estimations, not promises.
 | Gameboy series               | ?           | Z80 -ish   |
 | Vectrex, TRS-80 Coco, Dragon | ?           | 6809       |
 
+## Assembly Dialects
+
+See document about plans and ideas to support
+various [assembler dialects](docs/assembler-dialects.md). Supporting a new dialect is a matter of
+implementing the **Dialect** interface, possibly subclassing **BaseDialect**.
+
+Currently only one arbitrary custom dialect is implemented while the API is being stabilised. 
+
 ## Design Notes
 
 Machine language BASIC loaders often use base 10 data sequences of bytes. This is a
@@ -190,7 +197,7 @@ confirm simple hunches or heuristic interpretations.
 There are different ways to represent data and code which are equivalent. A canonical form
 functions as a single representation into which any variation can be transformed for the
 purpose of deciding equivalence and should help in identifying behaviour, optimisation,
-deobfuscation and porting. 
+deobfuscation and porting.
 
 The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
 forms to be recognised. In the case of character data, the canonical form might make the reverse
@@ -211,7 +218,6 @@ options should be selectable by the user.
 * Expression synthesis
 * Symbol definition
 * Comments, labels, alternate literal forms including escape characters
-
 
 ## Reverse Engineering Tools
 
