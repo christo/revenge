@@ -1,7 +1,7 @@
 import {Byteable} from "./Byteable.ts";
 import {Addr} from "./core";
 import {BE, Endian} from "./Endian.ts";
-import {ArrayMemory} from "./Memory.ts";
+import {ArrayMemory, Memory} from "./Memory.ts";
 
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed
@@ -29,6 +29,11 @@ class FileBlob implements Byteable {
     } else {
       return FileBlob.fromBytes(f.name, Array.from(f.data), endian);
     }
+  }
+
+  asEndian(): Memory<Endian> {
+    // TODO fix this smell - temporary type hack due to ignorance and impatience
+    return this.memory;
   }
 
   getBytes(): number[] {
