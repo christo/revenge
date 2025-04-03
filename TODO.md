@@ -2,20 +2,13 @@
 
 ## Next Actions
 
-* [x] tidy up revenge.ts a bit
 * [ ] fix mega slow ui rendering
-* [x] show definitions for used kernal symbols
-  * [x] collect used symbols from trace before rendering disassembly 
-  * [x] render source lines that have no address prefix - such as symbol definitions
-  * [x] implement jumping to definition
-  * [x] consistent syntax rendering of kernal symbols
 * [ ] vic 20 / c64 hardware register detection
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] support importing with `.ts` extension in test source dir
-* [x] show symbols instead of address values for JSR to kernal symbols (direct mode only)
 * [ ] Distinguish between code and data mostly automatically
   * [x] Implement a code path Tracer for a generous subset of instructions that follows
     execution from detected entry point.
@@ -30,6 +23,7 @@
   * [ ] Tracer records memory read and write sequence
   * [ ] Use read heuristics to detect evidence of data
   * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
+  * [ ] report disassembly/trace errors to ui in some nice note
 * [ ] view options - disassembly, basic, hex each should define their own config options
 * [ ] better styling for BASIC decoder
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and
@@ -39,9 +33,13 @@
 * [ ] dialect options - layout handles for indenting
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
 * [ ] BASIC data statements embedded machine code detection/designation
-* 
-* [ ] Kernel subroutines: map the inputs, outputs and register effects of subroutines
+* [ ] Subroutines: map the inputs, outputs and register effects of subroutines
+  * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
+  * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
+        routines using the same code path
 * [ ] hovertools for exploration and interactive reversing:
+  * [ ] symbol usage should show an inline popup preview of the definition 
+  * [ ] jump addresses should show an inline popup preview of the destination code
   * dynamically decorate
   * single instruction or selection
   * selection lollypop handles can be expanded using tools (drag extend up or down)
@@ -51,6 +49,7 @@
 * [ ] bulk back-end corpus
   * test-time analysis for tuning detectors
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
+  * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
 * content recognition:
   * common data fragments identified between files
   * build database of file content recognition.
