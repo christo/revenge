@@ -69,7 +69,7 @@ export class KeywordTag extends Tag {
 export const TAG_IN_BINARY = "inbinary";
 
 /** a defined symbol */
-export const TAG_KNOWN_SYMBOL = "symdef"
+export const TAG_KNOWN_SYMBOL = "knownsymbol"
 
 /** a label in the source code */
 export const TAG_LABEL = "label";
