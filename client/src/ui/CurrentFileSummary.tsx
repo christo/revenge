@@ -19,9 +19,8 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
     FileBlob.fromFile(file, Mos6502.ENDIANNESS).then(fb => setRendered({fb: fb, loading: false}));
   }, [file]);
 
-  return <Box sx={{p: 1, m: 2, color: "antiquewhite"}} className="fileSummary">
-    <Typography display="inline" sx={{pr: 1, fontWeight: "bold", fontSize: "200%", lineHeight: 1.8, color: neonYellow}}
-                className="filename">
+  return <Box sx={{p: 1, m: 2}}>
+    <Typography display="inline" sx={{pr: 1, fontWeight: "bold", fontSize: "200%", lineHeight: 1.8, color: neonYellow}}>
       {file.name}
     </Typography>
     <Typography display="inline" sx={{pr: 1, fontFamily: '"Martian Mono", monospace'}}>
