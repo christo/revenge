@@ -14,8 +14,6 @@ function intensity(value: number, max: number) {
 
 function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
 
-  // TODO make canvas resizable, draw proportionally
-
   const context = canvas.getContext("2d");
   if (context) {
     const bigram = new Bigram(fb);
