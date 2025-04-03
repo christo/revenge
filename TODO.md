@@ -50,8 +50,16 @@
 * [ ] bulk back-end corpus
   * test-time analysis for tuning detectors
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
+* content recognition:
+  * common data fragments identified between files
+  * build database of file content recognition.
+  * fragment content hash, db etc.?
+  * binary diff two files (linear)
+  * automate the similarity detection of files - need an indexing system, maybe use common sub-sequence - ask/research.
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
+* improve cart sniffers and basic stub machine code PRGsπ
+  * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 
 
 ## Long Term Ideas
@@ -71,8 +79,6 @@
   * make random access and modification to disassembled instruction list (lenses?)
   * need to be able to replace a sequence of instructions into a byte declaration
   * Make entire disassembly asynchronous (rather than n-pass)
-* improve cart sniffers
-  * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 * data section detection - probabilistic
   * human-designated
   * detected score
@@ -100,12 +106,6 @@
     * keep db details of uploads anyway
   * store file-level notes and byte-offset / byte-range notes
   * unified back-end between bootstrap filetree and uploaded stuff
-* content recognition:
-  * common data fragments identified between files
-  * build database of file content recognition.
-  * fragment content hash, db etc.?
-  * binary diff two files (linear)
-  * automate the similarity detection of files - need an indexing system, maybe use common sub-sequence - ask/research.
 * sharing, permissions
 * enable multiple people to do analysis of files, to store, share and collaborate on the analysis of files
 * Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will
