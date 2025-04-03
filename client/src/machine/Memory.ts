@@ -54,6 +54,11 @@ interface Memory<T extends Endian> extends Byteable {
  */
 class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
 
+  /**
+   * Arbitrary conspicuous (0b1010 = 0xa = 10) double-endian fill constant to aid debugging.
+   */
+  private static EMPTY_MEMORY_FILL = 0b1010;
+
   static zeroes<T extends Endian>(size: number, endian: T, writeable: boolean, executable: boolean): ArrayMemory<T> {
     return new ArrayMemory(Array(size).fill(0), endian, writeable, executable);
   }
@@ -81,8 +86,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
         throw Error(`Memory size ${bytes} is not supported`);
       }
       this._bytes = new Array<number>(bytes as number);
-      // arbitrary conspicuous (0b1010 = 0xa = 10) double-endian fill constant to aid debugging
-      this._bytes.fill(0b1010);
+      this._bytes.fill(ArrayMemory.EMPTY_MEMORY_FILL);
     } else {
       if (bytes.length > ArrayMemory.MAX) {
         throw Error(`Memory size ${bytes.length} is greater than maximum ${ArrayMemory.MAX}`);
