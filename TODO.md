@@ -2,10 +2,14 @@
 
 ## Next Actions
 
-* [ ] fix mega slow ui rendering
 * [ ] vic 20 / c64 hardware register detection
+* [ ] fix mega slow ui rendering
+  * [ ] learn devtools profiling
+  * [ ] learn react devtools profiling (very confusing and crashy on current page)
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
+  * [ ] introduce convenience methods on Tag at current call sites to reduce api noise (currently
+    only using constants for magic keys in stringland)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] support importing with `.ts` extension in test source dir
