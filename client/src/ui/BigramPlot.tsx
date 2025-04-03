@@ -14,13 +14,12 @@ function intensity(value: number, max: number) {
 
 function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
 
-  const bigram = new Bigram(fb);
-  const max = bigram.getMax();
-
   // TODO make canvas resizable, draw proportionally
 
   const context = canvas.getContext("2d");
   if (context) {
+    const bigram = new Bigram(fb);
+    const max = bigram.getMax();
 
     // start with black
     context.fillStyle = bgColor;
