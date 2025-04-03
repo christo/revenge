@@ -28,8 +28,8 @@ function debugTag(t: Tag): string {
  * @return it may be an id lol
  */
 function maybeId(tup: Tag): MaybeId {
-  const isSymbolDef = tup.hasTag(TAG_SYM_DEF);
-  const isAddress = tup.hasTag(TAG_ADDRESS);
+  const isSymbolDef = tup.isSymbolDef();
+  const isAddress = tup.isAddress();
 
   const mkAddressId = () => "M_" + tup.value;
 
@@ -92,29 +92,29 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
       {detail.dataView.getLines().map((ll, i) => {
         const tagsForLine: Tag[] = ll.getTags();
         return <Box className={detail.classNames.join(" ")} key={`fb_${i}`}>
-          {tagsForLine.map((tup: Tag, j) => {
+          {tagsForLine.map((tag: Tag, j) => {
             // TODO rename this param to tag
-            const isNote = tup.classNames.find(x => x === TAG_NOTE) !== undefined;
+            const isNote = tag.classNames.find(x => x === TAG_NOTE) !== undefined;
             // set data- attributes for each item in the data
             const data: { [k: string]: string; } = {};
-            tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
+            tag.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
             if (isNote) {
               // shown instead of normal line, represents a potential problem
               return <Alert severity="warning" {...data} sx={{mt: 2, width: "50%"}}
-                            key={`fb_${i}_${j}`}>{tup.value}</Alert>;
+                            key={`fb_${i}_${j}`}>{tag.value}</Alert>;
             } else {
-              const operand = tup.value;
-              const internalLink = tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]);
-              return <Box {...(maybeId(tup))} {...data}
+              const operand = tag.value;
+              const internalLink = tag.isOperandResolvingToInternalAddress();
+              return <Box {...(maybeId(tag))} {...data}
                           sx={{w: "100%"}}
-                          className={tup.spacedClassNames()}
+                          className={tag.spacedClassNames()}
                           key={`fb_${i}_${j}`}
-                          onClick={() => handleClick(tup.data, operand)}>
-                {tup.value}
+                          onClick={() => handleClick(tag.data, operand)}>
+                {tag.value}
                 <Box display="inline" className="iconAnno">
                   {internalLink ? <Tooltip title="Jump in binary"><InsertLink
-                      onClick={() => handleClick(tup.data, operand)}/></Tooltip> : ""}
-                  {tup.hasTag(TAG_KNOWN_SYMBOL) ? <BookmarkBorder onClick={() => handleClick(tup.data, operand)}/> : ""}
+                      onClick={() => handleClick(tag.data, operand)}/></Tooltip> : ""}
+                  {tag.isKnownSymbol() ? <BookmarkBorder onClick={() => handleClick(tag.data, operand)}/> : ""}
                 </Box>
               </Box>;
             }

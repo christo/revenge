@@ -1,5 +1,4 @@
 import {Detail} from "../ui/Detail.ts";
-import {TagRenderer} from "../ui/TagRenderer.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
 import {Byteable} from "./Byteable.ts";
@@ -15,11 +14,11 @@ import {Memory} from "./Memory.ts";
  * A sequence of string tuples that represent a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  *
- * TODO kill this crazy idea via migration to "TagRenderer"
+ * TODO kill this crazy Tag idea
  *   it's an overly desperate attempt to not use tsx by holding a fence-sitting abstraction that is
  *   ultimately just hard to use - it would be more ergonomic to have separate front-end components
  *   for semantically rich front-end rendering. This gets in the way of that. Introduce api with
- *   types and methods for dispatching to the correct component (yes this is a mega duplicated comment)
+ *   types and methods for dispatching to the correct component.
  */
 class Tag {
 
@@ -35,15 +34,25 @@ class Tag {
     this.value = value;
   }
 
-  hasTag = (s: string) => this.classNames.includes(s);
-
   /**
    * These are currently used to generate class name lists for styling.
    * @deprecated migrate to TagRenderer system
    */
   spacedClassNames = () => this.classNames.join(" ");
 
-  hasTags = (ts: string[]) => ts.every((t) => this.classNames.includes(t));
+  isOperandResolvingToInternalAddress = () => {
+    const cns = this.classNames;
+    return cns.includes(TAG_OPERAND) && cns.includes(TAG_ABSOLUTE) && cns.includes(TAG_IN_BINARY);
+  }
+
+  isLine = () => this.classNames.includes(TAG_LINE);
+
+  isLineNumber = () => this.classNames.includes(TAG_LINE_NUM);
+
+  isAddress = () => this.classNames.includes(TAG_ADDRESS);
+
+  isKnownSymbol = () => this.classNames.includes(TAG_KNOWN_SYMBOL);
+  isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF)
 }
 
 export class HexTag extends Tag {

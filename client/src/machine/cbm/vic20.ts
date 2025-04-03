@@ -255,8 +255,8 @@ class Vic20BasicSniffer implements BlobSniffer {
       decoded.getLines().forEach((ll: LogicalLine) => {
         const i: Tag[] = ll.getTags();
         // BasicDecoder puts this tag on lines1
-        const lnumStr = i.find(t => t.hasTag(TAG_LINE_NUM));
-        let addrStr = i.find(t => t.hasTag(TAG_ADDRESS));
+        const lnumStr = i.find(t => t.isLineNumber());
+        let addrStr = i.find(t => t.isAddress());
         if (lnumStr !== undefined && addrStr !== undefined) {
           let thisNum = parseInt(lnumStr.value);
           if (lastNum !== -1 && lastNum >= thisNum) {
