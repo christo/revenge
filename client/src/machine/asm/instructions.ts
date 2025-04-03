@@ -246,7 +246,7 @@ const BLANK_LINE: InstructionLike = {
 
   get sourceType(): SourceType {
     return SourceType.BLANK;
-  },
+  }
 }
 
 /**
