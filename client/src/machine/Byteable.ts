@@ -8,6 +8,8 @@ interface Byteable {
 
   /** Get a single byte from the given offset */
   read8(offset: number): number;
+
+  byteString(): string;
 }
 
 export {type Byteable};

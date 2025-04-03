@@ -253,6 +253,10 @@ class RomImage implements Byteable {
   read8(offset: number): number {
     return this.contents[offset] && 0xff;
   }
+
+  byteString(): string {
+    return this.getBytes().map(hex16).join(" ");
+  }
 }
 
 /**

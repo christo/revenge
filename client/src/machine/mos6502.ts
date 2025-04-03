@@ -13,7 +13,7 @@ import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";
-import {Addr, assertByte, unToSigned} from "./core.ts";
+import {Addr, assertByte, hex16, unToSigned} from "./core.ts";
 import {Cpu} from "./Cpu.ts";
 import {LE} from "./Endian.ts";
 
@@ -492,6 +492,10 @@ class FullInstruction implements Byteable {
   getLength = (): number => this.instruction.getLength();
 
   read8 = (offset: number): number => this.getBytes()[offset];
+
+  byteString(): string {
+    return this.getBytes().map(hex16).join(" ");
+  }
 
   /**
    * Include addressing modes that have statically resolvable operands. This excludes indirect or indexed modes

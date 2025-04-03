@@ -1,5 +1,5 @@
 import {Byteable} from "./Byteable.ts";
-import {Addr} from "./core";
+import {Addr, hex16} from "./core";
 import {BE, Endian} from "./Endian.ts";
 import {ArrayMemory, Memory} from "./Memory.ts";
 
@@ -42,6 +42,10 @@ class FileBlob implements Byteable {
 
   getLength(): number {
     return this.memory.getLength();
+  }
+
+  byteString(): string {
+    return this.getBytes().map(hex16).join(" ");
   }
 
   read16(byteOffset: number): number {

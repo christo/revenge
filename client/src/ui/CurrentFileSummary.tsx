@@ -28,7 +28,7 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
       {file.size} bytes
     </Typography>
     <Box className="contents">
-      {!rendered.loading ? <FileDetail fb={rendered.fb}/> : <CircularProgress sx={{p: 5}}/>}
+      {!rendered.loading ? <FileDetail fb={rendered.fb}/> : <CircularProgress color="secondary" sx={{p: 5}}/>}
     </Box>
   </Box>;
 }

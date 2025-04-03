@@ -1,5 +1,5 @@
 import {Byteable} from "./Byteable.ts";
-import {Addr, MB_8} from "./core.ts";
+import {Addr, hex16, MB_8} from "./core.ts";
 import {Endian} from "./Endian.ts";
 
 /**
@@ -150,6 +150,10 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
     data.forEach((b, index) => {
       this._bytes[index + location] = b;
     })
+  }
+
+  byteString(): string {
+    return this.getBytes().map(hex16).join(" ");
   }
 }
 

@@ -10,7 +10,7 @@ import {Disassembler} from "./Disassembler.ts";
 import {Edict} from "./Edict.ts";
 
 /** Convenience base class implementing comment and label properties. */
-export abstract class InstructionBase implements InstructionLike {
+export abstract class InstructionBase implements InstructionLike, Byteable {
   protected _lc: LabelsComments;
   private readonly _sourceType: SourceType;
 
@@ -28,6 +28,10 @@ export abstract class InstructionBase implements InstructionLike {
   }
 
   read8 = (offset: number): number => this.getBytes()[offset];
+
+  byteString(): string {
+    return this.getBytes().map(hex16).join(" ");
+  }
 
   abstract disassemble(dialect: Dialect, dis: Disassembler): Tag[];
 
@@ -233,6 +237,8 @@ const BLANK_LINE: InstructionLike = {
   read8: (_offset: number): number => {
     throw Error("no bytes to read");
   },
+
+  byteString: () => "",
 
   get labelsComments(): LabelsComments {
     return LabelsComments.EMPTY;
