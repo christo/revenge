@@ -22,6 +22,20 @@ function TabPanel(props: { children: React.ReactNode, value: number, item: numbe
   );
 }
 
+function BigramBox(props: { fb: FileBlob }) {
+  return <Box sx={{display: "flex", justifyContent: "space-between", flexGap: 5}}>
+    <Box sx={{mr: 2, ml: 5}}>
+      <Typography variant="h4" color={secondaryBright}>
+        Bigram
+      </Typography>
+      <Typography sx={{fontStyle: "italic", opacity: 0.6}}>
+        (Byte<sub>n</sub>,&nbsp;Byte<sub>n+1</sub>)
+      </Typography>
+    </Box>
+    <BigramPlot fb={props.fb}/>
+  </Box>;
+}
+
 /**
  * Main content showing interpreted file contents.
  *
@@ -57,17 +71,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
                        key={`tag_${i}`}/>;
         })}
       </Box>
-      <Box sx={{display: 'flex', justifyContent: "space-between", flexGap: 5}}>
-        <Box sx={{mr: 2, ml: 5}}>
-          <Typography variant="h4" color={secondaryBright}>
-            Bigram
-          </Typography>
-          <Typography sx={{fontStyle: "italic", opacity: 0.6}}>
-            (Byte<sub>n</sub>,&nbsp;Byte<sub>n+1</sub>)
-          </Typography>
-        </Box>
-        <BigramPlot fb={fb}/>
-      </Box>
+      <BigramBox fb={fb}/>
     </Box>
 
     <Tabs value={action} onChange={(_event: React.SyntheticEvent, newValue: number) => setAction(newValue)}>
