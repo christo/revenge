@@ -22,7 +22,7 @@ import {Memory} from "./Memory.ts";
  */
 class Tag {
 
-  private readonly classNames: string[];
+  readonly classNames: string[];
   private readonly id: string | undefined;
   readonly data: [string, string][];
   readonly value: string;
@@ -53,8 +53,9 @@ class Tag {
 
   isKnownSymbol = () => this.classNames.includes(TAG_KNOWN_SYMBOL);
 
-  isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF)
-  isNote = () => this.classNames.includes(TAG_NOTE)
+  isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF);
+
+  isNote = () => this.classNames.includes(TAG_NOTE);
 }
 
 export class HexTag extends Tag {
