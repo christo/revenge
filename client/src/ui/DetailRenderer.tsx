@@ -94,7 +94,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
         return <Box className={detail.classNames.join(" ")} key={`fb_${i}`}>
           {tagsForLine.map((tag: Tag, j) => {
             // TODO rename this param to tag
-            const isNote = tag.classNames.find(x => x === TAG_NOTE) !== undefined;
+            const isNote = tag.isNote();
             // set data- attributes for each item in the data
             const data: { [k: string]: string; } = {};
             tag.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);

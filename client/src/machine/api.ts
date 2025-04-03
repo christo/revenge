@@ -25,7 +25,7 @@ class Tag {
   private readonly classNames: string[];
   private readonly id: string | undefined;
   readonly data: [string, string][];
-  private readonly value: string;
+  readonly value: string;
 
   constructor(tags: string[], value: string, data: [string, string][] = [], id: string | undefined = undefined) {
     this.classNames = tags;
@@ -54,6 +54,7 @@ class Tag {
   isKnownSymbol = () => this.classNames.includes(TAG_KNOWN_SYMBOL);
 
   isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF)
+  isNote = () => this.classNames.includes(TAG_NOTE)
 }
 
 export class HexTag extends Tag {

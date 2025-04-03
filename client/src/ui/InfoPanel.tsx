@@ -12,18 +12,22 @@ const STYLE = {
   gap: 4
 };
 
+const SUBDUED = {opacity: 0.7, mr: 1};
+
+const PRONOUNCED = {color: "#e3e0bd", fontWeight: "bold"};
+
 export function InfoPanel({detail}: { detail: Detail }) {
   return <Box sx={STYLE}>
     <Box>
       {detail.stats.map(([key, value], i) =>
           <Box key={`sp_${i}`} className="stat">
-            <Typography display="inline" sx={{opacity: 0.7, mr: 1}}>{key}</Typography>
-            <Typography display="inline" sx={{color: "#e3e0bd", fontWeight: "bold"}}>{value}</Typography>
+            <Typography display="inline" sx={SUBDUED}>{key}</Typography>
+            <Typography display="inline" sx={PRONOUNCED}>{value}</Typography>
           </Box>
       )}
     </Box>
     <Box>
-      <Typography>Control panel will go here...</Typography>
+      <Typography sx={SUBDUED}>Control panel will go here...</Typography>
     </Box>
   </Box>;
 }
