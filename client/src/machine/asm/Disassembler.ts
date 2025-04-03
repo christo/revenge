@@ -86,8 +86,10 @@ class Disassembler {
       instLike = maybeInstruction;
     } else {
       const isIllegal = (n: number) => this.iset.op(n) === undefined;
+      if (this.currentIndex >= this.fb.getLength()) {
+        throw Error(`Cannot read past end of file`);
+      }
       const opcode = this.peekByte();
-      // TODO fix: opcode will not be undefined, peekByte will throw error beyond eof
       if (opcode === undefined) {
         throw Error(`Cannot get byte at offset ${this.currentIndex} from ${this.fb.name}`);
       } else if (isIllegal(opcode)) {
