@@ -121,10 +121,8 @@ classes for tags follow
 .hex {
   display: inline-block;
   min-width: 9ch;
-  width: 9ch;
-  /*background-color: #292638;*/
+  width: 12ch;
   color: #928d9a;
-  border-radius: 4px;
   padding: 2px 4px;
 }
 
