@@ -6,8 +6,8 @@ import {Byteable} from "../machine/Byteable.ts";
  */
 export class Bigram {
   private readonly plot: number[][];
-  private min: number;
-  private max: number;
+  private readonly min: number;
+  private readonly max: number;
   public readonly SIZE = 256;
 
   constructor(input: Byteable) {
