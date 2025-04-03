@@ -211,7 +211,7 @@ class DefaultDialect implements Dialect {
     const labels = new Tag([TAG_LABEL], this.renderLabels(pcAssign.labelsComments.labels));
     const pc = new Tag([TAG_CODE], "* =");
     const addr = new Tag([TAG_ABSOLUTE, TAG_OPERAND], this.hexWordText(pcAssign.address));
-    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack
+    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, pc, addr, comments];
   }
 
@@ -219,7 +219,7 @@ class DefaultDialect implements Dialect {
     const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));
     const symbolDefinition = new Tag([TAG_SYM_DEF], `${symDef.symDef.name} = ${this.hexWordText(symDef.symDef.value)}`);
-    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack
+    const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, symbolDefinition, comments];
   }
 
