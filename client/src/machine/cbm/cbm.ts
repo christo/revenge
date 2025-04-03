@@ -120,7 +120,6 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 
   const tracer = new Tracer(dis, entryPoints, LE_64K, isKernalSubroutine);
   const traceStart = Date.now();
-  // TODO max steps is half-arsed attempt to discover why this call locks up
   const stepsTaken = tracer.trace(10000);
   const endMessage = tracer.running() ? "did not terminate" : "completed";
   const traceTime = Date.now() - traceStart;
