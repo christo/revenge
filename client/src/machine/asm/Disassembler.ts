@@ -17,6 +17,7 @@ import {OpSemantics} from "./Op.ts";
  */
 class Disassembler {
 
+  // TODO perf test adding a cache of address to instruction
   readonly contentStartIndex: number;
   currentIndex: number;
   readonly fb: FileBlob;
