@@ -43,6 +43,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
     <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
       <Box sx={{
         mr: 1,
+        mb: 2,
       }}>
         <Typography display="inline" sx={{
           mr: 1,
