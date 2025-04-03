@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(
-    // <React.StrictMode> // TODO test with strict mode
+    <React.StrictMode>
     <App/>
-    // </React.StrictMode>
+    </React.StrictMode>
 );
