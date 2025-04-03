@@ -82,7 +82,11 @@ class DefaultDialect implements Dialect {
   }
 
   get name(): string {
-    return "Default MOS 6502";
+    return "Revenge MOS 6502";
+  }
+
+  get description(): string {
+    return "Example assembly syntax with all dialect features implemented."
   }
 
   get env(): Environment {
@@ -254,7 +258,7 @@ class DefaultDialect implements Dialect {
         // check if the operand is an address inside the binary
         if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE) {
           if (dis.isInBinary(opnd)) {
-            operandTag.classNames.push(TAG_IN_BINARY)
+            operandTag.classNames.push(TAG_IN_BINARY);
           } else {
             // for now only deal with symbols outside of binary
             const symDef = dis.getSymbol(opnd);

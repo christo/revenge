@@ -11,6 +11,7 @@ import {Directive, FullInstructionLine, InstructionLike, PcAssign, SymbolDefinit
  */
 interface Dialect {
   readonly name: string;
+  readonly description: string;
   readonly env: Environment;
 
   parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState];

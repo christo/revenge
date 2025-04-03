@@ -89,6 +89,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
   // TODO introduce detail having options as well as stats; dialect should be an option
   detail.stats.push(["dialect", dialect.name]);
+  detail.stats.push(["dialect info", dialect.description]);
   return detail;
 }
 
