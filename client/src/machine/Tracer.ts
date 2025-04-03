@@ -176,7 +176,6 @@ class Tracer {
    * @return number of steps taken
    */
   trace(maxSteps: number): number {
-    console.log(`starting trace with max steps ${maxSteps}`);
     const startCount = this.stepCount;
     while (this.running() && this.stepCount < maxSteps) {
       this.step();
