@@ -5,10 +5,10 @@ import {Byteable} from "../machine/Byteable.ts";
  * provided byte sequence.
  */
 export class Bigram {
+  public readonly SIZE = 256;
   private readonly plot: number[][];
   private readonly min: number;
   private readonly max: number;
-  public readonly SIZE = 256;
 
   constructor(input: Byteable) {
     this.min = Number.MAX_SAFE_INTEGER;
@@ -16,8 +16,8 @@ export class Bigram {
     const bytes = input.getBytes();
     // initialise bigram grid to zero
     const size = this.SIZE;
-    this.plot = Array.from({ length: size }, () =>
-        Array.from({ length: size }, () => 0)
+    this.plot = Array.from({length: size}, () =>
+        Array.from({length: size}, () => 0)
     );
     for (let i = 1; i < bytes.length; i++) {
       const first = bytes[i - 1];
@@ -25,7 +25,7 @@ export class Bigram {
       if (first > 255 || second > 255 || first < 0 || second < 0) {
         throw Error("illegal state, byte value out of range"); // paranoia
       }
-      const newVal = this.plot[first][second]+1;
+      const newVal = this.plot[first][second] + 1;
       this.max = Math.max(newVal, this.max);
       this.min = Math.min(newVal, this.min);
       this.plot[first][second] = newVal;

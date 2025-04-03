@@ -58,7 +58,7 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
   } else {
     return <Box>
       <Stack direction="row" spacing={2} justifyItems="middle">
-        <Typography >Quickload:</Typography>
+        <Typography>Quickload:</Typography>
         <Stack direction="row" spacing={2}>
           {items.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
@@ -77,7 +77,7 @@ function Logo() {
     borderRadius: "1em",
   }
   // noinspection HtmlUnknownTarget
-  return <img src="revenge-logo512.png" width={512} height={512} style={sx} alt="revenge logo" />;
+  return <img src="revenge-logo512.png" width={512} height={512} style={sx} alt="revenge logo"/>;
 }
 
 function App() {

@@ -1,7 +1,6 @@
-
 // TODO make this into idiomatic react theme
 
-import { createTheme } from "@mui/material";
+import {createTheme} from "@mui/material";
 
 // colours from the logo
 export const darkPurple = "#1B0420";

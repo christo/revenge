@@ -5,6 +5,6 @@ import App from './App';
 
 createRoot(document.getElementById('root')!).render(
     // <React.StrictMode> // TODO test with strict mode
-      <App/>
+    <App/>
     // </React.StrictMode>
 );

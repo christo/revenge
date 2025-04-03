@@ -7,7 +7,7 @@ import {useState} from "react";
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
-import {neonYellow, primaryBright, infoBright, secondaryBright} from "../neonColourScheme.ts";
+import {secondaryBright} from "../neonColourScheme.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
 

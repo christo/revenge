@@ -2,12 +2,12 @@ import {Box} from "@mui/material";
 import {useEffect, useRef} from "react";
 import {Bigram} from "../analysis/Bigram.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
-import {background, neonYellow, secondaryBright} from "../neonColourScheme.ts";
+import {background, secondaryBright} from "../neonColourScheme.ts";
 
 
 function intensity(value: number, max: number) {
   const linear = value / max;
-  const normalised = Math.pow(linear, 1/4); // 0 - 1
+  const normalised = Math.pow(linear, 1 / 4); // 0 - 1
   const result = (normalised * 255).toFixed(0);
   return `rgb(${result},${result},${((normalised * 128).toFixed(0))})`;
 }
@@ -40,7 +40,7 @@ function bigrams(canvas: HTMLCanvasElement, fb: FileBlob, bgColor: string) {
 
 }
 
-function BigramPlot({fb}: {fb: FileBlob}) {
+function BigramPlot({fb}: { fb: FileBlob }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   useEffect(() => {
     if (canvasRef.current) {

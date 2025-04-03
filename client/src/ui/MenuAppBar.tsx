@@ -32,7 +32,7 @@ export function MenuAppBar() {
                 aria-label="menu"
                 sx={{mr: 2}}
             >
-              <MenuIcon sx={{color:neonCyan}}/>
+              <MenuIcon sx={{color: neonCyan}}/>
             </IconButton>
             <Typography variant="h4" component="div" sx={{
               flexGrow: 1,
@@ -41,7 +41,8 @@ export function MenuAppBar() {
             }}>
               Revenge
             </Typography>
-            <Typography display="inline" sx={{color: neonPink, fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
+            <Typography display="inline"
+                        sx={{color: neonPink, fontStyle: "italic", fontFamily: "'BebasNeueRegular', cursive"}}>
               retrocomputing reverse engineering environment
             </Typography>
             {(

@@ -1,4 +1,5 @@
-import Alert from "@mui/material/Alert";
+import {BookmarkBorder, InsertLink} from "@mui/icons-material";
+import {Tooltip, Box, Alert} from "@mui/material";
 import {
   ActionExecutor,
   Tag,
@@ -11,9 +12,6 @@ import {
 } from "../machine/api.ts";
 import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
-import {InsertLink, BookmarkBorder} from "@mui/icons-material";
-import Box from "@mui/material/Box";
-import { Tooltip } from "@mui/material";
 
 /**
  * Shows the detailed contents of a single file with a leading info summary specific to

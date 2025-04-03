@@ -1,5 +1,5 @@
-import { Box, Typography } from "@mui/material";
-import { ReactNode } from "react";
+import {Box, Typography} from "@mui/material";
+import {ReactNode} from "react";
 
 export function SmolPanel({heading, children}: { heading: string, children: ReactNode }) {
   return <Box sx={{pr: 2}}>
