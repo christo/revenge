@@ -505,7 +505,7 @@ class FullInstruction implements Byteable {
    */
   staticallyResolvableOperand(): boolean {
     const m = this.instruction.mode;
-    return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE;
+    return m === MODE_RELATIVE || m === MODE_ABSOLUTE || m === MODE_IMMEDIATE || m === MODE_ZEROPAGE;
   }
 
   /**
