@@ -44,7 +44,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
 
   // start timer
   const startTime = Date.now();
-  console.log(`kernal symbols used: ${traceResult.kernalSymbolsUsed.length}`);
+  // console.log(`kernal symbols used: ${traceResult.kernalSymbolsUsed.length}`);
   // add the kernal symbol definitions first
   traceResult.kernalSymbolsUsed.forEach(symbol => {
     const symbolDefinition = new SymbolDefinition(symbol);
