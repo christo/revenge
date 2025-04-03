@@ -165,7 +165,7 @@ class LogicalLine {
 /**
  * Main function for generating the file detail.
  */
-type ActionExecutor = () => Detail;
+type ActionExecutor = () => Promise<Detail>;
 
 /** A type for handling the result of a UserAction execution */
 type Continuation = (fo: ActionExecutor) => void;
@@ -209,7 +209,7 @@ class BooBoo {
  */
 const hexDumper: UserFileAction = (fb: FileBlob) => ({
   label: "Hex Dump",
-  f: () => {
+  f: async () => {
     // TODO make hex dump have n bytes per line with addresses at beginning of each;
     //  currently whole hex dump is a single logical line at no address with no instruction
     // add the classes for hex dump as a whole and for each byte

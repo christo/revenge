@@ -165,7 +165,7 @@ export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new DefaultDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   let userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
-    f: () => {
+    f: async () => {
       return disassembleActual(fb, dialect, t.getMeta());
     }
   }, hexDumper(fb)];
@@ -181,7 +181,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     t: t,
     actions: [{
       label: "basic",
-      f: () => {
+      f: async () => {
         const cbmFb = fb.asEndian(); // TODO scary this shouldn't work with a better type system
         const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
         // exclude "note" tags which are not a "line"

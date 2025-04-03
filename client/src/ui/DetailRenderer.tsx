@@ -1,5 +1,6 @@
 import {BookmarkBorder, InsertLink} from "@mui/icons-material";
-import {Tooltip, Box, Alert} from "@mui/material";
+import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
+import {useEffect, useState} from "react";
 import {
   ActionExecutor,
   Tag,
@@ -18,7 +19,6 @@ import {InfoPanel} from "./InfoPanel.tsx";
  * the detailed view.
  */
 export function DetailRenderer({ae}: { ae: ActionExecutor }) {
-  const detail: Detail = ae();
 
   // when an address operand is clicked, try to find its destination in the view and if present scroll to it
   const handleClick = (data: [string, string][], addr: string) => {
@@ -33,41 +33,51 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
       }
     }
   }
+  const [detail, setDetail] = useState<Detail | null>(null);
+  useEffect(() => {
+    ae().then(d => setDetail(d));
+  }, [ae]);
+  if (!detail) {
+    return <Box sx={{w: "100%", overflowX: "hidden"}} className="actionResult"><CircularProgress/></Box>;
+  } else {
 
-  return <Box className="actionResult">
-    <InfoPanel detail={detail}/>
+    return <Box sx={{w: "100%", overflowX: "hidden"}} className="actionResult">
+      <InfoPanel detail={detail}/>
 
-    {detail.dataView.getLines().map((ll, i) => {
-      const tagsForLine: Tag[] = ll.getTags();
-      return <div className={detail.classNames.join(" ")} key={`fb_${i}`}>
-        {tagsForLine.map((tup: Tag, j) => {
-          // add id if this is an address
-          const isNote = tup.classNames.find(x => x === TAG_NOTE) !== undefined;
-          // set data- attributes for each item in the data
-          const data: { [k: string]: string; } = {};
-          tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
-          if (isNote) {
-            // shown instead of normal line, represents a potential problem
-            return <Alert severity="warning" {...data} sx={{mt: 2, width: "50%"}}
-                          key={`fb_${i}_${j}`}>{tup.value}</Alert>;
-          } else {
-            const operand = tup.value;
-            const internalLink = tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]);
-            const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
+      {detail.dataView.getLines().map((ll, i) => {
+        const tagsForLine: Tag[] = ll.getTags();
+        return <Box className={detail.classNames.join(" ")} key={`fb_${i}`}>
+          {tagsForLine.map((tup: Tag, j) => {
+            // add id if this is an address
+            const isNote = tup.classNames.find(x => x === TAG_NOTE) !== undefined;
+            // set data- attributes for each item in the data
+            const data: { [k: string]: string; } = {};
+            tup.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
+            if (isNote) {
+              // shown instead of normal line, represents a potential problem
+              return <Alert severity="warning" {...data} sx={{mt: 2, width: "50%"}}
+                            key={`fb_${i}_${j}`}>{tup.value}</Alert>;
+            } else {
+              const operand = tup.value;
+              // TODO link the symdef to the symbol usage
+              const internalLink = tup.hasTags([TAG_OPERAND, TAG_ABSOLUTE, TAG_IN_BINARY]);
+              const extra = tup.hasTag(TAG_ADDRESS) ? {id: "M_" + tup.value} : {};
 
-            return <div {...extra} {...data}
-                        className={tup.spacedClassNames()}
-                        key={`fb_${i}_${j}`}
-                        onClick={() => handleClick(tup.data, operand)}>
-              {tup.value}
-              <Box display="inline" className="iconAnno">
-                {internalLink ? <Tooltip title="Jump in binary"><InsertLink/></Tooltip> : ""}
-                {tup.hasTag(TAG_KNOWN_SYMBOL) ? <BookmarkBorder/> : ""}
-              </Box>
-            </div>;
-          }
-        })}
-      </div>;
-    })}
-  </Box>;
+              return <Box {...extra} {...data}
+                          sx={{w: "100%"}}
+                          className={tup.spacedClassNames()}
+                          key={`fb_${i}_${j}`}
+                          onClick={() => handleClick(tup.data, operand)}>
+                {tup.value}
+                <Box display="inline" className="iconAnno">
+                  {internalLink ? <Tooltip title="Jump in binary"><InsertLink/></Tooltip> : ""}
+                  {tup.hasTag(TAG_KNOWN_SYMBOL) ? <BookmarkBorder/> : ""}
+                </Box>
+              </Box>;
+            }
+          })}
+        </Box>;
+      })}
+    </Box>;
+  }
 }
