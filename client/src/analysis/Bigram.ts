@@ -46,8 +46,10 @@ export class Bigram {
     }
   }
 
+  // noinspection JSUnusedGlobalSymbols
   getMin() {
     return this.min;
+
   }
 
   getMax() {
