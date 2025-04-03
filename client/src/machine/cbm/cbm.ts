@@ -81,7 +81,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
     }
   }
 
-  // TODO link up internal address references including jump targets and mark two-sided cross-references
+  // TODO link up internal address references jump targets with synthetic label names
   const stats = dis.getStats();
   // for now assuming there's no doubling up of stats keys
   stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
