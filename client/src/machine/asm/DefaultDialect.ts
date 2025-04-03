@@ -216,9 +216,11 @@ class DefaultDialect implements Dialect {
   }
 
   symbolDefinition(symDef: SymbolDefinition, _dis: Disassembler): Tag[] {
+    // TODO add jump target like M_ prefixed numeric addresses
     const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));
     const symbolDefinition = new Tag([TAG_SYM_DEF], `${symDef.symDef.name} = ${this.hexWordText(symDef.symDef.value)}`);
+    symbolDefinition.data.push(['symname', symDef.symDef.name])
     const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, symbolDefinition, comments];
   }
@@ -254,16 +256,17 @@ class DefaultDialect implements Dialect {
           if (dis.isInBinary(opnd)) {
             operandTag.classNames.push(TAG_IN_BINARY)
           } else {
-            // for only deal with symbols outside of binary
+            // for now only deal with symbols outside of binary
             const symDef = dis.getSymbol(opnd);
             if (symDef) {
-              // we found a symbol for this
-              operandTag.data.push([`symdef-${symDef.name}`, symDef.descriptor]);
+              // we found a symbol for this add the data signifying usage of the symbol
+              operandTag.data.push([`symname`, symDef.name]);
+              operandTag.data.push([`symblurb`, symDef.descriptor]); // TODO maybe build a comment out of this
               operandTag.classNames.push(TAG_KNOWN_SYMBOL);
             }
           }
         }
-        // add operand hex value as data so front-end can always extract it
+        // add operand value as data so front-end can always extract it - could be symbol
         operandTag.data.push([TAG_OPERAND_VALUE, hex16(opnd)]);
       }
       return [mnemonic, operandTag];
