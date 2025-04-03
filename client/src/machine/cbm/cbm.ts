@@ -34,8 +34,6 @@ import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
 
 function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: DisassemblyMeta) {
-
-
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
 
@@ -90,6 +88,7 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
   detail.stats.push(["assembly lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
+  // TODO introduce detail having options as well as stats; dialect should be an option
   detail.stats.push(["dialect", dialect.name]);
   return detail;
 }
