@@ -165,13 +165,10 @@ export class Thread {
           }
         } else if (op.any([OpSemantics.IS_UNCONDITIONAL_JUMP])) {
           if (inst.instruction.mode === MODE_INDIRECT) {
-            // JMP ($1337)
-            // TODO indirect jump support probably needs a more complete emulation because the operand
-            //  may have been modified and we do not currently calculate all memory modifications
-            //  conversely, depending on the location and machine architecture, if the address of the
-            //  operand has not been modified by the program, we may decode the indirection faithfully
-            console.warn(`Thread ${this.descriptor} unsupported indirect mode ${inst.instruction.op.mnemonic} instruction at ${this.renderPc()} [${inst.getBytes().map(hex16).join(", ")}]`);
-            this.errors.push([this.pc, "indirect mode jump is unsupported"]);
+            const err = `unsupported indirect mode ${inst.instruction.op.mnemonic} instruction`;
+            const mesg = `Thread ${this.descriptor} ${err} at ${this.renderPc()} [${inst.byteString()}]`;
+            // console.warn(mesg);
+            this.errors.push([this.pc, mesg]);
             this.terminate("reached unsupported indirect jump");
           } else {
             const jumpTarget = inst.operandValue();
