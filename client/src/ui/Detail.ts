@@ -27,9 +27,6 @@ class Detail {
     return this._name;
   }
 
-  /**
-   * Classnames
-   */
   get classNames(): string[] {
     return this._classNames;
   }
