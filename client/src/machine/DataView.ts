@@ -16,9 +16,6 @@ interface DataView {
   addLine(ll: LogicalLine): void;
 }
 
-// TODO a data view probably needs to have view items that are not mapped to logical lines
-//   (think this through) there may need to be decorative content I haven't thought clearly enough about
-
 class DataViewImpl implements DataView {
   private readonly lines: LogicalLine[];
 
