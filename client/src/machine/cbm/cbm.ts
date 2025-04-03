@@ -49,7 +49,6 @@ function disassembleActual(fb: FileBlob, dialect: DefaultDialect, meta: Disassem
     detail.dataView.addLine(new LogicalLine(symbolDefinition.disassemble(dialect, dis), 0, undefined))
   });
 
-
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], ["load address"]);
   const tagSeq = assignPc.disassemble(dialect, dis);
