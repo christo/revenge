@@ -129,7 +129,6 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 
   const kernalSymbolsUsed: Set<SymDef<number>> = new Set<SymDef<number>>();
   executedInstructions.forEach(ir => {
-    const addr = ir[0];
     // get the address of the operand and figure out if it is a symbol needing a definition
     const instruction = ir[1];
     // does instruction have an operand?
