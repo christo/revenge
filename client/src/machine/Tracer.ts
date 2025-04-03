@@ -182,9 +182,7 @@ class Tracer {
       this.stepCount += 1;
     }
     // we might not have started from zero
-    const stepsTaken = this.stepCount - startCount;
-    // console.log(`traced ${stepsTaken} steps`);
-    return stepsTaken;
+    return this.stepCount - startCount;
   }
 
   executedInstructions() {
