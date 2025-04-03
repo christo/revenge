@@ -58,11 +58,6 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
    * Arbitrary conspicuous (0b1010 = 0xa = 10) double-endian fill constant to aid debugging.
    */
   private static EMPTY_MEMORY_FILL = 0b1010;
-
-  static zeroes<T extends Endian>(size: number, endian: T, writeable: boolean, executable: boolean): ArrayMemory<T> {
-    return new ArrayMemory(Array(size).fill(0), endian, writeable, executable);
-  }
-
   /** Arbitrary size, plenty for retro computers. */
   private static MAX: number = MB_8;
   private readonly _bytes: number[];
@@ -94,6 +89,10 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
       this._bytes = bytes;
     }
     this.endian = endian;
+  }
+
+  static zeroes<T extends Endian>(size: number, endian: T, writeable: boolean, executable: boolean): ArrayMemory<T> {
+    return new ArrayMemory(Array(size).fill(0), endian, writeable, executable);
   }
 
   executable = (): boolean => this._executable;

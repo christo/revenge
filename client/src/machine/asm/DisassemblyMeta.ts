@@ -1,8 +1,8 @@
+import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
+import {LabelsComments, SymbolTable} from "./asm.ts";
 import {Edict} from "./Edict.ts";
 import {InstructionLike} from "./instructions.ts";
-import {Addr} from "../core.ts";
-import {LabelsComments, SymbolTable} from "./asm.ts";
 
 /**
  * Provider of metadata about binaries, valuable for disassembling a {@link FileBlob}.

@@ -1,6 +1,6 @@
-import {BlobSniffer} from "./BlobSniffer.ts";
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
+import {BlobSniffer} from "./BlobSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 /**

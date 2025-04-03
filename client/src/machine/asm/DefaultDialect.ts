@@ -3,17 +3,19 @@ import {
   KeywordTag,
   Tag,
   TAG_ABSOLUTE,
-  TAG_ADDRESS,
   TAG_CODE,
   TAG_COMMENT,
   TAG_DATA,
   TAG_HEXARRAY,
-  TAG_IN_BINARY, TAG_KNOWN_SYMBOL,
+  TAG_IN_BINARY,
+  TAG_KNOWN_SYMBOL,
   TAG_LABEL,
-  TAG_MNEMONIC, TAG_NO_ADDRESS,
+  TAG_MNEMONIC,
+  TAG_NO_ADDRESS,
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
-  TAG_PETSCII, TAG_SYM_DEF
+  TAG_PETSCII,
+  TAG_SYM_DEF
 } from "../api.ts";
 import {Byteable} from "../Byteable.ts";
 import {Petscii} from "../cbm/petscii.ts";
@@ -43,7 +45,8 @@ import {
   FullInstructionLine,
   InstructionLike,
   LabelsCommentsOnly,
-  PcAssign, SymbolDefinition
+  PcAssign,
+  SymbolDefinition
 } from "./instructions.ts";
 
 /**
@@ -219,7 +222,6 @@ class DefaultDialect implements Dialect {
     const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack
     return [comments, labels, dummy, symbolDefinition]
   }
-
 
 
   labelsComments(labelsComments: LabelsComments, _dis: Disassembler): Tag[] {

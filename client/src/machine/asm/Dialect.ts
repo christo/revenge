@@ -1,8 +1,8 @@
 import {BooBoo, Tag} from "../api.ts";
 import {Environment, LabelsComments} from "./asm.ts";
-import {Directive, FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
-import {Disassembler} from "./Disassembler.ts";
 import {ParserState} from "./DefaultDialect.ts";
+import {Disassembler} from "./Disassembler.ts";
+import {Directive, FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
 
 /**
  * Abstraction for holding syntactic specifications and implementing textual renditions of

@@ -65,10 +65,6 @@ class Tracer {
   //          maybe we can only afford to do this for empty stacks? maybe certain small stacks of say 1 or 2 size?
   //          maybe we can collapse sequences of step instructions?, halts, unconditional jumps, conditional
   //          jumps (forks) and subroutine jumps (deferred steps).
-  // FUTURE: would also be nice to know if a memory location is writeable
-  private getExecuted: () => InstRec[] = () => {
-    return [...this.executedList];
-  };
 
   /**
    * Create a Tracer with a single Memory and single thread of execution at pc.
@@ -195,6 +191,11 @@ class Tracer {
   executedInstructions() {
     return this.executedList;
   }
+
+  // FUTURE: would also be nice to know if a memory location is writeable
+  private getExecuted: () => InstRec[] = () => {
+    return [...this.executedList];
+  };
 }
 
 export {Tracer, type InstRec, enumInstAddr};

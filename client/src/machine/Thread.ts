@@ -30,9 +30,6 @@ export class Thread {
   private readonly ignore: (addr: Addr) => boolean;
   private readonly addExecuted: (ir: InstRec) => void;
   private readonly getExecuted: () => InstRec[];
-
-  /** Whether we are running. False iff we have reached a termination point. */
-  private _running: boolean;
   private terminationReason: string;
 
   /**
@@ -63,6 +60,9 @@ export class Thread {
 
     this.errors = [];
   }
+
+  /** Whether we are running. False iff we have reached a termination point. */
+  private _running: boolean;
 
   /**
    * We might have executed a break instruction previously, in which case we are no longer running.
@@ -128,7 +128,7 @@ export class Thread {
       let instLen = 0;
       try {
         instLen = inst.getLength();
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
       let nextPc = this.pc + instLen;

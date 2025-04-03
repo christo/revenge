@@ -2,17 +2,16 @@
 // noinspection JSUnusedLocalSymbols
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
-import {LE} from "../Endian.ts";
-import {CartSniffer} from "./cbm.ts";
+import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
+import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
+import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {Mos6502} from "../mos6502.ts";
-import {Petscii} from "./petscii.ts";
-import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
-import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
-import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
-import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {ArrayMemory} from "../Memory.ts";
+import {Mos6502} from "../mos6502.ts";
+import {CartSniffer} from "./cbm.ts";
+import {Petscii} from "./petscii.ts";
 
 class C64 extends Computer {
   constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
