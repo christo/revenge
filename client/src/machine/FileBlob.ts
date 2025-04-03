@@ -8,6 +8,11 @@ import {ArrayMemory, Memory} from "./Memory.ts";
  * like a byte array.
  */
 class FileBlob implements Byteable {
+
+  // TODO this seems to have Endianness always thanks to this.memory - look into why it's not on the interface
+  //   maybe it's because we have a little endian platform hard-coded somewhere upstream the call graph and
+  //   won't know until we implement a big endian platform - maybe fix it in unit tests with a mock platform?
+
   public static NULL_FILE_BLOB: FileBlob = FileBlob.fromBytes("null", 0, BE);
 
   readonly name: string;
