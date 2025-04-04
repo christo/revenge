@@ -121,7 +121,7 @@ abstract class BaseDialect implements Dialect {
   readonly description: string;
   readonly env: Environment;
 
-  constructor(name: string, description: string, env: Environment) {
+  protected constructor(name: string, description: string, env: Environment) {
     this.name = name;
     this.description = description;
     this.env = env;
