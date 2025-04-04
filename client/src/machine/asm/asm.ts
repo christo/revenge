@@ -129,6 +129,13 @@ class SymbolTable {
     this.sym(SymbolType.sub, addr, name, desc, blurb);
   }
 
+  /**
+   * Register definition
+   * @param addr address of register
+   * @param name name of register
+   * @param desc description
+   * @param blurb optional extra blurb
+   */
   reg(addr: Addr, name: string, desc: string, blurb = "") {
     this.sym(SymbolType.reg, addr, name, desc, blurb);
   }
