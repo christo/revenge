@@ -10,6 +10,8 @@ import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
 import {FileLike} from "./machine/FileBlob.ts";
 import {background, darkTheme, infoBright, primaryBright} from "./neonColourScheme.ts";
+import {QuickLoad} from "./QuickLoad.ts";
+import {ServerError} from "./ServerError.ts";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
 import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
@@ -21,13 +23,6 @@ import {MenuAppBar} from "./ui/MenuAppBar.tsx";
  * This may be increased to handle larger sizes if need arises.
  */
 const MAX_SIZE_MB = 1;
-
-
-type Error = { message: string, name: string, code: string, config: string, request: Request, response: Response };
-type QuickLoad = {
-  VIC20: FileLike[],
-  C64: FileLike[],
-}
 
 /**
  * Temporary typographic logo.
@@ -50,12 +45,14 @@ function systemLogo(background: string, foreground: string, text: string) {
   }}>{text}</Typography>;
 }
 
+const EMPTY_QUICKLOADS = {VIC20: [], C64: []};
+
 /**
  * Try to load the QuickLoad binaries from the server for one click loading.
  */
 function QuickLoads(props: { setFile: (f: FileLike) => void }) {
-  const [items, setItems] = useState<QuickLoad>({VIC20: [], C64: []});
-  const [error, setError] = useState<Error>();
+  const [items, setItems] = useState<QuickLoad>(EMPTY_QUICKLOADS);
+  const [error, setError] = useState<ServerError>();
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     axios.get("/api/quickloads", {})
