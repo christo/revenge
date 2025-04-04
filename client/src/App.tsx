@@ -9,7 +9,7 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
 import {FileLike} from "./machine/FileBlob.ts";
-import {darkTheme} from "./neonColourScheme.ts";
+import {background, darkTheme, infoBright, primaryBright} from "./neonColourScheme.ts";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
 import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
@@ -27,6 +27,28 @@ type QuickLoad = {
   VIC20: FileLike[],
   C64: FileLike[],
 }
+
+/**
+ * Temporary typographic logo.
+ * @param background
+ * @param foreground
+ * @param text
+ */
+function systemLogo(background: string, foreground: string, text: string) {
+  return <Typography sx={{
+    font: "Martian Mono",
+    fontWeight: "bold",
+    fontSize: "0.6rem",
+    color: foreground,
+    backgroundColor: background,
+    // border: `solid thin ${primaryBright}`,
+    borderRadius: "5px",
+    p: "0 4px",
+    ml: 0.5,
+    opacity: 0.7
+  }}>{text}</Typography>;
+}
+
 /**
  * Try to load the QuickLoad binaries from the server for one click loading.
  */
@@ -65,11 +87,11 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
         <Stack direction="row" gap="0.5rem 1rem" flexWrap="wrap" display="flex" justifyContent="flex-start" alignContent="flex-start">
           {items.VIC20.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="primary"
-                           key={`qlvic_${i}`}>{item.name} (VIC)</Button>
+                           key={`qlvic_${i}`}>{item.name}&nbsp;{systemLogo(primaryBright, background, "VIC")}</Button>
           })}
           {items.C64.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
-                           key={`qlc64_${i}`}>{item.name} (C64)</Button>
+                           key={`qlc64_${i}`}>{item.name}&nbsp;{systemLogo(infoBright, background, "64")}</Button>
           })}
         </Stack>
       </Stack>
