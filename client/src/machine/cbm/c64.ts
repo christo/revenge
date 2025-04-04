@@ -19,7 +19,8 @@ class C64 extends Computer {
   }
 }
 
-const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", 0x0801);
+const C64_BASIC_PROGRAM_START = 0x0801;
+const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", C64_BASIC_PROGRAM_START);
 const C64_BASIC_PRG = new BlobTypeSniffer(
     "C64 basic prg",
     "BASIC program",
