@@ -8,6 +8,7 @@ import {DataView, DataViewImpl} from "./DataView.ts";
 import {BigEndian, LittleEndian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
+import {MODE_INDIRECT} from "./mos6502.ts";
 
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
@@ -56,6 +57,8 @@ class Tag {
   isSymbolDef = () => this.classNames.includes(TAG_SYM_DEF);
 
   isNote = () => this.classNames.includes(TAG_NOTE);
+
+  isIndirectMode = () => this.classNames.includes(MODE_INDIRECT.code);
 }
 
 export class HexTag extends Tag {
