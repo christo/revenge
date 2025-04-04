@@ -1,6 +1,8 @@
-// VIC-20 specific details
+/*
+VIC-20 specific details: machine definition, memory configs, kernel images, symbols, binary sniffers etc.
+ */
 
-import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag, TAG_ADDRESS, TAG_LINE_NUM} from "../api";
+import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag} from "../api";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {Dialect} from "../asm/Dialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
