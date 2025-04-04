@@ -51,15 +51,14 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
 
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], ["load address"]);
-  const tagSeq = assignPc.disassemble(dialect, dis);
   // this line corresponds to zero bytes
-  detail.dataView.addLine(new LogicalLine(tagSeq, 0, dis.currentAddress));
+  detail.dataView.addLine(new LogicalLine(assignPc.disassemble(dialect, dis), 0, dis.currentAddress));
   // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress;
     let inst: InstructionLike | undefined = dis.nextInstructionLine();
     if (!inst) {
-      // TODO decide how this can happen and what to do instead (byte declaration?)
+      // TODO decide how this can happen and what to do instead
       throw Error(`cannot disassemble at ${instAddress}`);
     } else {
       const addressTags = [TAG_ADDRESS];
