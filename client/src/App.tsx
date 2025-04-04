@@ -8,10 +8,11 @@ import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 import {fileTypes} from "./machine/cbm/cbm.ts";
-import {FileLike} from "./machine/FileBlob.ts";
+
+import {FileLike} from "../../server/src/common/FileLike.ts";
 import {background, darkTheme, infoBright, primaryBright} from "./neonColourScheme.ts";
-import {QuickLoad} from "./QuickLoad.ts";
-import {ServerError} from "./ServerError.ts";
+import {QuickLoad} from "../../server/src/common/QuickLoad.ts";
+import {ServerError} from "../../server/src/common/ServerError.ts";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
 import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
