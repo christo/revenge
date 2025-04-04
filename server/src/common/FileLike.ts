@@ -1,8 +1,9 @@
 /**
- * It's like... like a file, but, like... not actually a file?
+ * Flexible file-like abstraction backed by a byte array.
  */
 class FileLike {
-  // TODO why does this exist? Remind me.
+  static foo = () => { console.log("loading FileLike"); return "foo"};
+  static bar = FileLike.foo();
   private readonly _name: string;
   private readonly _data: Uint8Array;
   private readonly _size: number;
@@ -14,7 +15,6 @@ class FileLike {
     this._name = name;
     this._data = data;
     this._size = data.byteLength
-
   }
 
   get name(): string {
