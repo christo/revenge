@@ -88,7 +88,10 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
   // for now assuming there's no doubling up of stats keys
   stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
   detail.stats.push(["exec trace", `${traceResult.steps} steps, ${traceResult.traceTime} ms (${traceResult.endState})`]);
-  detail.stats.push(["memory trace", `${traceResult.readAddresses.length} read, ${traceResult.writtenAddresses.length} written addresess`]);
+  const readsInBinary = traceResult.readAddresses.filter(a => meta.isInBinary(a, fb));
+  const writesInBinary = traceResult.writtenAddresses.filter(a => meta.isInBinary(a, fb));
+  detail.stats.push(["static memory reads", `${traceResult.readAddresses.length} (${readsInBinary.length} in binary)`]);
+  detail.stats.push(["static memory writes", `${traceResult.writtenAddresses.length} (${writesInBinary.length} in binary)`]);
 
   detail.stats.push(["assembly lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
