@@ -8,7 +8,7 @@
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
-  * [ ] introduce convenience methods on Tag at current call sites to reduce api noise (currently
+  * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
 * [ ] consult published reverse engineering work on retro binaries I have as relevant ground truth
   * [ ] https://github.com/mwenge/gridrunner
