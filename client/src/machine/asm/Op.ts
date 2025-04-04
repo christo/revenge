@@ -3,13 +3,17 @@
  * interpreted.
  */
 export enum OpSemantics {
-  IS_UNCONDITIONAL_JUMP,  // will modify PC
-  IS_CONDITIONAL_JUMP,    // may modify PC
-  IS_RETURNABLE_JUMP,    // may modify PC
-  IS_BREAK,   // intentional stop of further processing
-  IS_JAM,     // undocumented stop of further processing
-  IS_ILLEGAL, // undocumented but may execute
-  IS_STORE,   // modifies memory
+  /** will modify PC */
+  IS_UNCONDITIONAL_JUMP,
+  /** may modify PC */
+  IS_CONDITIONAL_JUMP,
+  /** may modify PC, could continue execution at next instruction after doing so */
+  IS_RETURNABLE_JUMP,
+  /** intentional stop of further processing, might be trapped by runtime vector */
+  IS_BREAK,
+  /** CPU hangs cannot continue further processing */
+  IS_JAM,     //
+  IS_ILLEGAL, // undocumented but may execute with known effects (possibly CPU variant dependent)
   IS_RETURN,  // return from subroutine or interrupt
   IS_MEMORY_WRITE,   // modifies memory
   IS_MEMORY_READ, // reads a value from a memory location
