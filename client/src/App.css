@@ -285,7 +285,7 @@ classes for tags follow
 
 .entrypoint {
   color: #E346A5;
-  border-left: #f8ff22 solid 3px;
+  border-left: #f8ff22 solid 3px; /* border thickness matches margin offset */
   margin-left: -3px;
 }
 
