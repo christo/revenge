@@ -6,7 +6,7 @@ import {
   hexDumper,
   LogicalLine,
   Tag,
-  TAG_ADDRESS,
+  TAG_ADDRESS, TAG_ADDRESS_WAS_READ, TAG_ADDRESS_WAS_WRITTEN,
   TAG_ENTRY_POINT,
   TAG_EXECUTED,
   TAG_HEX,
@@ -14,10 +14,10 @@ import {
   UserAction
 } from "../api.ts";
 import {Environment, SymbolType,} from "../asm/asm.ts";
-import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {Directive, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
+import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
@@ -66,6 +66,12 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
       if (traceResult.codeAddresses.includes(instAddress)) {
         addressTags.push(TAG_EXECUTED);
       }
+      if (traceResult.writtenAddresses.includes(instAddress)) {
+        addressTags.push(TAG_ADDRESS_WAS_WRITTEN);
+      }
+      if (traceResult.readAddresses.includes(instAddress)) {
+        addressTags.push(TAG_ADDRESS_WAS_READ);
+      }
       if (meta.executionEntryPoints(fb).map(as => as[0]).includes(instAddress)) {
         addressTags.push(TAG_ENTRY_POINT);
       }
@@ -82,7 +88,8 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
   const stats = dis.getStats();
   // for now assuming there's no doubling up of stats keys
   stats.forEach((v, k) => detail.stats.push([k, v.toString()]));
-  detail.stats.push(["tracer", `${traceResult.steps} steps, ${traceResult.traceTime} ms (${traceResult.endState})`]);
+  detail.stats.push(["exec trace", `${traceResult.steps} steps, ${traceResult.traceTime} ms (${traceResult.endState})`]);
+  detail.stats.push(["memory trace", `${traceResult.readAddresses.length} read, ${traceResult.writtenAddresses.length} written addresess`]);
 
   detail.stats.push(["assembly lines", detail.dataView.getLines().length.toString()]);
   const timeTaken = Date.now() - startTime;
@@ -99,7 +106,9 @@ type TraceResult = {
   endState: string,
   steps: number,
   kernalSymbolsUsed: SymDef<Addr>[],
-  executedInstructions: InstRec[]
+  executedInstructions: InstRec[],
+  writtenAddresses: Addr[],
+  readAddresses: Addr[],
 }
 
 
@@ -111,6 +120,7 @@ type TraceResult = {
  * @return tuple of array of executed addresses and the number of milliseconds taken to trace
  */
 function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceResult {
+  // fill with zeroes because they are break on 6502
   const LE_64K = ArrayMemory.zeroes(0x10000, Mos6502.ENDIANNESS, true, true);
   // TODO load system rom into memory instead of ignoring
   const symbolTable = meta.getSymbolTable();
@@ -123,6 +133,8 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
   const endMessage = tracer.running() ? "did not terminate" : "completed";
   const traceTime = Date.now() - traceStart;
   const executedInstructions = tracer.executedInstructions();
+  const writtenAddresses = tracer.getWritten();
+  const readAddresses = tracer.getRead();
   const codeAddresses = [...tracer.executedAddresses()].sort();
 
   const kernalSymbolsUsed: Set<SymDef<number>> = new Set<SymDef<number>>();
@@ -150,6 +162,8 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
     codeAddresses: codeAddresses,
     kernalSymbolsUsed: Array.from(kernalSymbolsUsed),
     executedInstructions: executedInstructions,
+    writtenAddresses: writtenAddresses,
+    readAddresses: readAddresses,
     traceTime: traceTime,
     endState: endMessage,
     steps: stepsTaken

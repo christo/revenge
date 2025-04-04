@@ -59,6 +59,9 @@ class Tag {
   isNote = () => this.classNames.includes(TAG_NOTE);
 
   isIndirectMode = () => this.classNames.includes(MODE_INDIRECT.code);
+
+  wasWrittenTo = () => this.classNames.includes(TAG_ADDRESS_WAS_WRITTEN);
+  wasReadFrom = () => this.classNames.includes(TAG_ADDRESS_WAS_READ);
 }
 
 export class HexTag extends Tag {
@@ -129,6 +132,10 @@ export const TAG_OPERAND_VALUE = "opnd_val";
 export const TAG_HEXBYTE = "hexbyte";
 /** entire hex dump */
 export const TAG_HEXBYTES = "hexbytes";
+/** the address was written to */
+export const TAG_ADDRESS_WAS_WRITTEN = "waswritten";
+/** the address was read from */
+export const TAG_ADDRESS_WAS_READ = "wasread";
 
 /**
  * Holds a logical line of source with its address and the {@link InstructionLike}. Need to be bidirectionally mapped to

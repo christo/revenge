@@ -11,6 +11,9 @@ export enum OpSemantics {
   IS_ILLEGAL, // undocumented but may execute
   IS_STORE,   // modifies memory
   IS_RETURN,  // return from subroutine or interrupt
+  IS_MEMORY_WRITE,   // modifies memory
+  IS_MEMORY_READ, // reads a value from a memory location
+
 }
 
 /**

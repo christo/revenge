@@ -107,6 +107,14 @@ class Tracer {
     return this.getExecuted().flatMap(enumInstAddr);
   }
 
+  getWritten(): Array<Addr> {
+    return Array.from(new Set(this.threads.flatMap(v => v.getWritten())));
+  }
+
+  getRead(): Array<Addr> {
+    return Array.from(new Set(this.threads.flatMap(v => v.getRead())));
+  }
+
   /**
    * Whether or not the tracer has any active execution threads.
    */
@@ -150,7 +158,8 @@ class Tracer {
   }
 
   /**
-   * Step all active threads
+   * Step all active threads by one - may result in threads terminating or spawning.
+   * If no threads are in the running state, this does nothing.
    */
   stepAll() {
     const newThreads: Thread[] = [];
@@ -167,7 +176,9 @@ class Tracer {
   }
 
   /**
-   * Run the trace for a maximum number of steps or until completion.
+   * Run the trace for a maximum number of steps or until completion. One thread stepping
+   * once counts as a step. Which running thread is chosen to step at any given iteration
+   * is undefined.
    * @param maxSteps
    * @return number of steps taken
    */

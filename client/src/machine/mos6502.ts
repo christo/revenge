@@ -123,7 +123,7 @@ const BVC = new Op("BVC", "branch on overflow clear", BRA, [OpSemantics.IS_CONDI
 const BVS = new Op("BVS", "branch on overflow set", BRA, [OpSemantics.IS_CONDITIONAL_JUMP]);
 const CLC = new Op("CLC", "clear carry", MATH);
 const CLD = new Op("CLD", "clear decimal", SR);
-const CLI = new Op("CLI", "clear interrupt disable", INT);
+const CLI = new Op("CLI", "clear interrupt disable", INT);// TODO is this a memory write?
 const CLV = new Op("CLV", "clear overflow", SR);
 const CMP = new Op("CMP", "compare (with accumulator)", LG);
 const CPX = new Op("CPX", "compare with X", LG);
@@ -137,15 +137,19 @@ const INX = new Op("INX", "increment X", MATH);
 const INY = new Op("INY", "increment Y", MATH);
 const JMP = new Op("JMP", "jump", BRA, [OpSemantics.IS_UNCONDITIONAL_JUMP]);
 const JSR = new Op("JSR", "jump subroutine", SUB, [OpSemantics.IS_UNCONDITIONAL_JUMP, OpSemantics.IS_RETURNABLE_JUMP]);
-const LDA = new Op("LDA", "load accumulator", MEM);
-const LDX = new Op("LDX", "load X", MEM);
-const LDY = new Op("LDY", "load Y", MEM);
+const LDA = new Op("LDA", "load accumulator", MEM, [OpSemantics.IS_MEMORY_READ]);
+const LDX = new Op("LDX", "load X", MEM, [OpSemantics.IS_MEMORY_READ]);
+const LDY = new Op("LDY", "load Y", MEM, [OpSemantics.IS_MEMORY_READ]);
 const LSR = new Op("LSR", "logical shift right", MATH);
 const NOP = new Op("NOP", "no operation", MS);
 const ORA = new Op("ORA", "or with accumulator", LG);
+// TODO memory write to stack
 const PHA = new Op("PHA", "push accumulator", ST);
-const PHP = new Op("PHP", "push processor status (SR)", ST);
+// TODO memory write to stack
+const PHP = new Op("PHP", "push processor status (SR)", ST);  // TODO
+// TODO memory read from stack
 const PLA = new Op("PLA", "pull accumulator", ST);
+// TODO memory read from stack
 const PLP = new Op("PLP", "pull processor status (SR)", ST);
 const ROL = new Op("ROL", "rotate left", MATH);
 const ROR = new Op("ROR", "rotate right", MATH);
@@ -154,10 +158,10 @@ const RTS = new Op("RTS", "return from subroutine", SUB, [OpSemantics.IS_RETURN]
 const SBC = new Op("SBC", "subtract with carry", MATH);
 const SEC = new Op("SEC", "set carry", SR);
 const SED = new Op("SED", "set decimal", SR);
-const SEI = new Op("SEI", "set interrupt disable", INT);
-const STA = new Op("STA", "store accumulator", MEM, [OpSemantics.IS_STORE]);
-const STX = new Op("STX", "store X", MEM, [OpSemantics.IS_STORE]);
-const STY = new Op("STY", "store Y", MEM, [OpSemantics.IS_STORE]);
+const SEI = new Op("SEI", "set interrupt disable", INT); // TODO is this a memory write?
+const STA = new Op("STA", "store accumulator", MEM, [OpSemantics.IS_MEMORY_WRITE]);
+const STX = new Op("STX", "store X", MEM, [OpSemantics.IS_MEMORY_WRITE]);
+const STY = new Op("STY", "store Y", MEM, [OpSemantics.IS_MEMORY_WRITE]);
 const TAX = new Op("TAX", "transfer accumulator to X", TR);
 const TAY = new Op("TAY", "transfer accumulator to Y", TR);
 const TSX = new Op("TSX", "transfer stack pointer to X", TR);

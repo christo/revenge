@@ -1,18 +1,7 @@
-import {BookmarkBorder, Dangerous, InsertLink} from "@mui/icons-material";
+import {BookmarkBorder, Dangerous, Edit, InsertLink, MenuBook} from "@mui/icons-material";
 import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
 import {useEffect, useState} from "react";
-import {
-  ActionExecutor,
-  Tag,
-  TAG_ABSOLUTE,
-  TAG_ADDRESS,
-  TAG_IN_BINARY,
-  TAG_KNOWN_SYMBOL,
-  TAG_NOTE,
-  TAG_OPERAND,
-  TAG_OPERAND_VALUE,
-  TAG_SYM_DEF
-} from "../machine/api.ts";
+import {ActionExecutor, Tag, TAG_OPERAND_VALUE} from "../machine/api.ts";
 import {Detail} from "./Detail.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 
@@ -93,12 +82,10 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
         const tagsForLine: Tag[] = ll.getTags();
         return <Box className={detail.classNames.join(" ")} key={`fb_${i}`}>
           {tagsForLine.map((tag: Tag, j) => {
-            // TODO rename this param to tag
-            const isNote = tag.isNote();
             // set data- attributes for each item in the data
             const data: { [k: string]: string; } = {};
             tag.data.forEach((kv: [string, string]) => data[`data-${kv[0]}`] = kv[1]);
-            if (isNote) {
+            if (tag.isNote()) {
               // shown instead of normal line, represents a potential problem
               return <Alert severity="warning" {...data} sx={{mt: 2, width: "50%"}}
                             key={`fb_${i}_${j}`}>{tag.value}</Alert>;
@@ -111,6 +98,8 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
                           key={`fb_${i}_${j}`}
                           onClick={() => handleClick(tag.data, operand)}>
                 {tag.value}
+                {tag.wasWrittenTo() && <Tooltip title="Written to"><Edit/></Tooltip>}
+                {tag.wasReadFrom() && <Tooltip title="Read from"><MenuBook/></Tooltip>}
                 <Box display="inline" className="iconAnno">
                   {internalLink ? <Tooltip title="Jump in binary"><InsertLink
                       onClick={() => handleClick(tag.data, operand)}/></Tooltip> : ""}

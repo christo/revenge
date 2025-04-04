@@ -31,6 +31,8 @@ export class Thread {
   private readonly addExecuted: (ir: InstRec) => void;
   private readonly getExecuted: () => InstRec[];
   private terminationReason: string;
+  private readonly written: Addr[];
+  private readonly read: Addr[];
 
   /**
    * Starts in running mode.
@@ -52,6 +54,8 @@ export class Thread {
     this.disasm = disasm;
     this.pc = pc;
     this.memory = memory;
+    this.written = [];
+    this.read = [];
     this.addExecuted = addExecuted;
     this.getExecuted = getExecuted;
     this.ignore = ignore;
@@ -177,6 +181,14 @@ export class Thread {
             }
           }
         }
+        if(inst.staticallyResolvableOperand()) {
+          if (op.has(OpSemantics.IS_MEMORY_READ)) {
+            this.read.push(inst.operandValue());
+          }
+          if (op.has(OpSemantics.IS_MEMORY_WRITE)) {
+            this.written.push(inst.operandValue());
+          }
+        }
       }
 
       // TODO edge case: execution at an address could be byte-misaligned with previous execution resulting in
@@ -196,5 +208,13 @@ export class Thread {
   /** Renders program counter as a string in both hex and decimal */
   private renderPc() {
     return `0x${this.pc.toString(16)} (${this.pc})`
+  }
+
+  getWritten() {
+    return this.written;
+  }
+
+  getRead() {
+    return this.read;
   }
 }
