@@ -1,4 +1,4 @@
-import {BookmarkBorder, InsertLink} from "@mui/icons-material";
+import {BookmarkBorder, Dangerous, InsertLink} from "@mui/icons-material";
 import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
 import {useEffect, useState} from "react";
 import {
@@ -115,6 +115,9 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
                   {internalLink ? <Tooltip title="Jump in binary"><InsertLink
                       onClick={() => handleClick(tag.data, operand)}/></Tooltip> : ""}
                   {tag.isKnownSymbol() ? <BookmarkBorder onClick={() => handleClick(tag.data, operand)}/> : ""}
+                  { // TODO this tooltip message should be derived from trace result, not hardcoded here
+                    tag.isIndirectMode() ? <Tooltip title="Indirect operand unsupported by trace"><Dangerous/></Tooltip> : ""
+                  }
                 </Box>
               </Box>;
             }
