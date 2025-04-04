@@ -11,21 +11,31 @@ interface FileLike {
 }
 
 // init the preloads dir
-const PRELOADS_DIR = "data/preload";
-let PLDIR = path.join(".", PRELOADS_DIR);
-const preloads: FileLike[] = fs.readdirSync(PLDIR).filter(f => !f.startsWith(".")).map(fname => {
-  let data = Array.from(fs.readFileSync(path.join(".", PRELOADS_DIR, fname)));
-  console.log(`preparing preload blob ${fname}`);
+const PRELOADS_DIR_C64 = "data/preload/c64";
+const PRELOADS_DIR_VIC20 = "data/preload/vic20";
 
-  let fl: FileLike = {
-    name: fname,
-    data: data,
-    size: data.length
-  };
-  return fl;
-});
-router.get('/', async (req, res) => {
-  res.json(preloads);
+function getPreloads(fromPath: string) {
+  let plDir = path.join(".", fromPath);
+
+  return fs.readdirSync(plDir).filter(f => !f.startsWith(".")).map(fname => {
+
+    let data = Array.from(fs.readFileSync(path.join(".", fromPath, fname)));
+    console.log(`preparing preload blob ${fname}`);
+
+    let fl: FileLike = {
+      name: fname,
+      data: data,
+      size: data.length
+    };
+    return fl;
+  });
+}
+
+const PRELOADS_VIC20: FileLike[] = getPreloads(PRELOADS_DIR_VIC20);
+const PRELOADS_C64: FileLike[] = getPreloads(PRELOADS_DIR_C64);
+
+router.get('/', async (_req, res) => {
+  res.json({VIC20: PRELOADS_VIC20, C64: PRELOADS_C64});
 });
 
 export default router;

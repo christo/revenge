@@ -10,7 +10,7 @@ import {Mos6502} from "../../../src/machine/mos6502";
 
 describe("disassembler integration", () => {
   it("loads hesmon", () => {
-    const f = fs.readFileSync("../server/data/preload/HesMon.prg");
+    const f = fs.readFileSync("../server/data/preload/vic20/HesMon.prg");
     const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
     const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
@@ -22,7 +22,7 @@ describe("disassembler integration", () => {
   });
 
   it("traces avenger", () => {
-    const f = fs.readFileSync("../server/data/preload/Avenger.prg");
+    const f = fs.readFileSync("../server/data/preload/vic20/Avenger.prg");
     const fb = FileBlob.fromBytes("Avenger", Array.from(f), Mos6502.ENDIANNESS);
     const dm = new DisassemblyMetaImpl(0, [[2, "entry"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);

@@ -23,12 +23,15 @@ const MAX_SIZE_MB = 1;
 
 
 type Error = { message: string, name: string, code: string, config: string, request: Request, response: Response };
-
+type QuickLoad = {
+  VIC20: FileLike[],
+  C64: FileLike[],
+}
 /**
  * Try to load the QuickLoad binaries from the server for one click loading.
  */
 function QuickLoads(props: { setFile: (f: FileLike) => void }) {
-  const [items, setItems] = useState<FileLike[]>([]);
+  const [items, setItems] = useState<QuickLoad>({VIC20: [], C64: []});
   const [error, setError] = useState<Error>();
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
@@ -60,9 +63,13 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
       <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="center" >
         <Typography>Quickload:</Typography>
         <Stack direction="row" gap="0.5rem 1rem" flexWrap="wrap" display="flex" justifyContent="flex-start" alignContent="flex-start">
-          {items.map((item, i) => {
+          {items.VIC20.map((item, i) => {
+            return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="primary"
+                           key={`qlvic_${i}`}>{item.name} (VIC)</Button>
+          })}
+          {items.C64.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
-                           key={`ql_${i}`}>{item.name}</Button>
+                           key={`qlc64_${i}`}>{item.name} (C64)</Button>
           })}
         </Stack>
       </Stack>
