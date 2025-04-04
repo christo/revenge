@@ -27,3 +27,4 @@ People have achieved epic feats of reverse engineering using existing tools usua
 * Matson Dawson's Dart VIC-20 emulator https://github.com/matsondawson/vic20dart
 * C / WASM VIC-20 emulator by Nino Porcino (nippur72) https://github.com/nippur72/vic20-emu
   Also check out the reference software https://github.com/nippur72/vic20-emu/tree/master/software
+* Scala commodore multi-system emulator [kernal64](https://github.com/abbruzze/kernal64)
