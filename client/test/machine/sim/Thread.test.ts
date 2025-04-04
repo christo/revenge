@@ -1,13 +1,13 @@
 import {expect} from 'chai';
 
-import {LE} from "../../src/machine/Endian";
-import {Thread} from "../../src/machine/Thread";
-import {ArrayMemory} from "../../src/machine/Memory";
-import {Mos6502} from "../../src/machine/mos6502";
-import {FileBlob} from "../../src/machine/FileBlob";
-import {DisassemblyMetaImpl} from "../../src/machine/asm/DisassemblyMetaImpl";
-import {Disassembler} from "../../src/machine/asm/Disassembler";
-import {enumInstAddr, InstRec} from "../../src/machine/Tracer";
+import {LE} from "../../../src/machine/Endian";
+import {Thread} from "../../../src/machine/sim/Thread";
+import {ArrayMemory} from "../../../src/machine/Memory";
+import {Mos6502} from "../../../src/machine/mos6502";
+import {FileBlob} from "../../../src/machine/FileBlob";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
+import {Disassembler} from "../../../src/machine/asm/Disassembler";
+import {enumInstAddr, InstRec} from "../../../src/machine/sim/Tracer";
 
 const ZERO_OFFSET: [number, string][] = [[0, "NULL"]];
 

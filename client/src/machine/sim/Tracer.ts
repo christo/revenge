@@ -12,11 +12,11 @@
  * idioms may be recognised this same way across different code bases.
  */
 
-import {Disassembler} from "./asm/Disassembler";
-import {Addr, hex16} from "./core";
-import {Endian} from "./Endian.ts";
-import {Memory} from "./Memory.ts";
-import {FullInstruction} from "./mos6502.ts";
+import {Disassembler} from "../asm/Disassembler.ts";
+import {Addr, hex16} from "../core.ts";
+import {Endian} from "../Endian.ts";
+import {Memory} from "../Memory.ts";
+import {FullInstruction} from "../mos6502.ts";
 import {Thread} from "./Thread.ts";
 
 /**

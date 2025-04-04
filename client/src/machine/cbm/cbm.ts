@@ -25,7 +25,7 @@ import {DataViewImpl} from "../DataView.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
-import {InstRec, Tracer} from "../Tracer.ts";
+import {InstRec, Tracer} from "../sim/Tracer.ts";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 
 /**

@@ -3,7 +3,7 @@ import {Byteable} from "../Byteable.ts";
 import {Addr, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
-import {InstRec} from "../Tracer.ts";
+import {InstRec} from "../sim/Tracer.ts";
 import {LabelsComments} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {Edict} from "./Edict.ts";
