@@ -17,7 +17,7 @@ import {
   UNEXPANDED_VIC_BASIC,
   Vic20,
   VIC20_CART_SNIFFER,
-  VIC20_KERNAL
+  VIC20_SYM
 } from "./cbm/vic20.ts";
 import {Addr, asHex, hex16} from "./core.ts";
 import {FileBlob} from "./FileBlob.ts";
@@ -111,7 +111,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
             const startAddress = parseInt(intString, 10);
             if (!isNaN(startAddress)) {
               const entryPointDesc = `BASIC loader stub SYS ${startAddress}`;
-              const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_KERNAL, startAddress, entryPointDesc)
+              const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
               const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
               const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
               const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
