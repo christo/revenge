@@ -96,11 +96,128 @@ VIC20_KERNAL.sub(0xfd8d, "ram_init", "initialise and test RAM");
 VIC20_KERNAL.sub(0xe45b, "basic_vector_init", "initialise basic vector table");
 VIC20_KERNAL.sub(0xe3a4, "basic_ram_init", "initialise basic ram locations");
 
-VIC20_KERNAL.reg(0x0316, "break_interrupt_vector", "break interrupt vector", "(fed2)");
+// TODO it would be useful to set address ranges to describe regions
+// TODO register words so that the two addresses are individually meaningfully prescribed
+
+/*
+ * Common Registers
+ */
+VIC20_KERNAL.reg(0x0316, "break_interrupt_vector", "break interrupt vector", "When STOP key is pressed (fed2)");
 VIC20_KERNAL.reg(0x0317, "break_interrupt_vector_msb", "break interrupt vector (MSB)");
 VIC20_KERNAL.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_KERNAL.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
-VIC20_KERNAL.reg(0x0286, "color_mode", "characters are multi-color or single color");
+{
+  // future: extract these definitions into some common data format across platforms
+  VIC20_KERNAL.reg(
+      0x0286,
+      "color_mode",
+      "character foreground are multi-color or single color",
+      `bits 0-2 choose foreground colour from standard 8 as on the keyboard, 
+  bit 3 sets multi-colour mode`);
+}
+VIC20_KERNAL.reg(
+    0x0287,
+    "cursor_color",
+    "colour at current cursor position",
+);
+VIC20_KERNAL.reg(
+    0x0288,
+    "screen_map_page",
+    "MSB of screen map address",
+);
+VIC20_KERNAL.reg(
+    0x0292,
+    "scroll_down_flag",
+    "0 enables scroll down, any other value disables",
+);
+VIC20_KERNAL.reg(
+    0x033c,
+    "TPHDRID",
+    "Tape header identifier, start of tape buffer",
+);
+VIC20_KERNAL.reg(
+    0x9000,
+    "VICCR0",
+    "Left edge of video image and interlace switch",
+);
+VIC20_KERNAL.reg(
+    0x9001,
+    "VICCR1",
+    "Vertical origin of video image",
+);
+VIC20_KERNAL.reg(
+    0x9002,
+    "VICCR2",
+    "Number of text columns",
+);
+VIC20_KERNAL.reg(
+    0x9003,
+    "VICCR3",
+    "Number of text lines",
+);
+VIC20_KERNAL.reg(
+    0x9004,
+    "VICCR4",
+    "Raster beam location bits 8-1",
+);
+VIC20_KERNAL.reg(
+    0x9005,
+    "VICCR5",
+    "Screen map and character map addresses",
+);
+VIC20_KERNAL.reg(
+    0x9006,
+    "VICCR6",
+    "Light pen horizontal screen location",
+);
+VIC20_KERNAL.reg(
+    0x9007,
+    "VICCR7",
+    "Light pen vertical screen location",
+);
+VIC20_KERNAL.reg(
+    0x9008,
+    "VICCR8",
+    "Paddle X value",
+);
+VIC20_KERNAL.reg(
+    0x9009,
+    "VICCR9",
+    "Paddle Y value",
+);
+VIC20_KERNAL.reg(
+    0x900a,
+    "VICCRA",
+    "Sound oscillator 1 (bass) relative frequency",
+);
+VIC20_KERNAL.reg(
+    0x900b,
+    "VICCRB",
+    "Sound oscillator 2 (alto) relative frequency",
+);
+VIC20_KERNAL.reg(
+    0x900c,
+    "VICCRC",
+    "Sound oscillator 3 (soprano) relative frequency",
+);
+VIC20_KERNAL.reg(
+    0x900d,
+    "VICCRD",
+    "Sound oscillator 4 (noise) relative frequency",
+);
+VIC20_KERNAL.reg(
+    0x900e,
+    "VICCRE",
+    "Sound volume and aux colour",
+);
+VIC20_KERNAL.reg(
+    0x900f,
+    "VICCRF",
+    "Background colour, border colour, inverse colour switch",
+);
+
+
+
 
 /** The loading address vector is in the image at this offset. */
 const CART_BASE_ADDRESS_OFFSET = 0;
