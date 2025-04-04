@@ -288,6 +288,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
         const x = il.operand16();
         const symbol = dis.getSymbol(x);
         if (symbol !== undefined) {
+          // TODO handle subroutines differently to registers?
           operand = symbol.name;
           dis.addSymbolDefinition(symbol);
           dis.addStat("symbol definitions");
