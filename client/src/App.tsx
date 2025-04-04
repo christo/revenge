@@ -83,7 +83,13 @@ function QuickLoads(props: { setFile: (f: FileLike) => void }) {
     return <Box sx={{w: "100%", p: 1}}>
       <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="center" >
         <Typography>Quickload:</Typography>
-        <Stack direction="row" gap="0.5rem 1rem" flexWrap="wrap" display="flex" justifyContent="flex-start" alignContent="flex-start">
+        <Stack
+            direction="row"
+            gap="0.5rem 1rem"
+            flexWrap="wrap"
+            display="flex"
+            justifyContent="flex-start"
+            alignContent="flex-start">
           {items.VIC20.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="primary"
                            key={`qlvic_${i}`}>{item.name}&nbsp;{systemLogo(primaryBright, background, "VIC")}</Button>
