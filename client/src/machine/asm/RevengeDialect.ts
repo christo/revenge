@@ -88,8 +88,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     if (parserState === ParserState.READY) {
       // LINE_BEGIN [label] [instruction | directive] [comment] LINE_END
       // TODO add unit test to be sure of wtf
-      // eslint-disable-next-line no-useless-escape
-      const m = line.match(`^([A-Za-z_]\w*:)?\h*()?\h*(\\\*.*\*/|;.*)$`)
+      const m = line.match(/^([A-Za-z_]\w*:)?\s*(.*)\s*(\*.*\*\/|;.*)?$/)
       if (m) {
         const label = m[1];
         const instruction = m[2];
@@ -102,14 +101,14 @@ class RevengeDialect extends BaseDialect implements Dialect {
     } else if (parserState === ParserState.MID_MULTILINE_COMMENT) {
       // TODO add unit test to be sure of wtf
       // eslint-disable-next-line
-      if (line.match(`^\h*\*/\h*$`)) {
+      if (line.match(/^\h*\*\/\h*$/)) {
         // only end of comment
         return [BLANK_LINE, ParserState.READY];
       } else {
         // is this the last comment line?
         // TODO add unit test to be sure of wtf
         // eslint-disable-next-line
-        const m = line.match(`^(.*)\*/\h*$`);
+        const m = line.match(/^(.*)\*\/\h*$/);
         if (m) {
           return [new LabelsCommentsOnly(new LabelsComments([], m[1])), ParserState.READY];
         } else {
