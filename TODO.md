@@ -2,6 +2,7 @@
 
 ## Next Actions
 
+* [ ] support importing with `.ts` extension in test source dir
 * [ ] many C64 binaries are not detected correctly - investigate
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
@@ -32,7 +33,6 @@
       [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
-* [ ] support importing with `.ts` extension in test source dir
 * [ ] Distinguish between code and data mostly automatically
   * [x] Implement a code path Tracer for a generous subset of instructions that follows
     execution from detected entry point.
