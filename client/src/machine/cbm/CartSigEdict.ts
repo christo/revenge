@@ -1,10 +1,11 @@
 import {LabelsComments} from "../asm/asm.ts";
 import {ByteDefinitionEdict, InstructionLike} from "../asm/instructions.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {PetsciiDeclaration} from "./PetsciiDeclaration.ts";
+import {TextDeclaration} from "../asm/TextDeclaration.ts";
 
 /**
  * Specifies a commodore cart signature edict. Note C64 and VIC20 have different sigs.
+ * Their values are decodable as text (petscii).
  */
 export class CartSigEdict extends ByteDefinitionEdict {
 
@@ -14,7 +15,7 @@ export class CartSigEdict extends ByteDefinitionEdict {
 
   create(fb: FileBlob): InstructionLike {
     const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
-    return new PetsciiDeclaration(bytes, this.lc);
+    return new TextDeclaration(bytes, this.lc);
   }
 
   describe(): string {

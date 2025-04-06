@@ -1,6 +1,6 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
-import {PetsciiDeclaration} from "../cbm/PetsciiDeclaration.ts";
+import {TextDeclaration} from "./TextDeclaration.ts";
 import {assertByte, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
@@ -337,7 +337,7 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
 }
 
 /**
- * Define text; currently Petscii hard-coded because we have no other implementation.
+ * Define text
  */
 class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
 
@@ -354,7 +354,7 @@ class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<Instructi
 
   create(fb: FileBlob): InstructionLike {
     const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
-    return new PetsciiDeclaration(Array.from(bytes), this.lc);
+    return new TextDeclaration(Array.from(bytes), this.lc);
   }
 
   describe(): string {
