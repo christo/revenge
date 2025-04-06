@@ -129,7 +129,7 @@ C64_SYM.sub(0xffae, "unlsn", "Command serial bus to UNLISTEN");
 C64_SYM.sub(0xffab, "untlk", "Command serial bus to UNTALK");
 C64_SYM.sub(0xff8d, "vector", "Read/set vectored I/O");
 
-
+/** These are part of the C64 cartridge specification */
 const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
 const C64_8K16K_CART_SNIFFER = new CartSniffer(
     "C64 cart image",
