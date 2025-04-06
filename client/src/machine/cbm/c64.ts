@@ -149,4 +149,46 @@ export const C64_8K16K_CART_SNIFFER = new CartSniffer(
 );
 
 
-export {crt64Actions, C64_CRT, C64_8K_CART_SNIFFER, C64_BASIC_PRG};
+/**
+ * CRT format - see https://rr.pokefinder.org/wiki/CRT.txt
+ */
+class C64CrtSniffer extends CartSniffer {
+  private static CRT_SIG = [
+    0x43, 0x36, 0x34, 0x20, 0x43, 0x41, 0x52, 0x54, 0x52, 0x49, 0x44, 0x47, 0x45, 0x20, 0x20, 0x20
+  ];
+  private static VERSION1 = new Uint8Array([0x01, 0x00]);
+  private static VERSION_OFFSET = 0x14;
+
+  constructor(dm: DisassemblyMeta) {
+    super(
+        "C64 crt file", "CCS64 format cartridge file from C64 cartridge",
+        ["cart", C64.name],
+        C64CrtSniffer.CRT_SIG,
+        0,
+        dm
+    );
+  }
+
+  sniff(fb: FileBlob): number {
+    let magic = super.sniff(fb);
+    if (fb.getLength() < 8194) {
+      // pretty sure there's nothing we can do here
+      return magic * 0.1;
+    }
+    // TODO check header length:
+    // File header length  ($00000040,  in  high/low  format,
+    // calculated from offset $0000). The default  (also  the
+    // minimum) value is $40.  Some  cartridges  exist  which
+    // show a value of $00000020 which is wrong.
+
+    // match version field
+    magic *= fb.submatch(C64CrtSniffer.VERSION1, C64CrtSniffer.VERSION_OFFSET) ? 3 : 0.3;
+    // match hardware type; 0 is normal cartridge, don't currently support others
+    magic *= fb.submatch(new Uint8Array([0,0]), 0x14) ? 10 : 0.1;
+    // TODO get CHIP sections to find memory blocks to load
+    return magic
+  }
+}
+
+
+export {crt64Actions, C64_CRT, C64_BASIC_PRG};
