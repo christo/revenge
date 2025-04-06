@@ -129,7 +129,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
 
   read8(byteOffset: Addr): number {
     if (!this.contains(byteOffset)) {
-      throw Error("offset out of range for vector read");
+      throw Error(`offset ${byteOffset} out of range 0-${this.getLength()} for vector read`);
     }
     return this._bytes[byteOffset];
   }
