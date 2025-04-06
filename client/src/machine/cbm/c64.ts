@@ -131,7 +131,7 @@ C64_KERNAL.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 
 const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
-export const C64_8K16K_CART_SNIFFER = new CartSniffer(
+const C64_8K16K_CART_SNIFFER = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64 cartridge",
     ["cart", C64.name],
@@ -191,4 +191,4 @@ class C64CrtSniffer extends CartSniffer {
 }
 
 
-export {crt64Actions, C64_CRT, C64_BASIC_PRG};
+export {crt64Actions, C64_CRT, C64_8K16K_CART_SNIFFER, C64_BASIC_PRG};
