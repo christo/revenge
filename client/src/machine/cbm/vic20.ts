@@ -251,8 +251,6 @@ const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
 /** where basic rom image is mapped */
 const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
 
-// TODO need way to load rom image in browser or server
-//   maybe embed in client, later enable upload from browser
 let VIC_ROMS = [
   new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
