@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "type": "module",
   "private": true,
-  "license": "Copyright 2023, Chris Mountford, All Rights Reserved.",
+  "license": "Copyright 2023-2025, Chris Mountford, Licensed under GPLv3.",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",

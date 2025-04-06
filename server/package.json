@@ -10,6 +10,7 @@
   },
   "keywords": [],
   "author": "Chris Mountford",
+  "license": "Copyright 2023-2025, Chris Mountford, Licensed under GPLv3.",
   "private": true,
   "description": "revenge back end",
   "dependencies": {
