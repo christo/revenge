@@ -1,13 +1,21 @@
 import {expect} from 'chai';
+import {Environment} from "../../../src/machine/asm/asm.ts";
+import {Assembler} from "../../../src/machine/asm/Assembler.ts";
+import {Dialect} from "../../../src/machine/asm/Dialect.ts";
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 import {OpSemantics} from "../../../src/machine/asm/Op.ts";
+import {RevengeDialect} from "../../../src/machine/asm/RevengeDialect.ts";
 
 import {LE} from "../../../src/machine/Endian.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
 import {ArrayMemory} from "../../../src/machine/Memory.ts";
 import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
-import {niladicOpcodes} from "../util.ts";
+import {mockOffsetDescriptor, niladicOpcodes} from "../util.ts";
+
+const mos6502Assembler = (dialect: Dialect) => {
+  return new Assembler(Mos6502.ISA, dialect);
+};
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {
@@ -15,7 +23,7 @@ describe("disassembler", () => {
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", code, LE);
-    const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
+    const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor(0, "zero")], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2)!;
     expect(disassembled.instruction.op.mnemonic).to.equal("NOP");
@@ -27,7 +35,7 @@ describe("disassembler", () => {
     const code: number[] = [0, 0, ...bytes];
     const mem = new ArrayMemory(code, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", bytes, LE);
-    const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
+    const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor(0, "zero")], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const disassembled = d.disassemble1(mem, 2)!;
     const instruction = disassembled.instruction;
