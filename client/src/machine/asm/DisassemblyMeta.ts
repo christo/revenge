@@ -1,6 +1,7 @@
 import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {LabelsComments, SymbolTable} from "./asm.ts";
+import {IndexedDescriptor} from "./DisassemblyMetaImpl.ts";
 import {Edict} from "./Edict.ts";
 import {InstructionLike} from "./instructions.ts";
 
@@ -25,7 +26,7 @@ interface DisassemblyMeta {
    *
    * @param fb the fileblob.
    */
-  executionEntryPoints(fb: FileBlob): [Addr, string][];
+  executionEntryPoints(fb: FileBlob): IndexedDescriptor[];
 
   /**
    * The offset from the start of the fileblob at which the starting of the binary content is located.

@@ -1,6 +1,7 @@
 import {MemoryConfiguration} from "../api.ts";
 import {LabelsComments, SymbolTable} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
+import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Edict} from "../asm/Edict.ts";
 import {InstructionLike} from "../asm/instructions.ts";
 import {Addr} from "../core.ts";
@@ -34,8 +35,8 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  executionEntryPoints(_fb: FileBlob): [number, string][] {
-    return [[this.entryPointAddress, this.entryPointDesc]];
+  executionEntryPoints(_fb: FileBlob): IndexedDescriptor[] {
+    return [{index: this.entryPointAddress, name: this.entryPointDesc, description: ""}];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

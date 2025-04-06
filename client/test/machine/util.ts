@@ -1,6 +1,7 @@
+import {IndexedDescriptor} from "../../src/machine/asm/DisassemblyMetaImpl.ts";
 import {LE} from "../../src/machine/Endian.ts";
-import {Mos6502} from "../../src/machine/mos6502.ts";
 import {ArrayMemory} from "../../src/machine/Memory.ts";
+import {Mos6502} from "../../src/machine/mos6502.ts";
 
 /**
  * Return the bytes of each opcode in sequence - if there are several, chooses one in an unspecified way,
@@ -17,4 +18,10 @@ export function mem(contents: number[], offset: number = 0) {
     throw Error("not implemented");
   }
   return arrayMemory;
+}
+
+export function mockOffsetDescriptor(offset: number = 0, name: string = "test"): IndexedDescriptor {
+  return {
+    index: offset, name: name, description: `${name} description`
+  }
 }

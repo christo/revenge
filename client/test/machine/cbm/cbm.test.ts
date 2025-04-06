@@ -6,13 +6,14 @@ import {InstructionLike} from "../../../src/machine/asm/instructions.ts";
 import {trace} from "../../../src/machine/cbm/cbm.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
 import {Mos6502} from "../../../src/machine/mos6502.ts";
+import {mockOffsetDescriptor} from "../util.ts";
 
 
 describe("disassembler integration", () => {
   it("loads hesmon", () => {
     const f = fs.readFileSync("../server/data/preload/vic20/HesMon.prg");
     const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
-    const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
+    const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const lines: InstructionLike[] = [];
     while (d.hasNext()) {
@@ -24,9 +25,9 @@ describe("disassembler integration", () => {
   it("traces avenger", () => {
     const f = fs.readFileSync("../server/data/preload/vic20/Avenger.prg");
     const fb = FileBlob.fromBytes("Avenger", Array.from(f), Mos6502.ENDIANNESS);
-    const dm = new DisassemblyMetaImpl(0, [[2, "entry"]], 2);
+    const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor(2, "entry")], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const traceResult = trace(d,fb, dm);
+    const traceResult = trace(d, fb, dm);
     expect(traceResult.steps).to.eq(1140);
     expect(traceResult.executedInstructions.length).to.eq(1140);
   })

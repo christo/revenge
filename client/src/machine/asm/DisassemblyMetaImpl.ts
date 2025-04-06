@@ -6,9 +6,19 @@ import {Edict} from "./Edict.ts";
 import {InstructionLike} from "./instructions.ts";
 
 /**
- * A named index into a binary sequence.
+ * A named location.
  */
-type NamedOffset = [number, string];
+type IndexedDescriptor = {
+  index: number,
+  name: string,
+  description: string,
+}
+
+const NULL_INDEXED_DESCRIPTOR: IndexedDescriptor = {
+  index: 0,
+  name: "NULL",
+  description: "",
+}
 
 /**
  * Encapsulates outer context for disassembling with a {@link Disassembler}.
@@ -17,16 +27,22 @@ type NamedOffset = [number, string];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /** A bit stinky - should never be used and probably not exist. */
+  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(
+      0,
+      [NULL_INDEXED_DESCRIPTOR],
+      0,
+      [],
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, [[0, "NULL"]], 0, [], (_fb) => [], new SymbolTable("empty"));
+      (_fb) => [],
+      new SymbolTable("empty")
+  );
 
   private readonly _baseAddressOffset: number;
-  private readonly _jumpVectorOffsets: NamedOffset[];
+  private readonly _jumpVectorOffsets: IndexedDescriptor[];
   private readonly _contentStartOffset: number;
   private readonly edicts: { [id: number]: Edict<InstructionLike>; };
   private readonly symbolResolver: SymbolResolver;
   private readonly symbolTable: SymbolTable;
-  private codeAddresses: Addr[];
 
   /**
    * Create context with minimalist defaults.
@@ -40,7 +56,7 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    */
   constructor(
       baseAddressOffset: number = 0,
-      jumpVectorOffsets: Array<NamedOffset>,
+      jumpVectorOffsets: Array<IndexedDescriptor>,
       contentStartOffset: number = baseAddressOffset,
       edicts: Edict<InstructionLike>[] = [],
       symbolResolver: SymbolResolver = EMPTY_JUMP_TARGET_FETCHER,
@@ -51,7 +67,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
     this._baseAddressOffset = baseAddressOffset;
     this._contentStartOffset = contentStartOffset;
     this.symbolTable = symbolTable;
-    this.codeAddresses = [];
 
     // keep the offsets
     this._jumpVectorOffsets = jumpVectorOffsets;
@@ -95,9 +110,9 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
    *
    * @param fb the FileBlob
    */
-  executionEntryPoints(fb: FileBlob): [Addr, string][] {
+  executionEntryPoints(fb: FileBlob): IndexedDescriptor[] {
     // transform offsets into addresses
-    return this._jumpVectorOffsets.map(il => ([fb.read16(il[0]), il[1]]));
+    return this._jumpVectorOffsets.map(od => ({index: fb.read16(od.index), name: od.name, description: ""}));
   }
 
   getEdict(address: number): Edict<InstructionLike> | undefined {
@@ -111,11 +126,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
   getSymbolTable(): SymbolTable {
     return this.symbolTable;
   }
-
-  private inBinary(addr: number, fb: FileBlob) {
-    const base = this.baseAddress(fb);
-    return addr >= base && addr <= base + fb.getLength();
-  }
 }
 
-export {DisassemblyMetaImpl, type NamedOffset};
+export {DisassemblyMetaImpl, NULL_INDEXED_DESCRIPTOR, type IndexedDescriptor};

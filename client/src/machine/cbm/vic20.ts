@@ -19,7 +19,7 @@ import {CartSniffer, prg} from "./cbm";
 import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
 import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
 
-const VIC20_SYM = new SymbolTable("vic20");
+const VIC20_SYM = new SymbolTable("VIC-20");
 
 // kernal jump table, yes that's how they spell it
 // the underscore prefixed versions are often used though not officially recommended
@@ -107,7 +107,6 @@ VIC20_SYM.reg(0x0317, "break_interrupt_vector_msb", "break interrupt vector (MSB
 VIC20_SYM.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_SYM.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
 {
-  // future: extract these definitions into some common data format across platforms
   VIC20_SYM.reg(
       0x0286,
       "color_mode",

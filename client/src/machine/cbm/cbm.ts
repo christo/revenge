@@ -75,7 +75,7 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
       if (traceResult.readAddresses.includes(instAddress)) {
         addressTags.push(TAG_ADDRESS_WAS_READ);
       }
-      if (meta.executionEntryPoints(fb).map(as => as[0]).includes(instAddress)) {
+      if (meta.executionEntryPoints(fb).map(as => as.index).includes(instAddress)) {
         addressTags.push(TAG_ENTRY_POINT);
       }
       const tags = [

@@ -1,13 +1,13 @@
 import {expect} from 'chai';
+import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {OpSemantics} from "../../../src/machine/asm/Op.ts";
 
 import {LE} from "../../../src/machine/Endian.ts";
-import {niladicOpcodes} from "../util.ts";
-import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
-import {OpSemantics} from "../../../src/machine/asm/Op.ts";
-import {ArrayMemory} from "../../../src/machine/Memory.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
-import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
+import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
+import {niladicOpcodes} from "../util.ts";
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {

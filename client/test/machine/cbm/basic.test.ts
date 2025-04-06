@@ -1,5 +1,5 @@
-import * as fs from "fs";
 import {expect} from "chai";
+import * as fs from "fs";
 import {CBM_BASIC_2_0} from "../../../src/machine/cbm/BasicDecoder.ts";
 import {LE, LittleEndian} from "../../../src/machine/Endian.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";

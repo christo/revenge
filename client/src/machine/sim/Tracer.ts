@@ -13,6 +13,7 @@
  */
 
 import {Disassembler} from "../asm/Disassembler.ts";
+import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Addr, hex16} from "../core.ts";
 import {Endian} from "../Endian.ts";
 import {Memory} from "../Memory.ts";
@@ -73,15 +74,15 @@ class Tracer {
    */
   constructor(
       disasm: Disassembler,
-      entryPoints: [pc: number, label: string][],
+      entryPoints: IndexedDescriptor[],
       memory: Memory<Endian>,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ignore = (_: Addr) => false) {
 
-    entryPoints.forEach(ep => {
-      const pc = ep[0];
+    entryPoints.forEach((ep: IndexedDescriptor) => {
+      const pc = ep.index;
       if (Math.round(pc) !== pc) {
-        throw Error(`pc must be integer`);
+        throw Error(`pc must be integer but was ${pc}`);
       } else if (pc < 0 || memory.getLength() <= pc) {
         const imageSize = disasm.fb.getLength();
         throw Error(`initial pc 0x${hex16(pc)} not inside memory of size ${memory.getLength()} binary size: ${imageSize} seg base 0x${hex16(disasm.getSegmentBaseAddress())}`);
@@ -97,7 +98,7 @@ class Tracer {
       disasm.addExecutionPoints([ir]);
     };
     entryPoints.forEach(ep => {
-      this.threads.push(new Thread(ep[1], disasm, ep[0], memory, addExecuted, this.getExecuted, ignore));
+      this.threads.push(new Thread(ep.name, disasm, ep.index, memory, addExecuted, this.getExecuted, ignore));
     })
   }
 
