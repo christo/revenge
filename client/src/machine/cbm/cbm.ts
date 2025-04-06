@@ -196,7 +196,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     actions: [{
       label: "basic",
       f: async () => {
-        const cbmFb = fb.asEndian(); // TODO scary this shouldn't work with a better type system
+        const cbmFb = fb.asEndian(); // smelly
         const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
         // exclude "note" tags which are not a "line"
         const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
