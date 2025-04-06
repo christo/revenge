@@ -1,11 +1,11 @@
 import {expect} from "chai";
 import * as fs from "fs";
-import {Disassembler} from "../../../src/machine/asm/Disassembler";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
-import {InstructionLike} from "../../../src/machine/asm/instructions";
-import {trace} from "../../../src/machine/cbm/cbm";
-import {FileBlob} from "../../../src/machine/FileBlob";
-import {Mos6502} from "../../../src/machine/mos6502";
+import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {InstructionLike} from "../../../src/machine/asm/instructions.ts";
+import {trace} from "../../../src/machine/cbm/cbm.ts";
+import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {Mos6502} from "../../../src/machine/mos6502.ts";
 
 
 describe("disassembler integration", () => {
@@ -16,7 +16,7 @@ describe("disassembler integration", () => {
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const lines: InstructionLike[] = [];
     while (d.hasNext()) {
-      lines.push(d.nextInstructionLine());
+      lines.push(d.nextInstructionLine()!);
     }
     expect(lines.length).to.equal(1944); // includes *=$a000 directive
   });

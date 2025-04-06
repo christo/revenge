@@ -1,13 +1,13 @@
 import {expect} from 'chai';
 
-import {LE} from "../../../src/machine/Endian";
-import {Thread} from "../../../src/machine/sim/Thread";
-import {ArrayMemory} from "../../../src/machine/Memory";
-import {Mos6502} from "../../../src/machine/mos6502";
-import {FileBlob} from "../../../src/machine/FileBlob";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
-import {Disassembler} from "../../../src/machine/asm/Disassembler";
-import {enumInstAddr, InstRec} from "../../../src/machine/sim/Tracer";
+import {LE} from "../../../src/machine/Endian.ts";
+import {Thread} from "../../../src/machine/sim/Thread.ts";
+import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {Mos6502} from "../../../src/machine/mos6502.ts";
+import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
+import {enumInstAddr, InstRec} from "../../../src/machine/sim/Tracer.ts";
 
 const ZERO_OFFSET: [number, string][] = [[0, "NULL"]];
 
@@ -33,7 +33,7 @@ describe("thread", () => {
   });
 
   it("executes JMP", () => {
-    const brk = Mos6502.ISA.byName("BRK").getBytes()[0];
+    const brk = Mos6502.ISA.byName("BRK")!.getBytes()[0];
     const contents = [
       0, 0,             // 0, 1 - load address
       0x4c, 0x06, 0x00, // 2, 3, 4 - JMP $0006

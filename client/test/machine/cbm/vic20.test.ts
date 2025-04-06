@@ -1,10 +1,10 @@
 import {expect} from "chai";
-import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder";
-import {Addr} from "../../../src/machine/core";
-import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20";
-import {LE} from "../../../src/machine/Endian";
-import {FileBlob} from "../../../src/machine/FileBlob";
-import {Petscii} from "../../../src/machine/cbm/petscii";
+import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder.ts";
+import {Addr} from "../../../src/machine/core.ts";
+import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20.ts";
+import {LE} from "../../../src/machine/Endian.ts";
+import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {Petscii} from "../../../src/machine/cbm/petscii.ts";
 
 
 /**

@@ -1,6 +1,6 @@
-import {LE} from "../../src/machine/Endian";
-import {Mos6502} from "../../src/machine/mos6502";
-import {ArrayMemory} from "../../src/machine/Memory";
+import {LE} from "../../src/machine/Endian.ts";
+import {Mos6502} from "../../src/machine/mos6502.ts";
+import {ArrayMemory} from "../../src/machine/Memory.ts";
 
 /**
  * Return the bytes of each opcode in sequence - if there are several, chooses one in an unspecified way,
@@ -8,7 +8,7 @@ import {ArrayMemory} from "../../src/machine/Memory";
  * @param niladics no operands are included, so only suits niladic ops
  */
 export function niladicOpcodes(niladics: string[]): number[] {
-  return niladics.flatMap(op => Mos6502.ISA.byName(op).getBytes())
+  return niladics.flatMap(op => Mos6502.ISA.byName(op)!.getBytes())
 }
 
 export function mem(contents: number[], offset: number = 0) {

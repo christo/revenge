@@ -1,16 +1,16 @@
 import {expect} from 'chai';
-import {Disassembler} from "../../../src/machine/asm/Disassembler";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
-import {Addr} from "../../../src/machine/core";
-import {LE} from "../../../src/machine/Endian";
-import {FileBlob} from "../../../src/machine/FileBlob";
-import {ArrayMemory} from "../../../src/machine/Memory";
-import {Mos6502} from "../../../src/machine/mos6502";
-import {Tracer} from "../../../src/machine/sim/Tracer";
-import {mem} from "../util";
+import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {Addr} from "../../../src/machine/core.ts";
+import {LE} from "../../../src/machine/Endian.ts";
+import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {Mos6502} from "../../../src/machine/mos6502.ts";
+import {Tracer} from "../../../src/machine/sim/Tracer.ts";
+import {mem} from "../util.ts";
 
-const brk = Mos6502.ISA.byName("BRK").getBytes()[0];
-const nop = Mos6502.ISA.byName("NOP").getBytes()[0];
+const brk = Mos6502.ISA.byName("BRK")!.getBytes()[0];
+const nop = Mos6502.ISA.byName("NOP")!.getBytes()[0];
 
 describe("tracer", () => {
   it("runs then stops at BRK", () => {

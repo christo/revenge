@@ -1,13 +1,13 @@
 import {expect} from 'chai';
 
-import {LE} from "../../../src/machine/Endian";
-import {niladicOpcodes} from "../util";
-import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502";
-import {OpSemantics} from "../../../src/machine/asm/Op";
-import {ArrayMemory} from "../../../src/machine/Memory";
-import {FileBlob} from "../../../src/machine/FileBlob";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl";
-import {Disassembler} from "../../../src/machine/asm/Disassembler";
+import {LE} from "../../../src/machine/Endian.ts";
+import {niladicOpcodes} from "../util.ts";
+import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
+import {OpSemantics} from "../../../src/machine/asm/Op.ts";
+import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {
@@ -17,7 +17,7 @@ describe("disassembler", () => {
     const fb = FileBlob.fromBytes("testblob", code, LE);
     const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const disassembled = d.disassemble1(mem, 2);
+    const disassembled = d.disassemble1(mem, 2)!;
     expect(disassembled.instruction.op.mnemonic).to.equal("NOP");
   });
   it("disassembles single JMP instruction", () => {
@@ -29,7 +29,7 @@ describe("disassembler", () => {
     const fb = FileBlob.fromBytes("testblob", bytes, LE);
     const dm = new DisassemblyMetaImpl(0, [[0, "zero"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    const disassembled = d.disassemble1(mem, 2);
+    const disassembled = d.disassemble1(mem, 2)!;
     const instruction = disassembled.instruction;
     const op = instruction.op;
     expect(instruction.op.has(OpSemantics.IS_UNCONDITIONAL_JUMP)).to.equal(true);

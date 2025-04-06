@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {unToSigned} from "../../src/machine/core";
+import {unToSigned} from "../../src/machine/core.ts";
 
 /** Data-driven test of two's complement: input, expected output */
 const TC_DATA: [number, number][] = [
