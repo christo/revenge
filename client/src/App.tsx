@@ -21,14 +21,14 @@ import {MenuAppBar} from "./ui/MenuAppBar.tsx";
  */
 const MAX_SIZE_MB = 1;
 
-function AppLogo() {
+function AppLogo({size}: {size: 1024 | 512 | 192}) {
   const sx = {
     margin: "0 auto",
     display: "block",
     borderRadius: "1em",
   }
   // noinspection HtmlUnknownTarget
-  return <img src="revenge-logo512.png" width={512} height={512} style={sx} alt="revenge logo"/>;
+  return <img src={`revenge-logo${size}.png`} width={size} height={size} style={sx} alt="revenge logo"/>;
 }
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
                 <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
               </Box>
             </Box>
-            {file ? <CurrentFileSummary file={file}/> : <AppLogo/>}
+            {file ? <CurrentFileSummary file={file}/> : <AppLogo size={512}/>}
           </Box>
         </Box>
       </ThemeProvider>
