@@ -132,6 +132,10 @@ C64_SYM.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 /** These are part of the C64 cartridge specification */
 const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
+
+/**
+ * Detects raw 8kb or 16kb C64 cartridge dumps.
+ */
 const C64_8K16K_CART_SNIFFER = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64 cartridge",
