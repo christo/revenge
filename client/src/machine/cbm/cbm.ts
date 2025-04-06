@@ -14,9 +14,10 @@ import {
   UserAction
 } from "../api.ts";
 import {Environment, SymbolType,} from "../asm/asm.ts";
+import {Directive} from "../asm/Directive.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {Directive, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
+import {InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
 import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";

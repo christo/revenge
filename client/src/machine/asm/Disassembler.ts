@@ -5,9 +5,10 @@ import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {InstRec} from "../sim/Tracer.ts";
 import {LabelsComments} from "./asm.ts";
+import {ByteDeclaration} from "./ByteDeclaration.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {Edict} from "./Edict.ts";
-import {ByteDeclaration, FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
+import {FullInstructionLine, InstructionLike, SymDef} from "./instructions.ts";
 import {InstructionSet} from "./InstructionSet.ts";
 import {OpSemantics} from "./Op.ts";
 

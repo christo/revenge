@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// noinspection JSUnusedLocalSymbols
 
 /*
  MOS Technology 6502-family of 8-bit microprocessors.
@@ -10,7 +9,6 @@
  */
 
 import {AddressingMode} from "./AddressingMode.ts";
-import {InstructionBase} from "./asm/instructions.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";

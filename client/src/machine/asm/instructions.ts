@@ -1,58 +1,16 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
-import {TextDeclaration} from "./TextDeclaration.ts";
-import {assertByte, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
 import {Assembler} from "./Assembler.ts";
+import {ByteDeclaration} from "./ByteDeclaration.ts";
 import {Dialect} from "./Dialect.ts";
+import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {Edict} from "./Edict.ts";
-
-/** Convenience base class implementing comment and label properties. */
-export abstract class InstructionBase implements InstructionLike, Byteable {
-  protected _lc: LabelsComments;
-  private readonly _sourceType: SourceType;
-
-  protected constructor(lc: LabelsComments, st: SourceType) {
-    this._lc = lc;
-    this._sourceType = st;
-  }
-
-  get labelsComments(): LabelsComments {
-    return this._lc;
-  }
-
-  get sourceType(): SourceType {
-    return this._sourceType;
-  }
-
-  read8 = (offset: number): number => this.getBytes()[offset];
-
-  byteString(): string {
-    return this.getBytes().map(hex16).join(" ");
-  }
-
-  abstract disassemble(dialect: Dialect, dis: Disassembler): Tag[];
-
-  abstract getBytes(): number[];
-
-  abstract getLength(): number;
-}
-
-/**
- * Assembler directive. Has a source form, may produce bytes during assembly and may be synthesised during
- * disassembly, but does not necessarily correspond to machine instructions and may not even produce code output.
- */
-interface Directive extends InstructionLike {
-
-  isSymbolDefinition(): boolean;
-
-  isMacroDefinition(): boolean;
-
-  isPragma(): boolean;
-}
+import {InstructionBase} from "./InstructionBase.ts";
+import {TextDeclaration} from "./TextDeclaration.ts";
 
 class SymbolDefinition extends InstructionBase implements Directive {
   private readonly _symDef: SymDef<number>;
@@ -131,34 +89,6 @@ class PcAssign extends InstructionBase implements Directive {
   getBytes = (): number[] => [];
 
   getLength = (): number => 0;
-}
-
-/** Assembler pseudo-op that reserves literal bytes. */
-export class ByteDeclaration extends InstructionBase implements Directive, Byteable {
-
-  private readonly _rawBytes: Array<number>;
-
-  constructor(rawBytes: number[], lc: LabelsComments) {
-    super(lc, SourceType.DATA);
-    this._rawBytes = rawBytes.map(b => assertByte(b));
-  }
-
-  isMacroDefinition(): boolean {
-    return false;
-  }
-
-  isPragma(): boolean {
-    return false;
-  }
-
-  isSymbolDefinition(): boolean {
-    return false;
-  }
-
-  getBytes = (): number[] => this._rawBytes;
-  getLength = (): number => this._rawBytes.length;
-
-  disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.bytes(this, dis);
 }
 
 /**
@@ -420,4 +350,4 @@ export {
   LabelsCommentsOnly,
   BLANK_LINE
 };
-export type {Directive, InstructionLike};
+export type {InstructionLike};

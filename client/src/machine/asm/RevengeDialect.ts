@@ -37,10 +37,10 @@ import {
 } from "../mos6502.ts";
 import {Environment, LabelsComments} from "./asm.ts";
 import {BaseDialect, C_COMMENT_MULTILINE, Dialect, SEMICOLON_PREFIX} from "./Dialect.ts";
+import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {
   BLANK_LINE,
-  Directive,
   FullInstructionLine,
   InstructionLike,
   LabelsCommentsOnly,

@@ -1,7 +1,8 @@
 import {BooBoo, Tag, TAG_COMMENT, TAG_LABEL} from "../api.ts";
 import {Environment, LabelsComments} from "./asm.ts";
+import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
-import {Directive, FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
+import {FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
 import {ParserState} from "./RevengeDialect.ts";
 
 export const C_COMMENT_MULTILINE: [string, string] = ["/*", "*/"];
