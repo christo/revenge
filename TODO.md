@@ -29,8 +29,8 @@
     only using constants for magic keys in stringland)
 * [ ] consult published reverse engineering work on retro binaries I have as relevant ground truth
   * [ ] https://github.com/mwenge/gridrunner
-  * [ ] Matson Dawson's published version of Lee Davison's VIC-20 
-      [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
+  * [ ] Matson Dawson's published version of Lee Davison's VIC-20
+    [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] Distinguish between code and data mostly automatically
@@ -60,24 +60,43 @@
 * [ ] Subroutines: map the inputs, outputs and register effects of subroutines
   * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
   * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
-        routines using the same code path
+    routines using the same code path
 * content recognition:
   * common data fragments identified between files
   * build database of file content recognition.
   * fragment content hash, db etc.?
   * binary diff two files (linear)
-  * automate the similarity detection of files - need an indexing system, maybe use common sub-sequence - ask/research.
+  * automate the similarity detection of files - need an indexing system, maybe use common
+    sub-sequence - ask/research.
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
 * improve cart sniffers and basic stub machine code PRGs
   * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
+
+## eslint with typescript config
+
+From https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files
+
+Bun can handle typescript eslint config natively, so can node 22.10 but only with and experimental
+flag as follows, or by adding a dev dep on `jiti` (done):
+
+```
+Native TypeScript Support
+If you’re using Node.js >= 22.10.0, you can load TypeScript configuration files natively without requiring jiti. This is possible thanks to the --experimental-strip-types flag.
+
+Since this feature is still experimental, you must also enable the unstable_native_nodejs_ts_config flag.
+
+npx --node-options='--experimental-strip-types' eslint --flag unstable_native_nodejs_ts_config
+
+```
+
+* [ ] if/once (p)npm/node builds are supported, eslint config in typescript can be simplified  
 
 ## Reading List
 
 * [x] [Solving BIT Magic](https://rosenzweig.io/blog/solving-bit-magic.html) by Alyssa Rosenzweig
 * [ ] [Statically Recompiling NES Games into Native Executables with LLVM and Go](https://andrewkelley.me/post/jamulator.html)
   by Andrew Kelley
-
 
 ## Long Term Ideas
 
@@ -86,11 +105,12 @@
     core https://github.com/6502ts/6502.ts
   * [ ] check out full js/ts system emulators - need to be able to support multiple emulators
     at some point so ensure the multi-emulator context exists in the speculative binary detection
-    and code detection code path 
+    and code detection code path
 * check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to
   Ramda
 * check out Haskell Difference List datastructure
-* Add readonly memory region support (will help isolate selfmod potential and help with static analysis)
+* Add readonly memory region support (will help isolate selfmod potential and help with static
+  analysis)
 * functional data structure for byte interpretation
   * what is that fp datastructure for strings
   * make random access and modification to disassembled instruction list (lenses?)
@@ -114,7 +134,8 @@
 * interactive choice of data/code regions
 * multiple disassembly dialect support
 * type possibility list with probabilities etc.
-* canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo halting prob,
+* canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo
+  halting prob,
   natch)
 * user accounts
 * file back-end
@@ -124,9 +145,12 @@
   * store file-level notes and byte-offset / byte-range notes
   * unified back-end between bootstrap filetree and uploaded stuff
 * sharing, permissions
-* enable multiple people to do analysis of files, to store, share and collaborate on the analysis of files
-* Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly listing will
-  assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy or hard.
+* enable multiple people to do analysis of files, to store, share and collaborate on the analysis of
+  files
+* Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly
+  listing will
+  assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy
+  or hard.
 * useful material icons:
   * ManageHistory (reverse engineering)
   * DragIndicator

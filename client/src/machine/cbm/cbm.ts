@@ -57,7 +57,7 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
   // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress;
-    let inst: InstructionLike | undefined = dis.nextInstructionLine();
+    const inst: InstructionLike | undefined = dis.nextInstructionLine();
     if (!inst) {
       // TODO decide how this can happen and what to do instead
       throw Error(`cannot disassemble at ${instAddress}`);
@@ -178,7 +178,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
  */
 export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
-  let userActions: [UserAction, ...UserAction[]] = [{
+  const userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
     f: async () => {
       return disassembleActual(fb, dialect, t.getMeta());
@@ -217,7 +217,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 function prg(prefix: ArrayLike<number> | number) {
   // prg has a two byte load address
   const prefixPair = (typeof prefix === "number") ? Mos6502.ENDIANNESS.wordToTwoBytes(prefix) : prefix;
-  let addr: string = `${hex8(prefixPair[1])}${hex8(prefixPair[0])}`; // little-endian rendition
+  const addr: string = `${hex8(prefixPair[1])}${hex8(prefixPair[0])}`; // little-endian rendition
   const desc = `program binary to load at $${addr}`;
   return new BlobTypeSniffer(`prg@${addr}`, desc, ["prg"], "prg", prefixPair);
 }

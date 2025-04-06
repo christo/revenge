@@ -1,3 +1,4 @@
+import React from 'react';
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
 import axios from "axios";
 import {useEffect, useState} from "react";
@@ -41,7 +42,7 @@ export function QuickLoads(props: { setFile: (f: FileLike) => void }) {
           setIsLoaded(true);
           setItems(r.data);
         })
-        .catch((err: any) => {
+        .catch((err) => {
           setIsLoaded(true);
           setError(err);
         }).finally(() => {

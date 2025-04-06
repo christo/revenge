@@ -1,3 +1,4 @@
+import React from 'react';
 import {Box} from "@mui/material";
 import {useEffect, useRef} from "react";
 import {Bigram} from "../analysis/Bigram.ts";

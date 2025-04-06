@@ -167,7 +167,7 @@ class BasicDecoder {
     let thisLineAddr = nextLineAddr;
     let lineNumber = 0;
     let finished = false;
-    let dataView: DataView = new DataViewImpl([]);
+    const dataView: DataView = new DataViewImpl([]);
     let line = "";
     let quoteMode = false;
 
@@ -189,7 +189,7 @@ class BasicDecoder {
         i += 2; // advance after basic line number
         line = " "; // the space after the line number
       }
-      let b = source.getBytes().at(i++);
+      const b = source.getBytes().at(i++);
       const eol = b === 0;
       if (b === undefined) {
         console.error("byte no existo");
@@ -199,7 +199,7 @@ class BasicDecoder {
         dataView.addLine(mkBasicLine(byteSize, thisLineAddr, lineNumber, line));
       } else {
         // interpret as a character in quoteMode, otherwise a BASIC token
-        let token = quoteMode ? Petscii.C64.vice[b] : this.decodeToken(b);
+        const token = quoteMode ? Petscii.C64.vice[b] : this.decodeToken(b);
         // toggle quotemode
         if (token === '"') {
           quoteMode = !quoteMode;

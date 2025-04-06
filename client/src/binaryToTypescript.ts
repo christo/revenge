@@ -28,7 +28,7 @@ const romFiles: RomFile[] = [
 // Process each ROM file
 romFiles.forEach((rom: RomFile) => {
   try {
-    // @ts-ignore
+    // @ts-expect-error type no existo
     const data: Buffer = readFileSync(join(import.meta.dir, rom.input));
 
     const byteArray: number[] = [...new Uint8Array(data)];
@@ -43,7 +43,7 @@ romFiles.forEach((rom: RomFile) => {
     }
 
     tsContent += `];\n`;
-    // @ts-ignore
+    // @ts-expect-error type no existo
     writeFileSync(join(import.meta.dir, rom.output), tsContent);
 
     console.log(`Successfully converted ${byteArray.length} bytes from ${rom.input} to ${rom.output}`);

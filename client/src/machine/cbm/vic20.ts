@@ -224,7 +224,7 @@ const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
 /** where basic rom image is mapped */
 const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
 
-let VIC_ROMS = [
+const VIC_ROMS = [
   new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
 ];
@@ -294,15 +294,15 @@ class Vic20BasicSniffer implements BlobSniffer {
     try {
       const decoded = CBM_BASIC_2_0.decode(fb.asEndian());
       let lastNum = -1;
-      let lastAddr = -1;
+      const lastAddr = -1;
       let byteCount = 0;
       decoded.getLines().forEach((ll: LogicalLine) => {
         const i: Tag[] = ll.getTags();
         // BasicDecoder puts this tag on lines1
         const lnumStr = i.find(t => t.isLineNumber());
-        let addrStr = i.find(t => t.isAddress());
+        const addrStr = i.find(t => t.isAddress());
         if (lnumStr !== undefined && addrStr !== undefined) {
-          let thisNum = parseInt(lnumStr.value);
+          const thisNum = parseInt(lnumStr.value);
           if (lastNum !== -1 && lastNum >= thisNum) {
             // decrease in basic line numbers
             console.log(`decrease in basic line numbers for ${fb.name}`)
@@ -336,7 +336,7 @@ class Vic20BasicSniffer implements BlobSniffer {
       });
     } catch (e) {
       // if we exploded, it's not BASIC!
-      // console.error(e);
+      console.error(e);
       isBasic = 0.01;
     }
     return isBasic;
