@@ -170,8 +170,11 @@ class C64CrtSniffer extends CartSniffer {
   }
 
   sniff(fb: FileBlob): number {
+    // check prefix signature
     let magic = super.sniff(fb);
     if (fb.getLength() < 8194) {
+      // TODO confirm there would not be crt files with binary image parts smaller than 8kb
+      //   smaller carts are padded out? There may be smaller carts out there
       // pretty sure there's nothing we can do here
       return magic * 0.1;
     }
@@ -182,11 +185,19 @@ class C64CrtSniffer extends CartSniffer {
     // show a value of $00000020 which is wrong.
 
     // match version field
-    magic *= fb.submatch(C64CrtSniffer.VERSION1, C64CrtSniffer.VERSION_OFFSET) ? 3 : 0.3;
+    magic *= this.isCrtVersion1(fb) ? 3 : 0.3;
     // match hardware type; 0 is normal cartridge, don't currently support others
-    magic *= fb.submatch(new Uint8Array([0,0]), 0x14) ? 10 : 0.1;
+    magic *= this.isNormalCart(fb) ? 10 : 0.1;
     // TODO get CHIP sections to find memory blocks to load
     return magic
+  }
+
+  isNormalCart(fb: FileBlob) {
+    return fb.submatch(new Uint8Array([0, 0]), 0x14);
+  }
+
+  isCrtVersion1(fb: FileBlob) {
+    return fb.submatch(C64CrtSniffer.VERSION1, C64CrtSniffer.VERSION_OFFSET);
   }
 }
 
