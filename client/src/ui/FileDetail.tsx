@@ -66,7 +66,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
           opacity: 0.6,
         }}>Smells like</Typography>
         <Typography display="inline" sx={{mr: 1}}>{t.name}</Typography>
-        <Typography display="inline" sx={{mr: 1}}>{t.desc}</Typography>
+        <Typography display="inline" sx={{mr: 1, fontStyle: "italic"}}>{t.desc}</Typography>
         {t.tags.map((tag, i) => {
           return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="secondary"
                        key={`tag_${i}`}/>;
