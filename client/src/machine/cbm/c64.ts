@@ -11,6 +11,7 @@ import {KB_64} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
+import {CartSigEdict} from "./CartSigEdict.ts";
 import {CartSniffer} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 
@@ -76,7 +77,7 @@ const CBM80 = [0xC3, 0xC2, 0xCD, 0x38, 0x30];
 
 const MAGIC_OFFSET = 6;
 
-const C64_CART_MAGIC = new ByteDefinitionEdict(MAGIC_OFFSET, CBM80.length, new LabelsComments("cartSig", "specified by C64 cart format"));
+const C64_CART_MAGIC = new CartSigEdict(MAGIC_OFFSET, CBM80.length, "specified by C64 cart format");
 const C64_CART_NMI_VECTOR = new VectorDefinitionEdict(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
 const C64_CART_RESET_VECTOR = new VectorDefinitionEdict(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 

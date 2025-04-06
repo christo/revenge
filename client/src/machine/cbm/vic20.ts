@@ -4,17 +4,16 @@ VIC-20 specific details: machine definition, memory configs, kernel images, symb
 
 import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag} from "../api";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
-import {Dialect} from "../asm/Dialect.ts";
-import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl";
-import {ByteDeclaration, ByteDefinitionEdict, InstructionLike, VectorDefinitionEdict} from "../asm/instructions.ts";
+import {VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
+import {CartSigEdict} from "./CartSigEdict.ts";
 import {CartSniffer, prg} from "./cbm";
 import {VIC20_BASIC_ROM} from "./vic20Basic.ts";
 import {VIC20_KERNAL_ROM} from "./vic20Kernal.ts";
@@ -208,32 +207,6 @@ const VIC_20_CART_VECTORS: SymbolResolver = (fb: FileBlob) => [
   [fb.readVector(CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
 
-class PetsciiDeclaration extends ByteDeclaration {
-  constructor(bytes: number[], lc: LabelsComments) {
-    super(bytes, lc);
-  }
-
-  disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => {
-    return dialect.text(this, dis);
-  };
-}
-
-class CartSigEdict extends ByteDefinitionEdict {
-
-  constructor() {
-    super(CART_SIG_OFFSET, A0CBM.length, new LabelsComments("cartSig", "specified by VIC-20 cart format"));
-  }
-
-  create(fb: FileBlob): InstructionLike {
-    const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
-    return new PetsciiDeclaration(bytes, this.lc);
-  }
-
-  describe(): string {
-    return `VIC-20 cart signature`;
-  }
-}
-
 /**
  * Common load addresses for machine language cartridge images on VIC-20.
  * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
@@ -389,7 +362,7 @@ const VIC20_CART_SNIFFER = new CartSniffer(
         CART_JUMP_POINT_OFFSETS,
         2,
         [
-          new CartSigEdict(),
+          new CartSigEdict(CART_SIG_OFFSET, A0CBM.length, "specified by VIC-20 cart format"),
           new VectorDefinitionEdict(CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
           new VectorDefinitionEdict(CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
           new VectorDefinitionEdict(CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
