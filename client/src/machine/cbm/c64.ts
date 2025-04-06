@@ -4,7 +4,7 @@
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
 import {mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
+import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
@@ -133,7 +133,10 @@ C64_SYM.sub(0xffab, "untlk", "Command serial bus to UNTALK");
 C64_SYM.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 /** These are part of the C64 cartridge specification */
-const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
+const ENTRY_POINT_OFFSETS: IndexedDescriptor[] = [
+  {index: C64_COLD_VECTOR_OFFSET, name: "reset", description: "cold reset vector"},
+  {index: C64_WARM_VECTOR_OFFSET, name: "nmi", description: "warm reset vector"}
+];
 
 /**
  * Detects raw 8kb or 16kb C64 cartridge dumps.
