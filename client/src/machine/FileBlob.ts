@@ -1,7 +1,7 @@
+import {FileLike} from "../../../server/src/common/FileLike.ts";
 import {Byteable} from "./Byteable.ts";
 import {Addr, hex16} from "./core";
 import {BE, Endian} from "./Endian.ts";
-import {FileLike} from "../../../server/src/common/FileLike.ts";
 import {ArrayMemory, Memory} from "./Memory.ts";
 
 /**

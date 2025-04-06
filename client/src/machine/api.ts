@@ -5,7 +5,7 @@ import {Byteable} from "./Byteable.ts";
 import {Addr, hex16, hex8} from "./core";
 import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
-import {BigEndian, Endian, LittleEndian} from "./Endian.ts";
+import {Endian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
 import {MODE_INDIRECT} from "./mos6502.ts";
@@ -24,9 +24,9 @@ import {MODE_INDIRECT} from "./mos6502.ts";
 class Tag {
 
   readonly classNames: string[];
-  private readonly id: string | undefined;
   readonly data: [string, string][];
   readonly value: string;
+  private readonly id: string | undefined;
 
   constructor(tags: string[], value: string, data: [string, string][] = [], id: string | undefined = undefined) {
     this.classNames = tags;

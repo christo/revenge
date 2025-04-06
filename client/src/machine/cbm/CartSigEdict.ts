@@ -1,7 +1,7 @@
 import {LabelsComments} from "../asm/asm.ts";
 import {ByteDefinitionEdict, InstructionLike} from "../asm/instructions.ts";
-import {FileBlob} from "../FileBlob.ts";
 import {TextDeclaration} from "../asm/TextDeclaration.ts";
+import {FileBlob} from "../FileBlob.ts";
 
 /**
  * Specifies a commodore cart signature edict. Note C64 and VIC20 have different sigs.

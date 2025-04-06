@@ -6,7 +6,9 @@ import {
   hexDumper,
   LogicalLine,
   Tag,
-  TAG_ADDRESS, TAG_ADDRESS_WAS_READ, TAG_ADDRESS_WAS_WRITTEN,
+  TAG_ADDRESS,
+  TAG_ADDRESS_WAS_READ,
+  TAG_ADDRESS_WAS_WRITTEN,
   TAG_ENTRY_POINT,
   TAG_EXECUTED,
   TAG_HEX,
@@ -23,7 +25,7 @@ import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
 import {DataViewImpl} from "../DataView.ts";
-import {Endian, LittleEndian} from "../Endian.ts";
+import {LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory, Memory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";

@@ -97,6 +97,14 @@ export class Thread {
     return this.terminationReason;
   }
 
+  getWritten() {
+    return this.written;
+  }
+
+  getRead() {
+    return this.read;
+  }
+
   private terminate(reason: string) {
     const mesg = `${reason} @ ${this.renderPc()}`;
     this.terminationReason = mesg;
@@ -181,7 +189,7 @@ export class Thread {
             }
           }
         }
-        if(inst.staticallyResolvableOperand()) {
+        if (inst.staticallyResolvableOperand()) {
           if (op.has(OpSemantics.IS_MEMORY_READ)) {
             this.read.push(inst.operandValue());
           }
@@ -208,13 +216,5 @@ export class Thread {
   /** Renders program counter as a string in both hex and decimal */
   private renderPc() {
     return `0x${this.pc.toString(16)} (${this.pc})`
-  }
-
-  getWritten() {
-    return this.written;
-  }
-
-  getRead() {
-    return this.read;
   }
 }

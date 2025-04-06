@@ -1,8 +1,8 @@
 import {Addr} from "../core.ts";
-import {ParserState} from "./RevengeDialect.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";
 import {InstructionSet} from "./InstructionSet.ts";
+import {ParserState} from "./RevengeDialect.ts";
 
 /**
  * Syntax-independent stateful assembler, parametised by {@link InstructionSet}

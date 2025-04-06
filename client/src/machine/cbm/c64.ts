@@ -2,10 +2,10 @@
 // noinspection JSUnusedLocalSymbols
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
-import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
-import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
+import {VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
 import {LittleEndian} from "../Endian.ts";
@@ -159,7 +159,7 @@ const C64_8K16K_CART_SNIFFER = new CartSniffer(
  */
 class C64CrtSniffer extends CartSniffer {
   private static CRT_SIG = [
-      // "C64 CARTRIDGE   " 16 byte space-padded
+    // "C64 CARTRIDGE   " 16 byte space-padded
     0x43, 0x36, 0x34, 0x20, 0x43, 0x41, 0x52, 0x54, 0x52, 0x49, 0x44, 0x47, 0x45, 0x20, 0x20, 0x20
   ];
   private static VERSION1 = new Uint8Array([0x01, 0x00]);
