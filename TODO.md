@@ -2,7 +2,9 @@
 
 ## Next Actions
 
-* [ ] many C64 binaries are not detected - investigate
+* [ ] many C64 binaries are not detected correctly - investigate
+  * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
+  * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
 * [ ] hovertools for exploration and interactive reversing:
   * [ ] symbol usage should show an inline popup preview of the definition
   * [ ] jump addresses should show an inline popup preview of the destination code
