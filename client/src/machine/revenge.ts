@@ -106,7 +106,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
           i++;
         }
         // read decimal address
-        const intString = Petscii.readDigits(fileBlob.asLittleEndian(), i);
+        const intString = Petscii.readDigits(fileBlob.asEndian(), i);
         if (intString.length > 0) {
           try {
             const startAddress = parseInt(intString, 10);
