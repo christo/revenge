@@ -75,6 +75,7 @@ class Tracer {
       disasm: Disassembler,
       entryPoints: [pc: number, label: string][],
       memory: Memory<Endian>,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ignore = (_: Addr) => false) {
 
     entryPoints.forEach(ep => {

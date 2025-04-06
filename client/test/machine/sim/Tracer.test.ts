@@ -21,6 +21,7 @@ describe("tracer", () => {
     const fb = FileBlob.fromBytes("testblob", machineCode, LE);
     const dm = new DisassemblyMetaImpl(0, [[0, "test"]], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const t = new Tracer(d, [[0, "root"]], mem(machineCode), (_: Addr) => false);
     expect(t.countActiveThreads() == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
@@ -143,9 +144,8 @@ describe("tracer", () => {
       entryPoints.forEach(entryPoint => {
         console.log(`entry point ${entryPoint[1]} address: 0x${entryPoint[0].toString(16)}`);
         expect(entryPoint[0]).to.eq(0x1008);
-      })
-      const t = new Tracer(d, [[initialPc, "root"]], mem64k)
-
+      });
+      new Tracer(d, [[initialPc, "root"]], mem64k)
     });
   })
 });

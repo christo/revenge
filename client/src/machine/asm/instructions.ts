@@ -159,12 +159,14 @@ interface InstructionLike extends Byteable {
  */
 const BLANK_LINE: InstructionLike = {
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   disassemble: (_dialect: Dialect, _dis: Disassembler): Tag[] => [],
 
   getBytes: (): number[] => [],
 
   getLength: (): number => 0,
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   read8: (_offset: number): number => {
     throw Error("no bytes to read");
   },
@@ -269,6 +271,7 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
 /**
  * Define text
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
 
   /**

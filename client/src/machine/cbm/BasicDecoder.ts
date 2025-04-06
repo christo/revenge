@@ -2,7 +2,6 @@ import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from ".
 import {hex16} from "../core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
 import {LittleEndian} from "../Endian.ts";
-import {FileBlob} from "../FileBlob.ts";
 import {Memory} from "../Memory.ts";
 import {Petscii} from "./petscii.ts";
 

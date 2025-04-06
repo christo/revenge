@@ -49,6 +49,7 @@ const C64_8K_BASE_ADDRESS = 0x8000;
  * The base address for 16kb C64 carts.
  * Turns out carts are pretty complex in c64, so this is WIP
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const C64_16K_BASE_ADDRESS = 0x8000;
 
 /**
@@ -157,6 +158,7 @@ const C64_8K16K_CART_SNIFFER = new CartSniffer(
 /**
  * CRT format - see https://rr.pokefinder.org/wiki/CRT.txt
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class C64CrtSniffer extends CartSniffer {
   private static CRT_SIG = [
     // "C64 CARTRIDGE   " 16 byte space-padded

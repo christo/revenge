@@ -33,10 +33,12 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
     return PRG_CONTENT_OFFSET;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   executionEntryPoints(_fb: FileBlob): [number, string][] {
     return [[this.entryPointAddress, this.entryPointDesc]];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getEdict(_offset: number): Edict<InstructionLike> | undefined {
     return undefined;
   }
@@ -49,6 +51,7 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
     return addr > this.memoryConfig.basicProgramStart && addr < (fb.getLength() - PRG_CONTENT_OFFSET);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resolveSymbols(_fb: FileBlob): [number, LabelsComments][] {
     return this.symbols;
   }

@@ -13,6 +13,7 @@ describe("basic decoder", () => {
     let linesRead = 0;
     const fb = FileBlob.fromBytes(fname, Array.from(new Uint8Array(buffer)), LE);
     const fbm = fb.asEndian() as Memory<LittleEndian>;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     CBM_BASIC_2_0.decode(fbm).getLines().map((ll) => ll.getTags()).map(t => t[1]).forEach(_x => {
       linesRead++;
     })

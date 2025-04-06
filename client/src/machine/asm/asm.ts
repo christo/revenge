@@ -231,6 +231,7 @@ export class LabelsComments {
  */
 type SymbolResolver = (fb: FileBlob) => Array<[Addr, LabelsComments]>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const EMPTY_JUMP_TARGET_FETCHER: SymbolResolver = (_fb) => []
 
 export {

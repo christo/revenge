@@ -137,6 +137,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return "$" + hex16(x);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bytes(x: FullInstructionLine, _dis: Disassembler): Tag[] {
     // future: context may give us rules about grouping, pattern detection etc.
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(x.labelsComments.comments));
@@ -145,6 +146,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return [comments, labels, data];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   text(x: FullInstructionLine | Directive, _dis: Disassembler): Tag[] {
     if (x.getLength() === 0) {
       throw Error("not entirely sure how to declare text for zero bytes");
@@ -159,6 +161,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return [comments, labels, data];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   words(words: number[], lc: LabelsComments, _dis: Disassembler): Tag[] {
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(lc.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(lc.labels));
@@ -180,6 +183,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return [comments, labels, ...this.taggedCode(fil, dis)];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   directive(dir: Directive, _dis: Disassembler): Tag[] {
     if (dir.isSymbolDefinition()) {
       // TODO don't have enough context to generate symbol
@@ -192,6 +196,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   pcAssign(pcAssign: PcAssign, _dis: Disassembler): Tag[] {
     const comments = new Tag([TAG_COMMENT], this.renderComments(pcAssign.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(pcAssign.labelsComments.labels));
@@ -201,6 +206,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return [dummy, labels, pc, addr, comments];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   symbolDefinition(symDef: SymbolDefinition, _dis: Disassembler): Tag[] {
     const comments = new Tag([TAG_COMMENT], this.renderComments(symDef.labelsComments.comments));
     const labels = new Tag([TAG_LABEL], this.renderLabels(symDef.labelsComments.labels));

@@ -17,6 +17,7 @@ type NamedOffset = [number, string];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /** A bit stinky - should never be used and probably not exist. */
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, [[0, "NULL"]], 0, [], (_fb) => [], new SymbolTable("empty"));
 
   private readonly _baseAddressOffset: number;

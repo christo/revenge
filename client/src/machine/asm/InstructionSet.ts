@@ -85,6 +85,7 @@ class InstructionSet {
       build: () => [234]
     };
     this.ops.forEach(op => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       builder.opMap[op.mnemonic] = (_args: number[]) => {
         const instructionBytes = this.byName(op.mnemonic)?.getBytes();
         instructionBytes?.forEach(b => builder.bytes.push(b));
