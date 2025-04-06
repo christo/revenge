@@ -5,7 +5,7 @@ import {join, resolve} from 'node:path';
 
 const MB1 = 1024 * 1024;
 
-const excludeExtensions = [
+const NON_ROM_EXTS = [
   "tap",
   "zip",
   "html",
@@ -69,13 +69,49 @@ function formatBytesInMegs(n: number): string {
   return (n / (MB1)).toFixed(3);
 }
 
+/**
+ * Using common file extensions defined above, return false only if the file extension is an exact match or
+ * occurs after the final dot of the file name.
+ * @param fi
+ */
 const okExt = (fi: FileInfo) => {
-  return excludeExtensions.find((e: string) => {
+  return NON_ROM_EXTS.find((e: string) => {
     return fi.name === e || fi.name.toLowerCase().endsWith(`.${e.toLowerCase()}`);
   }) === undefined;
 };
 
+/**
+ * Comparator based on ascending size.
+ * @param a
+ * @param b
+ */
 const bySize = (a: FileInfo, b: FileInfo) => a.size - b.size
+
+async function scanDirectory(dirPath: string, files: Array<FileInfo>): Promise<void> {
+  try {
+    const entries = await readdir(dirPath, {withFileTypes: true});
+
+    for (const entry of entries) {
+      if (!entry.name.startsWith(".")) {
+        const fullPath = join(dirPath, entry.name);
+        if (entry.isDirectory()) {
+          // Recursively scan subdirectories
+          await scanDirectory(fullPath, files);
+        } else if (entry.isFile()) {
+          // Check file size
+          const stats = await stat(fullPath);
+          files.push({
+            name: entry.name,
+            size: stats.size,
+            path: fullPath
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error scanning ${dirPath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
 
 async function findLargeFiles(directory: string) {
   try {
@@ -107,32 +143,6 @@ async function findLargeFiles(directory: string) {
   } catch (error) {
     console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
-  }
-}
-
-async function scanDirectory(dirPath: string, files: Array<FileInfo>): Promise<void> {
-  try {
-    const entries = await readdir(dirPath, {withFileTypes: true});
-
-    for (const entry of entries) {
-      if (!entry.name.startsWith(".")) {
-        const fullPath = join(dirPath, entry.name);
-        if (entry.isDirectory()) {
-          // Recursively scan subdirectories
-          await scanDirectory(fullPath, files);
-        } else if (entry.isFile()) {
-          // Check file size
-          const stats = await stat(fullPath);
-          files.push({
-            name: entry.name,
-            size: stats.size,
-            path: fullPath
-          });
-        }
-      }
-    }
-  } catch (error) {
-    console.error(`Error scanning ${dirPath}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

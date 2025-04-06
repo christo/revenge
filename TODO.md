@@ -2,6 +2,21 @@
 
 ## Next Actions
 
+* [ ] many C64 binaries are not detected - investigate
+* [ ] hovertools for exploration and interactive reversing:
+  * [ ] symbol usage should show an inline popup preview of the definition
+  * [ ] jump addresses should show an inline popup preview of the destination code
+  * [ ] dynamically decorate
+  * [ ] single instruction or selection
+  * [ ] selection lollypop handles can be expanded using tools (drag extend up or down)
+  * [ ] extra info
+  * [ ] edit options
+  * [ ] branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
+* [ ] bulk back-end corpus
+  * test-time analysis for tuning detectors
+  * incorporate `file` output - it does a reasonable job for many files
+  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
+  * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
 * [ ] fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
@@ -44,19 +59,6 @@
   * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
   * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
         routines using the same code path
-* [ ] hovertools for exploration and interactive reversing:
-  * [ ] symbol usage should show an inline popup preview of the definition 
-  * [ ] jump addresses should show an inline popup preview of the destination code
-  * dynamically decorate
-  * single instruction or selection
-  * selection lollypop handles can be expanded using tools (drag extend up or down)
-  * extra info
-  * edit options
-  * branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
-* [ ] bulk back-end corpus
-  * test-time analysis for tuning detectors
-  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
-  * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
 * content recognition:
   * common data fragments identified between files
   * build database of file content recognition.
