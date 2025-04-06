@@ -3,6 +3,7 @@
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
 import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
@@ -130,7 +131,7 @@ C64_KERNAL.sub(0xff8d, "vector", "Read/set vectored I/O");
 
 
 const ENTRY_POINT_OFFSETS: NamedOffset[] = [[C64_COLD_VECTOR_OFFSET, "reset"], [C64_WARM_VECTOR_OFFSET, "nmi"]];
-const C64_8K_CART_SNIFFER = new CartSniffer(
+export const C64_8K16K_CART_SNIFFER = new CartSniffer(
     "C64 cart image",
     "ROM dump from C64 cartridge",
     ["cart", C64.name],
