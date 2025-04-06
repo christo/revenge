@@ -1,5 +1,6 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
+import {PetsciiDeclaration} from "../cbm/PetsciiDeclaration.ts";
 import {assertByte, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
@@ -333,6 +334,33 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
     return `declare ${s} at offset ${this._offset}`;
   }
 
+}
+
+/**
+ * Define text; currently Petscii hard-coded because we have no other implementation.
+ */
+class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
+
+  /**
+   * Create an edict that defines a string with an assembler directive.
+   *
+   * @param offset offset in bytes of the edict
+   * @param length length of the edict
+   * @param lc labels and comments
+   */
+  constructor(offset: number, length: number, lc: LabelsComments) {
+    super(offset, length, lc);
+  }
+
+  create(fb: FileBlob): InstructionLike {
+    const bytes = fb.getBytes().slice(this.offset, this.offset + this.length);
+    return new PetsciiDeclaration(Array.from(bytes), this.lc);
+  }
+
+  describe(): string {
+    const s = `a string of ${this.length} char${this.length !== 1 ? 's' : ""}`;
+    return `declare ${s} at offset ${this.offset}`;
+  }
 }
 
 /**
