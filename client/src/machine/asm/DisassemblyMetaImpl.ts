@@ -17,7 +17,7 @@ type NamedOffset = [number, string];
 class DisassemblyMetaImpl implements DisassemblyMeta {
 
   /** A bit stinky - should never be used and probably not exist. */
-  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, [[0, "NULL"]], 0, [], (_fb) => [], new SymbolTable("null"));
+  static NULL_DISSASSEMBLY_META = new DisassemblyMetaImpl(0, [[0, "NULL"]], 0, [], (_fb) => [], new SymbolTable("empty"));
 
   private readonly _baseAddressOffset: number;
   private readonly _jumpVectorOffsets: NamedOffset[];
