@@ -14,12 +14,9 @@ import {MenuAppBar} from "./ui/MenuAppBar.tsx";
 
 
 /**
- * Maximum allowed size for file uploads.
- * The biggest currently imaginable case a d81 double-sided disk image including error byte block according to the
- * following URL this weighs in at 822400 bytes as per http://unusedino.de/ec64/technical/formats/d81.html
- * This may be increased to handle larger sizes if need arises.
+ * Maximum allowed size for file uploads, much larger than any currently imaginable practical use case would require.
  */
-const MAX_SIZE_MB = 1;
+const MAX_SIZE_MB = 10;
 
 function AppLogo({size}: {size: 1024 | 512 | 192}) {
   const sx = {
