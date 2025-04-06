@@ -2,7 +2,6 @@
 
 ## Next Actions
 
-* [x] vic 20 / c64 hardware register detection
 * [ ] fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
