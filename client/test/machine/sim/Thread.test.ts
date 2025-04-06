@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
-import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {DisassemblyMetaImpl, IndexedDescriptor} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 
 import {LE} from "../../../src/machine/Endian.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
@@ -8,15 +8,16 @@ import {ArrayMemory} from "../../../src/machine/Memory.ts";
 import {Mos6502} from "../../../src/machine/mos6502.ts";
 import {Thread} from "../../../src/machine/sim/Thread.ts";
 import {enumInstAddr, InstRec} from "../../../src/machine/sim/Tracer.ts";
+import {mockOffsetDescriptor} from "../util.ts";
 
-const ZERO_OFFSET: [number, string][] = [[0, "NULL"]];
+const ZERO_OFFSET: IndexedDescriptor = mockOffsetDescriptor();
 
 describe("thread", () => {
   it("records executed instructions", () => {
     const contents = [0, 0, 0xea, 0xea]; // 0, 0, NOP, NOP
     const memory = new ArrayMemory(contents, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", contents, LE);
-    const dm = new DisassemblyMetaImpl(0, ZERO_OFFSET, 2);
+    const dm = new DisassemblyMetaImpl(0, [ZERO_OFFSET], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
 
     const executed: InstRec[] = [];
@@ -43,7 +44,7 @@ describe("thread", () => {
     ];
     const memory = new ArrayMemory(contents, LE, true, true);
     const fb = FileBlob.fromBytes("testblob", contents, LE);
-    const dm = new DisassemblyMetaImpl(0, ZERO_OFFSET, 2);
+    const dm = new DisassemblyMetaImpl(0, [ZERO_OFFSET], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
     const executed: InstRec[] = [];
     const addExecuted = (ir: InstRec) => {
