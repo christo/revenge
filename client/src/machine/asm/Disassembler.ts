@@ -137,7 +137,7 @@ class Disassembler {
   instructionByteAhead = (n: number) => {
     const address = this.currentAddress + n;
     const entries = this.disMeta.executionEntryPoints(this.fb);
-    const isEntryPoint = entries.find(ar => ar[0] === address) !== undefined;
+    const isEntryPoint = entries.find(ar => ar.index === address) !== undefined;
     return isEntryPoint || this.executionPoints.map(ir => ir[0]).includes(address);
   };
 
