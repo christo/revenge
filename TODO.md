@@ -73,25 +73,6 @@
 * improve cart sniffers and basic stub machine code PRGs
   * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 
-## eslint with typescript config
-
-From https://eslint.org/docs/latest/use/configure/configuration-files#typescript-configuration-files
-
-Bun can handle typescript eslint config natively, so can node 22.10 but only with and experimental
-flag as follows, or by adding a dev dep on `jiti` (done):
-
-```
-Native TypeScript Support
-If you’re using Node.js >= 22.10.0, you can load TypeScript configuration files natively without requiring jiti. This is possible thanks to the --experimental-strip-types flag.
-
-Since this feature is still experimental, you must also enable the unstable_native_nodejs_ts_config flag.
-
-npx --node-options='--experimental-strip-types' eslint --flag unstable_native_nodejs_ts_config
-
-```
-
-* [ ] if/once (p)npm/node builds are supported, eslint config in typescript can be simplified  
-
 ## Reading List
 
 * [x] [Solving BIT Magic](https://rosenzweig.io/blog/solving-bit-magic.html) by Alyssa Rosenzweig
