@@ -43,6 +43,12 @@ const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({
 const C64_8K_BASE_ADDRESS = 0x8000;
 
 /**
+ * The base address for 16kb C64 carts.
+ * Turns out carts are pretty complex in c64, so this is WIP
+ */
+const C64_16K_BASE_ADDRESS = 0x8000;
+
+/**
  * 16kb carts load two 8k blocks, ROML at the normal base address
  * and ROMH at this address.
  */
