@@ -12,8 +12,14 @@ export default defineConfig([
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
-    rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
+    settings: {
+      react: {
+        version: "detect",
+      }
     },
-  }
+    rules: {
+      "@typescript-eslint/no-unused-vars": "warn"
+    },
+  },
+
 ]);
