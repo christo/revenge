@@ -153,12 +153,12 @@ const C64_8K16K_CART_SNIFFER = new CartSniffer(
         C64_SYM)
 );
 
-
 /**
  * CRT format - see https://rr.pokefinder.org/wiki/CRT.txt
  */
 class C64CrtSniffer extends CartSniffer {
   private static CRT_SIG = [
+      // "C64 CARTRIDGE   " 16 byte space-padded
     0x43, 0x36, 0x34, 0x20, 0x43, 0x41, 0x52, 0x54, 0x52, 0x49, 0x44, 0x47, 0x45, 0x20, 0x20, 0x20
   ];
   private static VERSION1 = new Uint8Array([0x01, 0x00]);
