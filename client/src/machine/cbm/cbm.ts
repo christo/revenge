@@ -23,8 +23,9 @@ import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
 import {DataViewImpl} from "../DataView.ts";
+import {Endian, LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {ArrayMemory} from "../Memory.ts";
+import {ArrayMemory, Memory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
 import {InstRec, Tracer} from "../sim/Tracer.ts";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
@@ -197,7 +198,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     actions: [{
       label: "basic",
       f: async () => {
-        const cbmFb = fb.asEndian(); // smelly
+        const cbmFb: Memory<LittleEndian> = fb.asEndian() as Memory<LittleEndian>;
         const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
         // exclude "note" tags which are not a "line"
         const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;

@@ -9,8 +9,9 @@ import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl";
 import {VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
+import {LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob";
-import {ArrayMemory} from "../Memory.ts";
+import {ArrayMemory, Memory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 import {CartSigEdict} from "./CartSigEdict.ts";
@@ -229,7 +230,7 @@ const VIC_ROMS = [
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
 ];
 
-class Vic20 extends Computer {
+class Vic20 extends Computer<LittleEndian> {
   static NAME = "VIC-20";
 
   static MEMORY_CONFIG = {
@@ -292,7 +293,9 @@ class Vic20BasicSniffer implements BlobSniffer {
 
     // try decoding it as basic
     try {
-      const decoded = CBM_BASIC_2_0.decode(fb.asEndian());
+      // TODO need to be able to dynamically interpret a FileBlob as LittleEndian
+      //   in order to read the bytes for VIC - if the shoe fits...
+      const decoded = CBM_BASIC_2_0.decode(fb.asEndian() as Memory<LittleEndian>);
       let lastNum = -1;
       const lastAddr = -1;
       let byteCount = 0;

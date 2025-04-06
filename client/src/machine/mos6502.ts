@@ -14,7 +14,7 @@ import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "./Byteable.ts";
 import {Addr, assertByte, hex16, unToSigned} from "./core.ts";
 import {Cpu} from "./Cpu.ts";
-import {LE} from "./Endian.ts";
+import {LE, LittleEndian} from "./Endian.ts";
 
 // awkward impl needs to be fixed
 class StatusRegisterFlag {
@@ -558,7 +558,7 @@ class FullInstruction implements Byteable {
 // TODO introduce CPU abstraction for Z80 etc.
 
 // noinspection JSUnusedGlobalSymbols
-class Mos6502 implements Cpu {
+class Mos6502 implements Cpu<LittleEndian> {
   static readonly NAME = "Mos 6502";
   static readonly ISA = I;
 

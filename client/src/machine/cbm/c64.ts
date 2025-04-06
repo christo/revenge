@@ -8,6 +8,7 @@ import {DisassemblyMetaImpl, NamedOffset} from "../asm/DisassemblyMetaImpl.ts";
 import {ByteDefinitionEdict, VectorDefinitionEdict} from "../asm/instructions.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
+import {LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";
@@ -15,7 +16,7 @@ import {CartSigEdict} from "./CartSigEdict.ts";
 import {CartSniffer} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 
-class C64 extends Computer {
+class C64 extends Computer<LittleEndian> {
   constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
     super("C64", new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }

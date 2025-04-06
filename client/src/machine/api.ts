@@ -5,7 +5,7 @@ import {Byteable} from "./Byteable.ts";
 import {Addr, hex16, hex8} from "./core";
 import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
-import {BigEndian, LittleEndian} from "./Endian.ts";
+import {BigEndian, Endian, LittleEndian} from "./Endian.ts";
 import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
 import {MODE_INDIRECT} from "./mos6502.ts";
@@ -312,18 +312,18 @@ class MemoryConfiguration {
  * Stateful instance of a specific computer with memory, cpu, etc.
  * TODO implement method to load ROMs
  */
-abstract class Computer {
-  private _memory: Memory<BigEndian | LittleEndian>;
+abstract class Computer<T extends Endian> {
+  private _memory: Memory<T>;
   private readonly roms: RomImage[];
   private readonly _memoryConfig: MemoryConfiguration;
   private readonly _name: string;
   private readonly _tags: string[];
-  private readonly _cpu: Cpu;
+  private readonly _cpu: Cpu<T>;
 
   protected constructor(
       name: string,
-      cpu: Cpu,
-      memory: Memory<BigEndian | LittleEndian>,
+      cpu: Cpu<T>,
+      memory: Memory<T>,
       memoryConfig: MemoryConfiguration,
       roms: RomImage[],
       tags: string[]) {
