@@ -2,7 +2,7 @@ import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
-import {LabelsComments, SourceType, SymbolType} from "./asm.ts";
+import {LabelsComments, SourceType} from "./asm.ts";
 import {Assembler} from "./Assembler.ts";
 import {ByteDeclaration} from "./ByteDeclaration.ts";
 import {Dialect} from "./Dialect.ts";
@@ -10,6 +10,7 @@ import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {Edict} from "./Edict.ts";
 import {InstructionBase} from "./InstructionBase.ts";
+import {SymbolType} from "./SymbolTable.ts";
 import {TextDeclaration} from "./TextDeclaration.ts";
 
 class SymbolDefinition extends InstructionBase implements Directive {

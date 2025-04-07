@@ -1,3 +1,6 @@
+import {AddressingMode} from "../AddressingMode.ts";
+import {MODE_ABSOLUTE, MODE_ZEROPAGE} from "../mos6502.ts";
+
 /**
  * Encapsulates important meaning of an instruction so that code can be simply analysed or approximately
  * interpreted.
@@ -39,6 +42,10 @@ export class Op {
     this.mnemonic = mnemonic;
     this.description = description;
     this.cat = cat;
+  }
+
+  valueImpliedMode(value: number): AddressingMode | undefined {
+    return (value < 256) ? MODE_ZEROPAGE : MODE_ABSOLUTE;
   }
 
   /**

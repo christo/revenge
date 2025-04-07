@@ -15,12 +15,13 @@ import {
   TAG_LINE,
   UserAction
 } from "../api.ts";
-import {Environment, SymbolType,} from "../asm/asm.ts";
+import {Environment,} from "../asm/asm.ts";
 import {Directive} from "../asm/Directive.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
 import {RevengeDialect} from "../asm/RevengeDialect.ts";
+import {SymbolType} from "../asm/SymbolTable.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";

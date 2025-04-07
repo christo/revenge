@@ -3,10 +3,11 @@ VIC-20 specific details: machine definition, memory configs, kernel images, symb
  */
 
 import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag} from "../api";
-import {LabelsComments, mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {LabelsComments, mkLabels, SymbolResolver} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl";
 import {VectorDefinitionEdict} from "../asm/instructions.ts";
+import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
 import {LittleEndian} from "../Endian.ts";
@@ -194,9 +195,9 @@ const CART_SIG_OFFSET = 6;
 const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
 
 const CART_JUMP_POINT_OFFSETS: IndexedDescriptor[] = [
-    // TODO this is code duplication, find it!
-      {index: CART_COLD_VECTOR_OFFSET, name: "reset", description: "cold reset vector"},
-      {index: CART_WARM_VECTOR_OFFSET, name: "nmi", description: "warm reset vector"},
+  // TODO this is code duplication, find it!
+  {index: CART_COLD_VECTOR_OFFSET, name: "reset", description: "cold reset vector"},
+  {index: CART_WARM_VECTOR_OFFSET, name: "nmi", description: "warm reset vector"},
 
 ];
 
@@ -338,7 +339,7 @@ class Vic20BasicSniffer implements BlobSniffer {
           // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
         }
       });
-    } catch (e) {
+    } catch (_e) {
       // if we exploded, it's not BASIC!
       //console.error(e);
       isBasic = 0.01;

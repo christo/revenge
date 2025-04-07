@@ -16,14 +16,16 @@ class InstructionSet {
   // noinspection JSMismatchedCollectionQueryUpdate
   private cycles: Array<Cycles> = [];
   private instructions: Array<Instruction> = [];
-  private name: string;
-
+  readonly name: string;
 
   constructor(name: string) {
     this.name = name;
   }
 
   add(opcode: number, op: Op, mode: AddressingMode, bytes: number, cycles: Cycles) {
+    if (!op) {
+      throw Error(`op to add was falsy! ${op}`);
+    }
     const o = assertByte(opcode);
     if (this.instructions[o]) {
       throw Error("Instruction for this opcode already registered.");
@@ -94,6 +96,17 @@ class InstructionSet {
     })
   }
 
+  /**
+   * Gets the Op by name - note this is independent of AddressingMode
+   * @param mnemonic
+   */
+  opByName(mnemonic: string): Op | undefined {
+    console.log(`opsByName ${mnemonic} among ${this.ops.length} ops`);
+    const maybeOp = this.ops.find((m: Op) => {
+      return m && m.mnemonic === mnemonic;
+    });
+    return maybeOp;
+  }
 }
 
 

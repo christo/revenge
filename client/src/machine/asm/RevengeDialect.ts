@@ -36,6 +36,8 @@ import {
   MODE_ZEROPAGE_Y
 } from "../mos6502.ts";
 import {Environment, LabelsComments} from "./asm.ts";
+import {Emitter, emitThis, errorEmitter, instructionEmitter} from "./Assembler.ts";
+import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {BaseDialect, C_COMMENT_MULTILINE, Dialect, SEMICOLON_PREFIX} from "./Dialect.ts";
 import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
@@ -47,14 +49,11 @@ import {
   PcAssign,
   SymbolDefinition
 } from "./instructions.ts";
-
-/**
- * Represents the state of a line-based parser
- */
-enum ParserState {
-  READY,
-  MID_MULTILINE_COMMENT,
-}
+import {LiteralOperand} from "./LiteralOperand.ts";
+import {OperandResolver} from "./OperandResolver.ts";
+import {ParserState} from "./ParserState.ts";
+import {SymbolLookup} from "./SymbolLookup.ts";
+import {SymbolTable} from "./SymbolTable.ts";
 
 /**
  * Turns a tagSeq into plain text, discarding the tags.
@@ -64,7 +63,7 @@ enum ParserState {
 const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
 
 /**
- * Need to support options, possibly at specific memory locations.
+ * Homebrew 6502 dialect with modern conventional idioms.
  * Global option may be lowercase opcodes.
  * Location-specific option might be arbitrary label, decimal operand, lo-byte selector "<" etc.
  * Some assembler dialects have other ways of rendering addressing modes (e.g. suffix on mnemonic).
@@ -75,17 +74,74 @@ class RevengeDialect extends BaseDialect implements Dialect {
   private static readonly KW_WORD_DECLARATION: string = '.word';
   private static readonly KW_TEXT_DECLARATION: string = '.text';
 
-  constructor(env: Environment) {
-    super("Revenge MOS 6502", "Vaguely standard modern syntax with all supported features.", env);
+  constructor(env: Environment = Environment.DEFAULT_ENV) {
+    super(
+        "Revenge MOS 6502",
+        "Vaguely standard modern syntax with all supported features.",
+        env
+    );
   }
 
   multilineCommentDelimiters(): [string, string] {
     return C_COMMENT_MULTILINE;
   }
 
-  parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState] {
+  parseInstructionPart(s: string, am: AssemblyMeta) {
+    /*
+      parse instruction of form MNEMONIC OPERAND
+      where:
+        MNEMONIC is 3 alpha chars
+        OPERAND is either:
+          $hh (two digit hex implying zero page mode)
+          $hhhh (four digit hex implying absolute mode)
+          d..d decimal digits (<256 implies zero page, 256-65535 implies absolute)
+          label word chars implying symbol lookup which defers operand and mode resolution
+    */
+    // TODO does not do indirect yet
+    const r = s.match(/([A-Za-z]{3})\s(#)?(\$[A-Fa-f0-9]{2,4}|[A-Za-z]\w*)\s*((,)\s*(x|y))?/);
+    if (r) {
+      const mnemonic = r[1];
+      const immFlag = r[2];
+      const operand = r[3];
+      const comma = r[4];
+      const indexReg = r[5];
+      console.log(`mnemonic: ${mnemonic}`);
+      console.log(`immFlag: ${immFlag}`);
+      console.log(`operand: ${operand}`);
+      console.log(`comma: ${comma}`);
+      console.log(`indexReg: ${indexReg}`);
+      if (mnemonic) {
+        if (operand) {
+          if (immFlag) {
+            throw Error("unimplemented immediate mnemonic");
+          } else if (comma && indexReg) {
+            throw Error(`unmplemented indexed addressing mode`)
+          } else {
+            console.log("got mnemonic and operand");
+            // look up the mnemonic by name and mode
+            const resolver = this.parseOperand(operand, am);
+            if (!resolver) {
+              return errorEmitter(`Cannot parse operand ${operand}`);
+            } else {
+              return instructionEmitter(mnemonic, resolver);
+            }
+          }
+        } else {
+          // no operand
+          throw Error("unimplemented niladic mnemonics");
+        }
+      } else {
+        return errorEmitter(`cannot find mnemonic`);
+      }
+    } else {
+      return errorEmitter(`cannot parse instruction ${s}`);
+    }
+  }
+
+  parseLine(line: string, parserState: ParserState, am: AssemblyMeta): Emitter[] {
     // work in progres - assembler
-    if (parserState === ParserState.READY) {
+
+    if (parserState.state === "READY") {
       // LINE_BEGIN [label] [instruction | directive] [comment] LINE_END
       // TODO add unit test to be sure of wtf
       const m = line.match(/^([A-Za-z_]\w*:)?\s*(.*)\s*(\*.*\*\/|;.*)?$/)
@@ -93,26 +149,34 @@ class RevengeDialect extends BaseDialect implements Dialect {
         const label = m[1];
         const instruction = m[2];
         const comment = m[3];
-        console.log(`label: ${label} instruction:${instruction} comment:${comment}`);
-        throw new Error("unimplemented");
+        // const inst = this.parseInstructionPart(m[2], parserState.symbolTable);
+        const e = this.parseInstructionPart(instruction, am);
+        console.log(`*****   label: ${label} instruction:${instruction} comment:${comment}`);
+        if (!e) {
+          console.error("undefined emitter!");
+        }
+        return e ? [e] : [];
       } else {
-        throw new Error("parse error");
+        throw new Error(`parse error: ${line}`);
       }
-    } else if (parserState === ParserState.MID_MULTILINE_COMMENT) {
+    } else if (parserState.state === "MID_MULTILINE_COMMENT") {
       // TODO add unit test to be sure of wtf
       // eslint-disable-next-line
       if (line.match(/^\h*\*\/\h*$/)) {
         // only end of comment
-        return [BLANK_LINE, ParserState.READY];
+        parserState.state = "READY";
+        return [emitThis({bytes: Petscii.codes("\n")})];
       } else {
         // is this the last comment line?
         // TODO add unit test to be sure of wtf
         // eslint-disable-next-line
         const m = line.match(/^(.*)\*\/\h*$/);
         if (m) {
-          return [new LabelsCommentsOnly(new LabelsComments([], m[1])), ParserState.READY];
+          parserState.state = "READY";
+          return [];//new LabelsCommentsOnly(new LabelsComments([], m[1])), parserState];
         } else {
-          return [new LabelsCommentsOnly(new LabelsComments([], line.trim())), ParserState.MID_MULTILINE_COMMENT];
+          parserState.state = "MID_MULTILINE_COMMENT";
+          return [];//[new LabelsCommentsOnly(new LabelsComments([], line.trim())), parserState];
         }
       }
     } else {
@@ -215,6 +279,34 @@ class RevengeDialect extends BaseDialect implements Dialect {
     symbolDefinition.data.push(['symname', symName])
     const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, symbolDefinition, comments];
+  }
+
+  /**
+   * Parse an operand, either literal or symbolic
+   * @param operand
+   * @private
+   */
+  parseOperand(operand: string, am: AssemblyMeta): OperandResolver | undefined {
+    if (operand.length < 2) {
+      return undefined;
+    } else {
+      if (this.isHexLiteral(operand)) {
+        // hex literal
+        const hexLiteral = operand.substring(1);
+        console.log(`got hex literal ${hexLiteral}`);
+        return new LiteralOperand(parseInt(hexLiteral, 16));
+      } else if (operand.match(/^[0-9]*$/)) {
+        return new LiteralOperand(parseInt(operand, 10));
+      } else if (operand.match(/^[A-Za-z_]\w*$/)) {
+        // label
+        return new SymbolLookup(operand, am.symbolTable);
+      }
+    }
+  }
+
+  private isHexLiteral(operand: string) {
+    // TODO
+    return operand.startsWith("$");
   }
 
   /**
@@ -347,4 +439,4 @@ class RevengeDialect extends BaseDialect implements Dialect {
   }
 }
 
-export {RevengeDialect, ParserState};
+export {RevengeDialect};

@@ -1,9 +1,10 @@
 import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
-import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver, SymbolTable} from "./asm.ts";
+import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";
 import {Edict} from "./Edict.ts";
 import {InstructionLike} from "./instructions.ts";
+import {SymbolTable} from "./SymbolTable.ts";
 
 /**
  * A named location.
