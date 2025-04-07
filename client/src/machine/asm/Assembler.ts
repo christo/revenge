@@ -1,4 +1,5 @@
 import {Addr} from "../core.ts";
+import {Endian} from "../Endian.ts";
 import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";
@@ -11,13 +12,13 @@ import {SymbolTable} from "./SymbolTable.ts";
  * Syntax-independent stateful assembler, parametised by {@link InstructionSet}
  * and {@link Dialect}.
  */
-class Assembler {
+class Assembler<T extends Endian> {
   private currentAddress: Addr;
   private readonly isa: InstructionSet;
   private readonly dialect: Dialect;
-  private assemblyMeta: AssemblyMeta;
+  private readonly assemblyMeta: AssemblyMeta<T>;
 
-  constructor(isa: InstructionSet, dialect: Dialect, assemblyMeta: AssemblyMeta) {
+  constructor(isa: InstructionSet, dialect: Dialect, assemblyMeta: AssemblyMeta<T>) {
     this.isa = isa;
     this.dialect = dialect;
     this.assemblyMeta = assemblyMeta;
@@ -35,7 +36,7 @@ class Assembler {
     return instruction.getBytes();
   }
 
-  parse(line: string): Emitter[] {
+  parse(line: string): Emitter<T>[] {
     const ps: ParserState = {
       state: "READY", symbolTable: new SymbolTable("base"),
     }
@@ -45,6 +46,7 @@ class Assembler {
 
 
 type Emission = {
+  // TODO currently we are emitting bytes, but we should emit intermediate representation
   bytes: number[];
   error?: string;
 }
@@ -53,15 +55,15 @@ function emitError(s: string): Emission {
   return {bytes: [], error: s};
 }
 
-type Emitter = (am: AssemblyMeta) => Emission;
+type Emitter<T extends Endian> = (am: AssemblyMeta<T>) => Emission;
 
 /**
  * Makes an emitter only of an error of the given message.
  * @param mesg
  */
-const errorEmitter: (mesg: string) => Emitter = (mesg: string) => (_am: AssemblyMeta) => emitError(mesg);
+const errorEmitter: <T extends Endian>(mesg: string) => Emitter<T> = (mesg: string) => <T extends Endian>(_am: AssemblyMeta<T>) => emitError(mesg);
 
-const emitThis: (e: Emission) => Emitter = (e: Emission) => (_am: AssemblyMeta) => e;
+const emitThis: <T extends Endian>(e: Emission) => Emitter<T> = (e: Emission) => <T extends Endian>(_am: AssemblyMeta<T>) => e;
 
 /**
  * Wires up deferred instruction emission returning an Emitter which may depend on
@@ -70,9 +72,9 @@ const emitThis: (e: Emission) => Emitter = (e: Emission) => (_am: AssemblyMeta) 
  * @param mnemonic
  * @param resolver
  */
-function instructionEmitter(mnemonic: string, resolver: OperandResolver): Emitter {
+function instructionEmitter<T extends Endian>(mnemonic: string, resolver: OperandResolver): Emitter<T> {
   console.log('wiring up instruction emitter');
-  return (am: AssemblyMeta) => {
+  return (am: AssemblyMeta<T>) => {
     console.log(`looking up mnemonic: ${mnemonic} in ${am.instructionSet.name}`);
     const op = am.instructionSet.opByName(mnemonic);
     if (op) {
