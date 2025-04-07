@@ -18,7 +18,11 @@ export default defineConfig([
       }
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn"
+      // unused underscore-prefixed variables are explicitly ignored
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
 

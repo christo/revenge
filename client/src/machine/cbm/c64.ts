@@ -76,7 +76,7 @@ const C64_WARM_VECTOR_OFFSET = 4;
 /**
  * The C64 magic cartridge signature CBM80 in petscii.
  */
-const CBM80 = [0xC3, 0xC2, 0xCD, 0x38, 0x30];
+const CBM80 = Petscii.codes("CBM80");
 
 const MAGIC_OFFSET = 6;
 
