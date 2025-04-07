@@ -312,18 +312,18 @@ class MemoryConfiguration {
  * Stateful instance of a specific computer with memory, cpu, etc.
  * TODO implement method to load ROMs
  */
-abstract class Computer<T extends Endian> {
-  private _memory: Memory<T>;
+abstract class Computer {
+  private _memory: Memory<Endian>;
   private readonly roms: RomImage[];
   private readonly _memoryConfig: MemoryConfiguration;
   private readonly _name: string;
   private readonly _tags: string[];
-  private readonly _cpu: Cpu<T>;
+  private readonly _cpu: Cpu<Endian>;
 
   protected constructor(
       name: string,
-      cpu: Cpu<T>,
-      memory: Memory<T>,
+      cpu: Cpu<Endian>,
+      memory: Memory<Endian>,
       memoryConfig: MemoryConfiguration,
       roms: RomImage[],
       tags: string[]) {

@@ -6,12 +6,12 @@ import {SymbolTable} from "./SymbolTable.ts";
 /**
  * Metadata for the assembler.
  */
-export class AssemblyMeta<T extends Endian> {
+export class AssemblyMeta {
   readonly symbolTable: SymbolTable;
   readonly instructionSet: InstructionSet;
-  readonly endian: T;
+  readonly endian: Endian;
 
-  constructor(symbolTable: SymbolTable, cpu: Cpu<T>) {
+  constructor(symbolTable: SymbolTable, cpu: Cpu<Endian>) {
     this.symbolTable = symbolTable;
     this.instructionSet = cpu.isa();
     this.endian = cpu.endianness();
