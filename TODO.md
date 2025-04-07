@@ -2,7 +2,6 @@
 
 ## Next Actions
 
-* [x] support importing with `.ts` extension in test source dir
 * [ ] many C64 binaries are not detected correctly - investigate
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
