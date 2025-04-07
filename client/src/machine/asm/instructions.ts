@@ -80,11 +80,6 @@ class PcAssign extends InstructionBase implements Directive {
     return true;
   }
 
-  assemble(_dialect: Dialect, ass: Assembler): number[] {
-    ass.setCurrentAddress(this._address);
-    return this.getBytes();
-  }
-
   disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.pcAssign(this, dis);
 
   getBytes = (): number[] => [];
