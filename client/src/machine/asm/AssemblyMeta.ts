@@ -3,6 +3,9 @@ import {Endian} from "../Endian.ts";
 import {InstructionSet} from "./InstructionSet.ts";
 import {SymbolTable} from "./SymbolTable.ts";
 
+/**
+ * Metadata for the assembler.
+ */
 export class AssemblyMeta<T extends Endian> {
   readonly symbolTable: SymbolTable;
   readonly instructionSet: InstructionSet;
