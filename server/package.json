@@ -15,7 +15,7 @@
   "description": "revenge back end",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "sha1": "^1.1.1"
   },
