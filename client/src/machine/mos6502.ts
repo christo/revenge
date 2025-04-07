@@ -234,6 +234,7 @@ class Instruction {
     return `${this.op.mnemonic}:${this._mode}/${this._numBytes}`;
   }
 
+  /** Gets the instruction bytes without operands, may be single byte */
   getBytes(): number[] {
     return [this.opcode];
   }

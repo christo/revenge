@@ -2,10 +2,11 @@
 // noinspection JSUnusedLocalSymbols
 
 import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from "../api.ts";
-import {mkLabels, SymbolResolver, SymbolTable} from "../asm/asm.ts";
+import {mkLabels, SymbolResolver} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {VectorDefinitionEdict} from "../asm/instructions.ts";
+import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
 import {LittleEndian} from "../Endian.ts";

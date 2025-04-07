@@ -1,9 +1,11 @@
 import {BooBoo, Tag, TAG_COMMENT, TAG_LABEL} from "../api.ts";
 import {Environment, LabelsComments} from "./asm.ts";
+import {Emitter} from "./Assembler.ts";
+import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
-import {ParserState} from "./RevengeDialect.ts";
+import {ParserState} from "./ParserState.ts";
 
 export const C_COMMENT_MULTILINE: [string, string] = ["/*", "*/"];
 export const SEMICOLON_PREFIX = ["; "];
@@ -18,7 +20,7 @@ interface Dialect {
   readonly description: string;
   readonly env: Environment;
 
-  parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState];
+  parseLine(line: string, parserState: ParserState, am: AssemblyMeta): Emitter[];
 
   /**
    * Check that the given label conforms to the rules for labels, returning a possibly empty array of
@@ -159,7 +161,7 @@ abstract class BaseDialect implements Dialect {
 
   abstract multilineCommentDelimiters(): [string, string] | undefined;
 
-  abstract parseLine(line: string, parserState: ParserState): [InstructionLike, ParserState];
+  abstract parseLine(line: string, parserState: ParserState, am: AssemblyMeta): Emitter[];
 
   abstract pcAssign(pcAssign: PcAssign, dis: Disassembler): Tag[];
 

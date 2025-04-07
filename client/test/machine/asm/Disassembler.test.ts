@@ -1,11 +1,7 @@
 import {expect} from 'chai';
-import {Environment} from "../../../src/machine/asm/asm.ts";
-import {Assembler} from "../../../src/machine/asm/Assembler.ts";
-import {Dialect} from "../../../src/machine/asm/Dialect.ts";
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 import {OpSemantics} from "../../../src/machine/asm/Op.ts";
-import {RevengeDialect} from "../../../src/machine/asm/RevengeDialect.ts";
 
 import {LE} from "../../../src/machine/Endian.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
@@ -13,9 +9,6 @@ import {ArrayMemory} from "../../../src/machine/Memory.ts";
 import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
 import {mockOffsetDescriptor, niladicOpcodes} from "../util.ts";
 
-const mos6502Assembler = (dialect: Dialect) => {
-  return new Assembler(Mos6502.ISA, dialect);
-};
 
 describe("disassembler", () => {
   it("disassembles single niladic instruction", () => {
