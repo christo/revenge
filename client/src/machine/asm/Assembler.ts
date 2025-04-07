@@ -43,9 +43,14 @@ class Assembler {
   }
 }
 
-
+/**
+ * Represents something the Assembler emits. It could be an error.
+ */
 type Emission = {
-  // TODO currently we are emitting bytes, but we should emit intermediate representation
+  /**
+   * @deprecated transition to an intermediate model
+   * TODO currently we are emitting bytes, but we should emit intermediate representation
+   */
   bytes: number[];
   error?: string;
 }
