@@ -12,7 +12,7 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 **Project Status**: _pre alpha_ (it sort of works with plenty left [TODO](TODO.md))
 
-![revenge screenshot](docs/revenge-screenshot-20250324.png)
+![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
 ## Performance Problems April 2025
 
