@@ -27,3 +27,6 @@ server/node_modules
 /server/dist/
 /client/dist/
 *.tsbuildinfo
+/c64cartlist.txt
+/server/data/preload/c64/RESCUE 64 1.1.prg
+/server/data/preload/c64/teleporter64.prg
