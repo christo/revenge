@@ -45,7 +45,8 @@ to check you have the relevant/recommended tools installed:
 The main system is a single page web app with an optional server comonent which provides
 access to retro binaries stored on the local filesystem a few are included in this
 repo. Without the server, you can drag and drop files from your computer into the browser or click
-the upload button.
+the upload button. The plan for the server is to manage the state of interactive sessions
+and provide access to a filetree of binaries for bulk analysis.
 
 To run the server in its own shell, make sure you're in the `server` dir:
 
