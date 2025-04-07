@@ -12,6 +12,9 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 **Project Status**: _pre alpha_ (it sort of works with plenty left [TODO](TODO.md))
 
+Currently the disassembler is fully automatic, although it identifies very few bytes
+definitively as data. Binary content is detected using heuristics.
+
 ![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
 ## Performance Problems April 2025
