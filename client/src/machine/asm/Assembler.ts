@@ -44,7 +44,7 @@ class Assembler {
 }
 
 /**
- * Represents something the Assembler emits. It could be an error.
+ * Represents something the Assembler emits. It could be an error. Empty content is OK.
  */
 type Emission = {
   /**
