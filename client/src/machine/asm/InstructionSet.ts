@@ -116,7 +116,6 @@ class InstructionSet {
 type Builder = {
   bytes: number[],
   add: InstructionCall,
-  // TODO looks way skuffed here
   opMap: { [keyof: string]: (args: number[]) => Builder }
   build: () => number[];
 }
