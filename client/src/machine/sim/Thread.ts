@@ -45,7 +45,6 @@ export class Thread {
    */
   constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>,
               addExecuted: (addr: InstRec) => void, getExecuted: () => InstRec[],
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               ignore = (_: Addr) => false) {
     const memorySize = memory.getLength();
     if (memorySize < 1) {

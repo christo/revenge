@@ -8,7 +8,6 @@ class LiteralOperand implements OperandResolver {
     this.literal = value;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   value(): number | undefined {
     console.log(`returning value ${this.literal}`);
     return this.literal;

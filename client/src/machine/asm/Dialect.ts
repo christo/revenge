@@ -193,8 +193,6 @@ abstract class BaseDialect implements Dialect {
     return comments.map(c => cp + c.replaceAll(le, le + cp)).join("");
   }
 
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   labelsComments(labelsComments: LabelsComments, _dis: Disassembler): Tag[] {
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(labelsComments.labels));
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(labelsComments.comments));
