@@ -4,7 +4,7 @@ import {hexDumper, TypeActions} from "./api.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
 import {UNKNOWN_TYPE} from "./BlobTypeSniffer.ts";
 import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
-import {disassemble, printBasic} from "./cbm/cbm.ts";
+import {disasmAction, printBasic} from "./cbm/cbm.ts";
 import {
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
@@ -44,7 +44,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     const cart = carts[i];
     if (cart.sniff(fileBlob) > 1) {
       // TODO get rid of early return
-      return disassemble(cart, fileBlob);
+      return disasmAction(cart, fileBlob);
     }
   }
   const hd = hexDumper(fileBlob);
@@ -73,7 +73,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     if (prg.sniff(fileBlob) > 1) {
       console.log(`sniffed common prg blob type`);
       // TODO get rid of early return
-      return disassemble(prg, fileBlob);
+      return disasmAction(prg, fileBlob);
     }
   }
   // detect VIC20 machine code with basic stub

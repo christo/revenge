@@ -33,11 +33,22 @@ import {Mos6502} from "../mos6502.ts";
 import {InstRec, Tracer} from "../sim/Tracer.ts";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 
+const PROGRAM_EXTS = ["prg", "crt", "bin", "rom", "p00", "bas"];
+const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
+const MEDIA_EXTS = ["sid"];
+
 /**
  * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
  */
-const fileTypes = ["prg", "crt", "bin", "d64", "tap", "t64", "rom", "d71", "d81", "p00", "sid", "bas"];
+const ALL_CBM_FILE_EXTS = [...PROGRAM_EXTS, ...VOLUME_EXTS, ...MEDIA_EXTS];
 
+
+/**
+ * Call the Disassembler for 6502 instruction set.
+ * @param fb binary to disassemble
+ * @param dialect decides the output syntax
+ * @param meta metadata about the disassembly context
+ */
 function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: DisassemblyMeta) {
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
@@ -180,7 +191,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 /**
  * User action that disassembles the file.
  */
-export const disassemble: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
+const disasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   const userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
@@ -271,4 +282,4 @@ class CartSniffer implements BlobSniffer {
   }
 }
 
-export {CartSniffer, prg, printBasic, fileTypes, trace};
+export {CartSniffer, prg, printBasic, ALL_CBM_FILE_EXTS, trace, disasmAction};

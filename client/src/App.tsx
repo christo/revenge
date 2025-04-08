@@ -6,7 +6,7 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 
 import {FileLike} from "../../server/src/common/FileLike.ts";
-import {fileTypes} from "./machine/cbm/cbm.ts";
+import {ALL_CBM_FILE_EXTS} from "./machine/cbm/cbm.ts";
 import {darkTheme} from "./neonColourScheme.ts";
 import {QuickLoads} from "./QuickLoads.tsx";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";
@@ -42,7 +42,7 @@ function App() {
             }}>
               <QuickLoads setFile={(f) => setFile(f)}/>
               <Box className="dropZone">
-                <FileUploader handleChange={setFile} name="file" types={fileTypes} maxSize={MAX_SIZE_MB}/>
+                <FileUploader handleChange={setFile} name="file" types={ALL_CBM_FILE_EXTS} maxSize={MAX_SIZE_MB}/>
               </Box>
             </Box>
             {file ? <CurrentFileSummary file={file}/> : <AppLogo size={512}/>}
