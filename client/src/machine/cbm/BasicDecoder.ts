@@ -1,8 +1,9 @@
 import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api.ts";
-import {hex16} from "../core.ts";
+import {hex16, hex8} from "../core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
 import {LittleEndian} from "../Endian.ts";
 import {Memory} from "../Memory.ts";
+import {plural} from "../util.ts";
 import {Petscii} from "./petscii.ts";
 
 type Token = [number, string];
@@ -213,10 +214,18 @@ class BasicDecoder {
 
     // "i" is pointing at the termination word
     const remainingBytes = source.getLength() - i - 2;
+
+    function mkHexString() {
+      // TODO duplicated code; machine context and user config should determine numeric formatting
+      return source.getBytes().slice(source.getLength() - remainingBytes).map(n => `$${hex8(n)}`).join(", ");
+    }
+
     if (remainingBytes > 0) {
-      // TODO consider how better to show this - hexdump?
-      const note = new Tag([TAG_NOTE], `${remainingBytes} remaining bytes`);
-      const numBytes = baseAddress + i + 2;
+      // for now if there aren't many bytes, just show a mini hex dump, otherwise just count them
+      const descBytes = ((remainingBytes < 16) ? mkHexString() : `${remainingBytes}`);
+
+      const note = new Tag([TAG_NOTE], `${remainingBytes} trailing ${plural(remainingBytes, "byte")}: ${descBytes}`);
+      const numBytes = baseAddress + i + 2; // TODO is this 2 the content offset?
       const addr = new Tag([TAG_ADDRESS], hex16(numBytes));
       dataView.addLine(new LogicalLine([note, addr], remainingBytes, numBytes));
     }
