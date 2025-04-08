@@ -33,7 +33,6 @@ class DisassemblyMetaImpl implements DisassemblyMeta {
       [NULL_INDEXED_DESCRIPTOR],
       0,
       [],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (_fb) => [],
       new SymbolTable("empty")
   );

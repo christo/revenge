@@ -90,7 +90,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
           label word chars implying symbol lookup which defers operand and mode resolution
     */
     // TODO does not do indirect yet
-    const r = s.match(/([A-Za-z]{3})\s(#)?(\$[A-Fa-f0-9]{2,4}|[A-Za-z]\w*)\s*((,)\s*(x|y))?/);
+    const r = s.match(/([A-Za-z]{3})\s(#)?(\$[A-Fa-f0-9]{2,4}|[A-Za-z]\w*)\s*((,)\s*([xy]))?/);
     if (r) {
       const mnemonic = r[1];
       const immFlag = r[2];
@@ -153,16 +153,14 @@ class RevengeDialect extends BaseDialect implements Dialect {
       }
     } else if (parserState.state === "MID_MULTILINE_COMMENT") {
       // TODO add unit test to be sure of wtf
-      // eslint-disable-next-line
-      if (line.match(/^\h*\*\/\h*$/)) {
+      if (line.match(/^\s*\*\/\s*$/)) {
         // only end of comment
         parserState.state = "READY";
         return [emitThis({bytes: Petscii.codes("\n")})];
       } else {
         // is this the last comment line?
         // TODO add unit test to be sure of wtf
-        // eslint-disable-next-line
-        const m = line.match(/^(.*)\*\/\h*$/);
+        const m = line.match(/^(.*)\*\/\s*$/);
         if (m) {
           parserState.state = "READY";
           return [];//new LabelsCommentsOnly(new LabelsComments([], m[1])), parserState];
