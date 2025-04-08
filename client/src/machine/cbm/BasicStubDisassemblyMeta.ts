@@ -41,6 +41,8 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
 
   getEdict(offset: number): Edict<InstructionLike> | undefined {
     if (offset === 2) {
+      // TODO add label to symbol table for the next line and make this word reference that symbol
+      //   undecided on detailed mechanics of making this work
       return new WordDefinitionEdict(2, mkComments('Next line pointer'), false);
     }
     if (offset === 4) {
