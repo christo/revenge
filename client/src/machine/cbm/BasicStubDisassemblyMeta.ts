@@ -35,12 +35,10 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
     return PRG_CONTENT_OFFSET;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   executionEntryPoints(_fb: FileBlob): IndexedDescriptor[] {
     return [{index: this.entryPointAddress, name: this.entryPointDesc, description: ""}];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getEdict(offset: number): Edict<InstructionLike> | undefined {
     if (offset === 2) {
       return new WordDefinitionEdict(2, mkComments('Next line pointer'), false);
@@ -59,7 +57,6 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
     return addr > this.memoryConfig.basicProgramStart && addr < (fb.getLength() - PRG_CONTENT_OFFSET);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resolveSymbols(_fb: FileBlob): [number, LabelsComments][] {
     return this.symbols;
   }

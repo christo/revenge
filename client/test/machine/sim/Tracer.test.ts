@@ -22,7 +22,6 @@ describe("tracer", () => {
     const fb = FileBlob.fromBytes("testblob", machineCode, LE);
     const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const t = new Tracer(d, [mockOffsetDescriptor(0, "root")], mem(machineCode), (_: Addr) => false);
     expect(t.countActiveThreads() == 1, "should begin with 1 thread");
     expect(t.running(), "tracer should have started running");
