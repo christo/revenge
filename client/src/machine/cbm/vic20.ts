@@ -195,7 +195,7 @@ const CART_SIG_OFFSET = 6;
 const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
 
 const CART_JUMP_POINT_OFFSETS: IndexedDescriptor[] = [
-  // TODO this is code duplication, find it!
+  // TODO fix code duplication
   {index: CART_COLD_VECTOR_OFFSET, name: "reset", description: "cold reset vector"},
   {index: CART_WARM_VECTOR_OFFSET, name: "nmi", description: "warm reset vector"},
 
