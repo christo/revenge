@@ -3,31 +3,18 @@ import {Byteable} from "../Byteable.ts";
 import {assertByte} from "../core.ts";
 import {LabelsComments, SourceType} from "./asm.ts";
 import {Dialect} from "./Dialect.ts";
-import {Directive} from "./Directive.ts";
+import {Directive, DirectiveBase} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
-import {InstructionBase} from "./InstructionBase.ts";
 import {InstructionLike} from "./instructions.ts";
 
 /** Assembler pseudo-op that reserves literal bytes. */
-export class ByteDeclaration extends InstructionBase implements InstructionLike, Directive, Byteable {
+export class ByteDeclaration extends DirectiveBase implements InstructionLike, Directive, Byteable {
 
   private readonly _rawBytes: Array<number>;
 
   constructor(rawBytes: number[], lc: LabelsComments) {
-    super(lc, SourceType.DATA);
+    super(lc, SourceType.DATA, false,  false, false);
     this._rawBytes = rawBytes.map(b => assertByte(b));
-  }
-
-  isMacroDefinition(): boolean {
-    return false;
-  }
-
-  isPragma(): boolean {
-    return false;
-  }
-
-  isSymbolDefinition(): boolean {
-    return false;
   }
 
   getBytes = (): number[] => this._rawBytes;

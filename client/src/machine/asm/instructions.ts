@@ -1,5 +1,5 @@
 import {plural} from "../../ui/util.ts";
-import {Tag} from "../api.ts";
+import {Tag, TAG_BLANK} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
@@ -7,7 +7,7 @@ import {LabelsComments, SourceType} from "./asm.ts";
 import {Assembler} from "./Assembler.ts";
 import {ByteDeclaration} from "./ByteDeclaration.ts";
 import {Dialect} from "./Dialect.ts";
-import {Directive} from "./Directive.ts";
+import {Directive, DirectiveBase} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {Edict} from "./Edict.ts";
 import {InstructionBase} from "./InstructionBase.ts";
@@ -18,29 +18,17 @@ import {TextDeclaration} from "./TextDeclaration.ts";
  * Assembler directive that assigns a symbol to a value for literal replacement.
  *
  */
-class SymbolDefinition extends InstructionBase implements Directive {
+class SymbolDefinition extends DirectiveBase implements Directive {
   private readonly _symDef: SymDef<number>;
 
   // TODO handle generic argument correctly, not all definitions are of type number
   constructor(symDef: SymDef<number>) {
-    super(new LabelsComments([], [symDef.descriptor]), SourceType.PSEUDO);
+    super(new LabelsComments([], [symDef.descriptor]), SourceType.PSEUDO, false, false, true);
     this._symDef = symDef;
   }
 
   get symDef(): SymDef<number> {
     return this._symDef;
-  }
-
-  isMacroDefinition(): boolean {
-    return false;
-  }
-
-  isPragma(): boolean {
-    return false;
-  }
-
-  isSymbolDefinition(): boolean {
-    return true;
   }
 
   disassemble(dialect: Dialect, dis: Disassembler): Tag[] {
@@ -61,28 +49,16 @@ class SymbolDefinition extends InstructionBase implements Directive {
  * Assembly directive representing setting the program counter.
  * Often represented like this: 'org = $f000' or '* = $f000'
  */
-class PcAssign extends InstructionBase implements Directive {
+class PcAssign extends DirectiveBase implements Directive {
   private readonly _address: number;
 
   constructor(address: number, labels: string[] = [], comments: string[] = []) {
-    super(new LabelsComments(labels, comments), SourceType.PSEUDO);
+    super(new LabelsComments(labels, comments), SourceType.PSEUDO, false, false, true);
     this._address = address;
   }
 
   get address(): number {
     return this._address;
-  }
-
-  isMacroDefinition(): boolean {
-    return false;
-  }
-
-  isPragma(): boolean {
-    return false;
-  }
-
-  isSymbolDefinition(): boolean {
-    return true;
   }
 
   disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.pcAssign(this, dis);
@@ -95,7 +71,7 @@ class PcAssign extends InstructionBase implements Directive {
 /**
  * 16-bit word definition in architecture endianness. Currently only little-endian architectures supported.
  */
-class WordDefinition extends InstructionBase implements Directive {
+class WordDefinition extends DirectiveBase implements Directive {
   private readonly value: number;
   private readonly bytes: number[];
   // TODO use this as parameter to source generation call chain
@@ -109,22 +85,10 @@ class WordDefinition extends InstructionBase implements Directive {
    * @param lc for the humans.
    */
   constructor(firstByte: number, secondByte: number, lc: LabelsComments, decimal: boolean = false) {
-    super(lc, SourceType.DATA);
+    super(lc, SourceType.DATA, false, false, false);
     this.decimal = decimal;
     this.value = (secondByte << 8) | firstByte;
     this.bytes = [firstByte, secondByte];
-  }
-
-  isMacroDefinition(): boolean {
-    return false;
-  }
-
-  isPragma(): boolean {
-    return false;
-  }
-
-  isSymbolDefinition(): boolean {
-    return false;
   }
 
   disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => {
@@ -174,14 +138,12 @@ interface InstructionLike extends Byteable {
  */
 const BLANK_LINE: InstructionLike = {
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  disassemble: (_dialect: Dialect, _dis: Disassembler): Tag[] => [],
+  disassemble: (_dialect: Dialect, _dis: Disassembler): Tag[] => [new Tag([TAG_BLANK], "")],
 
   getBytes: (): number[] => [],
 
   getLength: (): number => 0,
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   read8: (_offset: number): number => {
     throw Error("no bytes to read");
   },
@@ -286,7 +248,6 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
 /**
  * Define text
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
 
   /**

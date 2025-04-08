@@ -1,3 +1,5 @@
+import {LabelsComments, SourceType} from "./asm.ts";
+import {InstructionBase} from "./InstructionBase.ts";
 import {InstructionLike} from "./instructions.ts";
 
 /**
@@ -13,4 +15,30 @@ interface Directive extends InstructionLike {
   isPragma(): boolean;
 }
 
-export {type Directive};
+abstract class DirectiveBase extends InstructionBase implements Directive {
+  private readonly macroDef: boolean;
+  private readonly symbolDef: boolean;
+  private readonly pragma: boolean;
+
+  protected constructor(lc: LabelsComments, st: SourceType, macroDef:boolean, isPragma:boolean, symbolDef: boolean) {
+    super(lc, st);
+    this.symbolDef = symbolDef;
+    this.macroDef = macroDef;
+    this.pragma = isPragma;
+  }
+
+  isMacroDefinition(): boolean {
+    return this.macroDef;
+  }
+
+  isPragma(): boolean {
+    return this.pragma;
+  }
+
+  isSymbolDefinition(): boolean {
+    return this.symbolDef;
+  }
+
+}
+
+export {type Directive, DirectiveBase};
