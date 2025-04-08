@@ -19,7 +19,7 @@ import {Environment,} from "../asm/asm.ts";
 import {Directive} from "../asm/Directive.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
-import {InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
+import {BLANK_LINE, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
 import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {SymbolType} from "../asm/SymbolTable.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
@@ -64,6 +64,9 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
     const symbolDefinition = new SymbolDefinition(symbol);
     detail.dataView.addLine(new LogicalLine(symbolDefinition.disassemble(dialect, dis), 0, undefined))
   });
+
+  // trying out this idea, looks a little noisy still
+  detail.dataView.addLine(new LogicalLine(BLANK_LINE.disassemble(dialect, dis), 0, undefined));
 
   // set the base address with a directive
   const assignPc: Directive = new PcAssign(dis.currentAddress, ["base"], ["load address"]);
