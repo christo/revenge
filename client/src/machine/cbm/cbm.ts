@@ -75,31 +75,26 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
   // TODO this is where we must change to code path disassembly order
   while (dis.hasNext()) {
     const instAddress = dis.currentAddress;
-    const inst: InstructionLike | undefined = dis.nextInstructionLine();
-    if (!inst) {
-      // TODO decide how this can happen and what to do instead
-      throw Error(`cannot disassemble at ${instAddress}`);
-    } else {
-      const addressTags = [TAG_ADDRESS];
-      if (traceResult.codeAddresses.includes(instAddress)) {
-        addressTags.push(TAG_EXECUTED);
-      }
-      if (traceResult.writtenAddresses.includes(instAddress)) {
-        addressTags.push(TAG_ADDRESS_WAS_WRITTEN);
-      }
-      if (traceResult.readAddresses.includes(instAddress)) {
-        addressTags.push(TAG_ADDRESS_WAS_READ);
-      }
-      if (meta.executionEntryPoints(fb).map(as => as.index).includes(instAddress)) {
-        addressTags.push(TAG_ENTRY_POINT);
-      }
-      const tags = [
-        new Tag(addressTags, hex16(instAddress)),
-        new Tag([TAG_HEX], asHex(inst.getBytes())),
-        ...inst.disassemble(dialect, dis)
-      ];
-      detail.dataView.addLine(new LogicalLine(tags, inst.getLength(), instAddress, inst));
+    const inst: InstructionLike = dis.nextInstructionLine();
+    const addressTags = [TAG_ADDRESS];
+    if (traceResult.codeAddresses.includes(instAddress)) {
+      addressTags.push(TAG_EXECUTED);
     }
+    if (traceResult.writtenAddresses.includes(instAddress)) {
+      addressTags.push(TAG_ADDRESS_WAS_WRITTEN);
+    }
+    if (traceResult.readAddresses.includes(instAddress)) {
+      addressTags.push(TAG_ADDRESS_WAS_READ);
+    }
+    if (meta.executionEntryPoints(fb).map(as => as.index).includes(instAddress)) {
+      addressTags.push(TAG_ENTRY_POINT);
+    }
+    const tags = [
+      new Tag(addressTags, hex16(instAddress)),
+      new Tag([TAG_HEX], asHex(inst.getBytes())),
+      ...inst.disassemble(dialect, dis)
+    ];
+    detail.dataView.addLine(new LogicalLine(tags, inst.getLength(), instAddress, inst));
   }
 
   // TODO link up internal address references jump targets with synthetic label names
