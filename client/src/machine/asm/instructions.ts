@@ -14,6 +14,10 @@ import {InstructionBase} from "./InstructionBase.ts";
 import {SymbolType} from "./SymbolTable.ts";
 import {TextDeclaration} from "./TextDeclaration.ts";
 
+/**
+ * Assembler directive that assigns a symbol to a value for literal replacement.
+ *
+ */
 class SymbolDefinition extends InstructionBase implements Directive {
   private readonly _symDef: SymDef<number>;
 
