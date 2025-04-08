@@ -4,7 +4,7 @@ import {Emitter} from "./Assembler.ts";
 import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
-import {FullInstructionLine, InstructionLike, PcAssign, SymbolDefinition} from "./instructions.ts";
+import {FullInstructionLine, PcAssign, SymbolDefinition} from "./instructions.ts";
 import {ParserState} from "./ParserState.ts";
 
 export const C_COMMENT_MULTILINE: [string, string] = ["/*", "*/"];
@@ -126,6 +126,12 @@ interface Dialect {
 }
 
 abstract class BaseDialect implements Dialect {
+
+  /**
+   * Alpha-prefixed classic identifier rule, non-capturing.
+   */
+  static VALID_LABEL_RX: RegExp = /[A-Za-z_]\w*/;
+
   readonly name: string;
   readonly description: string;
   readonly env: Environment;
@@ -144,8 +150,8 @@ abstract class BaseDialect implements Dialect {
    */
   checkLabel(l: string): BooBoo[] {
     // future: some assemblers insist labels must not equal/start-with/contain a mnemonic
-    // TODO should restrict label characters more than this
-    const match = l.matchAll(/(^\d|\s)/g);
+    // classic identifier rule, alpha-prefix then word chars, note like lisp we are ok with hyphens
+    const match = l.matchAll(/[A-Za-z_]\w*/);
     if (match) {
       return [new BooBoo(`Label must not start with digit or contain whitespace: ${l}`)];
     } else {

@@ -4,8 +4,6 @@ import {Addr, toStringArray} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 
 
-const VALID_LABEL_RX = /[A-Za-z_]\w*/;
-
 /**
  * Defines a semantic category for a line of assembly source.
  */

@@ -1,9 +1,9 @@
 import {MemoryConfiguration} from "../api.ts";
-import {LabelsComments, mkComments, mkLabels} from "../asm/asm.ts";
+import {LabelsComments, mkComments} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Edict} from "../asm/Edict.ts";
-import {ByteDefinitionEdict, InstructionLike, WordDefinitionEdict} from "../asm/instructions.ts";
+import {InstructionLike, WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
