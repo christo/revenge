@@ -16,12 +16,18 @@ function renderAddrDecHex(addr: Addr) {
 }
 
 
+/**
+ * Temporary function that combines sniffer and its calling code
+ * @param fileBlob
+ * @deprecated migrate to just use the sniffer
+ */
 function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
   const loadAddress = fileBlob.read16(0);
   // TODO we only find the first memory config with the correct start address, we should
   //  possibly use the largest one that matches the layout with the correct start address
   //  i.e. unexpanded, 3kb, 24kb
   const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
+  // try to decode just the stub in order to determine the machine code entry point
   // TODO tighten up this rough heuristic
   if (fileBlob.getLength() > 20 && memoryConfig) {
     //console.log("got basic load address, checking simple sys call to machine code");
@@ -33,6 +39,8 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
     // next line address length: 2 +
     // line number length: 2 =
     // 6
+    // hacky peek to find a sys token which might reveal the petscii decimal address
+    // this is just a guess that is often correct, however there could be parentheses, preamble code etc.
     if (fileBlob.read8(6) === TOKEN_SYS) {
       let i = 7;
       // skip any spaces
@@ -95,6 +103,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
 
   sniff(fb: FileBlob): number {
+    // how much like BASIC does this seem?
     const basicSmell = super.sniff(fb);
     // TODO WIP finish this implementation and move snifVic20McWithBasicStub(fb) in here
     const typeActions = snifVic20McWithBasicStub(fb);
