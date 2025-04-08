@@ -1,4 +1,4 @@
-import {hexDumper, MemoryConfiguration, TypeActions, UserAction} from "../api.ts";
+import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer, UNKNOWN_TYPE} from "../BlobTypeSniffer.ts";
