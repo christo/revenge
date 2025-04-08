@@ -1,7 +1,7 @@
 import {FileLike} from "./FileLike";
 
 /**
- * TODO share this type between server and client
+ * Represents server-provided binaries that can be loaded without doing clientside upload.
  */
 export type QuickLoad = {
   VIC20: FileLike[],
