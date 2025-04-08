@@ -188,7 +188,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return "$" + hex8(b);
   }
 
+  // TODO maybe instead introduce wordText(radix)
+
   hexWordText(x: number) {
+    // assembler may support multiple syntaxes but this would be a user preference for the dialect from the environment
     return "$" + hex16(x);
   }
 
