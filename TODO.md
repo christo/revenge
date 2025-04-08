@@ -3,7 +3,8 @@
 ## Next Actions
 
 * [ ] many C64 binaries are not detected correctly - investigate
-  * [ ] Add C64 basic quickload and test case.
+  * [x] Add C64 basic quickload
+  * [ ] add test case.
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
 * [ ] hovertools for exploration and interactive reversing:
