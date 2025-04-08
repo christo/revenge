@@ -1,3 +1,4 @@
+import {plural} from "../../ui/util.ts";
 import {Tag} from "../api.ts";
 import {Byteable} from "../Byteable.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -272,7 +273,7 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
   }
 
   describe(): string {
-    const s = `${this.numBytes} byte${this.numBytes !== 1 ? 's' : ""}`;
+    const s = `${this.numBytes} ${plural(this.numBytes, "byte")}`;
     return `declare ${s} at offset ${this._offset}`;
   }
 
@@ -301,7 +302,7 @@ class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<Instructi
   }
 
   describe(): string {
-    const s = `a string of ${this.length} char${this.length !== 1 ? 's' : ""}`;
+    const s = `a string of ${this.length} ${plural(this.length, "char")}`;
     return `declare ${s} at offset ${this.offset}`;
   }
 }

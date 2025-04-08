@@ -3,7 +3,7 @@ import {hex16, hex8} from "../core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
 import {LittleEndian} from "../Endian.ts";
 import {Memory} from "../Memory.ts";
-import {plural} from "../util.ts";
+import {plural} from "../../ui/util.ts";
 import {Petscii} from "./petscii.ts";
 
 type Token = [number, string];
