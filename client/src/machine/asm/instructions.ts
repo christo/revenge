@@ -311,7 +311,7 @@ class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<Instructi
  * Declares an address definition using the bytes at the offset.
  */
 class WordDefinitionEdict extends ByteDefinitionEdict {
-  private decimal: boolean;
+  private readonly decimal: boolean;
 
   constructor(offset: number, lc: LabelsComments, decimal: boolean = false) {
     super(offset, 2, lc);
@@ -328,9 +328,8 @@ class WordDefinitionEdict extends ByteDefinitionEdict {
     }
   }
 
-
   describe(): string {
-    return `declare a 16-bit word at offset ${this.length}`;
+    return `declare a 16-bit word at offset ${this.offset}`;
   }
 }
 
