@@ -74,37 +74,31 @@ class Disassembler {
   }
 
   /**
-   * Decides which {@link InstructionLike} should be constructed at the current index point
-   * and advances the index by the correct number of bytes.
+   * Decides which {@link InstructionLike} should be constructed at the current index point and advances the index by
+   * the correct number of bytes.
    *
    * Incorporates configured edicts which can force some data to be interpreted as code or data.
-   *
+   * @return an instruction, possibly a data definition if the instruction set has no applicable opcode
    */
-  nextInstructionLine(): InstructionLike | undefined {
+  nextInstructionLine(): InstructionLike {
 
     const lc = this.mkPredefLabelsComments(this.currentAddress);
 
-    let instLike: InstructionLike | undefined;
+    let instLike: InstructionLike;
+
 
     const maybeInstruction: InstructionLike | undefined = this.maybeMkEdict(lc);
     if (maybeInstruction !== undefined) {
       instLike = maybeInstruction;
     } else {
-      const isIllegal = (n: number) => this.iset.op(n) === undefined;
       if (this.currentIndex >= this.fb.getLength()) {
         throw Error(`Cannot read past end of file`);
       }
       const opcode = this.peekByte();
       if (opcode === undefined) {
         throw Error(`Cannot get byte at offset ${this.currentIndex} from ${this.fb.name}`);
-      } else if (isIllegal(opcode)) {
-        // slurp up multiple illegal opcodes in a row
-        let numBytes = 1;
-        while (numBytes < this.bytesLeftInFile() && isIllegal(this.fb.read8(this.currentIndex + numBytes)!)) {
-          numBytes++;
-        }
-        lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
-        instLike = new ByteDeclaration(this.eatBytes(numBytes), lc);
+      } else if (this.iset.illegalOpcode(opcode)) {
+        instLike = this.byteDecsForIllegals(lc);
       } else {
         // if there are not enough bytes for this whole instruction, return a ByteDeclaration for this byte
         // we don't yet know if an instruction will fit for the next byte
@@ -117,11 +111,30 @@ class Disassembler {
         } else {
           // normal instruction disassembly
           // console.log(`bytes left: ${bytesLeft} instruction len: ${instLen}`);
-          instLike = this.edictAwareInstruction(opcode, lc);
+          const edictAware: InstructionLike | undefined = this.edictAwareInstruction(opcode, lc);
+          // fall back to byte declaration
+          instLike = edictAware || this.byteDecsForIllegals(lc);
         }
       }
     }
     return instLike;
+  }
+
+  /**
+   * Generates a byte declaration consuming all bytes that cannot be decoded as legal instructions until
+   * the first legal opcode or the end of file.
+   *
+   * @param lc
+   * @private
+   */
+  private byteDecsForIllegals(lc: LabelsComments): InstructionLike {
+    // slurp up multiple illegal opcodes in a row
+    let numBytes = 1;
+    while (numBytes < this.bytesLeftInFile() && this.iset.illegalOpcode(this.fb.read8(this.currentIndex + numBytes)!)) {
+      numBytes++;
+    }
+    lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
+    return new ByteDeclaration(this.eatBytes(numBytes), lc);
   }
 
   isInBinary(addr: Addr) {
@@ -150,8 +163,12 @@ class Disassembler {
    * clash with it, if they exist, then make ByteDeclaration up to the edict instead. If there is no clash, return the
    * instruction.
    *
+   * This will return undefined if the ISA doesn't define an instruction for the opcode byte or
+   * if there aren't enough bytes in the file to decode the required operand bytes.
+   *
    * @param currentByte the byte already read
-   * @param lc labels and comments
+   * @param lc labels and comments to attach TODO consider adding this to an undecorated return value at callsite
+   * @return instruction for the current byte, possibly via overridden edict or undefined.
    */
   edictAwareInstruction(currentByte: number, lc: LabelsComments): InstructionLike | undefined {
 
@@ -206,7 +223,7 @@ class Disassembler {
         }
       } else {
         console.error(`bytes remaining: ${bytesRemaining} instruction bytes: ${numInstructionBytes}`);
-        throw Error(`Not enough bytes to disassemble instruction at index ${this.currentIndex}`);
+        return undefined;
       }
     }
   }

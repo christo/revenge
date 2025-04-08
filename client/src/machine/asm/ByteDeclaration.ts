@@ -6,9 +6,10 @@ import {Dialect} from "./Dialect.ts";
 import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
 import {InstructionBase} from "./InstructionBase.ts";
+import {InstructionLike} from "./instructions.ts";
 
 /** Assembler pseudo-op that reserves literal bytes. */
-export class ByteDeclaration extends InstructionBase implements Directive, Byteable {
+export class ByteDeclaration extends InstructionBase implements InstructionLike, Directive, Byteable {
 
   private readonly _rawBytes: Array<number>;
 

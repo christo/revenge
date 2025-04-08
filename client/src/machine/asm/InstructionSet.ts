@@ -41,6 +41,14 @@ class InstructionSet {
     this.instructions[o] = new Instruction(op, mode, o, bytes, cycles, false);
   }
 
+  /**
+   * Is there an instruction defined for this opcode?
+   * @param opcode the instruction.
+   */
+  illegalOpcode(opcode: number) {
+    return this.op(opcode) === undefined;
+  }
+
   op(opcode: number) {
     return this.ops[assertByte(opcode)];
   }
