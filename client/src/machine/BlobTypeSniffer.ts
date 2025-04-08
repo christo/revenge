@@ -18,11 +18,12 @@ class BlobTypeSniffer implements BlobSniffer {
 
   /**
    * Make a sniffer for detecting binaries using stuff like prefix bytes and file extension.
+   *
    * @param name unique identifier used to report a detected binary type to the user
    * @param desc elaboration, longer detail about the detection
    * @param tags
-   * @param ext
-   * @param prefix the first bytes
+   * @param ext expected file extension
+   * @param prefix fixed expected value for the first bytes
    * @param dm
    */
   constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {

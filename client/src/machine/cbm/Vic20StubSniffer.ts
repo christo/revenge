@@ -1,5 +1,6 @@
 import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
+import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer, UNKNOWN_TYPE} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16} from "../core.ts";
@@ -53,14 +54,18 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
         try {
           const startAddress = parseInt(intString, 10);
           if (!isNaN(startAddress)) {
+
             const entryPointDesc = `BASIC loader stub SYS ${startAddress}`;
-            const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+
             const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
             const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
             const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+
             const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
 
             const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
+            const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+
             const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
             return disasmAction(sniffer, fileBlob);
           } else {
@@ -107,6 +112,12 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
     // TODO WIP finish this implementation and move snifVic20McWithBasicStub(fb) in here
     const typeActions = snifVic20McWithBasicStub(fb);
     return basicSmell;
+  }
+
+
+  getMeta(): DisassemblyMeta {
+    // TODO implement this using BasicStubDisassemblyMeta
+    return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
   }
 }
 
