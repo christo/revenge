@@ -11,14 +11,11 @@ import {
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
   POPULAR_CART_LOAD_ADDRS,
-  UNEXPANDED_VIC_BASIC, Vic20,
-  VIC20_CART_SNIFFER, Vic20BasicSniffer
+  UNEXPANDED_VIC_BASIC,
+  VIC20_CART_SNIFFER
 } from "./cbm/vic20.ts";
+import {snifVic20McWithBasicStub} from "./cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
-import {
-  snifVic20McWithBasicStub,
-  Vic20StubSniffer
-} from "./cbm/Vic20StubSniffer.ts";
 
 
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
