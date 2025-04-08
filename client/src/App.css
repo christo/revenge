@@ -141,7 +141,11 @@ classes for tags follow
   left: 40ch;
   border-radius: 4px;
   padding: 1px 6px;
-  border: #7a7373 solid;
+  border: #7a737380 solid;
+}
+
+.blank {
+  min-height: 1em;
 }
 
 .mn, .code {
