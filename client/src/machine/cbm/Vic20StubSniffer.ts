@@ -2,14 +2,14 @@ import {hexDumper, MemoryConfiguration, TypeActions, UserAction} from "../api.ts
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {BlobTypeSniffer, UNKNOWN_TYPE} from "../BlobTypeSniffer.ts";
+import {Addr, asHex, hex16} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Mos6502} from "../mos6502.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.ts";
 import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.ts";
 import {disasmAction, prg} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.ts";
-import {Addr, asHex, hex16} from "../core.ts";
-import {FileBlob} from "../FileBlob.ts";
-import {Mos6502} from "../mos6502.ts";
 
 function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
