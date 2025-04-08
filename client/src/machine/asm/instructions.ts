@@ -4,7 +4,6 @@ import {Byteable} from "../Byteable.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {LabelsComments, SourceType} from "./asm.ts";
-import {Assembler} from "./Assembler.ts";
 import {ByteDeclaration} from "./ByteDeclaration.ts";
 import {Dialect} from "./Dialect.ts";
 import {Directive, DirectiveBase} from "./Directive.ts";
@@ -74,8 +73,7 @@ class PcAssign extends DirectiveBase implements Directive {
 class WordDefinition extends DirectiveBase implements Directive {
   private readonly value: number;
   private readonly bytes: number[];
-  // TODO use this as parameter to source generation call chain
-  private decimal: boolean;
+  private readonly decimal: boolean;
 
   /**
    * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
@@ -83,6 +81,7 @@ class WordDefinition extends DirectiveBase implements Directive {
    * @param firstByte first byte in the stream.
    * @param secondByte second byte in the stream.
    * @param lc for the humans.
+   * @param decimal
    */
   constructor(firstByte: number, secondByte: number, lc: LabelsComments, decimal: boolean = false) {
     super(lc, SourceType.DATA, false, false, false);
@@ -248,6 +247,7 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
 /**
  * Define text
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
 
   /**

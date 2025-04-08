@@ -101,7 +101,6 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
         ["basic", "machine-code", "vic20", memory.shortName]);
   }
 
-
   sniff(fb: FileBlob): number {
     // how much like BASIC does this seem?
     const basicSmell = super.sniff(fb);
