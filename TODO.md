@@ -21,6 +21,19 @@
   * incorporate `file` output - it does a reasonable job for many files
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
   * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
+* [ ] distinguishing data and code:
+  * [ ] designation of interpretation of a line should have a confidence score
+  * [ ] executed lines should be detected as code with high confidence score
+  * [ ] line interpretation can be multiple in theory
+  * [ ] in-binary locations that were statically read from or written to and not executed would
+        have a reasonably high confidence detection as data
+  * [ ] identity as data can go deeper to data types: bytes, words, strings, graphics, sound etc.
+  * [ ] the session should store any choices or overrides by the user: 
+    * interpreting binary bytes
+    * naming symbols
+    * configuring disassembly options
+    * adding annotations
+    * identifying the target machine configuration (impacts memory layout, instruction set etc.)
 * [ ] fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
