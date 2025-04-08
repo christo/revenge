@@ -51,6 +51,6 @@ class BlobTypeSniffer implements BlobSniffer {
   }
 }
 
-const UNKNOWN_BLOB = new BlobTypeSniffer("unknown", "type not detected", []);
+const UNKNOWN_TYPE = new BlobTypeSniffer("unknown", "type not detected", []);
 
-export {BlobTypeSniffer, UNKNOWN_BLOB};
+export {BlobTypeSniffer, UNKNOWN_TYPE};

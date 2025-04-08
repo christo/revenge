@@ -52,6 +52,10 @@ class Disassembler {
     this.executionPoints = [];
   }
 
+  getLiteralRadix(): number {
+    return 16;
+  }
+
   get currentAddress(): Addr {
     return this.segmentBaseAddress + this.currentIndex - this.contentStartIndex;
   }

@@ -4,7 +4,7 @@ import {
   TAG_ABSOLUTE,
   TAG_CODE,
   TAG_COMMENT,
-  TAG_DATA,
+  TAG_DATA, TAG_DECIMAL_ARRAY,
   TAG_HEXARRAY,
   TAG_IN_BINARY,
   TAG_KNOWN_SYMBOL,
@@ -41,19 +41,11 @@ import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {BaseDialect, C_COMMENT_MULTILINE, Dialect, SEMICOLON_PREFIX} from "./Dialect.ts";
 import {Directive} from "./Directive.ts";
 import {Disassembler} from "./Disassembler.ts";
-import {
-  BLANK_LINE,
-  FullInstructionLine,
-  InstructionLike,
-  LabelsCommentsOnly,
-  PcAssign,
-  SymbolDefinition
-} from "./instructions.ts";
+import {FullInstructionLine, PcAssign, SymbolDefinition} from "./instructions.ts";
 import {LiteralOperand} from "./LiteralOperand.ts";
 import {OperandResolver} from "./OperandResolver.ts";
 import {ParserState} from "./ParserState.ts";
 import {SymbolLookup} from "./SymbolLookup.ts";
-import {SymbolTable} from "./SymbolTable.ts";
 
 /**
  * Turns a tagSeq into plain text, discarding the tags.
@@ -200,6 +192,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return "$" + hex16(x);
   }
 
+  decimalWordText(x: number) {
+    return (0xffff & x).toString();
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bytes(x: FullInstructionLine, _dis: Disassembler): Tag[] {
     // future: context may give us rules about grouping, pattern detection etc.
@@ -225,10 +221,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  words(words: number[], lc: LabelsComments, _dis: Disassembler): Tag[] {
+  words(words: number[], lc: LabelsComments, dis: Disassembler): Tag[] {
     const comments: Tag = new Tag([TAG_COMMENT], this.renderComments(lc.comments));
     const labels: Tag = new Tag([TAG_LABEL], this.renderLabels(lc.labels));
-    const tags: Tag[] = this.wordDeclaration(words)
+    const tags: Tag[] = this.wordDeclaration(words, dis)
     const data: Tag = new Tag([TAG_DATA], this.env.indent() + tagText(tags));
     return [comments, labels, data];
   }
@@ -367,10 +363,17 @@ class RevengeDialect extends BaseDialect implements Dialect {
     return [kw, hexTag];
   }
 
-  private wordDeclaration(words: number[]): Tag[] {
+  private wordDeclaration(words: number[], dis: Disassembler): Tag[] {
     const kw: Tag = new KeywordTag(RevengeDialect.KW_WORD_DECLARATION);
-    const values: Tag = new Tag([TAG_HEXARRAY], words.map(this.hexWordText).join(", "));
-    return [kw, values];
+    // TODO ask disassembler whether to use binary, decimal or hex
+    if (dis.getLiteralRadix() === 10) {
+
+      const values: Tag = new Tag([TAG_DECIMAL_ARRAY], words.map(this.decimalWordText).join(", "));
+      return [kw, values];
+    } else {
+      const values: Tag = new Tag([TAG_HEXARRAY], words.map(this.hexWordText).join(", "));
+      return [kw, values];
+    }
   }
 
   /**

@@ -118,6 +118,7 @@ export const TAG_LINE_NUM = "lnum";
 export const TAG_NOTE = "note";
 export const TAG_KEYWORD = 'kw';
 export const TAG_HEXARRAY = "hexarray";
+export const TAG_DECIMAL_ARRAY = "decarray";
 /** displays a literal text string such as in assembly source */
 export const TAG_PETSCII = "tlit";
 /** generic class of assembly source expressions */
@@ -282,9 +283,14 @@ class RomImage implements Byteable {
 
 /**
  * Immutable config for available memory, basic load address etc.
+ *
  */
 class MemoryConfiguration {
+
+  // TODO generalise this to describe VIC20 expansion RAM in banks, C64 and 128
   readonly name: string;
+
+  /** Very Commodore-specific, start address of BASIC program. */
   readonly basicProgramStart: Addr;
 
   /**

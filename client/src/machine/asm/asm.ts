@@ -159,7 +159,7 @@ export {
   Environment,
   Section,
   SectionType,
-  mkLabels,
+  mkLabels, mkComments,
   SourceType,
   EMPTY_JUMP_TARGET_FETCHER
 };

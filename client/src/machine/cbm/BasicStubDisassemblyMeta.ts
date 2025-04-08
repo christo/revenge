@@ -1,9 +1,9 @@
 import {MemoryConfiguration} from "../api.ts";
-import {LabelsComments} from "../asm/asm.ts";
+import {LabelsComments, mkComments, mkLabels} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Edict} from "../asm/Edict.ts";
-import {InstructionLike} from "../asm/instructions.ts";
+import {ByteDefinitionEdict, InstructionLike, WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {Addr} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -41,7 +41,13 @@ export class BasicStubDisassemblyMeta implements DisassemblyMeta {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getEdict(_offset: number): Edict<InstructionLike> | undefined {
+  getEdict(offset: number): Edict<InstructionLike> | undefined {
+    if (offset === 2) {
+      return new WordDefinitionEdict(2, mkComments('Next line pointer'), false);
+    }
+    if (offset === 4) {
+      return new WordDefinitionEdict(4, mkComments('BASIC line number'), true);
+    }
     return undefined;
   }
 

@@ -5,7 +5,7 @@ import {BlobToActions, Computer, hexDumper, MemoryConfiguration, RomImage} from 
 import {mkLabels, SymbolResolver} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
-import {VectorDefinitionEdict} from "../asm/instructions.ts";
+import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
@@ -80,8 +80,8 @@ const CBM80 = Petscii.codes("CBM80");
 const MAGIC_OFFSET = 6;
 
 const C64_CART_MAGIC = new CartSigEdict(MAGIC_OFFSET, CBM80.length, "specified by C64 cart format");
-const C64_CART_NMI_VECTOR = new VectorDefinitionEdict(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
-const C64_CART_RESET_VECTOR = new VectorDefinitionEdict(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
+const C64_CART_NMI_VECTOR = new WordDefinitionEdict(C64_COLD_VECTOR_OFFSET, mkLabels("resetVector"));
+const C64_CART_RESET_VECTOR = new WordDefinitionEdict(C64_WARM_VECTOR_OFFSET, mkLabels("nmiVector"));
 
 const jumpTargetFetcher: SymbolResolver = (fb: FileBlob) => [
   [fb.read16(C64_COLD_VECTOR_OFFSET), mkLabels("reset")],

@@ -6,7 +6,7 @@ import {Computer, LogicalLine, MemoryConfiguration, RomImage, Tag} from "../api"
 import {LabelsComments, mkLabels, SymbolResolver} from "../asm/asm.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl";
-import {VectorDefinitionEdict} from "../asm/instructions.ts";
+import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
@@ -232,7 +232,7 @@ const VIC_ROMS = [
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
 ];
 
-class Vic20 extends Computer<LittleEndian> {
+class Vic20 extends Computer {
   static NAME = "VIC-20";
 
   static MEMORY_CONFIG = {
@@ -265,9 +265,8 @@ class Vic20 extends Computer<LittleEndian> {
   }
 }
 
-
 /**
- * Detects Vic-20 BASIC
+ * Detects Vic-20 BASIC program.
  */
 class Vic20BasicSniffer implements BlobSniffer {
 
@@ -276,11 +275,18 @@ class Vic20BasicSniffer implements BlobSniffer {
   tags: string[];
   private memory: MemoryConfiguration;
 
-  constructor(memory: MemoryConfiguration) {
+  constructor(
+      memory: MemoryConfiguration,
+      name: string = "BASIC prg",
+      // TODO generalise this for C64, getting the machine stuff from a Machine definition which also provides
+      //   a place to keep MemoryConfiguration details
+      desc: string = `VIC-20 BASIC (${memory.shortName})`,
+      tags: string[] = ["basic", "vic20", memory.shortName]
+  ) {
     this.memory = memory;
-    this.desc = `VIC-20 BASIC (${memory.shortName})`;
-    this.name = "BASIC prg";
-    this.tags = ["basic", "vic20", memory.shortName];
+    this.name = name;
+    this.desc = desc;
+    this.tags = tags;
   }
 
   getMeta(): DisassemblyMeta {
@@ -368,9 +374,9 @@ const VIC20_CART_SNIFFER = new CartSniffer(
         2,
         [
           new CartSigEdict(CART_SIG_OFFSET, A0CBM.length, "specified by VIC-20 cart format"),
-          new VectorDefinitionEdict(CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
-          new VectorDefinitionEdict(CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
-          new VectorDefinitionEdict(CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
+          new WordDefinitionEdict(CART_BASE_ADDRESS_OFFSET, mkLabels("cartBase")),
+          new WordDefinitionEdict(CART_COLD_VECTOR_OFFSET, mkLabels("resetVector")),
+          new WordDefinitionEdict(CART_WARM_VECTOR_OFFSET, mkLabels("nmiVector")),
         ], VIC_20_CART_VECTORS,
         VIC20_SYM
     )
@@ -387,4 +393,5 @@ export {
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
   VIC20_SYM,
+  Vic20BasicSniffer,
 }

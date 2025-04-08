@@ -93,6 +93,8 @@ class PcAssign extends InstructionBase implements Directive {
 class WordDefinition extends InstructionBase implements Directive {
   private readonly value: number;
   private readonly bytes: number[];
+  // TODO use this as parameter to source generation call chain
+  private decimal: boolean;
 
   /**
    * Use stream order of bytes, lsb and msb is determined by endianness inside this implementation.
@@ -101,8 +103,9 @@ class WordDefinition extends InstructionBase implements Directive {
    * @param secondByte second byte in the stream.
    * @param lc for the humans.
    */
-  constructor(firstByte: number, secondByte: number, lc: LabelsComments) {
+  constructor(firstByte: number, secondByte: number, lc: LabelsComments, decimal: boolean = false) {
     super(lc, SourceType.DATA);
+    this.decimal = decimal;
     this.value = (secondByte << 8) | firstByte;
     this.bytes = [firstByte, secondByte];
   }
@@ -119,7 +122,18 @@ class WordDefinition extends InstructionBase implements Directive {
     return false;
   }
 
-  disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => dialect.words([this.value], this._lc, dis);
+  disassemble = (dialect: Dialect, dis: Disassembler): Tag[] => {
+    let whodis: Disassembler = dis;
+    if (this.decimal) {
+      // override the radix
+      whodis = {
+        ...dis,
+        getLiteralRadix: () => 10,
+      } as Disassembler;
+    }
+    return dialect.words([this.value], this._lc, whodis);
+  };
+
   getBytes = (): number[] => this.bytes;
   getLength = (): number => 2;
 }
@@ -295,17 +309,19 @@ class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<Instructi
 /**
  * Declares an address definition using the bytes at the offset.
  */
-class VectorDefinitionEdict extends ByteDefinitionEdict {
+class WordDefinitionEdict extends ByteDefinitionEdict {
+  private decimal: boolean;
 
-  constructor(offset: number, lc: LabelsComments) {
-    super(offset, 2, lc); // 2 bytes in a word
+  constructor(offset: number, lc: LabelsComments, decimal: boolean = false) {
+    super(offset, 2, lc);
+    this.decimal = decimal; // 2 bytes in a word
   }
 
   create(fb: FileBlob): InstructionLike {
     const firstByte = fb.read8(this.offset);
     const secondByte = fb.read8(this.offset + 1);
     if (firstByte !== undefined && secondByte !== undefined) {
-      return new WordDefinition(firstByte, secondByte, this.lc);
+      return new WordDefinition(firstByte, secondByte, this.lc, this.decimal);
     } else {
       throw Error(`Can't read word from FileBlob ${fb.name} at offset ${this.offset} `);
     }
@@ -340,7 +356,7 @@ class LabelsCommentsOnly extends InstructionBase {
 }
 
 export {
-  VectorDefinitionEdict,
+  WordDefinitionEdict,
   ByteDefinitionEdict,
   SymDef,
   FullInstructionLine,

@@ -117,6 +117,12 @@ interface Dialect {
    * @param x
    */
   hexWordText(x: number): string;
+
+  /**
+   * Return the source string for the given word as a decimal literal.
+   * @param x
+   */
+  decimalWordText(x: number): string;
 }
 
 abstract class BaseDialect implements Dialect {
@@ -156,6 +162,8 @@ abstract class BaseDialect implements Dialect {
   abstract hexByteText(b: number): string;
 
   abstract hexWordText(x: number): string;
+
+  abstract decimalWordText(x: number): string;
 
   abstract lineCommentPrefix(): string[];
 

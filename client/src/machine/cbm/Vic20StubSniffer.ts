@@ -1,0 +1,105 @@
+import {hexDumper, MemoryConfiguration, TypeActions, UserAction} from "../api.ts";
+import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
+import {BlobSniffer} from "../BlobSniffer.ts";
+import {BlobTypeSniffer, UNKNOWN_TYPE} from "../BlobTypeSniffer.ts";
+import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.ts";
+import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.ts";
+import {disassemble, prg} from "./cbm.ts";
+import {Petscii} from "./petscii.ts";
+import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.ts";
+import {Addr, asHex, hex16} from "../core.ts";
+import {FileBlob} from "../FileBlob.ts";
+import {Mos6502} from "../mos6502.ts";
+
+function renderAddrDecHex(addr: Addr) {
+  return `${addr} ($${hex16(addr)})`
+}
+
+
+function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
+  const loadAddress = fileBlob.read16(0);
+  // TODO we only find the first memory config with the correct start address, we should
+  //  possibly use the largest one that matches the layout with the correct start address
+  //  i.e. unexpanded, 3kb, 24kb
+  const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
+  // TODO tighten up this rough heuristic
+  if (fileBlob.getLength() > 20 && memoryConfig) {
+    //console.log("got basic load address, checking simple sys call to machine code");
+    // we probably have a basic header with machine code following
+    // we need to decode the basic header, read a sys command and
+    // calculate the entry point
+    // sys token index =
+    // load address length: 2 +
+    // next line address length: 2 +
+    // line number length: 2 =
+    // 6
+    if (fileBlob.read8(6) === TOKEN_SYS) {
+      let i = 7;
+      // skip any spaces
+      while (fileBlob.read8(i) === TOKEN_SPACE) {
+        i++;
+      }
+      // read decimal address
+      const intString = Petscii.readDigits(fileBlob.asEndian(), i);
+      if (intString.length > 0) {
+        try {
+          const startAddress = parseInt(intString, 10);
+          if (!isNaN(startAddress)) {
+            const entryPointDesc = `BASIC loader stub SYS ${startAddress}`;
+            const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+            const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
+            const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
+            const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+            const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
+
+            const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
+            const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+            return disassemble(sniffer, fileBlob);
+          } else {
+            console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
+          }
+        } catch (e) {
+          console.error("died trying to disassemble during sniff", e);
+        }
+      } else {
+        console.warn(`couldn't find sys command argument`);
+      }
+    } else {
+      const b = fileBlob.getBytes().slice(0, 20);
+      console.log(b);
+      const hex = asHex(b);
+      console.warn(`basic header didn't start with sys command\n${hex}`);
+    }
+
+    return {t: UNKNOWN_TYPE, actions: [hexDumper(fileBlob)]}
+  }
+  console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
+  return disassemble(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);
+}
+
+/**
+ * Hybrid sniffer of a machine code program with a basic stub.
+ * Since some different memory configurations require different load addresses,
+ * these can be distinguished just like pure BASIC prg files, however not all
+ * memory configuration requirements are evident from the load address. A
+ * trace or simulation could give good approximation here.
+ */
+class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
+
+  constructor(memory: MemoryConfiguration) {
+    super(memory,
+        `6502 Machine Code with BASIC stub`,
+        `6502 Machine Code with BASIC stub(${memory.shortName})`,
+        ["basic", "machine-code", "vic20", memory.shortName]);
+  }
+
+
+  sniff(fb: FileBlob): number {
+    const basicSmell = super.sniff(fb);
+    // TODO WIP finish this implementation and move snifVic20McWithBasicStub(fb) in here
+    const typeActions = snifVic20McWithBasicStub(fb);
+    return basicSmell;
+  }
+}
+
+export {Vic20StubSniffer, snifVic20McWithBasicStub};
