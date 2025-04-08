@@ -90,7 +90,7 @@ export const TAG_KNOWN_SYMBOL = "knownsymbol"
 
 /** a label in the source code */
 export const TAG_LABEL = "label";
-
+export const TAG_BLANK = "blank";
 /** a human readable comment */
 export const TAG_COMMENT = "comment";
 export const TAG_DATA = "data";
