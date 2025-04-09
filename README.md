@@ -22,8 +22,7 @@ detect the filetype.
 ## Performance Problems April 2025
 
 There is currently a terrible performance bottleneck in the front-end rendering causing
-page loads to take a few seconds. Fixing it is a priority as soon as work-in-progress
-for kernal symbol definitions and non-address-resident source lines is complete. It's
+large binary loads to take a few seconds. Fixing it is a pretty high priority. It's
 something dumb and will probably be quick to fix although I can imagine it taking a
 whole day to find the cause.
 
