@@ -30,6 +30,7 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.
+ * TODO should return a top list with confidence scores
  *
  * @param fileBlob
  */
@@ -76,6 +77,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   // detect VIC20 machine code with basic stub
   // we have already detected some basicness
   if (maxBasicSmell > 0.5) {
+    // TODO finish this idea, maybe take sniffer with max score?
     /*
     Vic20.MEMORY_CONFIGS
         .map(mc => new Vic20StubSniffer(mc)
@@ -87,7 +89,8 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     const ta: TypeActions = snifVic20McWithBasicStub(fileBlob);
     return ta;
   }
-  const typeActions: TypeActions = {t: UNKNOWN_TYPE, actions: [hd]};
+  // resort to hex dump only
+  const typeActions: TypeActions = {t: BlobTypeSniffer.UNKNOWN_TYPE, actions: [hd]};
   return typeActions;
 }
 
