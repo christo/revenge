@@ -95,7 +95,7 @@
 
 ## Long Term Ideas
 
-* [ ] Find usable game database info to identify binaries from checksums or content hashes. MAME seems to have one such database (licensed CC0) organised by system under the `hash/` directory that includes CRC32 and SHA1 for the few files I checked.
+* [ ] Find usable game database info to identify binaries from checksums or content hashes. [MAME seems to have one such database](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) (licensed CC0) organised by system under the `hash/` directory that includes CRC32 and SHA1 for the few files I checked.
   * Design some kind of system with a multi-authority claim of fact. The idea is that a given authority claims that a binary of a given size, with a given hash etc. has a given name and runs on a given system etc. The content of the claim will not be homogenous however each claimable field should be consistently defined.
   * End users and known published sources can be authorities. When a binary matches a claim by low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be ideal at that point. The user can take it or leave it. 
   * Such claims might be accepted as a hint or fact with which to guide a reverse engineering session.
