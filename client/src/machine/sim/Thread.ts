@@ -41,6 +41,8 @@ export class Thread {
    * @param disasm disassembler to identify instruction semantics
    * @param pc address of next instruction to be executed
    * @param memory contains code to run
+   * @param addExecuted function called when adding an executed address
+   * @param getExecuted function if called must return all executed addresses
    * @param ignore function to indicate whether to ignore a given address, defaults to ignoring none.
    */
   constructor(creator: string, disasm: Disassembler, pc: Addr, memory: Memory<Endian>,
