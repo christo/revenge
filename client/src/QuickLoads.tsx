@@ -28,6 +28,7 @@ function systemLogo(background: string, foreground: string, text: string) {
 
 const EMPTY_QUICKLOADS = {VIC20: [], C64: []};
 
+// TODO redo this in a more mui style wa2y
 const SX_QL = {
   color: lowKey,
   fontSize: "x-large",
