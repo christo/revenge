@@ -9,11 +9,11 @@ import {FileBlob} from "./FileBlob.ts";
  */
 class BlobTypeSniffer implements BlobSniffer {
 
-  name: string;
-  desc: string;
-  exts: string[];
-  tags: string[];
-  prefix: Uint8Array;
+  readonly name: string;
+  readonly desc: string;
+  readonly exts: string[];
+  readonly tags: string[];
+  readonly prefix: Uint8Array;
   dm: DisassemblyMeta;
 
   /**
@@ -21,10 +21,10 @@ class BlobTypeSniffer implements BlobSniffer {
    *
    * @param name unique identifier used to report a detected binary type to the user
    * @param desc elaboration, longer detail about the detection
-   * @param tags
+   * @param tags displayed as "hashtags" on the front-end
    * @param ext expected file extension
    * @param prefix fixed expected value for the first bytes
-   * @param dm
+   * @param dm optional context for possible disassembly
    */
   constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
     this.desc = desc;
