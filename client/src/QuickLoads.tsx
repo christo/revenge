@@ -69,7 +69,7 @@ export function QuickLoads(props: { setFile: (f: FileLike) => void }) {
   } else if (!isLoaded) {
     return <Box sx={{w: "100%"}}><CircularProgress color="secondary"/></Box>;
   } else {
-    return <Box sx={{w: "100%", p: 1}}>
+    return <Box sx={{w: "100%", p: 0}}>
       <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
         <Box sx={{pt: 1}}>
           <Typography variant="h4" sx={SX_QL}>Quickload</Typography>

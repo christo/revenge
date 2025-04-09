@@ -23,9 +23,11 @@ function AppLogo({size}: {size: 1024 | 512 | 192}) {
     margin: "0 auto",
     display: "block",
     borderRadius: "1em",
+    maxWidth: "30%",
+    maxHeight: "30%",
   }
   // noinspection HtmlUnknownTarget
-  return <img src={`revenge-logo${size}.png`} width={size} height={size} style={sx} alt="revenge logo"/>;
+  return <img src={`revenge-logo${size}.png`} style={sx} alt="revenge logo"/>;
 }
 
 function App() {
@@ -34,11 +36,11 @@ function App() {
       <ThemeProvider theme={darkTheme}>
         <Box sx={{m: 0}}>
           <MenuAppBar/>
-          <Box sx={{m: 1, w: '100%'}}>
+          <Box sx={{m: 2, w: '100%'}}>
             <Box sx={{
               display: "flex",
               justifyContent: "right",
-              alignItems: "center",
+              alignItems: "start",
             }}>
               <QuickLoads setFile={(f) => setFile(f)}/>
               <Box className="dropZone">
