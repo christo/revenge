@@ -109,8 +109,7 @@ export class Thread {
   }
 
   private terminate(reason: string) {
-    const mesg = `${reason} @ ${this.renderPc()}`;
-    this.terminationReason = mesg;
+    this.terminationReason = `${reason} @ ${this.renderPc()}`;
     this._running = false;
     // console.log(`${this.descriptor} terminated ${mesg}`);
   }
