@@ -21,14 +21,31 @@
   * incorporate `file` output - it does a reasonable job for many files
   * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
   * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
+  * [ ] Find usable game database info to identify binaries from checksums or content
+    hashes. MAME seems to have one such database 
+    for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) 
+    among many others (licensed CC0) organised by system under the `hash/` directory that includes
+    CRC32 and SHA1 for the few files I checked.
+  * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
+  * Design some kind of system with a multi-authority claim of fact. The idea is that a given
+    authority claims that a binary of a given size, with a given hash etc. has a given name and runs
+    on a given system etc. The content of the claim will not be homogenous however each claimable
+    field should be consistently defined.
+  * End users and known published sources can be authorities. When a binary matches a claim by
+    low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in
+    the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be
+    ideal at that point. The user can take it or leave it.
+  * Such claims might be accepted as a hint or fact with which to guide a reverse engineering
+    session.
+  * Could be used for machine learning tuning of a classifier
 * [ ] distinguishing data and code:
   * [ ] designation of interpretation of a line should have a confidence score
   * [ ] executed lines should be detected as code with high confidence score
   * [ ] line interpretation can be multiple in theory
   * [ ] in-binary locations that were statically read from or written to and not executed would
-        have a reasonably high confidence detection as data
+    have a reasonably high confidence detection as data
   * [ ] identity as data can go deeper to data types: bytes, words, strings, graphics, sound etc.
-  * [ ] the session should store any choices or overrides by the user: 
+  * [ ] the session should store any choices or overrides by the user:
     * interpreting binary bytes
     * naming symbols
     * configuring disassembly options
@@ -95,11 +112,6 @@
 
 ## Long Term Ideas
 
-* [ ] Find usable game database info to identify binaries from checksums or content hashes. [MAME seems to have one such database](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) (licensed CC0) organised by system under the `hash/` directory that includes CRC32 and SHA1 for the few files I checked.
-  * Design some kind of system with a multi-authority claim of fact. The idea is that a given authority claims that a binary of a given size, with a given hash etc. has a given name and runs on a given system etc. The content of the claim will not be homogenous however each claimable field should be consistently defined.
-  * End users and known published sources can be authorities. When a binary matches a claim by low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be ideal at that point. The user can take it or leave it. 
-  * Such claims might be accepted as a hint or fact with which to guide a reverse engineering session.
-  * Could be used for machine learning tuning of a classifier
 * [ ] Broaden code detection to fuller emulation
   * [ ] check out MIT licensed typescript 6502 emulator
     core https://github.com/6502ts/6502.ts
