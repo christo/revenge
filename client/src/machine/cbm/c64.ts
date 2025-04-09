@@ -17,8 +17,11 @@ import {CartSniffer} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 
 class C64 extends Computer {
+  static readonly NAME = "C64";
+  static readonly LONG_NAME = "Commodore C64";
+
   constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
-    super("C64", new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
+    super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
 
@@ -213,4 +216,4 @@ class C64CrtSniffer extends CartSniffer {
 }
 
 
-export {crt64Actions, C64_CRT, C64_8K16K_CART_SNIFFER, C64_BASIC_PRG};
+export {C64, crt64Actions, C64_CRT, C64_8K16K_CART_SNIFFER, C64_BASIC_PRG};

@@ -234,6 +234,7 @@ const VIC_ROMS = [
 
 class Vic20 extends Computer {
   static NAME = "VIC-20";
+  static LONG_NAME = "Commodore VIC-20"
 
   static MEMORY_CONFIG = {
     UNEX: new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded"),
