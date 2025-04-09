@@ -8,7 +8,7 @@ import {FileBlob} from "./FileBlob.ts";
  * file name extension, magic number prefixes detect file contents.
  */
 class BlobTypeSniffer implements BlobSniffer {
-
+  static readonly UNKNOWN_TYPE = new BlobTypeSniffer("unknown", "type not detected", []);
   readonly name: string;
   readonly desc: string;
   readonly exts: string[];
@@ -52,6 +52,5 @@ class BlobTypeSniffer implements BlobSniffer {
   }
 }
 
-const UNKNOWN_TYPE = new BlobTypeSniffer("unknown", "type not detected", []);
 
-export {BlobTypeSniffer, UNKNOWN_TYPE};
+export {BlobTypeSniffer};

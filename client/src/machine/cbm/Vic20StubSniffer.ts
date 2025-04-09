@@ -2,7 +2,7 @@ import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
-import {BlobTypeSniffer, UNKNOWN_TYPE} from "../BlobTypeSniffer.ts";
+import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
@@ -84,7 +84,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
       console.warn(`basic header didn't start with sys command\n${hex}`);
     }
 
-    return {t: UNKNOWN_TYPE, actions: [hexDumper(fileBlob)]}
+    return {t: BlobTypeSniffer.UNKNOWN_TYPE, actions: [hexDumper(fileBlob)]}
   }
   console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
   return disasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);

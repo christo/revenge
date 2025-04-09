@@ -2,7 +2,7 @@
 
 import {hexDumper, TypeActions} from "./api.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
-import {UNKNOWN_TYPE} from "./BlobTypeSniffer.ts";
+import {BlobTypeSniffer} from "./BlobTypeSniffer.ts";
 import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
 import {disasmAction, printBasic} from "./cbm/cbm.ts";
 import {
