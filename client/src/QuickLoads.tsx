@@ -1,11 +1,10 @@
-import React from 'react';
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from 'react';
 import {FileLike} from "../../server/src/common/FileLike.ts";
 import {QuickLoad} from "../../server/src/common/QuickLoad.ts";
 import {ServerError} from "../../server/src/common/ServerError.ts";
-import {background, infoBright, primaryBright} from "./neonColourScheme.ts";
+import {background, infoBright, lowKey, primaryBright} from "./neonColourScheme.ts";
 
 /**
  * Temporary typographic logo for a retro system.
@@ -28,6 +27,14 @@ function systemLogo(background: string, foreground: string, text: string) {
 }
 
 const EMPTY_QUICKLOADS = {VIC20: [], C64: []};
+
+const SX_QL = {
+  color: lowKey,
+  fontSize: "x-large",
+  writingMode: "vertical-rl",
+  textTransform: "uppercase",
+  fontFamily: "BebasNeueRegular"
+};
 
 /**
  * Try to load the QuickLoad binaries from the server for one click loading.
@@ -63,7 +70,9 @@ export function QuickLoads(props: { setFile: (f: FileLike) => void }) {
   } else {
     return <Box sx={{w: "100%", p: 1}}>
       <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
-        <Typography>Quickload:</Typography>
+        <Box sx={{pt: 1}}>
+          <Typography variant="h4" sx={SX_QL}>Quickload</Typography>
+        </Box>
         <Stack
             direction="row"
             gap="0.5rem 1rem"
