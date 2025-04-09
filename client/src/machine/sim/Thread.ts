@@ -59,6 +59,7 @@ export class Thread {
     this.written = [];
     this.read = [];
     this.addExecuted = addExecuted;
+    // TODO migrate use of getExecuted to wasExecuted(addr) so thread can ask if address was already executed
     this.getExecuted = getExecuted;
     this.ignore = ignore;
     this._running = true;
@@ -120,6 +121,8 @@ export class Thread {
    * @private
    */
   private byteBelongsToExecutedInstruction(pc: number) {
+    // TODO may not be sufficient, what if one of our operand bytes is part of an executed instruction
+    //   but not the opcode byte at the current pc?
     return this.getExecuted().flatMap(enumInstAddr).includes(pc);
   }
 
