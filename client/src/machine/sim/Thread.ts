@@ -123,7 +123,7 @@ export class Thread {
 
   /**
    * Trace-execute the instruction. If it is a conditional branch it forks a thread. If it is a
-   * jsr it pushes the appropriate address to the stack (6502 may not put return address), reaching
+   * jsr it pushes the appropriate address to the stack (6502 has some quirks here), reaching
    * an already-traced address should cause the thread to stop, aka "join" and reaching a brk should
    * stop thread execution. Because it's not a full emulator and runs all branches
    * of any conditional branch, many instructions have no effect on the state of the tracer.
@@ -169,9 +169,9 @@ export class Thread {
           // We terminate at return and a forked thread takes a subroutine jump though intuitively
           // backwards it simplifies implementation and shouldn't make any difference.
           // Strictly this assumption is wrong, we may never actually return which makes jsr
-          // equivalent to jmp with a return stack push.
+          // equivalent to jmp with a stack push.
           // A more conventional way would be for the current thread to do the jump and come back upon
-          // hitting a return but then threads would need a return stack to keep the return address.
+          // hitting a return but then threads would need a stack to keep the return address.
 
           // the program counter was already advanced before calculating any relative offset
           const jumpTarget = inst.resolveOperandAddress(nextPc);
