@@ -59,7 +59,6 @@ export class Thread {
     this.written = [];
     this.read = [];
     this.addExecuted = addExecuted;
-    // TODO migrate use of getExecuted to wasExecuted(addr) so thread can ask if address was already executed
     this.getExecuted = getExecuted;
     this.ignore = ignore;
     this._running = true;
