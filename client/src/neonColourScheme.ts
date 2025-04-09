@@ -17,6 +17,7 @@ export const background = darkPurple;
 export const primaryBright = neonPink;
 export const secondaryBright = neonYellow;
 export const infoBright = neonCyan;
+export const lowKey = "#6b6173";
 
 export const darkTheme = createTheme({
   palette: {
