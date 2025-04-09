@@ -138,8 +138,6 @@ describe("tracer", () => {
       const d = new Disassembler(Mos6502.ISA, fb, dm);
 
       const initialPc = 0x1000;
-      // TODO use the offsetOfResetVector to find the reset vector
-      // TODO start tracing at the reset vector
       const entryPoints = dm.executionEntryPoints(fb);
       entryPoints.forEach(entryPoint => {
         console.log(`entry point ${entryPoint.name} address: 0x${entryPoint.index.toString(16)}`);
