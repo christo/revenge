@@ -43,8 +43,14 @@ function App() {
               alignItems: "start",
             }}>
               <QuickLoads setFile={(f) => setFile(f)}/>
-              <Box className="dropZone">
-                <FileUploader handleChange={setFile} name="file" types={ALL_CBM_FILE_EXTS} maxSize={MAX_SIZE_MB}/>
+              <Box className="dropZoneContainer" >
+                <FileUploader
+                    classes="dropZoneActual"
+                    handleChange={setFile}
+                    name="file"
+                    types={ALL_CBM_FILE_EXTS}
+                    maxSize={MAX_SIZE_MB}
+                />
               </Box>
             </Box>
             {file ? <CurrentFileSummary file={file}/> : <AppLogo size={512}/>}

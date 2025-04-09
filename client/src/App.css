@@ -19,6 +19,16 @@ neon cyan: #0AE0E3
 neon yellow: #f8ff22;
  */
 
+.dropZoneActual {
+  border: 2px dashed #f8ff22 !important;
+  border-radius: 0.5em !important;
+  /*background-color: pink;*/
+}
+
+.dropZoneContainer {
+  /*outline: #8282e0 1px solid;*/
+}
+
 /*
 ***********************
 classes for tags follow
