@@ -14,7 +14,7 @@ class BlobTypeSniffer implements BlobSniffer {
   readonly exts: string[];
   readonly tags: string[];
   readonly prefix: Uint8Array;
-  dm: DisassemblyMeta;
+  readonly dm: DisassemblyMeta;
 
   /**
    * Make a sniffer for detecting binaries using stuff like prefix bytes and file extension.
