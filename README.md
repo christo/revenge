@@ -75,40 +75,6 @@ transparently agnostic about this but if you have opinions and skills, get in to
 accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/package.json` and
 `server/package.json` files to see what scripts are defined.
 
-## Code Detection
-
-It's not hard to make good guesses about what parts of a binary are code or data but it is
-harder to do reliably and automatically. Therefore, most reverse engineering tools are
-interactive; the user must get involved to interpret and understand the binary and to dictate
-what is code, text data, image data, audio etc. and this is even trickier when code is
-self-modifying, compressed, encrypted, obfuscated or when bytes are treated as both code and data.
-
-Using a hybrid approach to code detection, some parts of a binary can be confidently identified
-as code through a mixture of static and dynamic analysis. A `Tracer` is implemented
-which follows code execution paths, including both sides of conditional branches and records
-which addresses hold instructions. In many cases this approach can determine parts which are
-almost certainly code and also to identify regions of almost certain data.
-
-Work on this is ongoing.
-
-Solving this problem deterministically for all possible programs is equivalent to solving
-[The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously
-proved to be impossible. Solving it deterministically for certain programs, constrained to a
-useful subset of possible instructions is at an early stage of implementation and further work
-to extend this with partial evaluation and probabilistic execution could be very useful for
-accelerating reverse engineering on small retro systems.
-
-Using a combination of preemptive emulation, detailed machine architecture definitions and
-static analytic techniques like program transformation, escape analysis, peephole optimisation
-and dynamic techniques like speculative partial execution, combined with a large cross-referenced
-database built from a corpus of known software, I hope to give insight to a human reverse engineer
-about any software written for these enigmatic retro systems.
-
-Read more notes about [Dynamic Analysis](docs/dynamic-analysis.md).
-
-It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
-such a system.
-
 ## Features
 
 * drag and drop file loading
@@ -153,8 +119,8 @@ estimations, not promises.
 |------------------------------|-------------|------------|
 | VIC-20, C64                  | In Progress | 6502       |
 | Apple II, BBC B              | Planned     | 6502       |
-| NES                          | Probable    | 6502       |
-| ZX Spectrum                  | Planned     | Z80        |
+| NES, C128                    | Probable    | 6502       |
+| ZX Spectrum & clones         | Planned     | Z80        |
 | Microbee, TRS-80             | Probable    | Z80        |
 | Oric, Atari 8-bit            | Probable    | 6502       | 
 | VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
@@ -162,36 +128,73 @@ estimations, not promises.
 | Gameboy series               | ?           | Z80 -ish   |
 | Vectrex, TRS-80 Coco, Dragon | ?           | 6809       |
 
+## File Formats
+
+Info on [binary file formats](docs/file-formats.md) is documented to guide the design of content
+detection and disassembly.
+
 ## Assembly Dialects
 
-See document about plans and ideas to support
-various [assembler dialects](docs/assembler-dialects.md). Supporting a new dialect is a matter of
+See document about plans and ideas to support various
+[assembler dialects](docs/assembler-dialects.md). Supporting a new dialect is a matter of
 implementing the **Dialect** interface, possibly subclassing **BaseDialect**.
 
-Currently only one arbitrary custom dialect is implemented while the API is being stabilised. 
+Currently only one arbitrary custom dialect is implemented while the API is being stabilised.
+
+## Code Detection
+
+It's not hard to make good guesses about what parts of a binary are code or data but it is harder to
+do reliably and automatically. Therefore, most reverse engineering tools are interactive; the user
+must get involved to interpret and understand the binary and to dictate what is code, text data,
+image data, audio etc. and this is even trickier when code is self-modifying, compressed, encrypted,
+obfuscated or when bytes are treated as both code and data.
+
+Using a hybrid approach to code detection, some parts of a binary can be confidently identified as
+code through a mixture of static and dynamic analysis. A `Tracer` is implemented which follows code
+execution paths, including both sides of conditional branches and records which addresses hold
+instructions. In many cases this approach can determine parts which are almost certainly code and
+also to identify regions of almost certain data.
+
+Work on this is ongoing.
+
+Solving this problem deterministically for all possible programs is equivalent to solving
+[The Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) which has been famously proved
+to be impossible. Solving it deterministically for certain programs, constrained to a useful subset
+of possible instructions is at an early stage of implementation and further work to extend this with
+partial evaluation and probabilistic execution could be very useful for accelerating reverse
+engineering on small retro systems.
+
+Using a combination of preemptive emulation, detailed machine architecture definitions and static
+analytic techniques like program transformation, escape analysis, peephole optimisation and dynamic
+techniques like speculative partial execution, combined with a large cross-referenced database built
+from a corpus of known software, I hope to give insight to a human reverse engineer about any
+software written for these enigmatic retro systems.
+
+Read more notes about [Dynamic Analysis](docs/dynamic-analysis.md).
+
+It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
+such a system.
 
 ## Design Notes
 
-Machine language BASIC loaders often use base 10 data sequences of bytes. This is a
-low compression format. Higher radix formats can be used as strings, rem comments or
-some other transport format and the encoding of the instruction data can be a custom,
-variable-length compression format.
+Machine language BASIC loaders often use base 10 data sequences of bytes. This is a low compression
+format. Higher radix formats can be used as strings, rem comments or some other transport format and
+the encoding of the instruction data can be a custom, variable-length compression format.
 
 Peep-hole optimiser.
 See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
 
-Patchy comprehensions - in a given disassembly, is the byte literal treated as a
-zero-page address? If so, or if it is a 16-bit address for, say, a load or store,
-is there some kernal symbol for that address or is it a JSR destination?
+Patchy comprehensions - in a given disassembly, is the byte literal treated as a zero-page address?
+If so, or if it is a 16-bit address for, say, a load or store, is there some kernal symbol for that
+address or is it a JSR destination?
 
-Run small trial executions in the background to score various areas as code or data.
-Detect code sequences that modify code (self-modifying code is harder to understand,
-although if the only change during simulation is to a memory address that is read from,
-and not thereafter jumped to or used as an index for a branch, signs point to likely
-separation between code and data).
+Run small trial executions in the background to score various areas as code or data. Detect code
+sequences that modify code (self-modifying code is harder to understand, although if the only change
+during simulation is to a memory address that is read from, and not thereafter jumped to or used as
+an index for a branch, signs point to likely separation between code and data).
 
-Try to make this multipronged analysis somewhat automatic so the user can just
-confirm simple hunches or heuristic interpretations.
+Try to make this multipronged analysis somewhat automatic so the user can just confirm simple
+hunches or heuristic interpretations.
 
 ### Pattern Recogniser and Macro Synthesiser
 
@@ -203,18 +206,17 @@ confirm simple hunches or heuristic interpretations.
 
 ### Canonicalisation
 
-There are different ways to represent data and code which are equivalent. A canonical form
-functions as a single representation into which any variation can be transformed for the
-purpose of deciding equivalence and should help in identifying behaviour, optimisation,
-deobfuscation and porting.
+There are different ways to represent data and code which are equivalent. A canonical form functions
+as a single representation into which any variation can be transformed for the purpose of deciding
+equivalence and should help in identifying behaviour, optimisation, deobfuscation and porting.
 
 The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
 forms to be recognised. In the case of character data, the canonical form might make the reverse
 form equivalent. In the case of code, the canonical form will have equivalences that, for example
 use the y register instead of the x register, all else being equal. Canonical forms for code may
-execute in a different number of cycles or use a different number of bytes or have instructions
-in a different order (some design is required to analyse alternate orderings with preservation
-of semantics).
+execute in a different number of cycles or use a different number of bytes or have instructions in a
+different order (some design is required to analyse alternate orderings with preservation of
+semantics).
 
 ## Interactive Disassembly
 
@@ -233,16 +235,14 @@ options should be selectable by the user.
 * [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and
   command-line toolset
 * [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA (supports 6502 and dozens of
-  more contemporary
-  architectures)
+  more contemporary architectures)
 * [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
 * [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to
-  support 6502 (I couldn't
-  make it work) see my GH
+  support 6502 (I couldn't make it work) see my GH
   issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
 * [IDA Pro](https://hex-rays.com/ida-pro/) classic, proprietary, native
 
-## Useful Resources
+## Useful Resources Documented Here
 
 * [Reverse Engineering](docs/references.md) references
 * [retro assembler dialects](docs/assembler-dialects.md)
