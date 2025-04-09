@@ -2,7 +2,8 @@
 
 Reverse Engineering Environment
 
-<img align="right" src="client/public/revenge-logo192.png">
+<!--suppress HtmlDeprecatedAttribute -->
+<img alt="revenge logo" align="right" src="client/public/revenge-logo192.png">
 
 The grand idea is a web-based reverse engineering environment for retro computers
 with very small initial goals: binary file type detection and simple disassembly of
