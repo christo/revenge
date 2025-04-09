@@ -165,9 +165,14 @@ export class Thread {
         } else if (op.has(OpSemantics.IS_RETURN)) {
           this.terminate("reached a return")
         } else if (op.any([OpSemantics.IS_CONDITIONAL_JUMP, OpSemantics.IS_RETURNABLE_JUMP])) {
-          // because we terminate at return, we fork at subroutine jumps (out-of-order execution)
-          // TODO strictly this may be wrong in case we never actually return - jsr may be used as shorthand for push?
-          //   to fix it threads need a return stack
+
+          // We terminate at return and a forked thread takes a subroutine jump though intuitively
+          // backwards it simplifies implementation and shouldn't make any difference.
+          // Strictly this assumption is wrong, we may never actually return which makes jsr
+          // equivalent to jmp with a return stack push.
+          // A more conventional way would be for the current thread to do the jump and come back upon
+          // hitting a return but then threads would need a return stack to keep the return address.
+
           // the program counter was already advanced before calculating any relative offset
           const jumpTarget = inst.resolveOperandAddress(nextPc);
           // don't bother spawning if we've already executed that instruction
