@@ -1,10 +1,9 @@
-import React from 'react';
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import {useState} from "react";
+import React, {useState} from 'react';
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
 import {sniff} from "../machine/revenge.ts";
@@ -37,6 +36,10 @@ function BigramBox(props: { fb: FileBlob }) {
   </Box>;
 }
 
+function HashTag({label}: { label: string }) {
+  return <Chip label={label} size="small" sx={{marginRight: 1}} variant="outlined" color="secondary"/>;
+}
+
 /**
  * Main content showing interpreted file contents.
  *
@@ -59,18 +62,16 @@ export function FileDetail({fb}: { fb: FileBlob }) {
       <Box sx={{
         mr: 1,
         mb: 2,
+        maxWidth: "60em",
       }}>
         <Typography display="inline" sx={{
           mr: 1,
           fontStyle: "italic",
           opacity: 0.6,
         }}>Smells like</Typography>
-        <Typography display="inline" sx={{mr: 1}}>{t.name}</Typography>
+        <Typography display="inline" color="secondary" sx={{mr: 1}}>{t.name}</Typography>
         <Typography display="inline" sx={{mr: 1, fontStyle: "italic"}}>{t.desc}</Typography>
-        {t.tags.map((tag, i) => {
-          return <Chip label={tag} size="small" sx={{marginRight: 1}} variant="outlined" color="secondary"
-                       key={`tag_${i}`}/>;
-        })}
+        {t.hashTags.map((tag, i) => <HashTag key={`tag_${i}`} label={tag}/>)}
       </Box>
       <BigramBox fb={fb}/>
     </Box>
