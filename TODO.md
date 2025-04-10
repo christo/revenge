@@ -4,6 +4,8 @@
 
 * [ ] content hash calculation
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
+  * [ ] write hash calculations in data dir
+  * [ ] add .env support to define data dir
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
