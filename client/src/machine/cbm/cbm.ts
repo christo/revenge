@@ -223,7 +223,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
 };
 
 /**
- * Makes a BlobType representing a 6502 Commodore program binary file format with
+ * Makes a BlobTypeSniffer representing a 6502 Commodore program binary file format with
  * the first two bytes of the load address in LSB,MSB format (little endian).
  *
  * @param prefix either an array of prefix bytes or a 16 bit word
