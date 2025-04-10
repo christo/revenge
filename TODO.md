@@ -26,6 +26,8 @@
     for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) 
     among many others (licensed CC0) organised by system under the `hash/` directory that includes
     CRC32 and SHA1 for the few files I checked.
+  * Gamebase 64 also seems to have a big database and there is evidence of many github projects that
+    make use of the database. 
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
   * Design some kind of system with a multi-authority claim of fact. The idea is that a given
     authority claims that a binary of a given size, with a given hash etc. has a given name and runs
