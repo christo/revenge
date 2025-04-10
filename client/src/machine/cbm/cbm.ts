@@ -191,6 +191,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
  */
 const disasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
+  // type: array of at least one UserAction
   const userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
     f: async () => {
