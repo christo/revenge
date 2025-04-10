@@ -3,8 +3,9 @@
 ## Next Actions
 
 * [ ] calculate feature vectors for binaries
-  * [ ] histogram
-  * [ ] entropy
+  * [x] histogram
+  * [x] entropy
+  * [x] length feature extractor
   * [ ] convert bigram to feature extractor
     * [ ] 256^2 may be too many features so consider:
       * Only include the top N most frequent bigrams
