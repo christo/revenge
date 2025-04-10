@@ -27,7 +27,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.14.0",
     "chai": "^5.2.0",
     "concurrently": "^8.2.2",
     "mocha": "^10.8.2",
