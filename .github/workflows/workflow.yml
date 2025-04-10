@@ -1,4 +1,4 @@
-name: client tests
+name: automated tests
 
 on:
   push:
