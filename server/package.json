@@ -5,7 +5,6 @@
     "compile": "tsc -b",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
     "dev": "nodemon -r tsconfig-paths/register --watch src src/server.ts",
-    "test": "mocha --experimentalSpecifierResolution node --trace-warnings'",
     "nodeversion": "ts-node --showConfig -vv"
   },
   "keywords": [],

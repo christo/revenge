@@ -9,7 +9,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "mocha"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
