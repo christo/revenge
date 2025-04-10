@@ -258,7 +258,7 @@ class Vic20 extends Computer {
   ];
 
   static BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
-    prg(mc.basicProgramStart)
+    return prg(mc.basicProgramStart)
   });
 
   constructor(memConfig: MemoryConfiguration, roms: RomImage[] = VIC_ROMS) {
