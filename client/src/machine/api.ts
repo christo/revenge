@@ -10,6 +10,10 @@ import {FileBlob} from "./FileBlob";
 import {Memory} from "./Memory.ts";
 import {MODE_INDIRECT} from "./mos6502.ts";
 
+/*
+main API types
+ */
+
 /**
  * Renderable output of structured text with html-friendly structure and internal text renderer.
  * A sequence of string tuples that represent a name-value pair that will be rendered with
