@@ -1,4 +1,12 @@
+
+/**
+ * Calculates feature vector for statistical analysis of byte array contents.
+ */
 export interface FeatureExtractor {
-  extract(buffer: Buffer): number[];
-  getFeatureNames(): string[];
+  /**
+   * Normalised vector calculated for each named feature.
+   * @param buffer array of bytes
+   */
+  extract(buffer: number[]): [string, number][];
+
 }
