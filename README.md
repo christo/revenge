@@ -2,6 +2,8 @@
 
 Reverse Engineering Environment
 
+![automated tests](https://github.com/christo/revenge/actions/workflows/workflow.yml/badge.svg)
+
 <!--suppress HtmlDeprecatedAttribute -->
 <img alt="revenge logo" align="right" src="client/public/revenge-logo192.png">
 
