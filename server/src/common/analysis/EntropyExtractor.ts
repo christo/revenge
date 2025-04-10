@@ -4,7 +4,7 @@ import {FeatureExtractor} from "./FeatureExtractor";
 /**
  * Calculates entropy statistics.
  */
-export class EntropyFeatureExtractor implements FeatureExtractor {
+export class EntropyExtractor implements FeatureExtractor {
   private readonly windowSize: number;
 
   constructor(windowSize: number = 256) {

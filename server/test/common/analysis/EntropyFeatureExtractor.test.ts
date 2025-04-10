@@ -1,10 +1,10 @@
 import {expect} from 'chai';
-import {EntropyFeatureExtractor} from "../../../src/common/analysis/EntropyFeatureExtractor";
+import {EntropyExtractor} from "../../../src/common/analysis/EntropyExtractor";
 import {FileLike} from "../../../src/common/FileLike";
 
 describe("entropy feature extractor", () => {
   it("scopres minimal entropy", () => {
-    const fe = new EntropyFeatureExtractor();
+    const fe = new EntropyExtractor();
     const buffer = [66, 66, 66, 66, 66];
     const features = fe.extract(new FileLike("foobar", Uint8Array.from(buffer)));
 
@@ -12,7 +12,7 @@ describe("entropy feature extractor", () => {
 
   });
   it("calculates high global entropy vector", () => {
-    const fe = new EntropyFeatureExtractor(3);
+    const fe = new EntropyExtractor(3);
     const buffer = [66, 66, 66, 66, 66];
     const features = fe.extract(new FileLike("foobar", Uint8Array.from(buffer)));
 

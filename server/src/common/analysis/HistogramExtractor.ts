@@ -4,7 +4,7 @@ import {FeatureExtractor} from "./FeatureExtractor";
 /**
  * One dimensional n-gram feature extractor.
  */
-export class HistogramFeatureExtractor implements FeatureExtractor {
+export class HistogramExtractor implements FeatureExtractor {
   extract(fileLike: FileLike): [string, number][] {
     const buffer = Array.from(fileLike.data);
     const histogram = new Array(256).fill(0);
