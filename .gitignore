@@ -31,3 +31,4 @@ server/node_modules
 /server/data/preload/c64/RESCUE 64 1.1.prg
 /server/data/preload/c64/teleporter64.prg
 /server/.env
+/server/data/analysis/hash/
