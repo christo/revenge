@@ -1,4 +1,4 @@
-import {Byteable} from "../Byteable.ts";
+import {Byteable} from "../../../../server/src/common/Byteable.ts";
 
 class Petscii {
 

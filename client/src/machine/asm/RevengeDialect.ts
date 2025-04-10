@@ -1,10 +1,12 @@
+import {Byteable} from "../../../../server/src/common/Byteable.ts";
 import {
   KeywordTag,
   Tag,
   TAG_ABSOLUTE,
   TAG_CODE,
   TAG_COMMENT,
-  TAG_DATA, TAG_DECIMAL_ARRAY,
+  TAG_DATA,
+  TAG_DECIMAL_ARRAY,
   TAG_HEXARRAY,
   TAG_IN_BINARY,
   TAG_KNOWN_SYMBOL,
@@ -16,9 +18,8 @@ import {
   TAG_PETSCII,
   TAG_SYM_DEF
 } from "../api.ts";
-import {Byteable} from "../Byteable.ts";
 import {Petscii} from "../cbm/petscii.ts";
-import {hex16, hex8, TODO, unToSigned} from "../core.ts";
+import {hex16, hex8, unToSigned} from "../core.ts";
 import {
   FullInstruction,
   MODE_ABSOLUTE,
@@ -244,11 +245,9 @@ class RevengeDialect extends BaseDialect implements Dialect {
     if (dir.isSymbolDefinition()) {
       // TODO don't have enough context to generate symbol
       // if value is in predefined symbol table, use label from symbol table
-      TODO();
-      return [];
+      throw Error(`Not Implemented`);
     } else {
-      TODO();
-      return [];
+      throw Error(`Not Implemented`);
     }
   }
 

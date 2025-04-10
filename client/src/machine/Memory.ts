@@ -1,4 +1,4 @@
-import {Byteable} from "./Byteable.ts";
+import {Byteable} from "../../../server/src/common/Byteable.ts";
 import {Addr, hex16, MB_8} from "./core.ts";
 import {Endian} from "./Endian.ts";
 

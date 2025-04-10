@@ -1,5 +1,5 @@
 import {FileLike} from "../../../server/src/common/FileLike.ts";
-import {Byteable} from "./Byteable.ts";
+import {Byteable} from "../../../server/src/common/Byteable.ts";
 import {Addr, hex16} from "./core";
 import {BE, Endian} from "./Endian.ts";
 import {ArrayMemory, Memory} from "./Memory.ts";

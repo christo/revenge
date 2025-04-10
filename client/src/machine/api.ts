@@ -1,7 +1,7 @@
 import {Detail} from "../ui/Detail.ts";
 import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
-import {Byteable} from "./Byteable.ts";
+import {Byteable} from "../../../server/src/common/Byteable.ts";
 import {Addr, hex16, hex8} from "./core";
 import {Cpu} from "./Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";

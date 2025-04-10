@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import {Byteable} from "../Byteable.ts";
+import {Byteable} from "../../../../server/src/common/Byteable.ts";
 import {Addr, hex16} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";

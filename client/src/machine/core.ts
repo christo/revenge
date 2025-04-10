@@ -13,11 +13,6 @@ const MB_1 = KB_1 * 1024;
 /** The number of bytes in 8 old-fashionied megabytes */
 const MB_8 = MB_1 * 8;
 
-/** Convenience dev-time error thrower like the cool languages have. */
-const TODO = (mesg = "") => {
-  throw Error(`Not Implemented ${mesg}`)
-};
-
 /**
  * Should be a 16-bit unsigned number. Would like a better way to contrain byte and word values.
  */
@@ -63,7 +58,6 @@ export {
   hex16,
   hex8,
   asHex,
-  TODO,
   toStringArray,
   toNumberArray,
   KB_64,
