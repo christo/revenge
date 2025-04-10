@@ -69,7 +69,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
   constructor(env: Environment = Environment.DEFAULT_ENV) {
     super(
         "Revenge MOS 6502",
-        "Vaguely standard modern syntax with all supported features.",
+        "Vaguely standard modern syntax with commonly supported features.",
         env
     );
   }
