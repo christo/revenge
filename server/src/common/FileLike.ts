@@ -2,8 +2,6 @@
  * Flexible file-like abstraction backed by a byte array.
  */
 class FileLike {
-  static foo = () => { console.log("loading FileLike"); return "foo"};
-  static bar = FileLike.foo();
   private readonly _name: string;
   private readonly _data: Uint8Array;
   private readonly _size: number;
