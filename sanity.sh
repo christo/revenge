@@ -1,28 +1,51 @@
 #!/usr/bin/env bash
 
-# not many requirements but this is expected to grow
-# to my mind this is better than a readme
+# basic script to check development environment, only a few requirements
+# to my mind this is better than a readme (which also exists)
 
-all_good=1
+all_good=1 # unless proven guilty
+
+RED_CROSS="❌"
+GREEN_CHECK="✔️"
+
+function success() {
+  echo -e "\033[92m${GREEN_CHECK} ${*}\033[0m"
+}
+
+function fail() {
+  echo -e "\033[91m${RED_CROSS} ${*}\033[0m"
+  all_good=0
+}
+
+# you're going to need these for some build targets
 for e in npx node bun; do
   if [[ $(which "$e") ]]; then
-    echo checking PATH for $e
+    success found on PATH: $e
   else
-    echo missing required executable: $e
-    echo "   you should install that"
-    all_good=0
+    fail install missing required executable: $e
   fi
 done
 
-for d in server/data server/data/preload; do
+# we assume these dirs exist
+for d in server/data server/data/preload server/data/preload/c64 server/data/preload/vic20; do
   if [[ -d "$d" ]]; then
-    echo checking dir $d
+    success found dir $d
   else
-    echo missing directory: $d
-    echo "   you should create that"
-    all_good=0
+    fail create missing directory: $d
   fi
 done
+
+
+if [[ -e "server/.env" ]]; then
+  success checking .env file exists
+else
+  fail "server/.env file does not exist \n\
+    copy the template server/example.env to server/.env and edit to taste"
+fi
+
 if [[ $all_good -eq 1 ]]; then
-  echo sanity: all good
+  echo
+  success sanity: all good
+else
+  exit 1
 fi
