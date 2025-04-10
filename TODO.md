@@ -2,6 +2,8 @@
 
 ## Next Actions
 
+* [ ] content hash calculation
+  * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
@@ -38,7 +40,6 @@
     CRC32 and SHA1 for the few files I checked.
   * Gamebase 64 also seems to have a big database and there is evidence of many github projects that
     make use of the database. 
-  * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
   * Design some kind of system with a multi-authority claim of fact. The idea is that a given
     authority claims that a binary of a given size, with a given hash etc. has a given name and runs
     on a given system etc. The content of the claim will not be homogenous however each claimable
