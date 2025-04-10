@@ -1,5 +1,5 @@
 import {readdir, stat} from 'node:fs/promises';
-import {join, resolve} from 'node:path';
+import {join} from 'node:path';
 
 const MB1 = 1024 * 1024;
 
