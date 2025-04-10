@@ -90,8 +90,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     return ta;
   }
   // resort to hex dump only
-  const typeActions: TypeActions = {t: BlobTypeSniffer.UNKNOWN_TYPE, actions: [hd]};
-  return typeActions;
+  return {t: UNKNOWN_BLOB, actions: [hd]};
 }
 
 
