@@ -1,0 +1,20 @@
+import fs from "fs";
+import {FeatureExtractor} from "./FeatureExtractor";
+
+class FeaturePipeline {
+  private extractors: FeatureExtractor[] = [];
+
+  add(extractor: FeatureExtractor): void {
+    this.extractors.push(extractor);
+  }
+
+  extractFromFile(filePath: string): [string, number][] {
+    const numbers = Array.from(fs.readFileSync(filePath));
+    const featureVectors: [string, number][][] = this.extractors.map(extractor =>
+        extractor.extract(numbers)
+    );
+
+    // Flatten the feature vectors
+    return featureVectors.flat();
+  }
+}

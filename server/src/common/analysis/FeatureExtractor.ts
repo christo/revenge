@@ -1,3 +1,4 @@
+import {FileLike} from "../FileLike";
 
 /**
  * Calculates feature vector for statistical analysis of byte array contents.
@@ -7,6 +8,6 @@ export interface FeatureExtractor {
    * Normalised vector calculated for each named feature.
    * @param buffer array of bytes
    */
-  extract(buffer: number[]): [string, number][];
+  extract(buffer: FileLike): [string, number][];
 
 }

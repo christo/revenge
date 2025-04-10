@@ -1,3 +1,4 @@
+import {FileLike} from "../FileLike";
 import {FeatureExtractor} from "./FeatureExtractor";
 
 /**
@@ -10,7 +11,8 @@ export class EntropyFeatureExtractor implements FeatureExtractor {
     this.windowSize = windowSize;
   }
 
-  extract(buffer: number[]): [string, number][] {
+  extract(fileLike: FileLike): [string, number][] {
+    const buffer = Array.from(fileLike.data);
     // Global entropy
     const globalEntropy = this.calculateEntropy(buffer);
 
