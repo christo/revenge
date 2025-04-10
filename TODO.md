@@ -11,6 +11,7 @@
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
+* [ ] basic stub does not show symbol definitions
 * [ ] many C64 binaries are not detected correctly - investigate
   * [x] Add C64 basic quickload example
   * [ ] add test case
