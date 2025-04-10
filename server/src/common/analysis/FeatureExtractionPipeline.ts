@@ -1,4 +1,6 @@
 import fs from "fs";
+import path from "path";
+import {FileLike} from "../FileLike";
 import {FeatureExtractor} from "./FeatureExtractor";
 
 class FeaturePipeline {
@@ -9,7 +11,7 @@ class FeaturePipeline {
   }
 
   extractFromFile(filePath: string): [string, number][] {
-    const numbers = Array.from(fs.readFileSync(filePath));
+    const numbers = new FileLike(path.basename(filePath), fs.readFileSync(filePath));
     const featureVectors: [string, number][][] = this.extractors.map(extractor =>
         extractor.extract(numbers)
     );

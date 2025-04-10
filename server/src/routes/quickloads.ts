@@ -1,14 +1,10 @@
 import express from "express";
 import fs from 'fs';
 import path from 'path';
+import {FileLike} from "../common/FileLike";
 
 const router = express.Router();
 
-interface FileLike {
-  name: string,
-  data: number[],
-  size: number;
-}
 
 // init the preloads dir
 const PRELOADS_DIR_C64 = "data/preload/c64";
@@ -18,16 +14,9 @@ function getPreloads(fromPath: string) {
   let plDir = path.join(".", fromPath);
 
   return fs.readdirSync(plDir).filter(f => !f.startsWith(".")).map(fname => {
-
     let data = Array.from(fs.readFileSync(path.join(".", fromPath, fname)));
     console.log(`preparing preload blob ${fname}`);
-
-    let fl: FileLike = {
-      name: fname,
-      data: data,
-      size: data.length
-    };
-    return fl;
+    return new FileLike(fname, Uint8Array.from(data));
   });
 }
 
