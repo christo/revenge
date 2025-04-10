@@ -85,7 +85,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
     return {t: UNKNOWN_BLOB, actions: [hexDumper(fileBlob)]}
   }
   console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
-  return mkDisasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);
+  return mkDisasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob); // stinky
 }
 
 /**
