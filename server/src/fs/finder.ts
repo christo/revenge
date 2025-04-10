@@ -1,5 +1,7 @@
+import * as fs from "fs";
 import {readdir, stat} from 'node:fs/promises';
 import {join} from 'node:path';
+import {FileLike} from "../common/FileLike";
 
 const MB1 = 1024 * 1024;
 
@@ -40,10 +42,17 @@ const SRC_EXTS = [
   "css",
   "rb",
   "html",
+  "htm",  // ok boomer
   "js",
   "Makefile",
   "yml",
   "xml",
+  "vkm", // vice keyboard map
+  "cpp",
+  "sln", // visual studio project file
+  "vcxproj",
+  "vcxproj.filters",
+  "vcxproj.user"
 ];
 
 const TEXT_EXTS = [
@@ -51,6 +60,7 @@ const TEXT_EXTS = [
   "md",
   "readme",
   "log",
+  "nfo",
   ...SRC_EXTS
 ];
 
@@ -61,6 +71,7 @@ const MEDIA_EXTS = [
   "png",
   "gif",
   "mid",
+  "ico"
 ];
 
 const NON_ROM_EXTS = [
@@ -71,6 +82,8 @@ const NON_ROM_EXTS = [
   "img",
   "bin",
   "com",
+  "exe",
+  "diz",
   ...DOC_EXTS,
   ...MEDIA_EXTS,
   ...TEXT_EXTS,
@@ -97,6 +110,12 @@ const okExt = (fi: FileInfo) => {
     return fi.name === e || fi.name.toLowerCase().endsWith(`.${e.toLowerCase()}`);
   }) === undefined;
 };
+
+function fileInfoToFileLike(fileInfo: FileInfo): FileLike {
+  const buffer = fs.readFileSync(fileInfo.path);
+  const data = Uint8Array.from(buffer);
+  return new FileLike(fileInfo.path, data);
+}
 
 /**
  * Comparator based on ascending size.
@@ -131,7 +150,7 @@ async function scanDirectory(dirPath: string, files: Array<FileInfo>): Promise<v
   }
 }
 
-export {scanDirectory, type FileInfo, bySize, formatBytesInMegs, okExt, MB1};
+export {scanDirectory, type FileInfo, bySize, formatBytesInMegs, okExt, MB1, fileInfoToFileLike};
 
 
 

@@ -7,9 +7,6 @@ class FileLike {
   private readonly _size: number;
 
   constructor(name: string, data: Uint8Array) {
-    if (!data.byteLength) {
-      throw Error("byteLength undefined?");
-    }
     this._name = name;
     this._data = data;
     this._size = data.byteLength

@@ -22,7 +22,7 @@ class HashCalc {
     return p;
   }
 
-  async mg5(fl: FileLike): Promise<[string, string]> {
+  async md5(fl: FileLike): Promise<[string, string]> {
     const p: Promise<[string, string]> = md5(fl.data).then(hash => [fl.name, hash]);
     this.hashesMd5.push(p);
     return p;
@@ -61,3 +61,5 @@ class HashCalc {
 
   }
 }
+
+export {HashCalc};

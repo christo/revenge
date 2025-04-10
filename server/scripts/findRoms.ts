@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import {resolve} from "node:path";
-import {bySize, FileInfo, formatBytesInMegs, MB1, okExt, scanDirectory} from "../src/fs/romFinder";
+import {bySize, FileInfo, formatBytesInMegs, MB1, okExt, scanDirectory} from "../src/fs/finder";
 
 
 async function findLargeFiles(directory: string) {
