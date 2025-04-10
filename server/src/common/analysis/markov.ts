@@ -1,9 +1,8 @@
-// script for analysing prg files
+// old hacked up markov analysis
 
 import fs from "fs";
 import path from "path";
 import os from "os";
-
 
 type BytePair = [number, number];
 
