@@ -246,7 +246,7 @@ class Vic20 extends Computer {
   };
 
   /**
-   * Common memory configs.
+   * Common memory configs. Strictly, memory configs can include all block mapping permutations.
    */
   static MEMORY_CONFIGS = [
     Vic20.MEMORY_CONFIG.UNEX,
@@ -257,6 +257,9 @@ class Vic20 extends Computer {
     Vic20.MEMORY_CONFIG.EXP35K,
   ];
 
+  /**
+   * Create a BlobTypeSniffer for each VIC memory configuration.
+   */
   static BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
     return prg(mc.basicProgramStart)
   });
