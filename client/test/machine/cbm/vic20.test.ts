@@ -67,7 +67,7 @@ describe("vic20", () => {
     const fb: FileBlob = FileBlob.fromBytes("basic-descending-lnums", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).lt(1);
-  })
+  });
 });
 
 export {};
