@@ -25,9 +25,6 @@ function renderAddrDecHex(addr: Addr) {
  */
 function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
   const loadAddress = fileBlob.read16(0);
-  // TODO we only find the first memory config with the correct start address, we should
-  //  possibly use the largest one that matches the layout with the correct start address
-  //  i.e. unexpanded, 3kb, 24kb
   const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
   // try to decode just the stub in order to determine the machine code entry point
   // TODO tighten up this rough heuristic
