@@ -8,7 +8,7 @@ import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.ts";
 import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.ts";
-import {disasmAction, prg} from "./cbm.ts";
+import {mkDisasmAction, prg} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.ts";
 
@@ -67,7 +67,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
             const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
 
             const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
-            return disasmAction(sniffer, fileBlob);
+            return mkDisasmAction(sniffer, fileBlob);
           } else {
             console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
           }
@@ -87,7 +87,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
     return {t: BlobTypeSniffer.UNKNOWN_TYPE, actions: [hexDumper(fileBlob)]}
   }
   console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
-  return disasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);
+  return mkDisasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);
 }
 
 /**

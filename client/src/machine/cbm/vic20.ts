@@ -10,7 +10,7 @@ import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobSniffer} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
-import {LittleEndian} from "../Endian.ts";
+import {LE, LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory, Memory} from "../Memory.ts";
 import {Mos6502} from "../mos6502";
@@ -210,17 +210,19 @@ const VIC_20_CART_VECTORS: SymbolResolver = (fb: FileBlob) => [
   [fb.readVector(CART_WARM_VECTOR_OFFSET), new LabelsComments("nmi", "jump target on restore key")]
 ];
 
+const COMMON_CART_LOAD_ADDRESSES = [
+  0x4000,
+  0x6000,
+  0x8000,
+  0xa000,
+  0xc000,
+];
+
 /**
  * Common load addresses for machine language cartridge images on VIC-20.
  * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
  */
-const POPULAR_CART_LOAD_ADDRS = [
-  prg([0x00, 0x40]),  // 0x4000
-  prg([0x00, 0x60]),  // 0x6000
-  prg([0x00, 0x80]),  // 0x8000
-  prg([0x00, 0xa0]),  // 0xa000
-  prg([0x00, 0xc0]),  // 0xc000
-];
+const VIC_CART_ADDRS = COMMON_CART_LOAD_ADDRESSES.map(a => prg(LE.wordToTwoBytes(a)));
 
 /** where kernal rom image is mapped */
 const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
@@ -389,7 +391,7 @@ const VIC20_CART_SNIFFER = new CartSniffer(
 
 export {
   Vic20,
-  POPULAR_CART_LOAD_ADDRS,
+  VIC_CART_ADDRS,
   VIC20_CART_SNIFFER,
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,

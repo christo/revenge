@@ -189,7 +189,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 /**
  * User action that disassembles the file.
  */
-const disasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
+const mkDisasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   // type: array of at least one UserAction
   const userActions: [UserAction, ...UserAction[]] = [{
@@ -281,4 +281,4 @@ class CartSniffer implements BlobSniffer {
   }
 }
 
-export {CartSniffer, prg, printBasic, ALL_CBM_FILE_EXTS, trace, disasmAction};
+export {CartSniffer, prg, printBasic, ALL_CBM_FILE_EXTS, trace, mkDisasmAction};

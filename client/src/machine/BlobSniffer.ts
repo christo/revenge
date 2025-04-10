@@ -1,4 +1,6 @@
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
+import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
+import {BlobTypeSniffer} from "./BlobTypeSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 /**
@@ -28,4 +30,32 @@ interface BlobSniffer {
   getMeta(): DisassemblyMeta;
 }
 
-export {type BlobSniffer};
+const UNKNOWN_BLOB: BlobSniffer = {
+  name: "unknown",
+  desc: "content of no known type",
+  tags: ["unknown"],
+  getMeta(): DisassemblyMeta {
+    return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
+  },
+  sniff(_fb: FileBlob): number {
+    return 0;
+  },
+};
+
+
+/**
+ * Returns the sniffer with the highest score
+ * @param someSniffers
+ * @param fileBlob
+ */
+function bestSniffer(someSniffers: BlobSniffer[], fileBlob: FileBlob) {
+  if (someSniffers.length === 0) {
+    throw Error("Zero sniffs given");
+  }
+  // TODO maybe wrap the sniffers in transparent cache these?
+  someSniffers.reduce((acc: BlobSniffer, cur: BlobSniffer) => {
+    return cur.sniff(fileBlob) > acc.sniff(fileBlob) ? cur : acc;
+  }, UNKNOWN_BLOB);
+}
+
+export {type BlobSniffer, bestSniffer, UNKNOWN_BLOB};

@@ -1,18 +1,17 @@
 // application-level stuff to tie user interface and domain model
 
 import {hexDumper, TypeActions} from "./api.ts";
-import {BlobSniffer} from "./BlobSniffer.ts";
-import {BlobTypeSniffer} from "./BlobTypeSniffer.ts";
+import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "./BlobSniffer.ts";
 import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
-import {disasmAction, printBasic} from "./cbm/cbm.ts";
+import {mkDisasmAction, printBasic} from "./cbm/cbm.ts";
 import {
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
-  POPULAR_CART_LOAD_ADDRS,
   UNEXPANDED_VIC_BASIC,
-  VIC20_CART_SNIFFER
+  VIC20_CART_SNIFFER,
+  VIC_CART_ADDRS
 } from "./cbm/vic20.ts";
 import {snifVic20McWithBasicStub} from "./cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
@@ -42,7 +41,7 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
     const cart = carts[i];
     if (cart.sniff(fileBlob) > 1) {
       // TODO get rid of early return
-      return disasmAction(cart, fileBlob);
+      return mkDisasmAction(cart, fileBlob);
     }
   }
   const hd = hexDumper(fileBlob);
@@ -66,12 +65,18 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
   }
 
   // common cartridge image load addresses
-  for (let i = 0; i < POPULAR_CART_LOAD_ADDRS.length; i++) {
-    const prg = POPULAR_CART_LOAD_ADDRS[i];
+
+  const someSniffers = VIC_CART_ADDRS;
+
+  bestSniffer(someSniffers, fileBlob);
+
+  for (let i = 0; i < VIC_CART_ADDRS.length; i++) {
+    const prg = VIC_CART_ADDRS[i];
+    // currently returns the first one that scores above 1
     if (prg.sniff(fileBlob) > 1) {
       console.log(`sniffed common prg blob type`);
       // TODO get rid of early return
-      return disasmAction(prg, fileBlob);
+      return mkDisasmAction(prg, fileBlob);
     }
   }
   // detect VIC20 machine code with basic stub
