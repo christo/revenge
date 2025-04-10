@@ -1,11 +1,12 @@
 import {expect} from 'chai';
 import {HistogramFeatureExtractor} from "../../../src/common/analysis/HistogramFeatureExtractor";
+import {FileLike} from "../../../src/common/FileLike";
 
 describe("histogram feature extractor", () => {
   it("handles simple binary case", () => {
     const hfe :HistogramFeatureExtractor = new HistogramFeatureExtractor();
     const buffer = [0, 0, 0, 0, 255];
-    const features = hfe.extract(buffer);
+    const features = hfe.extract(new FileLike("foobar", Uint8Array.from(buffer)));
     const byte255 = features.find(f => f[0] === `byte_255`);
     expect(byte255).not.to.equal(undefined);
     const byte0 = features.find(f => f[0] === `byte_0`);
@@ -16,7 +17,7 @@ describe("histogram feature extractor", () => {
   it("calculates flat feature vector", () => {
     const hfe :HistogramFeatureExtractor = new HistogramFeatureExtractor();
     const twoOfEach = [0, 2, 4, 8, 4, 2, 0, 8];
-    const features = hfe.extract(twoOfEach);
+    const features = hfe.extract(new FileLike("foobar", Uint8Array.from(twoOfEach)));
     const byte2 = features.find(f => f[0] === `byte_2`);
     expect(byte2).not.to.equal(undefined);
     const byte0 = features.find(f => f[0] === `byte_0`);
