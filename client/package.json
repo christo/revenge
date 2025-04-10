@@ -43,7 +43,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^16.0.0",
-    "mocha": "^10.8.2"
+    "mocha": "^11.1.0"
   },
   "browserslist": {
     "production": [
