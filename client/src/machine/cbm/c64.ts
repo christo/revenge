@@ -30,7 +30,7 @@ const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", C64_BASIC_PROGRAM
 const C64_BASIC_PRG = new BlobTypeSniffer(
     "C64 basic prg",
     "BASIC program",
-    ["basic", "c64"],
+    ["basic", "c64", "prg"],
     "prg",
     Mos6502.ENDIANNESS.wordToByteArray(C64_MEMORY.basicProgramStart)
 );

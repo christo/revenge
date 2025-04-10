@@ -1,9 +1,10 @@
 import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
-import {BlobSniffer} from "../BlobSniffer.ts";
+import {BlobSniffer, UNKNOWN_BLOB} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16} from "../core.ts";
+import {LE} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.ts";
@@ -55,18 +56,18 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
           const startAddress = parseInt(intString, 10);
           if (!isNaN(startAddress)) {
 
-            const entryPointDesc = `BASIC loader stub SYS ${startAddress}`;
 
             const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
             const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
+            const entryPointDesc = `BASIC stub SYS ${startAddress}`;
             const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
-
             const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
 
-            const prefixWtf = [startAddress && 0x00ff, startAddress >> 2];
+            const loadAddressBytes = LE.wordToTwoBytes(startAddress);
             const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
 
-            const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, ["prg"], "prg", prefixWtf, dm);
+            const hashTags = ["prg", "vic20", memoryConfig.shortName];
+            const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, hashTags, "prg", loadAddressBytes, dm);
             return mkDisasmAction(sniffer, fileBlob);
           } else {
             console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
@@ -84,7 +85,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
       console.warn(`basic header didn't start with sys command\n${hex}`);
     }
 
-    return {t: BlobTypeSniffer.UNKNOWN_TYPE, actions: [hexDumper(fileBlob)]}
+    return {t: UNKNOWN_BLOB, actions: [hexDumper(fileBlob)]}
   }
   console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
   return mkDisasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob);

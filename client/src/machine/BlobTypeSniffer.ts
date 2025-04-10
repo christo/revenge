@@ -11,7 +11,7 @@ class BlobTypeSniffer implements BlobSniffer {
   readonly name: string;
   readonly desc: string;
   readonly exts: string[];
-  readonly tags: string[];
+  readonly hashTags: string[];
   readonly prefix: Uint8Array;
   readonly dm: DisassemblyMeta;
 
@@ -20,17 +20,17 @@ class BlobTypeSniffer implements BlobSniffer {
    *
    * @param name unique identifier used to report a detected binary type to the user
    * @param desc elaboration, longer detail about the detection
-   * @param tags displayed as "hashtags" on the front-end
+   * @param hashTags displayed as "hashtags" on the front-end
    * @param ext expected file extension
    * @param prefix fixed expected value for the first bytes
    * @param dm optional context for possible disassembly
    */
-  constructor(name: string, desc: string, tags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
+  constructor(name: string, desc: string, hashTags: string[], ext?: string, prefix?: ArrayLike<number>, dm?: DisassemblyMeta) {
     this.desc = desc;
     this.name = name;
     this.dm = dm ? dm : DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
     this.exts = ext ? [ext] : [];
-    this.tags = tags;
+    this.hashTags = hashTags;
     this.prefix = prefix ? new Uint8Array(prefix) : new Uint8Array(0);
   }
 

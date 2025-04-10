@@ -243,7 +243,7 @@ class CartSniffer implements BlobSniffer {
 
   readonly name: string;
   readonly desc: string;
-  readonly tags: string[];
+  readonly hashTags: string[];
   private readonly magic: Uint8Array;
   private readonly magicOffset: number;
   private readonly disassemblyMeta: DisassemblyMeta;
@@ -261,7 +261,7 @@ class CartSniffer implements BlobSniffer {
   constructor(name: string, desc: string, tags: string[], magic: ArrayLike<number>, offset: number, dm: DisassemblyMeta) {
     this.name = name;
     this.desc = desc;
-    this.tags = tags;
+    this.hashTags = tags;
     this.magic = new Uint8Array(magic);
     this.magicOffset = offset;
     this.disassemblyMeta = dm;

@@ -9,7 +9,7 @@ import {FileBlob} from "./FileBlob.ts";
 interface BlobSniffer {
   name: string;
   desc: string;
-  tags: string[];
+  hashTags: string[];
 
   /**
    * Produces a score for the given FileBlob, higher numbers indicate a corresponding higher confidence
@@ -33,7 +33,7 @@ interface BlobSniffer {
 const UNKNOWN_BLOB: BlobSniffer = {
   name: "unknown",
   desc: "content of no known type",
-  tags: ["unknown"],
+  hashTags: ["unknown"],
   getMeta(): DisassemblyMeta {
     return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
   },

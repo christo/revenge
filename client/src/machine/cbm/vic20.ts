@@ -263,7 +263,9 @@ class Vic20 extends Computer {
    * Create a BlobTypeSniffer for each VIC memory configuration.
    */
   static BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
-    return prg(mc.basicProgramStart)
+    const blobTypeSniffer = prg(mc.basicProgramStart);
+    blobTypeSniffer.hashTags.push("vic20");
+    return blobTypeSniffer
   });
 
   constructor(memConfig: MemoryConfiguration, roms: RomImage[] = VIC_ROMS) {
@@ -278,7 +280,7 @@ class Vic20BasicSniffer implements BlobSniffer {
 
   desc: string;
   name: string;
-  tags: string[];
+  hashTags: string[];
   private memory: MemoryConfiguration;
 
   constructor(
@@ -292,7 +294,7 @@ class Vic20BasicSniffer implements BlobSniffer {
     this.memory = memory;
     this.name = name;
     this.desc = desc;
-    this.tags = tags;
+    this.hashTags = tags;
   }
 
   getMeta(): DisassemblyMeta {
