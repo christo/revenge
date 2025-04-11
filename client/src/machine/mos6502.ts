@@ -12,7 +12,7 @@ import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "../../../server/src/common/Byteable.ts";
-import {Addr, assertByte, hex16, unToSigned} from "./core.ts";
+import {Addr, assertByte, hex16, hex8, unToSigned} from "./core.ts";
 import {Cpu} from "./Cpu.ts";
 import {LE, LittleEndian} from "./Endian.ts";
 
@@ -126,11 +126,11 @@ const CLV = new Op("CLV", "clear overflow", SR);
 const CMP = new Op("CMP", "compare (with accumulator)", LG);
 const CPX = new Op("CPX", "compare with X", LG);
 const CPY = new Op("CPY", "compare with Y", LG);
-const DEC = new Op("DEC", "decrement", MATH);
+const DEC = new Op("DEC", "decrement", MATH, [OpSemantics.IS_MEMORY_WRITE, OpSemantics.IS_MEMORY_READ]);
 const DEX = new Op("DEX", "decrement X", MATH);
 const DEY = new Op("DEY", "decrement Y", MATH);
 const EOR = new Op("EOR", "exclusive or (with accumulator)", LG);
-const INC = new Op("INC", "increment", MATH);
+const INC = new Op("INC", "increment", MATH, [OpSemantics.IS_MEMORY_WRITE, OpSemantics.IS_MEMORY_READ]);
 const INX = new Op("INX", "increment X", MATH);
 const INY = new Op("INY", "increment Y", MATH);
 const JMP = new Op("JMP", "jump", BRA, [OpSemantics.IS_UNCONDITIONAL_JUMP]);
@@ -499,7 +499,7 @@ class FullInstruction implements Byteable {
   read8 = (offset: number): number => this.getBytes()[offset];
 
   byteString(): string {
-    return this.getBytes().map(hex16).join(" ");
+    return this.getBytes().map(hex8).join(" ");
   }
 
   /**
