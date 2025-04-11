@@ -4,6 +4,7 @@
   "scripts": {
     "compile": "tsc -b",
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
+    "startBig": "NODE_OPTIONS='--max-old-space-size=8192' ts-node -r tsconfig-paths/register src/server.ts",
     "dev": "nodemon -r tsconfig-paths/register --watch src src/server.ts",
     "nodeversion": "ts-node --showConfig -vv"
   },

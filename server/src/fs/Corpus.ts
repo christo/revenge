@@ -11,9 +11,13 @@ class Corpus {
 
   private readonly dir: string;
 
-  constructor(dir = process.env.CORPUS_BASE_DIR) {
+  /**
+   *
+   * @param dir base of file tree to look for files
+   */
+  constructor(dir: string ) {
     if (!fs.existsSync(dir!)) {
-      throw Error("CORPUS_BASE_DIR doesn't exist");
+      throw Error(`Corpus dir doesn't exist: ${dir}`);
     }
     this.dir=dir!;
   }
