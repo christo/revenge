@@ -130,6 +130,16 @@
 
 ## Long Term Ideas
 
+* [ ] dialect translation: source -> source
+* [ ] execution harness for automatically running generated source:
+  * multiple assemblers installed on the server
+  * check exit status
+  * capture output (possibly matching important output info)
+  * analyse files produced
+  * determine test/failure on multiple points
+  * what kind of round-trip makes sense here? 
+    * existing-source -> binary -> gen-source -> binary
+    * binary -> gen-source -> binary
 * [ ] mechanism for testing or reengineering:
   * take a source project (with or without built binaries)
   * build the binary from it
