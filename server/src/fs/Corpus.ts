@@ -1,7 +1,14 @@
 import fs from "fs";
 import {FileInfo, okExt, scanDirectory} from "./finder";
 
+/**
+ * Define a library of binaries to analyse or identify.
+ * note there can be multiple filepaths for a given hash
+ */
 class Corpus {
+
+  // TODO enable configuration of multiple corpora, each with a name
+
   private readonly dir: string;
 
   constructor(dir = process.env.CORPUS_BASE_DIR) {
