@@ -104,7 +104,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
   getBytes = () => this._bytes;
 
   submatch(seq: Uint8Array, atOffset: number): boolean {
-    if (seq.length + atOffset <= this._bytes.length && seq.length > 0) {
+    if (seq.length + atOffset <= this._bytes.length && seq.length > 0 && atOffset >= 0) {
       for (let i = 0; i < seq.length; i++) {
         if (seq[i] !== this._bytes[i + atOffset]) {
           return false;
@@ -113,12 +113,14 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
       // sequence has matched at offset
       return true;
     } else {
-      console.log("Sequence length out of range (" + seq.length + ") for memory size " + this._bytes.length);
       return false;
     }
   }
 
   read16(byteOffset: Addr) {
+    if (this.getLength() === 0) {
+      throw Error("empty Memory, cannot read");
+    }
     // last possible word offset must fit word
     const lastWordAddress = this._bytes.length - 2;
     if (byteOffset < 0 || byteOffset > lastWordAddress) {
