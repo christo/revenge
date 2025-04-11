@@ -40,6 +40,12 @@ function HashTag({label}: { label: string }) {
   return <Chip label={label} size="small" sx={{marginRight: 1}} variant="outlined" color="secondary"/>;
 }
 
+function EmptyFile({fb}: {fb: FileBlob}) {
+  return <Box sx={{flexGrow: 1}}>
+    File {fb.name} appears to be empty.
+  </Box>;
+}
+
 /**
  * Main content showing interpreted file contents.
  *
@@ -47,6 +53,10 @@ function HashTag({label}: { label: string }) {
  * @constructor
  */
 export function FileDetail({fb}: { fb: FileBlob }) {
+
+  if (fb.getLength() === 0) {
+    return <EmptyFile fb={fb}/>
+  }
   // get actions that can be done on this blob based on scoring from sniff:
   const typeActions: TypeActions = runSniffers(fb);
   const [action, setAction] = useState(0);
