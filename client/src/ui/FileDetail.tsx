@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import React, {useState} from 'react';
 import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../machine/FileBlob.ts";
-import {sniff} from "../machine/revenge.ts";
+import {runSniffers} from "../machine/revenge.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
@@ -48,7 +48,7 @@ function HashTag({label}: { label: string }) {
  */
 export function FileDetail({fb}: { fb: FileBlob }) {
   // get actions that can be done on this blob based on scoring from sniff:
-  const typeActions: TypeActions = sniff(fb);
+  const typeActions: TypeActions = runSniffers(fb);
   const [action, setAction] = useState(0);
   const t = typeActions.t;
   /*
