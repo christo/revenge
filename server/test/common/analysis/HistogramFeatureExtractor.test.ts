@@ -6,7 +6,7 @@ describe("histogram feature extractor", () => {
   it("handles simple binary case", () => {
     const hfe :HistogramExtractor = new HistogramExtractor();
     const buffer = [0, 0, 0, 0, 255];
-    const features = hfe.extract(new FileLike("foobar", Uint8Array.from(buffer)));
+    const features = hfe.extract(new FileLike("foobar", buffer));
     const byte255 = features.find(f => f[0] === `byte_255`);
     expect(byte255).not.to.equal(undefined);
     const byte0 = features.find(f => f[0] === `byte_0`);
@@ -17,7 +17,7 @@ describe("histogram feature extractor", () => {
   it("calculates flat feature vector", () => {
     const hfe :HistogramExtractor = new HistogramExtractor();
     const twoOfEach = [0, 2, 4, 8, 4, 2, 0, 8];
-    const features = hfe.extract(new FileLike("foobar", Uint8Array.from(twoOfEach)));
+    const features = hfe.extract(new FileLike("foobar", twoOfEach));
     const byte2 = features.find(f => f[0] === `byte_2`);
     expect(byte2).not.to.equal(undefined);
     const byte0 = features.find(f => f[0] === `byte_0`);

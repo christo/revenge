@@ -34,6 +34,9 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
  * @param fileBlob
  */
 const runSniffers = (fileBlob: FileBlob): TypeActions => {
+  if (fileBlob.getLength() === 0) {
+    throw Error(`empty fileblob ${fileBlob.name}`);
+  }
   // run through various detection matchers which return a match coefficient
   // we look for a good match in order to decide what TypeActions to give the user,
   // falling through to unknown which can only hexdump.

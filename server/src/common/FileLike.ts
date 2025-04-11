@@ -2,26 +2,14 @@
  * Flexible file-like abstraction backed by a byte array.
  */
 class FileLike {
-  private readonly _name: string;
-  private readonly _data: Uint8Array;
-  private readonly _size: number;
+  readonly name: string;
+  readonly data: number[];
+  readonly size: number;
 
-  constructor(name: string, data: Uint8Array) {
-    this._name = name;
-    this._data = data;
-    this._size = data.byteLength
-  }
-
-  get name(): string {
-    return this._name;
-  }
-
-  get data(): Uint8Array {
-    return this._data;
-  }
-
-  get size(): number {
-    return this._size;
+  constructor(name: string, data: number[]) {
+    this.name = name;
+    this.data = data;
+    this.size = data.length;
   }
 }
 

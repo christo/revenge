@@ -30,7 +30,7 @@ class FileBlob implements Byteable {
       const bytes = Array.from(new Uint8Array(buf));
       return FileBlob.fromBytes(f.name, bytes, endian);
     } else {
-      return FileBlob.fromBytes(f.name, Array.from(f.data), endian);
+      return FileBlob.fromBytes(f.name, f.data, endian);
     }
   }
 

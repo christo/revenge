@@ -113,8 +113,7 @@ const okExt = (fi: FileInfo) => {
 
 function fileInfoToFileLike(fileInfo: FileInfo): FileLike {
   const buffer = fs.readFileSync(fileInfo.path);
-  const data = Uint8Array.from(buffer);
-  return new FileLike(fileInfo.path, data);
+  return new FileLike(fileInfo.path, Array.from(buffer));
 }
 
 /**
