@@ -4,8 +4,11 @@
 
 * [ ] content hash calculation
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
-  * [ ] write hash calculations in data dir
-  * [ ] add .env support to define data dir
+  * [x] write hash calculations in data dir
+  * [x] add .env support to define data dir
+  * [ ] optimise memory usage and asynchrony of hash calculation
+  * [ ] load hashes from hash files on boot
+  * [ ] don't recalculate hashes if they are alraedy present 
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
@@ -127,14 +130,23 @@
 
 ## Long Term Ideas
 
+* [ ] mechanism for testing or reengineering:
+  * take a source project (with or without built binaries)
+  * build the binary from it
+  * reverse the binary to produce source
+  * compare the source to the real source for ideas on interpretation
+  * identify platform and tool-specific idioms
+* interpret source code examples to produce a theory of the dialect
+  * recognise dialect by syntax / platform etc.
+  * use an LLM to help categorise the dialect or build a dialect with revenge api
+  * build test suite for this
 * [ ] Broaden code detection to fuller emulation
   * [ ] check out MIT licensed typescript 6502 emulator
     core https://github.com/6502ts/6502.ts
   * [ ] check out full js/ts system emulators - need to be able to support multiple emulators
     at some point so ensure the multi-emulator context exists in the speculative binary detection
     and code detection code path
-* check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to
-  Ramda
+* check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to Ramda
 * check out Haskell Difference List datastructure
 * Add readonly memory region support (will help isolate selfmod potential and help with static
   analysis)
