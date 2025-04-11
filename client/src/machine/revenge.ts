@@ -33,17 +33,20 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
  *
  * @param fileBlob
  */
-const sniff = (fileBlob: FileBlob): TypeActions => {
-  // run through various detection matchers, falling through to unknown
-  // TODO CRT file format sniffer
-  const carts = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
-  for (let i = 0; i < carts.length; i++) {
-    const cart = carts[i];
-    if (cart.sniff(fileBlob) > 1) {
-      // TODO get rid of early return
-      return mkDisasmAction(cart, fileBlob);
-    }
+const runSniffers = (fileBlob: FileBlob): TypeActions => {
+  // run through various detection matchers which return a match coefficient
+  // we look for a good match in order to decide what TypeActions to give the user,
+  // falling through to unknown which can only hexdump.
+  // hexdump is always an option
+
+  // TODO C64 CRT file format sniffer
+
+  const cartSniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
+  const cartMatch = cartSniffers.find(c => c.sniff(fileBlob) > 1);
+  if (cartMatch) {
+    return mkDisasmAction(cartMatch, fileBlob);
   }
+
   const hd = hexDumper(fileBlob);
   if (C64_CRT.sniff(fileBlob) > 1) {
     const typeActions = crt64Actions(fileBlob);
@@ -99,4 +102,4 @@ const sniff = (fileBlob: FileBlob): TypeActions => {
 }
 
 
-export {sniff};
+export {runSniffers};
