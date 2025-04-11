@@ -79,7 +79,7 @@ NESASM3 is used in NES tutorial [Nerdy Nights](https://taywee.github.io/NerdyNig
 ## Others:
 
 * [ca65](https://cc65.github.io/doc/ca65.html) (part of [cc65](https://www.cc65.org/)) used in tutorial series for NES/Famicon called [Famicon Party](https://github.com/kzurawel/famicomparty-book) and a [translation of Nerdy Nights for ca65](https://github.com/JamesSheppardd/Nerdy-Nights-ca65-Translation)
-* [64tass](https://tass64.sourceforge.net/)
+* [tass64](https://tass64.sourceforge.net/) aka `64tass`
 * [xa65](http://www.floodgap.com/retrotech/xa/)
 * [DASM](https://dasm-assembler.github.io/) Popular with Atari 2600 Community
 * [Acme](https://sourceforge.net/projects/acme-crossass/)
