@@ -2,9 +2,6 @@
  Metadata root model for all possibly supportable systems.
  */
 
-import {C64} from "./cbm/c64.ts";
-import {Vic20} from "./cbm/vic20.ts";
-
 /**
  * Represents a type of file on a retro system with an optional spec url.
  */
@@ -15,7 +12,7 @@ type FileType = {
 type UrlRef = {
   name: string,
   url: string,
-  blurb: string
+  blurb?: string
 }
 
 // TODO introduce variant and configuration specification api based on software requirements, especially
@@ -39,11 +36,11 @@ class System {
   }
 
   addFiletype(ext: string, desc: string, url?: string) {
-    this.filetypes.push({ext: ext.toLowerCase(), desc: desc, url: url});
+    this.filetypes.push({ext: ext.toLowerCase(), desc, url});
     return this;
   }
 
-  addUrl(name: string, url: string,blurb: string, ) {
+  addUrl(name: string, url: string, blurb?: string, ) {
     this.urls.push({name, url, blurb});
     return this;
   }
@@ -51,15 +48,16 @@ class System {
 
 // future: probably belongs in a config file
 // TODO generate a page using this info
-export const SYSTEMS = [
-  new System(Vic20.NAME, Vic20.LONG_NAME),
-  new System(C64.NAME, C64.LONG_NAME),
+const SYSTEMS = [
+  new System("VIC-20", "Commodore VIC-20"),
+  new System("C64", "Commodore 64"),
   new System("C128", "Commodore 128"),
   new System("BBC", "BBC Micro Model B")
       .addUrl(
           "Beeb Wiki",
           "https://beebwiki.mdfs.net/Main_Page",
           "articles relating to the Acorn BBC Microcomputer and related computers")
+      .addUrl("Stardot Forums", "https://www.stardot.org.uk/forums/")
       .addFiletype("dsd", "BBC double-sided disk image", "https://beebwiki.mdfs.net/Acorn_DFS_disc_format")
       .addFiletype("ssd", "BBC single-sided disk image", "https://beebwiki.mdfs.net/Acorn_DFS_disc_format"),
   new System("ZX Spectrum", "Sinclair ZX Spectrum"),
@@ -75,3 +73,5 @@ export const SYSTEMS = [
   new System("SNES", "Super Nintendo Entertainment System"),
   new System("TRS-80", "Radio Shack TRS-80 Model 1"),
 ];
+
+export {SYSTEMS, System, type FileType, type UrlRef};
