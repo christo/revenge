@@ -239,12 +239,12 @@ class Vic20 extends Computer {
   static LONG_NAME = "Commodore VIC-20"
 
   static MEMORY_CONFIG = {
-    UNEX: new MemoryConfiguration("VIC-20 unexpanded", 0x1001, "unexpanded"),
-    EXP03K: new MemoryConfiguration("VIC-20 3k expansion", 0x401, "3k"),
-    EXP08K: new MemoryConfiguration("VIC-20 8k expansion", 0x1201, "8k"),
-    EXP16K: new MemoryConfiguration("VIC-20 16k expansion", 0x1201, "16k"),
-    EXP24K: new MemoryConfiguration("VIC-20 24k expansion", 0x1201, "24k"),
-    EXP35K: new MemoryConfiguration("VIC-20 35k expansion", 0x1201, "35k"),
+    UNEX: new MemoryConfiguration("Unexpanded", 0x1001, "unexpanded"),
+    EXP03K: new MemoryConfiguration("3k expansion", 0x401, "3k"),
+    EXP08K: new MemoryConfiguration("8k expansion", 0x1201, "8k"),
+    EXP16K: new MemoryConfiguration("16k expansion", 0x1201, "16k"),
+    EXP24K: new MemoryConfiguration("24k expansion", 0x1201, "24k"),
+    EXP35K: new MemoryConfiguration("35k expansion", 0x1201, "35k"),
   };
 
   /**
