@@ -113,13 +113,60 @@ VIC20_SYM.reg(
   bit 3 sets multi-colour mode`);
 VIC20_SYM.reg(0x0287, "cursor_color", "colour at current cursor position");
 VIC20_SYM.reg(0x0288, "screen_map_page", "MSB of screen map address");
-VIC20_SYM.reg(0x0292, "scroll_down_flag", "0 enables scroll down, any other value disables");
 
+// keyboard related
+VIC20_SYM.reg(0x0289, "XMAX", "Maximum number of characters in the keyboard buffer");
+VIC20_SYM.reg(0x028a, "RPTFLG", "Keyboard repeater flags");
+VIC20_SYM.reg(0x028b, "KOUNT", "Delay before other than first repeat of key");
+VIC20_SYM.reg(0x028c, "DELAY", "Delay before first repeat of key");
+VIC20_SYM.reg(0x028d, "SHFLAG", "Current SHIFT/CTRL/C= keys pattern");
+VIC20_SYM.reg(0x028e, "LSTSHF", "Previous SHIFT/CTRL/C= keys pattern");
+VIC20_SYM.reg(0x028f, "KEYLOG", "Pointer to the default keyboard table setup routine");
+VIC20_SYM.reg(0x0290, "KEYLOG_MSB", "MSB of pointer to the default keyboard table setup routine");
+VIC20_SYM.reg(0x0291, "MODE", "Flag to disable or enable combined SHIFT and Commodore keys",
+    "Only affects the special behaviour of combined SHIFT + C= keys");
+
+VIC20_SYM.reg(0x0292, "AUTODN", "0 enables scroll down, any other value disables");
+
+VIC20_SYM.reg(0x0300, "IERROR", "Vector to routine to print BASIC error message from a table");
+VIC20_SYM.reg(0x0301, "IERROR_MSB", "MSB of vector to routine to print BASIC error message from a table");
+VIC20_SYM.reg(0x0302, "IMAIN", "Vector to the BASIC main routine. Execute or store statement");
+VIC20_SYM.reg(0x0303, "IMAIN_MSB", "MSB of vector to the BASIC main routine. Execute or store statement",
+    "Points to the MAIN routine at 50307 ($C483)");
+VIC20_SYM.reg(0x0304, "ICRNCH", "Vector to the BASIC tokenization routine.",
+    "Points to the CRNCH routine at 50556 ($C57C)");
+VIC20_SYM.reg(0x0305, "ICRNCH_MSB", "MSB of vector to the BASIC tokenization routine.");
+VIC20_SYM.reg(0x0306, "IQPLOP", "Vector to the BASIC routine that expands and prints tokens.",
+    "Points to the QPLOP routine at 50970 ($C71A)");
+VIC20_SYM.reg(0x0307, "IQPLOP_MSB", "MSB of vector to the BASIC routine that expands and prints tokens.");
+VIC20_SYM.reg(0x0308, "IQGONE", "Vector to the BASIC routine that executes the next BASIC token.",
+    "Points to the CRNCH routine at 51172 ($C7E4)");
+VIC20_SYM.reg(0x0309, "IGONE_MSB", "MSB of vector to the BASIC routine that executes the next BASIC token.");
+VIC20_SYM.reg(0x030a, "IEVAL", "Vector to the BASIC routine that evaluates a variable.",
+    "Points to the EVAL routine at 52870 ($CE86)");
+VIC20_SYM.reg(0x030b, "IEVAL_MSB", "MSB of vector to the BASIC routine that evaluates a variable.");
+
+VIC20_SYM.reg(0x030c, "SAREG", "Save 6502 A register before BASIC SYS statement.");
+VIC20_SYM.reg(0x030d, "SXREG", "Save 6502 X register before BASIC SYS statement.");
+VIC20_SYM.reg(0x030e, "SYREG", "Save 6502 Y register before BASIC SYS statement.");
+VIC20_SYM.reg(0x030f, "SPREG", "Save 6502 P register before BASIC SYS statement.",
+    "Bit flag map: NV_BDIZC");
+
+VIC20_SYM.reg(0x0314, "CINV", "IRQ interrupt vector", "Vector to IRQ interrupt routine. Default is 60095 ($EABF)");
+VIC20_SYM.reg(0x0315, "CINV_MSB", "MSB of IRQ interrupt vector");
 VIC20_SYM.reg(0x0316, "break_interrupt_vector", "break interrupt vector", "When STOP key is pressed (fed2)");
 VIC20_SYM.reg(0x0317, "break_interrupt_vector_msb", "break interrupt vector (MSB)");
 VIC20_SYM.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_SYM.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
+
 VIC20_SYM.reg(0x033c, "TPHDRID", "Tape header identifier, start of tape buffer");
+VIC20_SYM.reg(0x033d, "TPHBGN", "Starting address for tape load");
+VIC20_SYM.reg(0x033e, "TPHBGN_MSB", "MSB of starting address for tape load");
+VIC20_SYM.reg(0x033f, "TPHEND", "Ending address plus one of tape load");
+VIC20_SYM.reg(0x0340, "TPHEND_MSB", "MSB of ending address plus one of tape load");
+VIC20_SYM.reg(0x0341, "TPHNAME", "Filename of tape data",
+    "Padded with blanks, these 187 bytes hold the filename that is specified with SAVE, OPEN, or SETNAM.)");
+
 
 // VIC REGISTERS
 VIC20_SYM.reg(0x9000, "VICCR0", "Left edge of video image and interlace switch");
@@ -140,7 +187,6 @@ VIC20_SYM.reg(0x900e, "VICCRE", "Sound volume and aux colour");
 VIC20_SYM.reg(0x900f, "VICCRF", "Background colour, border colour, inverse colour switch");
 
 // VIA registers
-
 VIC20_SYM.reg(0x9110, "VIA1PB", "VIA 1 I/O Port B - User port");
 VIC20_SYM.reg(0x9111, "VIA1PA1", "VIA 1 I/O Port A - Serial port and joystick port");
 VIC20_SYM.reg(0x9112, "VIA1DDRB", "VIA 1 I/O Port B Direction Register");
