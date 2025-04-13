@@ -372,8 +372,8 @@ const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
 const VIC20_CART_SNIFFER = new CartSniffer(
-    "VIC-20 cart image",
-    "ROM dump from VIC-20 cartridge",
+    "cart image",
+    "cartridge ROM dump",
     ["cart", Vic20.NAME],
     A0CBM, CART_SIG_OFFSET,
     new DisassemblyMetaImpl(

@@ -36,7 +36,7 @@ function basicLine(addr: Addr, lineNumber: number, lineContents: number[]): [Add
 }
 
 describe("vic20", () => {
-  const unexpanded = Vic20.MEMORY_CONFIG.UNEX;
+  const unexpanded = Vic20.MEM_CONFIG.UNEX;
   it("sniff basic program consisting only of line: 0 PRINT", () => {
     const memConfig = unexpanded;
     const VIC = new Vic20(memConfig);
