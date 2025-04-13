@@ -238,7 +238,7 @@ class Vic20 extends Computer {
   static NAME = "VIC-20";
   static LONG_NAME = "Commodore VIC-20"
 
-  static MEMORY_CONFIG = {
+  static MEM_CONFIG = {
     UNEX: new MemoryConfiguration("Unexpanded", 0x1001, "unexpanded"),
     EXP03K: new MemoryConfiguration("3k expansion", 0x401, "3k"),
     EXP08K: new MemoryConfiguration("8k expansion", 0x1201, "8k"),
@@ -251,12 +251,12 @@ class Vic20 extends Computer {
    * Common memory configs. Strictly, memory configs can include all block mapping permutations.
    */
   static MEMORY_CONFIGS = [
-    Vic20.MEMORY_CONFIG.UNEX,
-    Vic20.MEMORY_CONFIG.EXP03K,
-    Vic20.MEMORY_CONFIG.EXP08K,
-    Vic20.MEMORY_CONFIG.EXP16K,
-    Vic20.MEMORY_CONFIG.EXP24K,
-    Vic20.MEMORY_CONFIG.EXP35K,
+    Vic20.MEM_CONFIG.UNEX,
+    Vic20.MEM_CONFIG.EXP03K,
+    Vic20.MEM_CONFIG.EXP08K,
+    Vic20.MEM_CONFIG.EXP16K,
+    Vic20.MEM_CONFIG.EXP24K,
+    Vic20.MEM_CONFIG.EXP35K,
   ];
 
   /**
@@ -362,11 +362,11 @@ class Vic20BasicSniffer implements BlobSniffer {
   }
 }
 
-const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.UNEX);
-const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP03K);
-const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP08K);
-const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP16K);
-const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEMORY_CONFIG.EXP24K);
+const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.UNEX);
+const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP03K);
+const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP08K);
+const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
+const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
