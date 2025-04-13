@@ -101,23 +101,26 @@ VIC20_SYM.sub(0xe3a4, "basic_ram_init", "initialise basic ram locations");
 // TODO register words so that the two addresses are individually meaningfully prescribed
 
 /*
- * Common Registers
+ * Common Registers and locations
  */
+VIC20_SYM.reg(0x0281, "MSMSTR", "Pointer to start of user RAM")
+VIC20_SYM.reg(0x0282, "MSMSTR_MSB", "MSB Pointer to start of user RAM")
+VIC20_SYM.reg(
+    0x0286,
+    "color_mode",
+    "character foreground are multi-color or single color",
+    `bits 0-2 choose foreground colour from standard 8 as on the keyboard, 
+  bit 3 sets multi-colour mode`);
+VIC20_SYM.reg(0x0287, "cursor_color", "colour at current cursor position");
+VIC20_SYM.reg(0x0288, "screen_map_page", "MSB of screen map address");
+VIC20_SYM.reg(0x0292, "scroll_down_flag", "0 enables scroll down, any other value disables");
+
 VIC20_SYM.reg(0x0316, "break_interrupt_vector", "break interrupt vector", "When STOP key is pressed (fed2)");
 VIC20_SYM.reg(0x0317, "break_interrupt_vector_msb", "break interrupt vector (MSB)");
 VIC20_SYM.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_SYM.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
-{
-  VIC20_SYM.reg(
-      0x0286,
-      "color_mode",
-      "character foreground are multi-color or single color",
-      `bits 0-2 choose foreground colour from standard 8 as on the keyboard, 
-  bit 3 sets multi-colour mode`);
-}
-VIC20_SYM.reg(0x0287, "cursor_color", "colour at current cursor position");
-VIC20_SYM.reg(0x0288, "screen_map_page", "MSB of screen map address");
-VIC20_SYM.reg(0x0292, "scroll_down_flag", "0 enables scroll down, any other value disables");
+
+
 VIC20_SYM.reg(0x033c, "TPHDRID", "Tape header identifier, start of tape buffer");
 VIC20_SYM.reg(0x9000, "VICCR0", "Left edge of video image and interlace switch");
 VIC20_SYM.reg(0x9001, "VICCR1", "Vertical origin of video image");
@@ -372,8 +375,8 @@ const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
 const VIC20_CART_SNIFFER = new CartSniffer(
-    "cart image",
-    "cartridge ROM dump",
+    "VIC-20 cart",
+    "Cartridge ROM image dump",
     ["cart", Vic20.NAME],
     A0CBM, CART_SIG_OFFSET,
     new DisassemblyMetaImpl(
@@ -389,7 +392,6 @@ const VIC20_CART_SNIFFER = new CartSniffer(
         VIC20_SYM
     )
 );
-
 
 export {
   Vic20,
