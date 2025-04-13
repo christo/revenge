@@ -119,9 +119,9 @@ VIC20_SYM.reg(0x0316, "break_interrupt_vector", "break interrupt vector", "When 
 VIC20_SYM.reg(0x0317, "break_interrupt_vector_msb", "break interrupt vector (MSB)");
 VIC20_SYM.reg(0x0318, "nmi_vector", "non-maskable interrupt jump location");
 VIC20_SYM.reg(0x0319, "nmi_vector_msb", "non-maskable interrupt jump location (MSB)");
-
-
 VIC20_SYM.reg(0x033c, "TPHDRID", "Tape header identifier, start of tape buffer");
+
+// VIC REGISTERS
 VIC20_SYM.reg(0x9000, "VICCR0", "Left edge of video image and interlace switch");
 VIC20_SYM.reg(0x9001, "VICCR1", "Vertical origin of video image");
 VIC20_SYM.reg(0x9002, "VICCR2", "Number of text columns");
