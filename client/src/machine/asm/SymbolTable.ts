@@ -48,20 +48,8 @@ class SymbolTable {
    * @param desc description
    * @param blurb optional extra blurb
    */
-  reg(addr: Addr, name: string, desc: string, blurb = "") {
+  reg(addr: Addr, name: string, desc: string, blurb: string = "") {
     this.sym(SymbolType.reg, addr, name, desc, blurb);
-  }
-
-  /**
-   * Register a
-   * @param lowerAddr
-   * @param name
-   * @param desc
-   * @param blurb
-   */
-  reg16(lowerAddr: Addr, name: string, desc: string, blurb: string = "") {
-    this.sym(SymbolType.reg, lowerAddr, `${name}_LO`, `LO BYTE ${desc}`, blurb.length > 0 ? `LO BYTE ${blurb}` : "");
-    this.sym(SymbolType.reg, lowerAddr + 1, `${name}_HI`, `HI BYTE ${desc}`, blurb.length > 0 ? `LO BYTE ${blurb}` : "");
   }
 
   sym(sType: SymbolType, addr: Addr, name: string, desc: string, blurb = "") {
