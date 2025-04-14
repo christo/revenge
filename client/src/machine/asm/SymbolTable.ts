@@ -3,11 +3,18 @@ import {SymDef} from "./instructions.ts";
 
 /** There are different types of symbols duh. */
 enum SymbolType {
+  /**
+   * A register, memory mapped in hardware.
+   */
   reg,
   /**
-   * Subroutine symbol.
+   * Subroutine symbol, callable.
    */
-  sub
+  sub,
+  /**
+   * Memory map location, like a register but software defined.
+   */
+  map,
 }
 
 /**
@@ -42,7 +49,7 @@ class SymbolTable {
   }
 
   /**
-   * Register definition
+   * Register definition, usually by electrically connected peripheral chips or external ports.
    * @param addr address of register
    * @param name name of register
    * @param desc description
@@ -50,6 +57,17 @@ class SymbolTable {
    */
   reg(addr: Addr, name: string, desc: string, blurb: string = "") {
     this.sym(SymbolType.reg, addr, name, desc, blurb);
+  }
+
+  /**
+   * Memory map location, as implemented by OS / firmware.
+   * @param addr address to register
+   * @param name symbol for the address
+   * @param desc description
+   * @param blurb extended description
+   */
+  map(addr: Addr, name: string, desc: string, blurb: string = "") {
+    this.sym(SymbolType.map, addr, name, desc, blurb);
   }
 
   sym(sType: SymbolType, addr: Addr, name: string, desc: string, blurb = "") {
@@ -60,9 +78,12 @@ class SymbolTable {
     if (name.length < 1) {
       throw Error("name empty");
     }
-    if (this.addressToSymbol.has(addr) || this.nameToSymbol.has(name)) {
+    if (this.addressToSymbol.has(addr)) {
+      const existingName = this.addressToSymbol.get(addr);
       // TODO support multiple symbols at same address
-      throw Error(`${this.name}: non-unique address (${addr}) or name (${name})`);
+      throw Error(`Multiple symbols defined for ${addr}: existing: "${existingName}" new: "${name}"`);
+    } else if (this.nameToSymbol.has(name)) {
+      throw Error(`${this.name}: redefinition of name ${name} from ${this.nameToSymbol.get(name)} to ${addr}`);
     }
     const symDef = new SymDef(sType, name, addr, desc.trim(), blurb.trim());
     this.addressToSymbol.set(addr, symDef);
