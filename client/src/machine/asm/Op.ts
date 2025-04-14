@@ -24,13 +24,13 @@ export enum OpSemantics {
   IS_MEMORY_WRITE,
   /** Reads a value from a memory location */
   IS_MEMORY_READ,
-
 }
 
 /**
  * Represents a machine instruction with a string mnemonic.
  */
 export class Op {
+
   mnemonic: string;
   description: string;
   /** instruction category */
@@ -45,6 +45,7 @@ export class Op {
   }
 
   valueImpliedMode(value: number): AddressingMode | undefined {
+    // TODO when implementing Z80, extract this 6502 semantics into the CPU definition
     return (value < 256) ? MODE_ZEROPAGE : MODE_ABSOLUTE;
   }
 
