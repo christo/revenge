@@ -273,7 +273,7 @@ class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<Instructi
 }
 
 /**
- * Declares an address definition using the bytes at the offset.
+ * Declares a word definition using the bytes at the offset.
  */
 class WordDefinitionEdict extends ByteDefinitionEdict {
   private readonly decimal: boolean;
