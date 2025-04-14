@@ -48,7 +48,7 @@ class Assembler {
  */
 type Emission = {
   /**
-   * @deprecated transition to an intermediate model
+   * @deprecated (tentative) transition to an intermediate model
    * TODO currently we are emitting bytes, but we should emit intermediate representation
    *   in order to support program transformations in the intermediate representation without going through
    *   bytes.
