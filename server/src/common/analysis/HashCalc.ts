@@ -1,4 +1,4 @@
-import {existsSync, mkdirSync, writeFileSync} from 'fs';
+import fs, {existsSync, mkdirSync, writeFileSync} from 'fs';
 import {crc32, md5, sha1} from "hash-wasm";
 import path from "path";
 import {FileLike} from "../FileLike";
@@ -59,13 +59,39 @@ class HashCalc {
     })
   }
 
+  /**
+   * Whether all the hash files exist.
+   */
   exists() {
-    // TODO implement
-    return false;
+    let exists = fs.existsSync(path.join(this.baseDir, SHA1_FILE));
+    exists = exists && fs.existsSync(path.join(this.baseDir, MD5_FILE));
+    exists = exists && fs.existsSync(path.join(this.baseDir, CRC32_FILE));
+    return exists;
+  }
+
+  private loadHash(filename: string, map: Array<Promise<[string, string]>>) {
+    const file = fs.readFileSync(path.join(this.baseDir, filename), 'utf8');
+    let hashesLoaded = 0;
+    file.split("\n").forEach((line) => {
+      // skip comment lines or any line not matching expected format
+      const re = line.match(/^([^# ])+\s(.*)$/);
+      if (re) {
+        hashesLoaded++;
+        const hash = re[1];
+        const path = re[2];
+        map.push(Promise.resolve([hash, path]));
+      }
+    });
+    return hashesLoaded;
   }
 
   load() {
-    throw Error("unimplemented");
+    let hashesLoaded = this.loadHash(SHA1_FILE, this.hashesSha1);
+    console.log(`loaded ${hashesLoaded} SHA1 hashes`);
+    hashesLoaded = this.loadHash(MD5_FILE, this.hashesMd5);
+    console.log(`loaded ${hashesLoaded} MD5 hashes`);
+    hashesLoaded = this.loadHash(CRC32_FILE, this.hashesCrc32);
+    console.log(`loaded ${hashesLoaded} CRC32 hashes`);
   }
 }
 
