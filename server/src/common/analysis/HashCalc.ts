@@ -58,6 +58,15 @@ class HashCalc {
       writeFileSync(filePath, data, 'utf8');
     })
   }
+
+  exists() {
+    // TODO implement
+    return false;
+  }
+
+  load() {
+    throw Error("unimplemented");
+  }
 }
 
 export {HashCalc};
