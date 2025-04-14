@@ -11,7 +11,8 @@ function loadCorpus() {
       hashCalc.load();
     } else {
       corpus.files().then(fis => {
-        console.log(`calculating corpus hashes on ${fis.length} files`)
+        console.log(`calculating corpus hashes on ${fis.length} files`);
+        // TODO change this implementation, it uses too much RAM
         Promise.all(fis.map((file: FileInfo) => {
           const fl = fileInfoToFileLike(file);
           const shaP = hashCalc.sha1(fl);
