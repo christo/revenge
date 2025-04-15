@@ -6,7 +6,7 @@
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
   * [x] write hash calculations in data dir
   * [x] add .env support to define data dir
-  * [ ] PERF memory constant bulk hash calculation
+  * [ ] `PERF` memory constant bulk hash calculation
   * [x] load hashes from hash files on boot
   * [x] don't recalculate hashes if they are alraedy present 
 * [ ] calculate feature vectors for binaries
@@ -19,7 +19,7 @@
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
-* [ ] fix mega slow ui rendering
+* [ ] `PERF` fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
 * [ ] Myriad basic stub does not show symbol definitions (some others too?)
