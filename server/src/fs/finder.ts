@@ -27,6 +27,7 @@ const SRC_EXTS = [
   "bat",
   "sh",
   "c",
+  "cpp",
   "h",
   "asm",
   "s",
@@ -48,7 +49,6 @@ const SRC_EXTS = [
   "yml",
   "xml",
   "vkm", // vice keyboard map
-  "cpp",
   // visual studio project files
   "sln",
   "vcxproj",
