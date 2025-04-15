@@ -32,6 +32,8 @@ timer frequency is determined)
 
 From [VICE Manual Chapter 1](https://vice-emu.sourceforge.io/vice_toc.html#TOC43)
 
+Seems most likely these file formats are also filename extensions.
+
 * `X64` or `D64` disk image files; Used by the 1541, 2031, 3040, 4040 drives.
 * `G64` GCR-encoded 1541 disk image files
 * `P64` lowlevel NRZI flux pulse disk image files
