@@ -72,6 +72,19 @@
 * [ ] fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
+* [ ] Support zipped files
+  * automatically unzip
+  * if contains multiple, show contents for selection of single item to load
+  * if simgle file contents, just load it with its own filename
+* [ ] support tape and disk image formats
+  * if multiple contents show list for selection and loading
+  * if single item just load it
+* [ ] Add to sniffer for CBM files the "smart attach" filename tag system that VICE and TheC64 understands e.g.:
+  * (PAL), (NTSC) - TV system
+  * (Cart) - Cartridge type
+  * (8) - Drive number
+  * (BASIC) - ROM requirement
+  * Machine model indicators like (C64), (C128), etc.
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
   * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
