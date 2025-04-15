@@ -14,6 +14,6 @@ export class CartSigEdict extends TextDefinitionEdict {
   }
 
   describe(): string {
-    return `VIC-20 cart signature`;
+    return `cart signature`;
   }
 }
