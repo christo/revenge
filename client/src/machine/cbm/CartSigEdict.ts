@@ -3,7 +3,6 @@ import {TextDefinitionEdict} from "../asm/instructions.ts";
 
 /**
  * Specifies a commodore cart signature edict. Note C64 and VIC20 have different sigs.
- * Their values are decodable as text (petscii).
  */
 export class CartSigEdict extends TextDefinitionEdict {
 
