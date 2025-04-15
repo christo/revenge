@@ -10,19 +10,20 @@ function loadCorpus() {
     if (hashCalc.exists()) {
       hashCalc.load();
     } else {
-      corpus.files().then(fis => {
+      corpus.files(0, 64*1024).then(fis => {
+        const start = Date.now();
         console.log(`calculating corpus hashes on ${fis.length} files`);
         // TODO change this implementation, it uses too much RAM
-        Promise.all(fis.map((file: FileInfo) => {
+        Promise.all(fis.map(async (file: FileInfo) => {
           const fl = fileInfoToFileLike(file);
-          const shaP = hashCalc.sha1(fl);
-          const md5P = hashCalc.md5(fl);
-          const crc32P = hashCalc.crc32(fl);
-          return Promise.all([shaP, md5P, crc32P]);
+          await hashCalc.sha1(fl);
+          await hashCalc.md5(fl);
+          return await hashCalc.crc32(fl);
         })).then(() => {
           console.log("saving hash files");
           hashCalc.save();
-          console.log("corpus hashes calculated");
+          const elapsedSec = ((Date.now() - start)/1000).toFixed(2);
+          console.log(`corpus hashes calculated in ${elapsedSec} s`);
         });
       });
     }
