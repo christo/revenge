@@ -49,7 +49,8 @@ const SRC_EXTS = [
   "xml",
   "vkm", // vice keyboard map
   "cpp",
-  "sln", // visual studio project file
+  // visual studio project files
+  "sln",
   "vcxproj",
   "vcxproj.filters",
   "vcxproj.user"
