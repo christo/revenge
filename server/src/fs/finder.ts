@@ -75,7 +75,7 @@ const MEDIA_EXTS = [
 ];
 
 const NON_ROM_EXTS = [
-  "tap",
+  "tap",  // probably should consider these "roms"
   "TAP",
   "sqlite",
   "brd",
