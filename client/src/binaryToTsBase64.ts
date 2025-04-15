@@ -13,6 +13,7 @@ interface RomFile {
   varName: string;
 }
 
+// TODO take these as parameters and move this into server/src/common
 const romFiles: RomFile[] = [
   {
     input: '../../roms/vic20/KERNAL.ROM',
