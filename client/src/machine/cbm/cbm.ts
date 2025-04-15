@@ -33,6 +33,7 @@ import {Mos6502} from "../mos6502.ts";
 import {InstRec, Tracer} from "../sim/Tracer.ts";
 import {CBM_BASIC_2_0} from "./BasicDecoder.ts";
 
+// TODO merge these with the bigger list in common/analysis...
 const PROGRAM_EXTS = ["prg", "crt", "bin", "rom", "p00", "bas"];
 const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
 const MEDIA_EXTS = ["sid"];
