@@ -22,7 +22,7 @@
 * [ ] fix mega slow ui rendering
   * [ ] learn devtools profiling
   * [ ] learn react devtools profiling (very confusing and crashy on current page)
-* [ ] Myriad basic stub does not show symbol definitions (some others to)
+* [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] many C64 binaries are not detected correctly - investigate
   * [x] Add C64 basic quickload example
   * [ ] add test case
