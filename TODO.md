@@ -6,7 +6,7 @@
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
   * [x] write hash calculations in data dir
   * [x] add .env support to define data dir
-  * [ ] PERF optimise memory usage and asynchrony of hash calculation
+  * [ ] PERF memory constant bulk hash calculation
   * [x] load hashes from hash files on boot
   * [x] don't recalculate hashes if they are alraedy present 
 * [ ] calculate feature vectors for binaries
@@ -15,6 +15,7 @@
   * [x] length feature extractor
   * [ ] convert bigram to feature extractor
     * [ ] 256^2 may be too many features so consider:
+      * How to decide how many features are too many?
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
