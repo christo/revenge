@@ -7,8 +7,8 @@
   * [x] write hash calculations in data dir
   * [x] add .env support to define data dir
   * [ ] optimise memory usage and asynchrony of hash calculation
-  * [ ] load hashes from hash files on boot
-  * [ ] don't recalculate hashes if they are alraedy present 
+  * [x] load hashes from hash files on boot
+  * [x] don't recalculate hashes if they are alraedy present 
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
