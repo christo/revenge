@@ -22,10 +22,10 @@ class Corpus {
     this.dir=dir!;
   }
 
-  async files(): Promise<Array<FileInfo>> {
+  async files(minSize: number = 0, maxSize: number = 64 * 1024): Promise<FileInfo[]> {
     const fileInfos: FileInfo[] = [];
     await scanDirectory(this.dir, fileInfos);
-    return fileInfos.filter(fi => okExt(fi) && fi.size < 64*1024 && fi.size > 0);
+    return fileInfos.filter(fi => okExt(fi) && fi.size < maxSize && fi.size > minSize);
   }
 }
 

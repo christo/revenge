@@ -9,9 +9,9 @@ const MD5_FILE = `md5.txt`;
 const CRC32_FILE = `crc32.txt`;
 
 class HashCalc {
-  private hashesSha1: Array<Promise<[string, string]>> = [];
-  private hashesMd5: Array<Promise<[string, string]>> = [];
-  private hashesCrc32: Array<Promise<[string, string]>> = [];
+  private hashesSha1: Array<[string, string]> = [];
+  private hashesMd5: Array<[string, string]> = [];
+  private hashesCrc32: Array<[string, string]> = [];
   private readonly baseDir: string;
 
   constructor(baseDir: string) {
@@ -19,20 +19,29 @@ class HashCalc {
   }
 
   async sha1(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = sha1(Buffer.from(fl.data)).then(hash => [fl.name, hash]);
-    this.hashesSha1.push(p);
+    const p: Promise<[string, string]> = sha1(Buffer.from(fl.data)).then(hash => {
+      const entry: [string, string] = [fl.name, hash];
+      this.hashesSha1.push(entry);
+      return entry;
+    });
     return p;
   }
 
   async md5(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = md5(Buffer.from(fl.data)).then(hash => [fl.name, hash]);
-    this.hashesMd5.push(p);
+    const p: Promise<[string, string]> = md5(Buffer.from(fl.data)).then(hash => {
+      const entry: [string, string] = [fl.name, hash];
+      this.hashesMd5.push(entry);
+      return entry;
+    });
     return p;
   }
 
   async crc32(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = crc32(Buffer.from(fl.data)).then(hash => [fl.name, hash]);
-    this.hashesCrc32.push(p);
+    const p: Promise<[string, string]> = crc32(Buffer.from(fl.data)).then(hash => {
+      const entry: [string, string] = [fl.name, hash];
+      this.hashesCrc32.push(entry);
+      return entry;
+    });
     return p;
   }
 
@@ -48,15 +57,13 @@ class HashCalc {
     this.writeHashes("CRC32", CRC32_FILE, this.hashesCrc32);
   }
 
-  private writeHashes(hashName: string, filename: string, hashes: Promise<[string, string]>[]) {
+  private writeHashes(hashName: string, filename: string, hashes: [string, string][]) {
     const lastWritten = `written at ${new Date().toISOString()}`
     let filePath = path.join(this.baseDir, filename);
-    Promise.all(hashes).then(tuples => {
-      const header = `# ${hashName} hashes ${lastWritten}`;
-      const hashLines = tuples.map(v => `${v[1]} ${v[0]}`).join("\n");
-      const data = `${header}\n${hashLines}`;
-      writeFileSync(filePath, data, 'utf8');
-    })
+    const header = `# ${hashName} hashes ${lastWritten}`;
+    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\n");
+    const data = `${header}\n${hashLines}\n`;
+    writeFileSync(filePath, data, 'utf8');
   }
 
   /**
@@ -69,7 +76,7 @@ class HashCalc {
     return exists;
   }
 
-  private loadHash(filename: string, map: Array<Promise<[string, string]>>) {
+  private loadHash(filename: string, map: Array<[string, string]>) {
     const file = fs.readFileSync(path.join(this.baseDir, filename), 'utf8');
     let hashesLoaded = 0;
     file.split("\n").forEach((line) => {
@@ -79,7 +86,7 @@ class HashCalc {
         hashesLoaded++;
         const hash = re[1];
         const path = re[2];
-        map.push(Promise.resolve([hash, path]));
+        map.push([path, hash]);
       }
     });
     return hashesLoaded;
