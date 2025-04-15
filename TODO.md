@@ -6,7 +6,7 @@
   * Suitable fast hashes in wasm: [hash-wasm](https://github.com/Daninet/hash-wasm)
   * [x] write hash calculations in data dir
   * [x] add .env support to define data dir
-  * [ ] optimise memory usage and asynchrony of hash calculation
+  * [ ] PERF optimise memory usage and asynchrony of hash calculation
   * [x] load hashes from hash files on boot
   * [x] don't recalculate hashes if they are alraedy present 
 * [ ] calculate feature vectors for binaries
@@ -18,7 +18,10 @@
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
-* [ ] basic stub does not show symbol definitions
+* [ ] fix mega slow ui rendering
+  * [ ] learn devtools profiling
+  * [ ] learn react devtools profiling (very confusing and crashy on current page)
+* [ ] Myriad basic stub does not show symbol definitions (some others to)
 * [ ] many C64 binaries are not detected correctly - investigate
   * [x] Add C64 basic quickload example
   * [ ] add test case
@@ -69,9 +72,6 @@
     * configuring disassembly options
     * adding annotations
     * identifying the target machine configuration (impacts memory layout, instruction set etc.)
-* [ ] fix mega slow ui rendering
-  * [ ] learn devtools profiling
-  * [ ] learn react devtools profiling (very confusing and crashy on current page)
 * [ ] Support zipped files
   * automatically unzip
   * if contains multiple, show contents for selection of single item to load
