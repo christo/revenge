@@ -76,8 +76,8 @@ const MEDIA_EXTS = [
 
 const NON_ROM_EXTS = [
   "tap",
-  "sqlite",
   "TAP",
+  "sqlite",
   "brd",
   "img",
   "bin",
