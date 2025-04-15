@@ -27,4 +27,26 @@ Section 17 of the VICE manual contains a [detailed summary file formats](https:/
 * contains metadata such as computer platform and video standard (from which tape pulse clock
 timer frequency is determined)
 * pulse stream representing audio of a physical cassette tape ([original spec](https://ist.uwaterloo.ca/~schepers/formats/TAP.TXT))
-* 
+
+## Supported File Formats in VICE
+
+From [VICE Manual Chapter 1](https://vice-emu.sourceforge.io/vice_toc.html#TOC43)
+
+* `X64` or `D64` disk image files; Used by the 1541, 2031, 3040, 4040 drives.
+* `G64` GCR-encoded 1541 disk image files
+* `P64` lowlevel NRZI flux pulse disk image files
+* `D67` CBM2040 (DOS1) disk image format
+* `D71` VC1571 disk image format
+* `D81` VC1581 disk image format
+* `D80` CBM8050 disk image format
+* `D82` CBM8250/1001 disk image format
+* `D90` CBM D9090/60 disk image format
+* `D1M` FD2000/FD4000 DD disk image format
+* `D2M` FD2000/FD4000 HD disk image format
+* `D4M` FD4000 ED disk image format
+* `DHD` CMD HD disk image format
+* `T64` tape container files (read-only)
+* `TAP` lowlevel tape image files
+* `P00` program files
+* `CRT` C64 cartridge image files
+* `TCRT` tapecart image files
