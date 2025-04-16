@@ -85,6 +85,7 @@ NESASM3 is used in NES tutorial [Nerdy Nights](https://taywee.github.io/NerdyNig
 * [Acme](https://sourceforge.net/projects/acme-crossass/)
 * [Easy6502](http://skilldrick.github.io/easy6502/) [GitHub](https://github.com/skilldrick/easy6502)
 * [GAS](https://wiki.osdev.org/GAS) (Gnu Assembler) - works with [llvm-mos](https://llvm-mos.org/wiki/Welcome) and The Compiler Explorer (aka [goldbolt.org](https://godbolt.org/)); see this [small c64 example](https://godbolt.org/z/WGa169Kve)
+* [c64jasm](https://nurpax.github.io/c64jasm/) runs on Node.js or browser, extensible with JavaScript.
 
 ### Common Dialect Variations
 
