@@ -2,6 +2,9 @@
 
 Reverse Engineering Environment
 
+Short story: This is an app that runs in a web browser to help programmers
+reverse engineer software written for 1980s era home computers. It's not finished.
+
 ![automated tests](https://github.com/christo/revenge/actions/workflows/workflow.yml/badge.svg)
 
 <!--suppress HtmlDeprecatedAttribute -->
