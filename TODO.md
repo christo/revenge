@@ -13,6 +13,8 @@
   * [x] histogram
   * [x] entropy
   * [x] length feature extractor
+  * [ ] index value feature extractor - rom images can start with a load address
+    * feature is an index, value and length (maybe just 1 or 2?) 
   * [ ] convert bigram to feature extractor
     * [ ] 256^2 may be too many features so consider:
       * How to decide how many features are too many?
