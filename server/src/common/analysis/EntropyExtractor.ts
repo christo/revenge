@@ -5,6 +5,16 @@ import {FeatureExtractor} from "./FeatureExtractor";
  * Calculates entropy statistics.
  */
 export class EntropyExtractor implements FeatureExtractor {
+  private static readonly FEAT_GLOBAL_ENTROPY = 'global_entropy';
+
+  private static readonly FEAT_MIN_WINDOW_ENTROPY = 'min_window_entropy';
+
+  private static readonly FEAT_MAX_WINDOW_ENTROPY = 'max_window_entropy';
+
+  private static readonly FEAT_MEAN_WINDOW_ENTROPY = 'mean_window_entropy';
+
+  private static readonly FEAT_SD_WINDOW_ENTROPY = 'std_window_entropy';
+
   private readonly windowSize: number;
 
   constructor(windowSize: number = 256) {
@@ -27,11 +37,12 @@ export class EntropyExtractor implements FeatureExtractor {
 
     // Return global entropy and stats about window entropy
     return [
-      ['global_entropy', globalEntropy],
-      ['min_window_entropy', Math.min(...windowEntropies)],
-      ['max_window_entropy', Math.max(...windowEntropies)],
-      ['mean_window_entropy', windowEntropies.reduce((a, b) => a + b, 0) / windowEntropies.length], // mean
-      ['std_window_entropy', this.standardDeviation(windowEntropies)],
+      [EntropyExtractor.FEAT_GLOBAL_ENTROPY, globalEntropy],
+      [EntropyExtractor.FEAT_MIN_WINDOW_ENTROPY, Math.min(...windowEntropies)],
+      [EntropyExtractor.FEAT_MAX_WINDOW_ENTROPY, Math.max(...windowEntropies)],
+      [EntropyExtractor.FEAT_MEAN_WINDOW_ENTROPY,
+        windowEntropies.reduce((a, b) => a + b, 0) / windowEntropies.length], // mean
+      [EntropyExtractor.FEAT_SD_WINDOW_ENTROPY, this.standardDeviation(windowEntropies)],
     ];
   }
 
