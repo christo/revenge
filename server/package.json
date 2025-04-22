@@ -30,7 +30,7 @@
     "@types/mocha": "^10.0.9",
     "@types/node": "^22.9.0",
     "chai": "^5.2.0",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.1.2",
     "mocha": "^11.1.0",
     "nodemon": "^3.1.9",
     "regenerator-runtime": "^0.14.1",
