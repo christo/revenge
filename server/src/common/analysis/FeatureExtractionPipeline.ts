@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
 import {FileLike} from "../FileLike";
+import {EntropyExtractor} from "./EntropyExtractor";
 import {FeatureExtractor} from "./FeatureExtractor";
+import {HistogramExtractor} from "./HistogramExtractor";
 
 class FeaturePipeline {
   private extractors: FeatureExtractor[] = [];
@@ -16,7 +18,15 @@ class FeaturePipeline {
         extractor.extract(numbers)
     );
 
-    // Flatten the feature vectors
     return featureVectors.flat();
   }
 }
+
+function defaultPipeline() {
+  const pipeline = new FeaturePipeline();
+  pipeline.add(new HistogramExtractor());
+  pipeline.add(new EntropyExtractor());
+  return pipeline;
+}
+
+export {FeaturePipeline, defaultPipeline};
