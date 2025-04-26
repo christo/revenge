@@ -1,6 +1,6 @@
 import {HashCalc} from "./common/analysis/HashCalc";
-import {Corpus} from "./fs/Corpus";
-import {FileInfo, fileInfoToFileLike} from "./fs/finder";
+import {Corpus} from "././sys/Corpus";
+import {FileInfo, fileInfoToFileLike} from "././sys/finder";
 
 function loadCorpus() {
   if (process.env.CORPUS_ON_BOOT === 'true') {

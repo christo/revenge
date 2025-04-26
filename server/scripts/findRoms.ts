@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import {resolve} from "node:path";
-import {bySize, FileInfo, formatBytesInMegs, MB1, okExt, scanDirectory} from "../src/fs/finder";
+import {bySize, FileInfo, formatBytesInMegs, MB1, okExt, scanDirectory} from "../src/./sys/finder";
 
 
 async function findLargeFiles(directory: string) {
