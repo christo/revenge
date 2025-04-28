@@ -1,4 +1,4 @@
-import {Byteable} from "../Byteable";
+import {Byteable} from "../Byteable.js";
 
 /**
  * Implements a frequency distribution for byte pair occurrences in the

@@ -1,5 +1,5 @@
-import {FileLike} from "../FileLike";
-import {FeatureExtractor} from "./FeatureExtractor";
+import {FileLike} from "../FileLike.js";
+import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**
  * Calculates entropy statistics.

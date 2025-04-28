@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import {readdir, stat} from 'node:fs/promises';
 import {join} from 'node:path';
-import {FileLike} from "../common/FileLike";
+import {FileLike} from "../common/FileLike.js";
 
 const MB1 = 1024 * 1024;
 

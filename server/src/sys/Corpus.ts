@@ -1,5 +1,5 @@
 import fs from "fs";
-import {FileInfo, okExt, scanDirectory} from "./finder";
+import {FileInfo, okExt, scanDirectory} from "./finder.js";
 
 /**
  * Define a library of binaries to analyse or identify.

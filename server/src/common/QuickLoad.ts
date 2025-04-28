@@ -1,4 +1,4 @@
-import {FileLike} from "./FileLike";
+import {FileLike} from "./FileLike.js";
 
 /**
  * Represents server-provided binaries that can be loaded without doing clientside upload.

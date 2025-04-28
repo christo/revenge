@@ -1,8 +1,12 @@
-import {HashCalc} from "./common/analysis/HashCalc";
-import {Corpus} from "././sys/Corpus";
-import {FileInfo, fileInfoToFileLike} from "././sys/finder";
+import pLimit from "p-limit";
+import {Corpus} from "././sys/Corpus.js";
+import {FileInfo, fileInfoToFileLike} from "././sys/finder.js";
+import {HashCalc} from "./common/analysis/HashCalc.js";
+
+const FILE_CONCURRENCY = 120;
 
 function loadCorpus() {
+
   if (process.env.CORPUS_ON_BOOT === 'true') {
     console.log("corpus file collection started");
     const corpus = new Corpus(process.env.CORPUS_BASE_DIR!);
@@ -14,12 +18,13 @@ function loadCorpus() {
         const start = Date.now();
         console.log(`calculating corpus hashes on ${fis.length} files`);
         // TODO change this implementation, it uses too much RAM
-        Promise.all(fis.map(async (file: FileInfo) => {
+        const limit = pLimit(FILE_CONCURRENCY);
+        Promise.all(fis.map(file => limit(() => async (file: FileInfo) => {
           const fl = fileInfoToFileLike(file);
           await hashCalc.sha1(fl);
           await hashCalc.md5(fl);
           return await hashCalc.crc32(fl);
-        })).then(() => {
+        }))).then(() => {
           console.log("saving hash files");
           hashCalc.save();
           const elapsedSec = ((Date.now() - start)/1000).toFixed(2);

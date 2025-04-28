@@ -1,7 +1,7 @@
 import fs, {existsSync, mkdirSync, writeFileSync} from 'fs';
 import {crc32, md5, sha1} from "hash-wasm";
 import path from "path";
-import {FileLike} from "../FileLike";
+import {FileLike} from "../FileLike.js";
 import 'dotenv/config';
 
 const SHA1_FILE = `sha1.txt`;
@@ -19,30 +19,27 @@ class HashCalc {
   }
 
   async sha1(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = sha1(Buffer.from(fl.data)).then(hash => {
+    return sha1(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesSha1.push(entry);
       return entry;
     });
-    return p;
   }
 
   async md5(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = md5(Buffer.from(fl.data)).then(hash => {
+    return md5(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesMd5.push(entry);
       return entry;
     });
-    return p;
   }
 
   async crc32(fl: FileLike): Promise<[string, string]> {
-    const p: Promise<[string, string]> = crc32(Buffer.from(fl.data)).then(hash => {
+    return crc32(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesCrc32.push(entry);
       return entry;
     });
-    return p;
   }
 
   save() {

@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import {FileLike} from "../FileLike";
-import {EntropyExtractor} from "./EntropyExtractor";
-import {FeatureExtractor} from "./FeatureExtractor";
-import {HistogramExtractor} from "./HistogramExtractor";
+import {FileLike} from "../FileLike.js";
+import {EntropyExtractor} from "./EntropyExtractor.js";
+import {FeatureExtractor} from "./FeatureExtractor.js";
+import {HistogramExtractor} from "./HistogramExtractor.js";
 
 class FeaturePipeline {
   private extractors: FeatureExtractor[] = [];

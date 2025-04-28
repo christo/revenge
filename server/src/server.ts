@@ -1,6 +1,6 @@
 import express from "express";
-import {loadCorpus} from "./loadCorpus";
-import quickloadsRouter from "./routes/quickloads";
+import {loadCorpus} from "./loadCorpus.js";
+import quickloadsRouter from "./routes/quickloads.js";
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 

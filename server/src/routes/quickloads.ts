@@ -1,7 +1,7 @@
 import express from "express";
 import fs from 'fs';
 import path from 'path';
-import {FileLike} from "../common/FileLike";
+import {FileLike} from "../common/FileLike.js";
 
 const router = express.Router();
 

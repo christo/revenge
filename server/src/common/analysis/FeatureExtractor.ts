@@ -1,4 +1,4 @@
-import {FileLike} from "../FileLike";
+import {FileLike} from "../FileLike.js";
 
 /**
  * Calculates feature vector for statistical analysis of byte array contents.
