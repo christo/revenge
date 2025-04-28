@@ -1,5 +1,4 @@
 /**
- * TODO share this between server and client?
  */
 export type ServerError = {
   message: string,

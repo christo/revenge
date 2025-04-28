@@ -70,10 +70,9 @@ class HashCalc {
    * Whether all the hash files exist.
    */
   exists() {
-    let exists = fs.existsSync(path.join(this.baseDir, SHA1_FILE));
-    exists = exists && fs.existsSync(path.join(this.baseDir, MD5_FILE));
-    exists = exists && fs.existsSync(path.join(this.baseDir, CRC32_FILE));
-    return exists;
+    return fs.existsSync(path.join(this.baseDir, SHA1_FILE))
+        && fs.existsSync(path.join(this.baseDir, MD5_FILE))
+        && fs.existsSync(path.join(this.baseDir, CRC32_FILE));
   }
 
   private loadHash(filename: string, map: Array<[string, string]>) {
