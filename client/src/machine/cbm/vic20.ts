@@ -287,17 +287,19 @@ class Vic20 extends Computer {
   static NAME = "VIC-20";
   static LONG_NAME = "Commodore VIC-20"
 
+  // future: add screen and colour memory relocation for 8k, 16k, 24k, 32k
   static MEM_CONFIG = {
     UNEX: new MemoryConfiguration("Unexpanded", 0x1001, "unexpanded"),
     EXP03K: new MemoryConfiguration("3k expansion", 0x401, "3k"),
     EXP08K: new MemoryConfiguration("8k expansion", 0x1201, "8k"),
     EXP16K: new MemoryConfiguration("16k expansion", 0x1201, "16k"),
     EXP24K: new MemoryConfiguration("24k expansion", 0x1201, "24k"),
-    EXP35K: new MemoryConfiguration("35k expansion", 0x1201, "35k"),
+    EXP32K: new MemoryConfiguration("32k expansion", 0x1201, "32k"),
+    EXP35K: new MemoryConfiguration("35k expansion", 0x401, "35k"), // note basic location is same as 3k
   };
 
   /**
-   * Common memory configs. Strictly, memory configs can include all block mapping permutations.
+   * Common memory configs. Does not currently distinguish each block mapping permutation.
    */
   static MEMORY_CONFIGS = [
     Vic20.MEM_CONFIG.UNEX,
@@ -305,6 +307,7 @@ class Vic20 extends Computer {
     Vic20.MEM_CONFIG.EXP08K,
     Vic20.MEM_CONFIG.EXP16K,
     Vic20.MEM_CONFIG.EXP24K,
+    Vic20.MEM_CONFIG.EXP32K,
     Vic20.MEM_CONFIG.EXP35K,
   ];
 
@@ -416,6 +419,7 @@ const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP03K);
 const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP08K);
 const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
 const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
+
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
