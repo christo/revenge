@@ -7,9 +7,14 @@ all_good=1 # unless proven guilty
 
 RED_CROSS="❌"
 GREEN_CHECK="✔️"
+WARNING_MARK="🟠"
 
 function success() {
   echo -e "\033[92m${GREEN_CHECK} ${*}\033[0m"
+}
+
+function warn() {
+echo -e "\x1b[33m${WARNING_MARK} ${*}\033[0m"
 }
 
 function fail() {
@@ -25,6 +30,13 @@ for e in npx node bun; do
     fail install missing required executable: $e
   fi
 done
+
+# you don't need file but wth you don't have it? it is used to help detect file types based on their content
+if [[ $(which file) ]]; then
+  success found on PATH: file
+else
+  warn no 'file' command on path, some features will be disabled
+fi
 
 # we assume these dirs exist
 for d in server/data server/data/preload server/data/preload/c64 server/data/preload/vic20; do
