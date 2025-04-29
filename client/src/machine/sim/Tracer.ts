@@ -57,7 +57,6 @@ class Tracer {
    */
   private readonly executedList: Array<InstRec>; // array is sufficiently performant for now
 
-  // TODO: keep track of locations written to (data)
   // future: identify self-mod code and raise exception
   //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
   //    * if a written to address is disassembled as opcode or operand byte
