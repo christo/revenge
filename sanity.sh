@@ -6,7 +6,7 @@
 all_good=1 # unless proven guilty
 
 RED_CROSS="❌"
-GREEN_CHECK="✔️"
+GREEN_CHECK="✅️"
 WARNING_MARK="🟠"
 
 function success() {
@@ -31,7 +31,7 @@ for e in npx node bun; do
   fi
 done
 
-# you don't need file but wth you don't have it? it is used to help detect file types based on their content
+# you don't absolutely need file but it is used to help detect file types based on their content
 if [[ $(which file) ]]; then
   success found on PATH: file
 else
