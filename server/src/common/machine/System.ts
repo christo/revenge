@@ -15,7 +15,7 @@ type UrlRef = {
   blurb?: string
 }
 
-// TODO introduce variant and configuration specification api based on software requirements, especially
+// future: introduce variant and configuration specification api based on software requirements, especially
 //  those that can be detected from software binaries, automated manual reading or automated on-screen
 //  instruction reading
 
