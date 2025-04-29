@@ -55,7 +55,7 @@ class Tracer {
    * Track the instruction bytes executed
    * @private
    */
-  private readonly executedList: Array<InstRec>; // TODO maybe store set?
+  private readonly executedList: Array<InstRec>; // array is sufficiently performant for now
 
   // TODO: keep track of locations written to (data)
   // future: identify self-mod code and raise exception
