@@ -1,4 +1,4 @@
-// TODO make this into idiomatic react theme
+// TODO reshape this into idiomatic react/mui theme
 
 import {createTheme} from "@mui/material";
 
