@@ -2,10 +2,8 @@
 
 ## Next Actions
 
-* [ ] `PERF` memory constant bulk hash calculation on server
-* [ ] `PERF` fix mega slow ui rendering
-  * [ ] learn devtools profiling
-  * [ ] learn react devtools profiling (very confusing and crashy on current page)
+* [x] `PERF` memory constant bulk hash calculation on server
+* [x] `PERF` fix mega slow ui rendering
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
