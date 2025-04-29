@@ -225,7 +225,7 @@ class BasicDecoder {
       const descBytes = ((remainingBytes < 16) ? mkHexString() : `${remainingBytes}`);
 
       const note = new Tag([TAG_NOTE], `${remainingBytes} trailing ${plural(remainingBytes, "byte")}: ${descBytes}`);
-      const numBytes = baseAddress + i + 2; // TODO is this 2 the content offset?
+      const numBytes = baseAddress + i + 2; // 2 is the content offset because of load address
       const addr = new Tag([TAG_ADDRESS], hex16(numBytes));
       dataView.addLine(new LogicalLine([note, addr], remainingBytes, numBytes));
     }
