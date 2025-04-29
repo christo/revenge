@@ -29,7 +29,6 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.
- * TODO should return a top list with confidence scores
  *
  * @param fileBlob
  */
