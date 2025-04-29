@@ -112,6 +112,7 @@ function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: Disassem
   const timeTaken = Date.now() - startTime;
   detail.stats.push(["disassembled in", `${timeTaken}  ms`]);
   // TODO introduce detail having options as well as stats; dialect should be an option
+  //  note that options should be able to have sub-options or dependent options
   detail.stats.push(["dialect", dialect.name]);
   detail.stats.push(["dialect info", dialect.description]);
   return detail;
