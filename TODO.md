@@ -120,6 +120,7 @@
     routines using the same code path
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
+* [ ] find a suitable minimal system like CHIP-8 to add as a second machine architecture family
 
 ## Reading List
 
