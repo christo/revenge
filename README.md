@@ -25,16 +25,6 @@ detect the filetype.
 
 ![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
-## Performance Problems April 2025
-
-There is currently a terrible performance bottleneck in the front-end rendering causing
-large binary loads to take a few seconds. Fixing it is a pretty high priority. It's
-something dumb and will probably be quick to fix although I can imagine it taking a
-whole day to find the cause. The disassembly and tracing (speculative machine code
-simulation) together take less than 50ms and initial analysis shows it's something in
-the rendering although the dev tools were unstable when I checked so I didn't get further
-at that time.
-
 ## Architecture
 
 Implemented in [TypeScript](https://www.typescriptlang.org/), using [Bun](https://bun.sh/),
