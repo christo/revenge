@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import * as fs from "fs";
+import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 import {InstructionLike} from "../../../src/machine/asm/instructions.ts";
@@ -11,7 +12,7 @@ import {mockOffsetDescriptor} from "../util.ts";
 
 describe("disassembler integration", () => {
   it("loads hesmon", () => {
-    const f = fs.readFileSync("../server/data/preload/vic20/HesMon.prg");
+    const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/HesMon.prg`);
     const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
     const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
@@ -23,7 +24,7 @@ describe("disassembler integration", () => {
   });
 
   it("traces avenger", () => {
-    const f = fs.readFileSync("../server/data/preload/vic20/Avenger.prg");
+    const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/Avenger.prg`);
     const fb = FileBlob.fromBytes("Avenger", Array.from(f), Mos6502.ENDIANNESS);
     const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor(2, "entry")], 2);
     const d = new Disassembler(Mos6502.ISA, fb, dm);
