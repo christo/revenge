@@ -2,12 +2,9 @@ import express from "express";
 import fs from 'fs';
 import path from 'path';
 import {FileLike} from "../common/FileLike.js";
+import {PRELOADS_DIR_C64, PRELOADS_DIR_VIC20} from "./constants.js";
 
 const router = express.Router();
-
-// init the preloads dir
-const PRELOADS_DIR_C64 = "data/preload/c64";
-const PRELOADS_DIR_VIC20 = "data/preload/vic20";
 
 function getPreloads(fromPath: string): FileLike[] {
   let plDir = path.join(".", fromPath);
