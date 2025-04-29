@@ -2,8 +2,6 @@
 
 ## Next Actions
 
-* [x] `PERF` memory constant bulk hash calculation on server
-* [x] `PERF` fix mega slow ui rendering
 * [ ] calculate feature vectors for binaries
   * [x] histogram
   * [x] entropy
