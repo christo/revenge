@@ -2,11 +2,12 @@
 
 ## Next Actions
 
+* [ ] refactor basic stub sniffer for `VIC-20` before tackling `C64` version 
+* [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
-* [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] more feature vector extractor implementations
   * [ ] precise length feature extractor
