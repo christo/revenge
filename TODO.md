@@ -122,13 +122,6 @@
   * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
   * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
     routines using the same code path
-* content recognition:
-  * common data fragments identified between files
-  * build database of file content recognition.
-  * fragment content hash, db etc.?
-  * binary diff two files (linear)
-  * automate the similarity detection of files - need an indexing system, maybe use common
-    sub-sequence - ask/research.
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
 * improve cart sniffers and basic stub machine code PRGs
@@ -152,6 +145,13 @@
   * what kind of round-trip makes sense here? 
     * existing-source -> binary -> gen-source -> binary
     * binary -> gen-source -> binary
+* content recognition:
+  * common data fragments identified between files
+  * build database of file content recognition.
+  * fragment content hash, db etc.?
+  * binary diff two files (linear)
+  * automate the similarity detection of files - need an indexing system, maybe use common
+    sub-sequence - ask/research.
 * [ ] mechanism for testing or reengineering:
   * take a source project (with or without built binaries)
   * build the binary from it
