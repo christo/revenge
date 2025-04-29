@@ -2,10 +2,12 @@
 
 ## Next Actions
 
-* [x] calculate initial feature vectors for binaries
-  * [x] histogram
-  * [x] entropy
-  * [x] approximate length feature extractor
+* [ ] many C64 binaries are not detected correctly - investigate
+  * [x] Add C64 basic quickload example
+  * [ ] add test case
+  * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
+  * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
+* [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] more feature vector extractor implementations
   * [ ] precise length feature extractor
     * empirically determine n most common fixed sizes in corpus
@@ -18,12 +20,6 @@
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
-* [ ] Myriad basic stub does not show symbol definitions (some others too?)
-* [ ] many C64 binaries are not detected correctly - investigate
-  * [x] Add C64 basic quickload example
-  * [ ] add test case
-  * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
-  * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
 * [ ] treat zip files in corpus as directories by doing transparent contents unzipping
   * try [adm-zip](https://www.npmjs.com/package/adm-zip) - it supports decompressing to buffer
   * many emulators expect to support single file zipped versions of the true binary (spectrum
