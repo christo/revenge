@@ -213,7 +213,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     actions: [{
       label: "basic",
       f: async () => {
-        const cbmFb: Memory<LittleEndian> = fb.asEndian() as Memory<LittleEndian>;
+        const cbmFb: Memory<LittleEndian> = fb.asMemory() as Memory<LittleEndian>;
         const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
         // exclude "note" tags which are not a "line"
         const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;

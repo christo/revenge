@@ -362,7 +362,7 @@ class Vic20BasicSniffer implements BlobSniffer {
     try {
       // TODO need to be able to dynamically interpret a FileBlob as LittleEndian
       //   in order to read the bytes for VIC - if the shoe fits...
-      const decoded = CBM_BASIC_2_0.decode(fb.asEndian() as Memory<LittleEndian>);
+      const decoded = CBM_BASIC_2_0.decode(fb.asMemory() as Memory<LittleEndian>);
       let lastNum = -1;
       const lastAddr = -1;
       let byteCount = 0;

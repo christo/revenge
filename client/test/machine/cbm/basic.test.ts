@@ -12,7 +12,7 @@ describe("basic decoder", () => {
 
     let linesRead = 0;
     const fb = FileBlob.fromBytes(fname, Array.from(new Uint8Array(buffer)), LE);
-    const fbm = fb.asEndian() as Memory<LittleEndian>;
+    const fbm = fb.asMemory() as Memory<LittleEndian>;
     CBM_BASIC_2_0.decode(fbm).getLines().map((ll) => ll.getTags()).map(t => t[1]).forEach(_x => {
       linesRead++;
     })

@@ -47,7 +47,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
         i++;
       }
       // read decimal address
-      const intString = Petscii.readDigits(fileBlob.asEndian(), i);
+      const intString = Petscii.readDigits(fileBlob.asMemory(), i);
       if (intString.length > 0) {
         try {
           const startAddress = parseInt(intString, 10);

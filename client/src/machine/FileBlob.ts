@@ -34,8 +34,7 @@ class FileBlob implements Byteable {
     }
   }
 
-  asEndian(): Memory<Endian> {
-    // TODO fix this smell - temporary type hack due to ignorance and impatience
+  asMemory(): Memory<Endian> {
     return this.memory;
   }
 
