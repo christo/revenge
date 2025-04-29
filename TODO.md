@@ -7,6 +7,7 @@
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
 * [ ] Myriad basic stub does not show symbol definitions (some others too?)
+* [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] more feature vector extractor implementations
   * [ ] precise length feature extractor
     * empirically determine n most common fixed sizes in corpus
@@ -84,7 +85,6 @@
   * (8) - Drive number
   * (BASIC) - ROM requirement
   * Machine model indicators like (C64), (C128), etc.
-* [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
   * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
