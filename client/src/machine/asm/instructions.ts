@@ -303,8 +303,6 @@ class WordDefinitionEdict extends ByteDefinitionEdict {
  */
 class LabelsCommentsOnly extends InstructionBase {
 
-  // TODO add banner macro to dialect so sections can be rendered with multiline instances of this
-
   constructor(lc: LabelsComments) {
     super(lc, SourceType.COMMENT_LABEL);
   }
