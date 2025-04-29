@@ -558,8 +558,6 @@ class FullInstruction implements Byteable {
   }
 }
 
-// TODO introduce CPU abstraction for Z80 etc.
-
 // noinspection JSUnusedGlobalSymbols
 class Mos6502 implements Cpu<LittleEndian> {
   static readonly NAME = "Mos 6502";
