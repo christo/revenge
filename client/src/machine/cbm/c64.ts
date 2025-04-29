@@ -202,7 +202,7 @@ class C64CrtSniffer extends CartSniffer {
     magic *= this.isCrtVersion1(fb) ? 3 : 0.3;
     // match hardware type; 0 is normal cartridge, don't currently support others
     magic *= this.isNormalCart(fb) ? 10 : 0.1;
-    // TODO get CHIP sections to find memory blocks to load
+    // TODO get CHIP sections of CRT format to find memory blocks to load
     return magic
   }
 
