@@ -98,7 +98,6 @@ VIC20_SYM.sub(0xe45b, "basic_vector_init", "initialise basic vector table");
 VIC20_SYM.sub(0xe3a4, "basic_ram_init", "initialise basic ram locations");
 
 // TODO it would be useful to set address ranges to describe regions
-// TODO register words so that the two addresses are individually meaningfully prescribed
 
 /*
  * Common Registers and locations
