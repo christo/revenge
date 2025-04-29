@@ -32,13 +32,11 @@ interface Memory<T extends Endian> extends Byteable {
   submatch(seq: Uint8Array, atOffset: number): boolean;
 
   /**
-   * Returns true iff the given location is in our address range.
+   * Returns true iff the given offset is in our address range.
    *
-   * TODO clarify: does a memory know its address range and must it start at zero?
-   *
-   * @param location
+   * @param offset
    */
-  contains(location: Addr): boolean;
+  contains(offset: number): boolean;
 
   /**
    * Loads the given data to the given address.
@@ -138,7 +136,7 @@ class ArrayMemory<T extends Endian> implements Memory<T>, Byteable {
 
   endianness = (): T => this.endian;
 
-  contains = (location: Addr) => location >= 0 && location < this._bytes.length;
+  contains = (location: number) => location >= 0 && location < this._bytes.length;
 
   /**
    * Loads the given data to the given address.
