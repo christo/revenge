@@ -60,7 +60,6 @@ class Tracer {
   // future: identify self-mod code and raise exception
   //    * if address is written to that is part of an executed instruction (need to track all bytes of instruction)
   //    * if a written to address is disassembled as opcode or operand byte
-  // TODO: identify code vs data. Data may be written to without causing self-mod.
 
   /**
    * Create a Tracer with a single Memory and single thread of execution at pc.
