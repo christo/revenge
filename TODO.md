@@ -3,7 +3,6 @@
 ## Next Actions
 
 * [ ] refactor basic stub sniffer for `VIC-20` before tackling `C64` version 
-* [ ] FlappyBird.prg 9080 bytes not detected as machine code with basic stub
 * [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
