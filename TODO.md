@@ -105,6 +105,7 @@
     looks like this is not working for all example cases. NEED TEST CASE
   * [ ] Tracer loads kernal and basic ROMs into locations based on detected machine memory map
   * [ ] Tracer records path graph
+    * [ ] implement thread stack for path-accurate `JSR`/`RTS` pairs, also then detect unpaired  
   * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
   * [ ] report disassembly/trace errors to ui in some nice note
 * [ ] view options - disassembly, basic, hex each should define their own config options
