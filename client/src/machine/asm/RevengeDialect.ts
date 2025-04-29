@@ -296,7 +296,6 @@ class RevengeDialect extends BaseDialect implements Dialect {
   }
 
   private isHexLiteral(operand: string) {
-    // TODO
     return operand.startsWith("$");
   }
 
