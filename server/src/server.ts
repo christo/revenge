@@ -6,7 +6,9 @@ const PORT = parseInt(process.env.PORT || '3001', 10);
 
 const app = express();
 
-loadCorpus();
+loadCorpus().then(() => {
+  console.log("corpus loaded");
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
