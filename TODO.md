@@ -105,7 +105,6 @@
     looks like this is not working for all example cases.
   * [ ] Tracer loads kernal and basic ROMs into locations based on detected machine memory map
   * [ ] Tracer records path graph
-  * [ ] Tracer records memory read and write sequence
   * [ ] Use read heuristics to detect evidence of data
   * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
   * [ ] report disassembly/trace errors to ui in some nice note
@@ -113,9 +112,6 @@
 * [ ] better styling for BASIC decoder
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and
   code layout clash.
-* [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
-  read/write permissions, io mapping. Base required features on C128, BBC and Apple II
-* [ ] dialect options - layout handles for indenting
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
 * [ ] BASIC data statements embedded machine code detection/designation
 * [ ] Subroutines: map the inputs, outputs and register effects of subroutines
@@ -124,8 +120,6 @@
     routines using the same code path
 * [ ] petscii view (views abstraction)
   * UI: render text data in machine-original font, derived directly from the character ROM
-* improve cart sniffers and basic stub machine code PRGs
-  * look at the warm and cold jump vectors to see if they land in-range and at _probable code_
 
 ## Reading List
 
@@ -135,6 +129,8 @@
 
 ## Long Term Ideas
 
+* [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
+  read/write permissions, io mapping. Base required features on C128, BBC and Apple II
 * [ ] dialect translation: source -> source
 * [ ] execution harness for automatically running generated source:
   * multiple assemblers installed on the server
