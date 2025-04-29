@@ -102,7 +102,7 @@
   * [x] Disassemble line in tracer to identify conditional branches
   * [ ] If a trace is available, all executed instructions should be disassembled consistently
     with the execution trace - maybe store all disassembled instructions as a result of the trace?
-    looks like this is not working for all example cases.
+    looks like this is not working for all example cases. NEED TEST CASE
   * [ ] Tracer loads kernal and basic ROMs into locations based on detected machine memory map
   * [ ] Tracer records path graph
   * [ ] Use read heuristics to detect evidence of data
