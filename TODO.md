@@ -20,6 +20,9 @@
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
       * Apply feature selection to identify the most discriminative bigrams
+* [ ] write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
+  * enable defining explicit basic stub in assembly
+  * help future rendering of BASIC syntax
 * [ ] treat zip files in corpus as directories by doing transparent contents unzipping
   * try [adm-zip](https://www.npmjs.com/package/adm-zip) - it supports decompressing to buffer
   * many emulators expect to support single file zipped versions of the true binary (spectrum
