@@ -90,6 +90,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     const stubSniff = bestSniffer(memoryconfigs, fileBlob);
     // TODO ideally we wouldn't sniff again
     if (stubSniff.sniff(fileBlob) > 1) {
+      // TODO disassembly missing basic stub edicts
       return mkDisasmAction(stubSniff, fileBlob);
     }
   }
