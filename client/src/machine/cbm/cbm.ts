@@ -12,7 +12,7 @@ import {
   TAG_ENTRY_POINT,
   TAG_EXECUTED,
   TAG_HEX,
-  TAG_LINE,
+  TAG_LINE, TypeActions,
   UserAction
 } from "../api.ts";
 import {Environment,} from "../asm/asm.ts";
@@ -191,7 +191,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
 /**
  * User action that disassembles the file.
  */
-const mkDisasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
+function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   // type: array of at least one UserAction
   const userActions: [UserAction, ...UserAction[]] = [{
@@ -204,7 +204,7 @@ const mkDisasmAction: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
     t: t,
     actions: userActions
   };
-};
+}
 
 /** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
