@@ -76,7 +76,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
         console.warn(`couldn't find sys command argument`);
       }
     } else {
-      const b = fileBlob.getBytes().slice(0, 20);
+      const b = fileBlob.getBytes().slice(0, 20); // arbitrary some first bytes
       console.log(b);
       const hex = asHex(b);
       console.warn(`basic header didn't start with sys command\n${hex}`);
