@@ -170,7 +170,7 @@ function trace(dis: Disassembler, fb: FileBlob, meta: DisassemblyMeta): TraceRes
           kernalSymbolsUsed.add(symDef);
         }
       } else {
-        // we cannot statically resolve this operand so it's not usd to build kernal symbols
+        // we cannot statically resolve this operand, we don't use it to build kernal symbols
         //console.warn(`no operand for ${instruction.instruction.op.mnemonic} instruction at ${addr} ${hex16(addr)}`);
       }
     }
