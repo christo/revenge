@@ -18,7 +18,6 @@ import {Petscii} from "./petscii.ts";
 
 class C64 extends Computer {
   static readonly NAME = "C64";
-  static readonly LONG_NAME = "Commodore C64";
 
   constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
     super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
@@ -142,7 +141,7 @@ const ENTRY_POINT_OFFSETS: IndexedDescriptor[] = [
 ];
 
 /**
- * Detects raw 8kb or 16kb C64 cartridge dumps.
+ * Detects raw 8 kb or 16 kb C64 cartridge dumps.
  */
 const C64_8K16K_CART_SNIFFER = new CartSniffer(
     "C64 cart image",
