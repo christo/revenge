@@ -27,6 +27,8 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
   C64_BASIC_PRG,
 ];
 
+const getBestSniffer = (fileBlob: FileBlob) => bestSniffer(VIC_CART_ADDRS, fileBlob);
+
 /**
  * Returns a best-guess file type and user actions that can be done on it.
  *
@@ -70,10 +72,6 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   }
 
   // common cartridge image load addresses
-
-  const someSniffers = VIC_CART_ADDRS;
-
-  bestSniffer(someSniffers, fileBlob);
 
   for (let i = 0; i < VIC_CART_ADDRS.length; i++) {
     const prg = VIC_CART_ADDRS[i];
