@@ -131,7 +131,27 @@ async function scanDirectory(dirPath: string, files: Array<FileInfo>): Promise<v
     for (const entry of entries) {
       if (!entry.name.startsWith(".")) {
         const fullPath = join(dirPath, entry.name);
-        if (entry.isDirectory()) {
+
+        if (entry.isSymbolicLink()) {
+          try {
+            // Follow the symbolic link and check if it points to a directory
+            const stats = await stat(fullPath);
+
+            if (stats.isDirectory()) {
+              // Recursively scan the linked directory
+              await scanDirectory(fullPath, files);
+            } else if (stats.isFile()) {
+              // Handle symbolic links to files
+              files.push({
+                name: entry.name,
+                size: stats.size,
+                path: fullPath
+              });
+            }
+          } catch (error) {
+            console.error(`Error following symbolic link ${fullPath}: ${error instanceof Error ? error.message : String(error)}`);
+          }
+        } else if (entry.isDirectory()) {
           // Recursively scan subdirectories
           await scanDirectory(fullPath, files);
         } else if (entry.isFile()) {
