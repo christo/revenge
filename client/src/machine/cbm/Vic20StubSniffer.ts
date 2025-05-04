@@ -1,4 +1,5 @@
 import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
+import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobSniffer, UNKNOWN_BLOB} from "../BlobSniffer.ts";
@@ -9,7 +10,7 @@ import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
 import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.ts";
 import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.ts";
-import {mkDisasmAction, prg} from "./cbm.ts";
+import {mkDisasmAction, prg, trace} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.ts";
 
@@ -35,7 +36,7 @@ function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined 
  * @param {number} startAddress - The starting address of the program in memory.
  * @return {BlobTypeSniffer} A configured sniffer instance, with metadata and descriptors for the analysed program.
  */
-function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number) {
+function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number): BlobTypeSniffer {
   const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
   const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
   const entryPointDesc = `BASIC stub SYS ${startAddress}`;
@@ -124,7 +125,6 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
   sniff(fb: FileBlob): number {
     let smell = 1;
-    console.log(`basic smell is  ${smell}`);
     const memoryConfig = guessMemoryConfig(fb);
     if (!memoryConfig) {
       // there's no matching memory configuration, cannot work as a basic stub
@@ -132,31 +132,59 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
       smell *= 0.1;
     } else {
       smell *= 3;
-    }
-    if (fb.getLength() < 20) {
-      console.log("binary too small");
-      // not enough bytes to have a basic stub
-      smell *= 0.1;
-    } else {
-      smell *= 2;
-      // temporary
-      const SYS_OFFSET = 6;
-      if (fb.read8(SYS_OFFSET) !== TOKEN_SYS) {
-        console.log("cannot find the sys token");
-        // can't find the sys token
+      if (fb.getLength() < 20) {
+        console.log("binary too small");
+        // not enough bytes to have a basic stub
         smell *= 0.1;
       } else {
-        smell *= 4;
-        let i = SYS_OFFSET + 1;
-        // skip any spaces
-        while (fb.read8(i) === TOKEN_SPACE) {
-          i++;
+        smell *= 2;
+        // temporary
+        const SYS_OFFSET = 6;
+        if (fb.read8(SYS_OFFSET) !== TOKEN_SYS) {
+          console.log("cannot find the sys token");
+          // can't find the sys token
+          smell *= 0.5;
+        } else {
+          smell *= 4;
+          let i = SYS_OFFSET + 1;
+          // skip any spaces
+          while (fb.read8(i) === TOKEN_SPACE) {
+            i++;
+          }
+          // read decimal address
+          const intString = Petscii.readDigits(fb.asMemory(), i);
+          if (intString.length > 0) {
+            try {
+              const startAddress = parseInt(intString, 10);
+              if (!isNaN(startAddress)) {
+                smell *= 4;
+                // don't attempt to parse any more basic manually, too many ways to fail
+                // future: use a more complete basic parser implementation to handle edge cases
+                const entryPointDesc = `BASIC stub SYS ${startAddress}`;
+                const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+                const disasm =  new Disassembler(Mos6502.ISA, fb, dm);
+                const traceResult = trace(disasm, fb, dm);
+                if (traceResult.steps > 5) {
+                  smell *= 2;
+                } else {
+                  smell *= 0.5;
+                }
+              } else {
+                smell *= 0.4;
+                console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
+              }
+            } catch (e) {
+              smell *= 0.4;
+              console.error("died trying to disassemble during sniff", e);
+            }
+          } else {
+            smell *= 0.4
+            console.warn(`couldn't find sys command argument`);
+          }
         }
-        // TODO finish reading basic stub and move on to machine code
-        // TODO attempt to read machine code
       }
     }
-
+    console.log(`smell: ${smell}`);
     return smell;
   }
 
