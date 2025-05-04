@@ -50,7 +50,7 @@ const ALL_CBM_FILE_EXTS = [...PROGRAM_EXTS, ...VOLUME_EXTS, ...MEDIA_EXTS];
  * @param dialect decides the output syntax
  * @param meta metadata about the disassembly context
  */
-function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: DisassemblyMeta) {
+function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: DisassemblyMeta): Detail {
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
   const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
 
