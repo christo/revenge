@@ -1,6 +1,9 @@
 import {expect} from 'chai';
+import fs from "fs";
+import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
+import {InstructionLike} from "../../../src/machine/asm/instructions.ts";
 import {OpSemantics} from "../../../src/machine/asm/Op.ts";
 
 import {LE} from "../../../src/machine/Endian.ts";
@@ -39,4 +42,15 @@ describe("disassembler", () => {
     expect(disassembled.getBytes().length).to.equal(3);
     expect(disassembled.operandValue()).to.equal(0x6502);
   });
+    it("disassembles hesmon, shallow test", () => {
+      const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/HesMon.prg`);
+      const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
+      const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
+      const d = new Disassembler(Mos6502.ISA, fb, dm);
+      const lines: InstructionLike[] = [];
+      while (d.hasNext()) {
+        lines.push(d.nextInstructionLine()!);
+      }
+      expect(lines.length).to.equal(1944); // includes *=$a000 directive
+    });
 });
