@@ -17,6 +17,37 @@ function renderAddrDecHex(addr: Addr) {
   return `${addr} ($${hex16(addr)})`
 }
 
+/**
+ * Guesses the memory configuration based on the provided file blob.
+ *
+ * @param {FileBlob} fileBlob - The file blob to analyse for determining the memory configuration.
+ * @return {MemoryConfiguration | undefined} The matching memory configuration, or undefined if no match is found.
+ */
+function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined {
+  const loadAddress = fileBlob.read16(0);
+  return Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
+}
+
+/**
+ * Creates a sniffer instance to analyse a program blob.
+ *
+ * @param {MemoryConfiguration} memoryConfig - The memory configuration of the VIC-20.
+ * @param {number} startAddress - The starting address of the program in memory.
+ * @return {BlobTypeSniffer} A configured sniffer instance, with metadata and descriptors for the analysed program.
+ */
+function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number) {
+  const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
+  const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
+  const entryPointDesc = `BASIC stub SYS ${startAddress}`;
+  const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
+  const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
+
+  const loadAddressBytes = LE.wordToTwoBytes(startAddress);
+  const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+
+  const hashTags = ["prg", "vic20", memoryConfig.shortName];
+  return new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, hashTags, "prg", loadAddressBytes, dm);
+}
 
 /**
  * Temporary function that combines sniffer and its calling code
@@ -24,8 +55,7 @@ function renderAddrDecHex(addr: Addr) {
  * @deprecated migrate to just use the sniffer
  */
 function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
-  const loadAddress = fileBlob.read16(0);
-  const memoryConfig = Vic20.MEMORY_CONFIGS.find(mc => mc.basicProgramStart === loadAddress);
+  const memoryConfig = guessMemoryConfig(fileBlob);
   // try to decode just the stub in order to determine the machine code entry point
   // TODO tighten up this rough heuristic
   if (fileBlob.getLength() > 20 && memoryConfig) {
@@ -52,19 +82,7 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
         try {
           const startAddress = parseInt(intString, 10);
           if (!isNaN(startAddress)) {
-
-
-            const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
-            const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
-            const entryPointDesc = `BASIC stub SYS ${startAddress}`;
-            const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
-            const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
-
-            const loadAddressBytes = LE.wordToTwoBytes(startAddress);
-            const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
-
-            const hashTags = ["prg", "vic20", memoryConfig.shortName];
-            const sniffer = new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, hashTags, "prg", loadAddressBytes, dm);
+            const sniffer = mkSniffer(memoryConfig, startAddress);
             return mkDisasmAction(sniffer, fileBlob);
           } else {
             console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
