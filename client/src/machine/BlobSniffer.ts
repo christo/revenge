@@ -1,6 +1,5 @@
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
-import {BlobTypeSniffer} from "./BlobTypeSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 /**
@@ -12,7 +11,7 @@ interface BlobSniffer {
   hashTags: string[];
 
   /**
-   * Produces a score for the given FileBlob, higher numbers indicate a corresponding higher confidence
+   * Produces a score for the given FileBlob, higher numbers indicate corresponding higher confidence
    * of a match. Component values are coefficients that multiply to produce aggregate scores. A value
    * of 1 signifies no indication of a match, less than 1 signifies unlikeliness and greater than 1
    * signifies increasing confidence. Zero is absolute certainty. Negative values must not be returned.
