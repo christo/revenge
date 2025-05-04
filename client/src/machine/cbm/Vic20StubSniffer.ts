@@ -126,12 +126,12 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
   sniff(fb: FileBlob): number {
     let smell = 1;
-    const memoryConfig = guessMemoryConfig(fb);
-    if (!memoryConfig) {
-      // there's no matching memory configuration, cannot work as a basic stub
+    const guessedMemoryConfig = guessMemoryConfig(fb);
+    if (!guessedMemoryConfig) {
+      // cannot derive memory configuration, cannot work as a basic stub
       console.log("no memory config");
       smell *= 0.1;
-    } else if (memoryConfig.basicProgramStart !== this.getMemoryConfig().basicProgramStart) {
+    } else if (guessedMemoryConfig.basicProgramStart !== this.getMemoryConfig().basicProgramStart) {
       // guessed memory config is not the same as configured one
       smell *= 0.1;
     } else {
@@ -165,7 +165,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
                 // don't attempt to parse any more basic manually, too many ways to fail
                 // future: use a more complete basic parser implementation to handle edge cases
                 const entryPointDesc = `BASIC stub SYS ${startAddress}`;
-                const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
+                const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(this.getMemoryConfig(), VIC20_SYM, startAddress, entryPointDesc)
                 const disasm = new Disassembler(Mos6502.ISA, fb, dm);
                 const traceResult = trace(disasm, fb, dm);
                 if (traceResult.steps > 5) {
