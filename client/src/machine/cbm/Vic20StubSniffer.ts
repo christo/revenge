@@ -91,9 +91,9 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
 /**
  * Hybrid sniffer of a machine code program with a basic stub.
  * Since some different memory configurations require different load addresses,
- * these can be distinguished just like pure BASIC prg files, however not all
+ * these can be distinguished just like pure BASIC prg files. However, not all
  * memory configuration requirements are evident from the load address. A
- * trace or simulation could give good approximation here.
+ * trace or simulation could give a good approximation here.
  */
 class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
