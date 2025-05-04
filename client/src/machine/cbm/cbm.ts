@@ -39,13 +39,14 @@ const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
 const MEDIA_EXTS = ["sid"];
 
 /**
- * The expected file extensions for Commodore machines. May need to add more but these seem initially sufficient
+ * The expected file extensions for Commodore machines. May need to add more, but these seem initially sufficient
  */
 const ALL_CBM_FILE_EXTS = [...PROGRAM_EXTS, ...VOLUME_EXTS, ...MEDIA_EXTS];
 
 
 /**
  * Call the Disassembler for 6502 instruction set.
+ *
  * @param fb binary to disassemble
  * @param dialect decides the output syntax
  * @param meta metadata about the disassembly context
