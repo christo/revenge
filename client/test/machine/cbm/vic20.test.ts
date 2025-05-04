@@ -1,10 +1,14 @@
 import {expect} from "chai";
+import fs from "fs";
+import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
 import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder.ts";
 import {Petscii} from "../../../src/machine/cbm/petscii.ts";
 import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20.ts";
+import {Vic20StubSniffer} from "../../../src/machine/cbm/Vic20StubSniffer.ts";
 import {Addr} from "../../../src/machine/core.ts";
 import {LE} from "../../../src/machine/Endian.ts";
 import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {Mos6502} from "../../../src/machine/mos6502.ts";
 
 
 /**
@@ -67,6 +71,14 @@ describe("vic20", () => {
     const fb: FileBlob = FileBlob.fromBytes("basic-descending-lnums", ba, LE);
     const score = UNEXPANDED_VIC_BASIC.sniff(fb);
     expect(score).lt(1);
+  });
+
+  it("sniff helloworld.prg machine code with basic stub", () => {
+    const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/helloworld.prg`);
+    const fb = FileBlob.fromBytes("helloworld", Array.from(f), Mos6502.ENDIANNESS);
+    const sut = new Vic20StubSniffer(unexpanded);
+    const score = sut.sniff(fb);
+    expect(score).gte(2);
   });
 });
 

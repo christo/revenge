@@ -51,14 +51,14 @@ function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number) {
 
 /**
  * Temporary function that combines sniffer and its calling code
- * @param fileBlob
+ * @param fb
  * @deprecated migrate to just use the sniffer
  */
-function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
-  const memoryConfig = guessMemoryConfig(fileBlob);
+function snifVic20McWithBasicStub(fb: FileBlob): TypeActions {
+  const memoryConfig = guessMemoryConfig(fb);
   // try to decode just the stub in order to determine the machine code entry point
   // TODO tighten up this rough heuristic
-  if (fileBlob.getLength() > 20 && memoryConfig) {
+  if (fb.getLength() > 20 && memoryConfig) {
     //console.log("got basic load address, checking simple sys call to machine code");
     // we probably have a basic header with machine code following
     // we need to decode the basic header, read a sys command and
@@ -70,20 +70,20 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
     // 6
     // hacky peek to find a sys token which might reveal the petscii decimal address
     // this is just a guess that is often correct, however there could be parentheses, preamble code etc.
-    if (fileBlob.read8(6) === TOKEN_SYS) {
+    if (fb.read8(6) === TOKEN_SYS) {
       let i = 7;
       // skip any spaces
-      while (fileBlob.read8(i) === TOKEN_SPACE) {
+      while (fb.read8(i) === TOKEN_SPACE) {
         i++;
       }
       // read decimal address
-      const intString = Petscii.readDigits(fileBlob.asMemory(), i);
+      const intString = Petscii.readDigits(fb.asMemory(), i);
       if (intString.length > 0) {
         try {
           const startAddress = parseInt(intString, 10);
           if (!isNaN(startAddress)) {
             const sniffer = mkSniffer(memoryConfig, startAddress);
-            return mkDisasmAction(sniffer, fileBlob);
+            return mkDisasmAction(sniffer, fb);
           } else {
             console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
           }
@@ -94,16 +94,16 @@ function snifVic20McWithBasicStub(fileBlob: FileBlob): TypeActions {
         console.warn(`couldn't find sys command argument`);
       }
     } else {
-      const b = fileBlob.getBytes().slice(0, 20); // arbitrary some first bytes
+      const b = fb.getBytes().slice(0, 20); // arbitrary some first bytes
       console.log(b);
       const hex = asHex(b);
       console.warn(`basic header didn't start with sys command\n${hex}`);
     }
 
-    return {t: UNKNOWN_BLOB, actions: [hexDumper(fileBlob)]}
+    return {t: UNKNOWN_BLOB, actions: [hexDumper(fb)]}
   }
-  console.log(`detecting prg at ${hex16(fileBlob.read16(0))}`);
-  return mkDisasmAction(prg([fileBlob.read8(1), fileBlob.read8(0)]), fileBlob); // stinky
+  console.log(`detecting prg at ${hex16(fb.read16(0))}`);
+  return mkDisasmAction(prg([fb.read8(1), fb.read8(0)]), fb); // stinky
 }
 
 /**
@@ -123,11 +123,41 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
   }
 
   sniff(fb: FileBlob): number {
-    // how much like BASIC does this seem?
-    const basicSmell = super.sniff(fb);
-    // TODO WIP finish this implementation and move snifVic20McWithBasicStub(fb) in here
-    const typeActions = snifVic20McWithBasicStub(fb);
-    return basicSmell;
+    let smell = 1;
+    console.log(`basic smell is  ${smell}`);
+    const memoryConfig = guessMemoryConfig(fb);
+    if (!memoryConfig) {
+      // there's no matching memory configuration, cannot work as a basic stub
+      console.log("no memory config");
+      smell *= 0.1;
+    } else {
+      smell *= 3;
+    }
+    if (fb.getLength() < 20) {
+      console.log("binary too small");
+      // not enough bytes to have a basic stub
+      smell *= 0.1;
+    } else {
+      smell *= 2;
+      // temporary
+      const SYS_OFFSET = 6;
+      if (fb.read8(SYS_OFFSET) !== TOKEN_SYS) {
+        console.log("cannot find the sys token");
+        // can't find the sys token
+        smell *= 0.1;
+      } else {
+        smell *= 4;
+        let i = SYS_OFFSET + 1;
+        // skip any spaces
+        while (fb.read8(i) === TOKEN_SPACE) {
+          i++;
+        }
+        // TODO finish reading basic stub and move on to machine code
+        // TODO attempt to read machine code
+      }
+    }
+
+    return smell;
   }
 
 
