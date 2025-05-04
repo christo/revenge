@@ -332,17 +332,17 @@ class Vic20BasicSniffer implements BlobSniffer {
   desc: string;
   name: string;
   hashTags: string[];
-  private memory: MemoryConfiguration;
+  private readonly memoryConfig: MemoryConfiguration;
 
   constructor(
-      memory: MemoryConfiguration,
+      memoryConfig: MemoryConfiguration,
       name: string = "BASIC prg",
       // TODO generalise this for C64, getting the machine stuff from a Machine definition which also provides
       //   a place to keep MemoryConfiguration details
-      desc: string = `VIC-20 BASIC (${memory.shortName})`,
-      tags: string[] = ["basic", "vic20", memory.shortName]
+      desc: string = `VIC-20 BASIC (${memoryConfig.shortName})`,
+      tags: string[] = ["basic", "vic20", memoryConfig.shortName]
   ) {
-    this.memory = memory;
+    this.memoryConfig = memoryConfig;
     this.name = name;
     this.desc = desc;
     this.hashTags = tags;
@@ -352,10 +352,14 @@ class Vic20BasicSniffer implements BlobSniffer {
     return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
   }
 
+  getMemoryConfig(): MemoryConfiguration {
+    return this.memoryConfig;
+  }
+
   sniff(fb: FileBlob): number {
     // check if the start address bytes match the basic load address for our MemoryConfiguration
-    const byte0Match = fb.getBytes()[0] === lsb(this.memory.basicProgramStart);
-    const byte1Match = fb.getBytes()[1] === msb(this.memory.basicProgramStart);
+    const byte0Match = fb.getBytes()[0] === lsb(this.memoryConfig.basicProgramStart);
+    const byte1Match = fb.getBytes()[1] === msb(this.memoryConfig.basicProgramStart);
     let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
 
     // try decoding it as basic

@@ -115,6 +115,7 @@ function snifVic20McWithBasicStub(fb: FileBlob): TypeActions {
  * trace or simulation could give a good approximation here.
  */
 class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
+  private nulldissassemblymeta = DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
 
   constructor(memory: MemoryConfiguration) {
     super(memory,
@@ -129,6 +130,9 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
     if (!memoryConfig) {
       // there's no matching memory configuration, cannot work as a basic stub
       console.log("no memory config");
+      smell *= 0.1;
+    } else if (memoryConfig.basicProgramStart !== this.getMemoryConfig().basicProgramStart) {
+      // guessed memory config is not the same as configured one
       smell *= 0.1;
     } else {
       smell *= 3;
@@ -162,7 +166,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
                 // future: use a more complete basic parser implementation to handle edge cases
                 const entryPointDesc = `BASIC stub SYS ${startAddress}`;
                 const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
-                const disasm =  new Disassembler(Mos6502.ISA, fb, dm);
+                const disasm = new Disassembler(Mos6502.ISA, fb, dm);
                 const traceResult = trace(disasm, fb, dm);
                 if (traceResult.steps > 5) {
                   smell *= 2;
@@ -189,8 +193,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
 
   getMeta(): DisassemblyMeta {
-    // TODO implement this using BasicStubDisassemblyMeta
-    return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
+    return this.nulldissassemblymeta;
   }
 }
 
