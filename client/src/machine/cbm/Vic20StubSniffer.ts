@@ -39,7 +39,7 @@ function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined 
 function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number): BlobTypeSniffer {
   const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
   const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
-  const entryPointDesc = `BASIC stub SYS ${startAddress}`;
+  const entryPointDesc = `BASIC stub SYS ${startAddress}`; // start address in decimalπ
   const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
   const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
 
