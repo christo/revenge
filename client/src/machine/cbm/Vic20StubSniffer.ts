@@ -184,7 +184,6 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
         }
       }
     }
-    console.log(`smell: ${smell}`);
     return smell;
   }
 
@@ -195,4 +194,4 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
   }
 }
 
-export {Vic20StubSniffer, snifVic20McWithBasicStub};
+export {Vic20StubSniffer, snifVic20McWithBasicStub, mkSniffer};

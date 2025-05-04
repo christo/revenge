@@ -9,11 +9,11 @@ import {
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
-  UNEXPANDED_VIC_BASIC,
+  UNEXPANDED_VIC_BASIC, Vic20,
   VIC20_CART_SNIFFER,
   VIC_CART_ADDRS
 } from "./cbm/vic20.ts";
-import {snifVic20McWithBasicStub} from "./cbm/Vic20StubSniffer.ts";
+import {mkSniffer, snifVic20McWithBasicStub, Vic20StubSniffer} from "./cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 
@@ -85,17 +85,13 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // detect VIC20 machine code with basic stub
   // we have already detected some basicness
   if (maxBasicSmell > 0.5) {
-    // TODO finish this idea, maybe take sniffer with max score?
-    /*
-    Vic20.MEMORY_CONFIGS
-        .map(mc => new Vic20StubSniffer(mc)
-        .sniff(fileBlob))
-        .reduce(sniff => {
-
-    }, 0)
-    */
-    const ta: TypeActions = snifVic20McWithBasicStub(fileBlob);
-    return ta;
+    // figure out which memory config to use
+    const memoryconfigs = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc));
+    const stubSniff = bestSniffer(memoryconfigs, fileBlob);
+    // TODO ideally we wouldn't sniff again
+    if (stubSniff.sniff(fileBlob) > 1) {
+      return mkDisasmAction(stubSniff, fileBlob);
+    }
   }
   // resort to hex dump only
   return {t: UNKNOWN_BLOB, actions: [hd]};
