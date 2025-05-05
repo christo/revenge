@@ -230,3 +230,7 @@ options should be selectable by the user.
 
 * [Reverse Engineering](docs/reverse-engineering.md) references
 * [retro assembler dialects](docs/assembler-dialects.md)
+* [Emulators](docs/emulators.md)
+* Relevant [file formats](docs/file-formats.md) for retro computing
+* Some thoughts on prospects for using [Dynamic Analysis](docs/dynamic-analysis.md) for
+  automating the detection of code and data as well as program comprehension and transformation.
