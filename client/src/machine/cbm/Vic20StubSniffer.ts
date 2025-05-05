@@ -180,7 +180,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
                 score *= 0.4;
                 messages.push(`sys argument couldn't be parsed as an integer: "${intString}"`);
               }
-            } catch (e) {
+            } catch (_e) {
               score *= 0.4;
               messages.push("died trying to disassemble during sniff");
             }

@@ -9,11 +9,12 @@ import {
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
-  UNEXPANDED_VIC_BASIC, Vic20,
+  UNEXPANDED_VIC_BASIC,
+  Vic20,
   VIC20_CART_SNIFFER,
   VIC_CART_ADDRS
 } from "./cbm/vic20.ts";
-import {mkSniffer, snifVic20McWithBasicStub, Vic20StubSniffer} from "./cbm/Vic20StubSniffer.ts";
+import {Vic20StubSniffer} from "./cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 
@@ -26,8 +27,6 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
   EXP24K_VIC_BASIC,
   C64_BASIC_PRG,
 ];
-
-const getBestSniffer = (fileBlob: FileBlob) => bestSniffer(VIC_CART_ADDRS, fileBlob);
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.

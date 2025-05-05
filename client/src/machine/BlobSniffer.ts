@@ -62,10 +62,9 @@ function bestSniffer(someSniffers: BlobSniffer[], fileBlob: FileBlob) {
   if (someSniffers.length === 0) {
     throw Error("Zero sniffs given");
   }
-  const best = someSniffers.reduce((acc: BlobSniffer, cur: BlobSniffer) => {
+  return someSniffers.reduce((acc: BlobSniffer, cur: BlobSniffer) => {
     return cur.sniff(fileBlob).score > acc.sniff(fileBlob).score ? cur : acc;
   }, UNKNOWN_BLOB);
-  return best;
 }
 
 export {type BlobSniffer, type Stench, bestSniffer, UNKNOWN_BLOB};

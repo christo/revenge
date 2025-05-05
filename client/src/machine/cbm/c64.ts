@@ -185,7 +185,7 @@ class C64CrtSniffer extends CartSniffer {
 
   sniff(fb: FileBlob): Stench {
     // check prefix signature
-    let stench = super.sniff(fb);
+    const stench = super.sniff(fb);
     if (fb.getLength() < 8194) {
       // TODO confirm there would not be crt files with binary image parts smaller than 8kb
       //   smaller carts are padded out? There may be smaller carts out there
