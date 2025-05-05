@@ -75,7 +75,7 @@ accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/pack
 * drag and drop file loading
 * load file contents into summary view
 * hex view (minimal)
-* dumb disassembly - detection of code vs data is a project goal
+* dumb disassembly - exemplary detection of code vs data is a project goal
 * file type recognition
   * can recognise at least two types and offer to disassemble if it knows how
   * vic20 raw cartridge image recognition
@@ -85,12 +85,13 @@ accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/pack
   syntax-specifics
 * assembly syntax highlighting
 * Trace code paths to build call graph for detecting code vs data.
+* Track static addresses written to and read from during trace execution (in progress)
 * Decode BASIC programs on VIC-20 and C64
 * Test suite
 * High quality reference data from the [c64ref](https://github.com/mist64/c64ref) project, initiated
   by [Michael Steil](https://pagetable.com/) of
   [The Ultimate C64 Talk](https://youtu.be/ZsRRCnque2E) fame.
-* stats/summary of file interpretation action taken
+* Stats/summary of file interpretation action taken
   * execution time for disassembly
   * trace time
   * symbol detection count (disassembly)
