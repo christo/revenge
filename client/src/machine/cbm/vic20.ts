@@ -8,7 +8,7 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl";
 import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
-import {BlobSniffer} from "../BlobSniffer.ts";
+import {BlobSniffer, Stench} from "../BlobSniffer.ts";
 import {KB_64, lsb, msb} from "../core";
 import {LE, LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob";
@@ -356,12 +356,12 @@ class Vic20BasicSniffer implements BlobSniffer {
     return this.memoryConfig;
   }
 
-  sniff(fb: FileBlob): number {
+  sniff(fb: FileBlob): Stench {
     // check if the start address bytes match the basic load address for our MemoryConfiguration
     const byte0Match = fb.getBytes()[0] === lsb(this.memoryConfig.basicProgramStart);
     const byte1Match = fb.getBytes()[1] === msb(this.memoryConfig.basicProgramStart);
     let isBasic = (byte0Match && byte1Match) ? 1.2 : 0.8; // score for matching or not
-
+    const messages: string[] = [];
     // try decoding it as basic
     try {
       // TODO need to be able to dynamically interpret a FileBlob as LittleEndian
@@ -379,18 +379,18 @@ class Vic20BasicSniffer implements BlobSniffer {
           const thisNum = parseInt(lnumStr.value);
           if (lastNum !== -1 && lastNum >= thisNum) {
             // decrease in basic line numbers
-            console.log(`decrease in basic line numbers for ${fb.name}`)
+            messages.push(`decrease in basic line numbers for ${fb.name}`)
             isBasic *= 0.5;
           }
           if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
             // next line address is allegedly lower? This ain't basic
-            console.log(`lower next line address for ${fb.name}`)
+            messages.push(`lower next line address for ${fb.name} after line at address ${lastAddr}`)
             isBasic *= 0.3;
           }
           lastNum = thisNum;
           byteCount += ll.getByteSize();
         } else {
-          // maybe a machine language block that follows
+          // maybe a machine language block that follows but this is a pure basic sniffer
           const basicSize = byteCount;
           // how much remains?
           const remainingSize = fb.getLength() - basicSize;
@@ -399,13 +399,10 @@ class Vic20BasicSniffer implements BlobSniffer {
             // almost certain we should treat this as machine code at this point
             // although it could be data that a basic program simply reads.
             isBasic *= 0.001;
+            messages.push("Large amount of non basic trailing data, giving up on basic")
           } else {
             console.log(`basic decoder: basicSize ${basicSize} remainingSize: ${remainingSize}`);
           }
-          // is it a simple sys command?
-
-          // not a basic line
-          // for now leave this because hybrid files we still want to interpret as BASIC until we have hybrid rendering
         }
       });
     } catch (_e) {
@@ -413,7 +410,7 @@ class Vic20BasicSniffer implements BlobSniffer {
       //console.error(e);
       isBasic = 0.01;
     }
-    return isBasic;
+    return {score: isBasic, messages: messages};
   }
 }
 
@@ -422,7 +419,6 @@ const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP03K);
 const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP08K);
 const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
 const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
-
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.

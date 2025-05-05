@@ -3,6 +3,17 @@ import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 /**
+ * Represents the result of sniffing a binary with a specific sniffer.
+ * The calculation of a score may be annotated with diagnostic messages.
+ * Yeah this is too cute, deal with it.
+ * future: more structure may be stored here like expensive cached results or
+ */
+type Stench = {
+  score: number;
+  messages: string[];
+}
+
+/**
  * Abstraction for scoring relative confidence in file content categorisation.
  */
 interface BlobSniffer {
@@ -18,7 +29,7 @@ interface BlobSniffer {
    *
    * @param fb the file contents to sniff
    */
-  sniff(fb: FileBlob): number;
+  sniff(fb: FileBlob): Stench;
 
   /**
    * FUTURE: This smells, it's a bag of disassembly-specific detail transported from the thing that knows
@@ -36,8 +47,8 @@ const UNKNOWN_BLOB: BlobSniffer = {
   getMeta(): DisassemblyMeta {
     return DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
   },
-  sniff(_fb: FileBlob): number {
-    return 0;
+  sniff(_fb: FileBlob): Stench {
+    return {score: 0, messages: []};
   },
 };
 
@@ -52,9 +63,9 @@ function bestSniffer(someSniffers: BlobSniffer[], fileBlob: FileBlob) {
     throw Error("Zero sniffs given");
   }
   const best = someSniffers.reduce((acc: BlobSniffer, cur: BlobSniffer) => {
-    return cur.sniff(fileBlob) > acc.sniff(fileBlob) ? cur : acc;
+    return cur.sniff(fileBlob).score > acc.sniff(fileBlob).score ? cur : acc;
   }, UNKNOWN_BLOB);
   return best;
 }
 
-export {type BlobSniffer, bestSniffer, UNKNOWN_BLOB};
+export {type BlobSniffer, type Stench, bestSniffer, UNKNOWN_BLOB};

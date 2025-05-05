@@ -53,8 +53,8 @@ describe("vic20", () => {
     ba.push(0x00, 0x00); // end of program
 
     const fb: FileBlob = FileBlob.fromBytes("basic-test", ba, VIC.cpu.endianness());
-    const score = UNEXPANDED_VIC_BASIC.sniff(fb);
-    expect(score).gte(1);   // this is a well-formed minimal basic program
+    const stench = UNEXPANDED_VIC_BASIC.sniff(fb);
+    expect(stench.score).gte(1);   // this is a well-formed minimal basic program
   });
 
   it("sniff basic program with non-ascending line numbers", () => {
@@ -69,16 +69,16 @@ describe("vic20", () => {
     line.push(0, 0); // end of program
 
     const fb: FileBlob = FileBlob.fromBytes("basic-descending-lnums", ba, LE);
-    const score = UNEXPANDED_VIC_BASIC.sniff(fb);
-    expect(score).lt(1);
+    const stench = UNEXPANDED_VIC_BASIC.sniff(fb);
+    expect(stench.score).lt(1);
   });
 
   it("sniff helloworld.prg machine code with basic stub", () => {
     const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/helloworld.prg`);
     const fb = FileBlob.fromBytes("helloworld", Array.from(f), Mos6502.ENDIANNESS);
     const sut = new Vic20StubSniffer(unexpanded);
-    const score = sut.sniff(fb);
-    expect(score).gte(2);
+    const stench = sut.sniff(fb);
+    expect(stench.score).gte(2);
   });
 });
 

@@ -46,13 +46,13 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // TODO C64 CRT file format sniffer
 
   const cartSniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
-  const cartMatch = cartSniffers.find(c => c.sniff(fileBlob) > 1);
+  const cartMatch = cartSniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
     return mkDisasmAction(cartMatch, fileBlob);
   }
 
   const hd = hexDumper(fileBlob);
-  if (C64_CRT.sniff(fileBlob) > 1) {
+  if (C64_CRT.sniff(fileBlob).score > 1) {
     const typeActions = crt64Actions(fileBlob);
     typeActions.actions.push(hd);
     // TODO get rid of early return
@@ -62,8 +62,8 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   let maxBasicSmell = 0;
   for (let i = 0; i < BASIC_SNIFFERS.length; i++) {
     const basicSmell = BASIC_SNIFFERS[i].sniff(fileBlob);
-    maxBasicSmell = Math.max(maxBasicSmell, basicSmell);
-    if (basicSmell > 1) {
+    maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
+    if (basicSmell.score > 1) {
       const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
       ta.actions.push(hd);
       // TODO get rid of early return
@@ -76,7 +76,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   for (let i = 0; i < VIC_CART_ADDRS.length; i++) {
     const prg = VIC_CART_ADDRS[i];
     // currently returns the first one that scores above 1
-    if (prg.sniff(fileBlob) > 1) {
+    if (prg.sniff(fileBlob).score > 1) {
       console.log(`sniffed common prg blob type`);
       // TODO get rid of early return
       return mkDisasmAction(prg, fileBlob);
@@ -89,7 +89,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     const memoryconfigs = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc));
     const stubSniff = bestSniffer(memoryconfigs, fileBlob);
     // TODO ideally we wouldn't sniff again
-    if (stubSniff.sniff(fileBlob) > 1) {
+    if (stubSniff.sniff(fileBlob).score > 1) {
       // TODO disassembly missing basic stub edicts
       return mkDisasmAction(stubSniff, fileBlob);
     }

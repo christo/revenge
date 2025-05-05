@@ -2,7 +2,7 @@ import {hexDumper, MemoryConfiguration, TypeActions} from "../api.ts";
 import {Disassembler} from "../asm/Disassembler.ts";
 import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
-import {BlobSniffer, UNKNOWN_BLOB} from "../BlobSniffer.ts";
+import {BlobSniffer, Stench, UNKNOWN_BLOB} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16} from "../core.ts";
 import {LE} from "../Endian.ts";
@@ -124,32 +124,33 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
         ["basic", "machine-code", "vic20", memory.shortName]);
   }
 
-  sniff(fb: FileBlob): number {
-    let smell = 1;
+  sniff(fb: FileBlob): Stench {
+    let score = 1;
+    const messages: string[] = [];
     const guessedMemoryConfig = guessMemoryConfig(fb);
     if (!guessedMemoryConfig) {
       // cannot derive memory configuration, cannot work as a basic stub
       console.log("no memory config");
-      smell *= 0.1;
+      score *= 0.1;
     } else if (guessedMemoryConfig.basicProgramStart !== this.getMemoryConfig().basicProgramStart) {
       // guessed memory config is not the same as configured one
-      smell *= 0.1;
+      score *= 0.1;
     } else {
-      smell *= 3;
+      score *= 3;
       if (fb.getLength() < 20) {
-        console.log("binary too small");
+        messages.push("binary too small to be machine code with basic stub");
         // not enough bytes to have a basic stub
-        smell *= 0.1;
+        score *= 0.1;
       } else {
-        smell *= 2;
+        score *= 2;
         // temporary
         const SYS_OFFSET = 6;
         if (fb.read8(SYS_OFFSET) !== TOKEN_SYS) {
-          console.log("cannot find the sys token");
+          messages.push("Could not find the sys token");
           // can't find the sys token
-          smell *= 0.5;
+          score *= 0.5;
         } else {
-          smell *= 4;
+          score *= 4;
           let i = SYS_OFFSET + 1;
           // skip any spaces
           while (fb.read8(i) === TOKEN_SPACE) {
@@ -161,7 +162,7 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
             try {
               const startAddress = parseInt(intString, 10);
               if (!isNaN(startAddress)) {
-                smell *= 4;
+                score *= 4;
                 // don't attempt to parse any more basic manually, too many ways to fail
                 // future: use a more complete basic parser implementation to handle edge cases
                 const entryPointDesc = `BASIC stub SYS ${startAddress}`;
@@ -169,26 +170,28 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
                 const disasm = new Disassembler(Mos6502.ISA, fb, dm);
                 const traceResult = trace(disasm, fb, dm);
                 if (traceResult.steps > 5) {
-                  smell *= 2;
+                  messages.push("more than 5 steps traced");
+                  score *= 2;
                 } else {
-                  smell *= 0.5;
+                  messages.push("less than 5 steps traced");
+                  score *= 0.5;
                 }
               } else {
-                smell *= 0.4;
-                console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
+                score *= 0.4;
+                messages.push(`sys argument couldn't be parsed as an integer: "${intString}"`);
               }
             } catch (e) {
-              smell *= 0.4;
-              console.error("died trying to disassemble during sniff", e);
+              score *= 0.4;
+              messages.push("died trying to disassemble during sniff");
             }
           } else {
-            smell *= 0.4
-            console.warn(`couldn't find sys command argument`);
+            score *= 0.4
+            messages.push(`couldn't find sys command argument`);
           }
         }
       }
     }
-    return smell;
+    return {score: score, messages: messages};
   }
 
 

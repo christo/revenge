@@ -22,7 +22,7 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {BLANK_LINE, InstructionLike, PcAssign, SymbolDefinition, SymDef} from "../asm/instructions.ts";
 import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {SymbolType} from "../asm/SymbolTable.ts";
-import {BlobSniffer} from "../BlobSniffer.ts";
+import {BlobSniffer, Stench} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {Addr, asHex, hex16, hex8} from "../core.ts";
 import {DataViewImpl} from "../DataView.ts";
@@ -275,8 +275,8 @@ class CartSniffer implements BlobSniffer {
    * signal that this is a cart.
    * @param fb fileblob to check for being a cart
    */
-  sniff(fb: FileBlob): number {
-    return fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3;
+  sniff(fb: FileBlob): Stench {
+    return {score: fb.submatch(this.magic, this.magicOffset) ? 3 : 0.3, messages: []};
   }
 
   getMeta(): DisassemblyMeta {

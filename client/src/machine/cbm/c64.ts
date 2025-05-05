@@ -7,6 +7,7 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
+import {Stench} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
 import {KB_64} from "../core.ts";
 import {FileBlob} from "../FileBlob.ts";
@@ -182,14 +183,14 @@ class C64CrtSniffer extends CartSniffer {
     );
   }
 
-  sniff(fb: FileBlob): number {
+  sniff(fb: FileBlob): Stench {
     // check prefix signature
-    let magic = super.sniff(fb);
+    let stench = super.sniff(fb);
     if (fb.getLength() < 8194) {
       // TODO confirm there would not be crt files with binary image parts smaller than 8kb
       //   smaller carts are padded out? There may be smaller carts out there
       // pretty sure there's nothing we can do here
-      return magic * 0.1;
+      return {score: stench.score * 0.1, messages: ["binary too short for C64 CRT format"]};
     }
     // TODO check header length:
     // File header length  ($00000040,  in  high/low  format,
@@ -198,11 +199,12 @@ class C64CrtSniffer extends CartSniffer {
     // show a value of $00000020 which is wrong.
 
     // match version field
+    let magic = stench.score;
     magic *= this.isCrtVersion1(fb) ? 3 : 0.3;
     // match hardware type; 0 is normal cartridge, don't currently support others
     magic *= this.isNormalCart(fb) ? 10 : 0.1;
     // TODO get CHIP sections of CRT format to find memory blocks to load
-    return magic
+    return {score: magic, messages: stench.messages};
   }
 
   isNormalCart(fb: FileBlob) {

@@ -1,6 +1,6 @@
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
-import {BlobSniffer} from "./BlobSniffer.ts";
+import {BlobSniffer, Stench} from "./BlobSniffer.ts";
 import {FileBlob} from "./FileBlob.ts";
 
 /**
@@ -46,8 +46,12 @@ class BlobTypeSniffer implements BlobSniffer {
     return fileBlob.submatch(this.prefix, 0);
   }
 
-  sniff(fb: FileBlob): number {
-    return (this.dataMatch(fb) ? 2 : 0.5) * (this.extensionMatch(fb) ? 1.5 : 0.9);
+  sniff(fb: FileBlob): Stench {
+    return {
+      score: (this.dataMatch(fb) ? 2 : 0.5)
+          * (this.extensionMatch(fb) ? 1.5 : 0.9),
+      messages: []
+    }
   }
 }
 
