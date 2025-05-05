@@ -225,19 +225,8 @@ options should be selectable by the user.
 * Symbol definition
 * Comments, labels, alternate literal forms including escape characters
 
-## Reverse Engineering Tools
-
-* [Radare2](https://github.com/radareorg/radare2) Unix-like reverse engineering framework and
-  command-line toolset
-* [Ghidra](https://github.com/NationalSecurityAgency/ghidra) by NSA (supports 6502 and dozens of
-  more contemporary architectures)
-* [Cutter](https://github.com/rizinorg/cutter) non-boomer UI
-* [Binary Ninja](https://binary.ninja/) proprietary but has free cloud version that claims to
-  support 6502 (I couldn't make it work) see my GH
-  issue [#152](https://github.com/Vector35/binaryninja-cloud-public/issues/152)
-* [IDA Pro](https://hex-rays.com/ida-pro/) classic, proprietary, native
 
 ## Useful Resources Documented Here
 
-* [Reverse Engineering](docs/references.md) references
+* [Reverse Engineering](docs/reverse-engineering.md) references
 * [retro assembler dialects](docs/assembler-dialects.md)
