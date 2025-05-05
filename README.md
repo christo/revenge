@@ -107,21 +107,28 @@ comprehensive test suite yet. Also, I'm not sure how feasible it would be to sup
 Within the communities of each system, different assembler tool chains are more prevalent.
 
 In general, project scope includes support for 6502-based and Z80-based 80s Microcomputers and a
-generous subset of the more common assembler syntax dialects. The following table shows
-estimations, not promises.
+generous subset of the more common assembler syntax dialects. Other 80s 8-bit CPUs are possible
+but their inclusion would probably be driven by personal interest and the availability of large
+software libraries. The following table shows estimations, not promises.
 
 | Machines                     | Status      | CPU Family |
 |------------------------------|-------------|------------|
-| VIC-20, C64                  | In Progress | 6502       |
-| Apple II, BBC B              | Planned     | 6502       |
-| NES, C128                    | Probable    | 6502       |
+| VIC-20                       | In Progress | 6502       |
+| C64                          | In Progress | 6502       |
+| Apple II                     | Planned     | 6502       |
+| BBC B                        | Planned     | 6502       |
+| C128                         | Planned     | 6502       |
+| NES                          | Probable    | 6502       |
+| Oric                         | Probable    | 6502       | 
+| Atari 8-bit                  | Probable    | 6502       | 
+| SNES                         | Probable    | 6502       |
 | ZX Spectrum & clones         | Planned     | Z80        |
-| Microbee, TRS-80             | Probable    | Z80        |
-| Oric, Atari 8-bit            | Probable    | 6502       | 
+| TRS-80 I-III                 | Probable    | Z80        |
+| Microbee                     | Probable    | Z80        |
 | VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
-| SNES                         | ?           | 6502       |
 | Gameboy series               | ?           | Z80 -ish   |
 | Vectrex, TRS-80 Coco, Dragon | ?           | 6809       |
+| CHIP-80                      | ?           | virtual    |
 
 ## File Formats
 
@@ -215,7 +222,7 @@ semantics).
 
 ## Interactive Disassembly
 
-While as much detection as possible is ideal, detection cannot be perfect and all designation
+While as much _automated_ detection as possible is ideal, it can't be perfect and all designation
 options should be selectable by the user.
 
 * Mark self-modifying code
@@ -229,7 +236,7 @@ options should be selectable by the user.
 ## Useful Resources Documented Here
 
 * [Reverse Engineering](docs/reverse-engineering.md) references
-* [retro assembler dialects](docs/assembler-dialects.md)
+* [Retro Assembler Dalects](docs/assembler-dialects.md)
 * [Emulators](docs/emulators.md)
 * Relevant [file formats](docs/file-formats.md) for retro computing
 * [Dynamic Analysis](docs/dynamic-analysis.md) - some thoughts on prospects for runtime techniques for
