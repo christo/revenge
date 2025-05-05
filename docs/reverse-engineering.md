@@ -19,6 +19,8 @@ People have achieved epic feats of reverse engineering using existing tools usua
 * [Bugs and Quirks in the VIC-20 Kernal](https://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?t=10804) (also applies to C64) topic on Denial, the VIC-20 forum.
 * Reverse engineered C64 source code by the awesome mist64 (Michael Steil)
   https://github.com/mist64/cbmsrc
+* github user "unorig" reverse engineered a few c64 games,
+  e.g. [Chiller](https://github.com/unorig/Chiller)
 
 
 ## Retroprogramming and Reversing
