@@ -14,10 +14,6 @@ import {mkDisasmAction, prg, trace} from "./cbm.ts";
 import {Petscii} from "./petscii.ts";
 import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.ts";
 
-function renderAddrDecHex(addr: Addr) {
-  return `${addr} ($${hex16(addr)})`
-}
-
 /**
  * Guesses the memory configuration based on the provided file blob.
  *
@@ -30,84 +26,6 @@ function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined 
 }
 
 /**
- * Creates a sniffer instance to analyse a program blob.
- *
- * @param {MemoryConfiguration} memoryConfig - The memory configuration of the VIC-20.
- * @param {number} startAddress - The starting address of the program in memory.
- * @return {BlobTypeSniffer} A configured sniffer instance, with metadata and descriptors for the analysed program.
- */
-function mkSniffer(memoryConfig: MemoryConfiguration, startAddress: number): BlobTypeSniffer {
-  const addrDesc = renderAddrDecHex(memoryConfig.basicProgramStart);
-  const systemDesc = `${Vic20.NAME} (${memoryConfig.shortName})`;
-  const entryPointDesc = `BASIC stub SYS ${startAddress}`; // start address in decimal
-  const extraDesc = `entry point $${hex16(startAddress)} via ${entryPointDesc}`;
-  const desc = `${systemDesc} program loaded at ${addrDesc}, ${extraDesc}`;
-
-  const loadAddressBytes = LE.wordToTwoBytes(startAddress);
-  const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(memoryConfig, VIC20_SYM, startAddress, entryPointDesc)
-
-  const hashTags = ["prg", "vic20", memoryConfig.shortName];
-  return new BlobTypeSniffer(`${Mos6502.NAME} Machine Code`, desc, hashTags, "prg", loadAddressBytes, dm);
-}
-
-/**
- * Temporary function that combines sniffer and its calling code
- * @param fb
- * @deprecated migrate to just use the sniffer
- */
-function snifVic20McWithBasicStub(fb: FileBlob): TypeActions {
-  const memoryConfig = guessMemoryConfig(fb);
-  // try to decode just the stub in order to determine the machine code entry point
-  // TODO tighten up this rough heuristic
-  if (fb.getLength() > 20 && memoryConfig) {
-    //console.log("got basic load address, checking simple sys call to machine code");
-    // we probably have a basic header with machine code following
-    // we need to decode the basic header, read a sys command and
-    // calculate the entry point
-    // sys token index =
-    // load address length: 2 +
-    // next line address length: 2 +
-    // line number length: 2 =
-    // 6
-    // hacky peek to find a sys token which might reveal the petscii decimal address
-    // this is just a guess that is often correct, however there could be parentheses, preamble code etc.
-    if (fb.read8(6) === TOKEN_SYS) {
-      let i = 7;
-      // skip any spaces
-      while (fb.read8(i) === TOKEN_SPACE) {
-        i++;
-      }
-      // read decimal address
-      const intString = Petscii.readDigits(fb.asMemory(), i);
-      if (intString.length > 0) {
-        try {
-          const startAddress = parseInt(intString, 10);
-          if (!isNaN(startAddress)) {
-            const sniffer = mkSniffer(memoryConfig, startAddress);
-            return mkDisasmAction(sniffer, fb);
-          } else {
-            console.warn(`sys argument couldn't be parsed as an integer: "${intString}"`);
-          }
-        } catch (e) {
-          console.error("died trying to disassemble during sniff", e);
-        }
-      } else {
-        console.warn(`couldn't find sys command argument`);
-      }
-    } else {
-      const b = fb.getBytes().slice(0, 20); // arbitrary some first bytes
-      console.log(b);
-      const hex = asHex(b);
-      console.warn(`basic header didn't start with sys command\n${hex}`);
-    }
-
-    return {t: UNKNOWN_BLOB, actions: [hexDumper(fb)]}
-  }
-  console.log(`detecting prg at ${hex16(fb.read16(0))}`);
-  return mkDisasmAction(prg([fb.read8(1), fb.read8(0)]), fb); // stinky
-}
-
-/**
  * Hybrid sniffer of a machine code program with a basic stub.
  * Since some different memory configurations require different load addresses,
  * these can be distinguished just like pure BASIC prg files. However, not all
@@ -115,7 +33,7 @@ function snifVic20McWithBasicStub(fb: FileBlob): TypeActions {
  * trace or simulation could give a good approximation here.
  */
 class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
-  private nulldissassemblymeta = DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
+  private dm: DisassemblyMeta = DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
 
   constructor(memory: MemoryConfiguration) {
     super(memory,
@@ -124,6 +42,10 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
         ["basic", "machine-code", "vic20", memory.shortName]);
   }
 
+  /**
+   * Stateful, resets DisassemblyMeta with config derived from contents of fileblob.
+   * @param fb the binary
+   */
   sniff(fb: FileBlob): Stench {
     let score = 1;
     const messages: string[] = [];
@@ -166,9 +88,9 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
                 // don't attempt to parse any more basic manually, too many ways to fail
                 // future: use a more complete basic parser implementation to handle edge cases
                 const entryPointDesc = `BASIC stub SYS ${startAddress}`;
-                const dm: DisassemblyMeta = new BasicStubDisassemblyMeta(this.getMemoryConfig(), VIC20_SYM, startAddress, entryPointDesc)
-                const disasm = new Disassembler(Mos6502.ISA, fb, dm);
-                const traceResult = trace(disasm, fb, dm);
+                this.dm = new BasicStubDisassemblyMeta(this.getMemoryConfig(), VIC20_SYM, startAddress, entryPointDesc)
+                const disasm = new Disassembler(Mos6502.ISA, fb, this.dm);
+                const traceResult = trace(disasm, fb, this.dm);
                 if (traceResult.steps > 5) {
                   messages.push("more than 5 steps traced");
                   score *= 2;
@@ -196,8 +118,8 @@ class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
 
 
   getMeta(): DisassemblyMeta {
-    return this.nulldissassemblymeta;
+    return this.dm;
   }
 }
 
-export {Vic20StubSniffer, snifVic20McWithBasicStub, mkSniffer};
+export {Vic20StubSniffer};
