@@ -232,5 +232,6 @@ options should be selectable by the user.
 * [retro assembler dialects](docs/assembler-dialects.md)
 * [Emulators](docs/emulators.md)
 * Relevant [file formats](docs/file-formats.md) for retro computing
-* Some thoughts on prospects for using [Dynamic Analysis](docs/dynamic-analysis.md) for
-  automating the detection of code and data as well as program comprehension and transformation.
+* [Dynamic Analysis](docs/dynamic-analysis.md) - some thoughts on prospects for runtime techniques for
+  automating the detection of code and data and topics like program comprehension and program transformation.
+* How [Basic Stubs](docs/basic-headers.md) work on 8-bit Commodore machines.
