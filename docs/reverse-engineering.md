@@ -10,22 +10,29 @@ If these links go dead please create an issue on the repo or submit a pull reque
 * https://6502disassembly.com/on-disassembly.html
 * https://6502disassembly.com/
 
-## Notable Reverse Engineered Retro Software
+## Notable Reverse Engineering Projects
 
-People have achieved epic feats of reverse engineering using existing tools usually including a lot of manual work. These provide useful points of comparison for what this project might one day achieve.
+People have achieved epic feats of reverse engineering using existing tools usually
+including a lot of manual work. These provide useful points of comparison for what this project
+might one day achieve.
 
-* Elite, originally developed for and on the BBC Micro, this code and various ports have been heroically reverse engineered: [Elite on the 6502](https://elite.bbcelite.com/) incorporating versions for BBC Micro, Acorn Electron, Commodore 64, Apple II and NES. Note that original source code has also been published. Apparently the C64 port was developed on BBC with a cross-development hardware system called PDS that sent binary builds to a C64 over a cable.
-* Rob Hogan (mwenge) reverse engineered [Gridrunner for VIC-20](https://github.com/mwenge/gridrunner)
-* [Bugs and Quirks in the VIC-20 Kernal](https://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?t=10804) (also applies to C64) topic on Denial, the VIC-20 forum.
+* Elite, originally developed for and on the BBC Micro, this code and various ports have been
+  heroically reverse engineered: [Elite on the 6502](https://elite.bbcelite.com/) incorporating
+  versions for BBC Micro, Acorn Electron, Commodore 64, Apple II and NES. Note that original source
+  code has also been published. Apparently the C64 port was developed on BBC with a
+  cross-development hardware system called PDS that sent binary builds to a C64 over a cable.
+* Rob Hogan (mwenge) reverse
+  engineered [Gridrunner for VIC-20](https://github.com/mwenge/gridrunner)
+* [Bugs and Quirks in the VIC-20 Kernal](https://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?t=10804) (
+  also applies to C64) topic on Denial, the VIC-20 forum.
 * Reverse engineered C64 source code by the awesome mist64 (Michael Steil)
   https://github.com/mist64/cbmsrc
-* [List of BBC reverse engineered software](https://stardot.org.uk/forums/viewtopic.php?t=23155) 
-* github user "unorig" reverse engineered a few c64 games: 
+* [List of BBC reverse engineered software](https://stardot.org.uk/forums/viewtopic.php?t=23155)
+* github user "unorig" reverse engineered a few c64 games:
   * [Chiller](https://github.com/unorig/Chiller)
   * [Ghostbusters](https://github.com/unorig/Ghostbusters)
   * [A View to a Kill](https://github.com/unorig/AVTAK)
   * [Squirm](https://github.com/unorig/Squirm)
-
 
 ## Retroprogramming and Reversing
 
