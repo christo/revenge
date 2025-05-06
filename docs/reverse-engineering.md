@@ -20,8 +20,11 @@ People have achieved epic feats of reverse engineering using existing tools usua
 * Reverse engineered C64 source code by the awesome mist64 (Michael Steil)
   https://github.com/mist64/cbmsrc
 * [List of BBC reverse engineered software](https://stardot.org.uk/forums/viewtopic.php?t=23155) 
-* github user "unorig" reverse engineered a few c64 games,
-  e.g. [Chiller](https://github.com/unorig/Chiller)
+* github user "unorig" reverse engineered a few c64 games: 
+  * [Chiller](https://github.com/unorig/Chiller)
+  * [Ghostbusters](https://github.com/unorig/Ghostbusters)
+  * [A View to a Kill](https://github.com/unorig/AVTAK)
+  * [Squirm](https://github.com/unorig/Squirm)
 
 
 ## Retroprogramming and Reversing
