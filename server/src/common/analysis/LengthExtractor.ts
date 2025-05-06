@@ -23,3 +23,5 @@ class LengthExtractor implements FeatureExtractor {
     return HARD_MAX.map(kv => [kv[0], Math.sqrt(Math.min(fileLike.size, kv[1])/kv[1])])
   }
 }
+
+export {LengthExtractor};

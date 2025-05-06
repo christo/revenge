@@ -30,33 +30,90 @@ export class DataCollector {
     // Process each platform directory
     for (const platform of fs.readdirSync(baseDir)) {
       const platformDir = path.join(baseDir, platform);
-      if (!fs.statSync(platformDir).isDirectory()) continue;
+      // Use the symbolic link flag available in Node.js 
+      const stats = fs.statSync(platformDir, { throwIfNoEntry: false });
+      if (!stats || !stats.isDirectory()) continue;
+      
+      // If this is a symlink, resolve to its target
+      let resolvedDir = platformDir;
+      if (fs.lstatSync(platformDir).isSymbolicLink()) {
+        resolvedDir = fs.realpathSync(platformDir);
+      }
       
       console.log(`Processing ${platform} files...`);
       
-      // Process each file in the platform directory
-      for (const file of fs.readdirSync(platformDir)) {
-        const filePath = path.join(platformDir, file);
-        if (!fs.statSync(filePath).isFile()) continue;
-        
-        try {
-          // Create unique file ID
-          const fileId = `${platform}_${file}`;
-          
-          // Extract features
-          const fileFeatures = this.pipeline.extractFromFile(filePath);
-          features.set(fileId, fileFeatures);
-          fileTypes.set(fileId, platform);
-          
-          console.log(`  Processed ${file}`);
-        } catch (error) {
-          console.error(`Error processing ${filePath}: ${error}`);
-        }
-      }
+      // Process files in the platform directory recursively
+      await this.processDirectory(resolvedDir, platform, features, fileTypes);
     }
     
     console.log(`Collected ${features.size} files across ${new Set(fileTypes.values()).size} platforms`);
     return { features, fileTypes };
+  }
+  
+  /**
+   * Process a directory recursively, extracting features from all files
+   * @param dirPath Directory path to process
+   * @param platform Platform identifier for classification
+   * @param features Map to store extracted features
+   * @param fileTypes Map to store file type labels
+   */
+  private async processDirectory(
+    dirPath: string, 
+    platform: string, 
+    features: Map<string, [string, number][]>, 
+    fileTypes: Map<string, string>
+  ): Promise<void> {
+    // Process each file/directory in the current directory
+    for (const entry of fs.readdirSync(dirPath)) {
+      const entryPath = path.join(dirPath, entry);
+      const entryStats = fs.statSync(entryPath);
+      
+      // If this is a symlink, resolve it
+      let resolvedEntryPath = entryPath;
+      if (fs.lstatSync(entryPath).isSymbolicLink()) {
+        resolvedEntryPath = fs.realpathSync(entryPath);
+        // Get stats of the resolved path
+        const resolvedStats = fs.statSync(resolvedEntryPath);
+        
+        if (resolvedStats.isDirectory()) {
+          // Recursively process the resolved directory
+          await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
+          continue;
+        }
+      }
+      
+      if (entryStats.isDirectory()) {
+        // Recursively process subdirectory
+        await this.processDirectory(entryPath, platform, features, fileTypes);
+      } else if (entryStats.isFile()) {
+        // Process file
+        try {
+          // Use the resolved path if it's a symlink, otherwise use the original path
+          const pathToProcess = resolvedEntryPath || entryPath;
+          
+          // Verify the path is a readable regular file, not a special file or device
+          try {
+            fs.accessSync(pathToProcess, fs.constants.R_OK);
+          } catch (e) {
+            console.log(`  Skipping unreadable file: ${pathToProcess}`);
+            continue;
+          }
+          
+          // Create unique file ID - use relative path from platform dir for nested files
+          const relativePath = path.relative(path.join(path.dirname(dirPath), platform), entryPath);
+          const fileId = `${platform}_${relativePath}`;
+          
+          // Extract features
+          const fileFeatures = this.pipeline.extractFromFile(pathToProcess);
+          features.set(fileId, fileFeatures);
+          fileTypes.set(fileId, platform);
+          
+          console.log(`  Processed ${relativePath}`);
+        } catch (error) {
+          console.error(`Error processing ${entryPath}: ${error}`);
+        }
+      }
+    }
   }
   
   /**
