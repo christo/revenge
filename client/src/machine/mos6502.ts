@@ -8,7 +8,7 @@
 
  */
 
-import {AddressingMode} from "./AddressingMode.ts";
+import {AddressingMode} from "../../../server/src/common/machine/AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "../../../server/src/common/Byteable.ts";

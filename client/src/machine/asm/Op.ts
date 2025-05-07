@@ -1,4 +1,4 @@
-import {AddressingMode} from "../AddressingMode.ts";
+import {AddressingMode} from "../../../../server/src/common/machine/AddressingMode.ts";
 import {MODE_ABSOLUTE, MODE_ZEROPAGE} from "../mos6502.ts";
 
 /**
