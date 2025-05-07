@@ -224,7 +224,26 @@ export class BinaryClassifierEnsemble {
       const negativeDistance = this.euclideanDistance(normalizedFeatures, model.negativeCentroid);
       
       // Higher score means closer to positive centroid and further from negative centroid
-      const score = negativeDistance / (positiveDistance + negativeDistance);
+      let score;
+      
+      // Prevent division by zero and handle edge cases
+      if (positiveDistance === 0 && negativeDistance === 0) {
+        // If both distances are zero, the vector is equidistant
+        score = 0.5;
+      } else if (positiveDistance === 0) {
+        // If positive distance is zero, max confidence
+        score = 1.0;
+      } else if (negativeDistance === 0) {
+        // If negative distance is zero, min confidence
+        score = 0.0;
+      } else {
+        // Normal case
+        score = negativeDistance / (positiveDistance + negativeDistance);
+      }
+      
+      // Ensure we never return NaN
+      score = isNaN(score) ? 0.5 : score;
+      
       scores.set(className, score);
     }
     
@@ -253,10 +272,17 @@ export class BinaryClassifierEnsemble {
   private euclideanDistance(a: number[], b: number[]): number {
     let sum = 0;
     for (let i = 0; i < a.length; i++) {
-      const diff = a[i] - b[i];
+      // Ensure values are valid numbers
+      const aVal = isNaN(a[i]) ? 0 : a[i];
+      const bVal = isNaN(b[i]) ? 0 : b[i];
+      
+      const diff = aVal - bVal;
       sum += diff * diff;
     }
-    return Math.sqrt(sum);
+    
+    // Guard against unexpected math errors
+    const result = Math.sqrt(sum);
+    return isNaN(result) ? 0 : result;
   }
   
   /**
