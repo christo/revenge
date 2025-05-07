@@ -6,9 +6,9 @@ import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.
 import {InstructionLike} from "../../../src/machine/asm/instructions.ts";
 import {OpSemantics} from "../../../src/machine/asm/Op.ts";
 
-import {LE} from "../../../src/machine/Endian.ts";
-import {FileBlob} from "../../../src/machine/FileBlob.ts";
-import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {LE} from "../../../../server/src/common/machine/Endian.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
+import {ArrayMemory} from "../../../../server/src/common/machine/Memory.ts";
 import {MODE_ABSOLUTE, Mos6502} from "../../../src/machine/mos6502.ts";
 import {mockOffsetDescriptor, niladicOpcodes} from "../util.ts";
 

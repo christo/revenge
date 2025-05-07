@@ -1,8 +1,8 @@
-import {FileLike} from "../../../server/src/common/FileLike.ts";
-import {Byteable} from "../../../server/src/common/Byteable.ts";
-import {Addr, hex16} from "../../../server/src/common/machine/core.ts";
-import {BE, Endian} from "./Endian.ts";
-import {ArrayMemory, Memory} from "./Memory.ts";
+import {FileLike} from "../FileLike.js";
+import {Byteable} from "../Byteable.js";
+import {Addr, hex16} from "./core.js";
+import {BE, Endian} from "./Endian.js";
+import {ArrayMemory, Memory} from "./Memory.js";
 
 /**
  * Abstraction over a file-like thing which stores binary content and has a name and size. Contents can be accessed

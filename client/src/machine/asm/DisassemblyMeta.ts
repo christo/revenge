@@ -1,5 +1,5 @@
 import {Addr} from "../../../../server/src/common/machine/core.ts";
-import {FileBlob} from "../FileBlob.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
 import {LabelsComments} from "./asm.ts";
 import {IndexedDescriptor} from "./DisassemblyMetaImpl.ts";
 import {Edict} from "./Edict.ts";

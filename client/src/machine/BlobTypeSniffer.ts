@@ -1,7 +1,7 @@
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
 import {BlobSniffer, Stench} from "./BlobSniffer.ts";
-import {FileBlob} from "./FileBlob.ts";
+import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 
 /**
  * Represents a file type where file type detection heuristics such as

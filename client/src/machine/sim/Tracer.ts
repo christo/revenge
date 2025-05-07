@@ -15,8 +15,8 @@
 import {Disassembler} from "../asm/Disassembler.ts";
 import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Addr, hex16} from "../../../../server/src/common/machine/core.ts";
-import {Endian} from "../Endian.ts";
-import {Memory} from "../Memory.ts";
+import {Endian} from "../../../../server/src/common/machine/Endian.ts";
+import {Memory} from "../../../../server/src/common/machine/Memory.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {Thread} from "./Thread.ts";
 

@@ -15,7 +15,7 @@ import {
   VIC_CART_ADDRS
 } from "./cbm/vic20.ts";
 import {Vic20StubSniffer} from "./cbm/Vic20StubSniffer.ts";
-import {FileBlob} from "./FileBlob.ts";
+import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 
 
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers

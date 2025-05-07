@@ -1,9 +1,9 @@
 import {expect} from "chai";
 import * as fs from "fs";
 import {CBM_BASIC_2_0} from "../../../src/machine/cbm/BasicDecoder.ts";
-import {LE, LittleEndian} from "../../../src/machine/Endian.ts";
-import {FileBlob} from "../../../src/machine/FileBlob.ts";
-import {Memory} from "../../../src/machine/Memory.ts";
+import {LE, LittleEndian} from "../../../../server/src/common/machine/Endian.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
+import {Memory} from "../../../../server/src/common/machine/Memory.ts";
 
 describe("basic decoder", () => {
   it("performs simple linear decode", () => {

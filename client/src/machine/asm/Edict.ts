@@ -1,4 +1,4 @@
-import {FileBlob} from "../FileBlob.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
 import {InstructionLike} from "./instructions.ts";
 
 /**

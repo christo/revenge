@@ -5,7 +5,7 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import React, {useState} from 'react';
 import {TypeActions} from "../machine/api.ts";
-import {FileBlob} from "../machine/FileBlob.ts";
+import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 import {runSniffers} from "../machine/revenge.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {BigramPlot} from "./BigramPlot.tsx";

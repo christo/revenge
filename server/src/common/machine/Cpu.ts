@@ -1,5 +1,5 @@
-import {InstructionSet} from "./asm/InstructionSet.ts";
-import {Endian} from "./Endian.ts";
+import {InstructionSet} from "../../../../client/src/machine/asm/InstructionSet.js";
+import {Endian} from "./Endian.js";
 
 /**
  * Represents the CPU of a machine. Tentative minimal definition until more implementations

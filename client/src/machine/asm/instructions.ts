@@ -1,7 +1,7 @@
 import {Byteable} from "../../../../server/src/common/Byteable.ts";
 import {plural} from "../../ui/util.ts";
 import {Tag, TAG_BLANK} from "../api.ts";
-import {FileBlob} from "../FileBlob.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {LabelsComments, SourceType} from "./asm.ts";
 import {ByteDeclaration} from "./ByteDeclaration.ts";

@@ -3,11 +3,11 @@ import {InstructionLike} from "./asm/instructions.ts";
 import {BlobSniffer} from "./BlobSniffer.ts";
 import {Byteable} from "../../../server/src/common/Byteable.ts";
 import {Addr, hex16, hex8} from "../../../server/src/common/machine/core.ts";
-import {Cpu} from "./Cpu.ts";
+import {Cpu} from "../../../server/src/common/machine/Cpu.ts";
 import {DataView, DataViewImpl} from "./DataView.ts";
-import {Endian} from "./Endian.ts";
-import {FileBlob} from "./FileBlob";
-import {Memory} from "./Memory.ts";
+import {Endian} from "../../../server/src/common/machine/Endian.ts";
+import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
+import {Memory} from "../../../server/src/common/machine/Memory.ts";
 import {MODE_INDIRECT} from "./mos6502.ts";
 
 /*

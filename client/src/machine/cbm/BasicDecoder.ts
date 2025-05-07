@@ -2,8 +2,8 @@ import {plural} from "../../ui/util.ts";
 import {LogicalLine, Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../api.ts";
 import {hex16, hex8} from "../../../../server/src/common/machine/core.ts";
 import {DataView, DataViewImpl} from "../DataView.ts";
-import {LittleEndian} from "../Endian.ts";
-import {Memory} from "../Memory.ts";
+import {LittleEndian} from "../../../../server/src/common/machine/Endian.ts";
+import {Memory} from "../../../../server/src/common/machine/Memory.ts";
 import {Petscii} from "./petscii.ts";
 
 type Token = [number, string];

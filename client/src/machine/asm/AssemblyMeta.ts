@@ -1,5 +1,5 @@
-import {Cpu} from "../Cpu.ts";
-import {Endian} from "../Endian.ts";
+import {Cpu} from "../../../../server/src/common/machine/Cpu.ts";
+import {Endian} from "../../../../server/src/common/machine/Endian.ts";
 import {InstructionSet} from "./InstructionSet.ts";
 import {SymbolTable} from "./SymbolTable.ts";
 

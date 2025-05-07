@@ -1,6 +1,6 @@
 import {DisassemblyMeta} from "./asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "./asm/DisassemblyMetaImpl.ts";
-import {FileBlob} from "./FileBlob.ts";
+import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 
 /**
  * Represents the result of sniffing a binary with a specific sniffer.

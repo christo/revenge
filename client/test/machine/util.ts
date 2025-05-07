@@ -1,6 +1,6 @@
 import {IndexedDescriptor} from "../../src/machine/asm/DisassemblyMetaImpl.ts";
-import {LE} from "../../src/machine/Endian.ts";
-import {ArrayMemory} from "../../src/machine/Memory.ts";
+import {LE} from "../../../server/src/common/machine/Endian.ts";
+import {ArrayMemory} from "../../../server/src/common/machine/Memory.ts";
 import {Mos6502} from "../../src/machine/mos6502.ts";
 
 /**

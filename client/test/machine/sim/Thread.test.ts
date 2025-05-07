@@ -2,9 +2,9 @@ import {expect} from 'chai';
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl, IndexedDescriptor} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 
-import {LE} from "../../../src/machine/Endian.ts";
-import {FileBlob} from "../../../src/machine/FileBlob.ts";
-import {ArrayMemory} from "../../../src/machine/Memory.ts";
+import {LE} from "../../../../server/src/common/machine/Endian.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
+import {ArrayMemory} from "../../../../server/src/common/machine/Memory.ts";
 import {Mos6502} from "../../../src/machine/mos6502.ts";
 import {Thread} from "../../../src/machine/sim/Thread.ts";
 import {enumInstAddr, InstRec} from "../../../src/machine/sim/Tracer.ts";

@@ -6,8 +6,8 @@ import {Petscii} from "../../../src/machine/cbm/petscii.ts";
 import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20.ts";
 import {Vic20StubSniffer} from "../../../src/machine/cbm/Vic20StubSniffer.ts";
 import {Addr} from "../../../../server/src/common/machine/core.ts";
-import {LE} from "../../../src/machine/Endian.ts";
-import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {LE} from "../../../../server/src/common/machine/Endian.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
 import {Mos6502} from "../../../src/machine/mos6502.ts";
 
 

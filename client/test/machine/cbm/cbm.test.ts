@@ -4,7 +4,7 @@ import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
 import {Disassembler} from "../../../src/machine/asm/Disassembler.ts";
 import {DisassemblyMetaImpl} from "../../../src/machine/asm/DisassemblyMetaImpl.ts";
 import {trace} from "../../../src/machine/cbm/cbm.ts";
-import {FileBlob} from "../../../src/machine/FileBlob.ts";
+import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
 import {Mos6502} from "../../../src/machine/mos6502.ts";
 import {mockOffsetDescriptor} from "../util.ts";
 

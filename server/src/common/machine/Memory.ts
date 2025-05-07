@@ -1,6 +1,6 @@
-import {Byteable} from "../../../server/src/common/Byteable.ts";
-import {Addr, hex16, MB_8} from "../../../server/src/common/machine/core.ts";
-import {Endian} from "./Endian.ts";
+import {Byteable} from "../Byteable.js";
+import {Addr, hex16, MB_8} from "./core.js";
+import {Endian} from "./Endian.js";
 
 /**
  * Contiguous, fixed-sized 0-based Memory with {@link Endian Endianness}.
