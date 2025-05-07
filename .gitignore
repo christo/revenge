@@ -32,3 +32,7 @@ server/node_modules
 /server/data/preload/c64/teleporter64.prg
 /server/.env
 /server/data/analysis/hash/
+
+**/.claude/settings.local.json
+/CLAUDE.md
+/server/data/analysis/file-outout.tsv

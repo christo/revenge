@@ -3,13 +3,13 @@
  * 
  * Usage:
  *   cd server
- *   bun scripts/classifier/trainClassifier.ts
+ *   bun src/trainClassifier.ts
  */
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { BinaryClassifierEnsemble, DataCollector, ModelEvaluator } from '../../src/common/analysis/classifier/index.js';
-import { fullPipeline } from '../../src/common/analysis/FeatureExtractionPipeline.js';
+import { BinaryClassifierEnsemble, DataCollector, ModelEvaluator } from './common/analysis/classifier/index.js';
+import { fullPipeline } from './common/analysis/FeatureExtractionPipeline.js';
 
 // Directory containing platform-specific files
 const TRAINING_PATH = path.resolve('./data/training');
