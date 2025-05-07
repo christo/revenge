@@ -2,8 +2,9 @@ import React from 'react';
 import {BookmarkBorder, Dangerous, Edit, InsertLink, MenuBook} from "@mui/icons-material";
 import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
 import {useEffect, useState} from "react";
-import {ActionExecutor, Tag, TAG_OPERAND_VALUE} from "../machine/api.ts";
-import {Detail} from "./Detail.ts";
+import {Detail} from "../../../server/src/common/Detail.ts";
+import {ActionExecutor} from "../machine/api.ts";
+import {Tag, TAG_OPERAND_VALUE} from "../../../server/src/common/machine/Tag.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 
 type MaybeId = { id?: string }

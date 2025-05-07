@@ -1,14 +1,14 @@
 import {expect} from "chai";
 import fs from "fs";
 import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
-import {TOKEN_PRINT, TOKEN_REM} from "../../../src/machine/cbm/BasicDecoder.ts";
-import {Petscii} from "../../../src/machine/cbm/petscii.ts";
-import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/machine/cbm/vic20.ts";
-import {Vic20StubSniffer} from "../../../src/machine/cbm/Vic20StubSniffer.ts";
+import {TOKEN_PRINT, TOKEN_REM} from "../../../../server/src/common/machine/cbm/BasicDecoder.ts";
+import {Petscii} from "../../../../server/src/common/machine/cbm/petscii.ts";
+import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../../server/src/common/machine/cbm/vic20.ts";
+import {Vic20StubSniffer} from "../../../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
 import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {LE} from "../../../../server/src/common/machine/Endian.ts";
 import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
-import {Mos6502} from "../../../src/machine/mos6502.ts";
+import {Mos6502} from "../../../../server/src/common/machine/mos6502.ts";
 
 
 /**

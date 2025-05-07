@@ -6,7 +6,7 @@ import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 
 import {FileLike} from "../../server/src/common/FileLike.ts";
-import {ALL_CBM_FILE_EXTS} from "./machine/cbm/cbm.ts";
+import {ALL_CBM_FILE_EXTS} from "../../server/src/common/machine/cbm/cbm.ts";
 import {darkTheme} from "./neonColourScheme.ts";
 import {QuickLoads} from "./QuickLoads.tsx";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";

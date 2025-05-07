@@ -1,9 +1,11 @@
 // application-level stuff to tie user interface and domain model
 
+import {crt64Actions} from "../crt64Actions.ts";
+import {mkDisasmAction} from "../mkDisasmAction.ts";
+import {printBasic} from "../printBasic.ts";
 import {hexDumper, TypeActions} from "./api.ts";
-import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "./BlobSniffer.ts";
-import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT, crt64Actions} from "./cbm/c64.ts";
-import {mkDisasmAction, printBasic} from "./cbm/cbm.ts";
+import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "../../../server/src/common/machine/BlobSniffer.ts";
+import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT} from "../../../server/src/common/machine/cbm/c64.ts";
 import {
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
@@ -13,8 +15,8 @@ import {
   Vic20,
   VIC20_CART_SNIFFER,
   VIC_CART_ADDRS
-} from "./cbm/vic20.ts";
-import {Vic20StubSniffer} from "./cbm/Vic20StubSniffer.ts";
+} from "../../../server/src/common/machine/cbm/vic20.ts";
+import {Vic20StubSniffer} from "../../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 
 

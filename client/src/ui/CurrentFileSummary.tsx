@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import {useEffect, useState} from "react";
 import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
 import {FileLike} from "../../../server/src/common/FileLike.ts";
-import {Mos6502} from "../machine/mos6502.ts";
+import {Mos6502} from "../../../server/src/common/machine/mos6502.ts";
 import {neonYellow} from "../neonColourScheme.ts";
 import {FileDetail} from "./FileDetail.tsx";
 

@@ -1,4 +1,4 @@
-import {InstructionSet} from "../../../../client/src/machine/asm/InstructionSet.js";
+import {InstructionSet} from "./asm/InstructionSet.js";
 import {Endian} from "./Endian.js";
 
 /**
