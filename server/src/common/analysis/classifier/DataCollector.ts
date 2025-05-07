@@ -64,33 +64,63 @@ export class DataCollector {
     fileTypes: Map<string, string>
   ): Promise<void> {
     // Process each file/directory in the current directory
-    for (const entry of fs.readdirSync(dirPath)) {
-      const entryPath = path.join(dirPath, entry);
-      const entryStats = fs.statSync(entryPath);
+    let entries: string[] = [];
+    
+    try {
+      entries = fs.readdirSync(dirPath);
+    } catch (error: any) {
+      console.error(`  Error reading directory ${dirPath}: ${error.message || error}`);
+      return; // Skip this directory and return
+    }
+    
+    for (const entry of entries) {
+      let entryPath = path.join(dirPath, entry);
+      let entryStats;
       
-      // If this is a symlink, resolve it
-      let resolvedEntryPath = entryPath;
+      // First check if it's a symlink without following it
+      let isSymlink = false;
       try {
-        if (fs.lstatSync(entryPath).isSymbolicLink()) {
-          try {
-            resolvedEntryPath = fs.realpathSync(entryPath);
-            const resolvedStats = fs.statSync(resolvedEntryPath);
-            
-            if (resolvedStats.isDirectory()) {
-              // Recursively process the resolved directory
-              await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
-              continue;
-            }
-          } catch (error: any) {
-            // TODO Handle case where symlink resolution fails (e.g., with files containing backslashes)
-            console.log(`  Skipping symlink resolution for ${path.basename(entryPath)}: ${error.message || error}`);
-          }
-        }
+        isSymlink = fs.lstatSync(entryPath).isSymbolicLink();
       } catch (error: any) {
-        // Handle case where lstat fails (rare)
-        console.log(`  Error checking if symlink: ${path.basename(entryPath)}: ${error.message || error}`);
+        console.error(`  Error checking if symlink for ${path.basename(entryPath)}: ${error.message || error}`);
+        continue; // Skip this entry if we can't even check if it's a symlink
       }
       
+      // Handle symlinks with careful error handling
+      let resolvedEntryPath = entryPath;
+      if (isSymlink) {
+        try {
+          // Try to resolve the symlink (this can fail for broken links)
+          resolvedEntryPath = fs.realpathSync(entryPath);
+        } catch (error: any) {
+          // This is a broken symlink
+          console.log(`  Skipping broken symlink: ${path.basename(entryPath)}`);
+          continue; // Skip processing this entry entirely
+        }
+        
+        // For working symlinks, try to get stats of the target
+        try {
+          entryStats = fs.statSync(resolvedEntryPath);
+          // If it's a directory, recursively process it
+          if (entryStats.isDirectory()) {
+            await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
+            continue; // Skip further processing of this symlink
+          }
+        } catch (error: any) {
+          console.error(`  Error accessing symlink target ${path.basename(resolvedEntryPath)}: ${error.message || error}`);
+          continue; // Skip this entry if we can't access the target
+        }
+      } else {
+        // For non-symlinks, try to get stats directly
+        try {
+          entryStats = fs.statSync(entryPath);
+        } catch (error: any) {
+          console.error(`  Error accessing ${path.basename(entryPath)}: ${error.message || error}`);
+          continue; // Skip this entry if we can't access it
+        }
+      }
+      
+      // Now we have valid stats for a non-broken entry
       if (entryStats.isDirectory()) {
         // Recursively process subdirectory
         await this.processDirectory(entryPath, platform, features, fileTypes);
@@ -137,8 +167,8 @@ export class DataCollector {
    * @returns Split data sets
    */
   splitTrainingTestData(data: TrainingData, testRatio: number = 0.2): { 
-    training: TrainingData, 
-    testing: TrainingData 
+    training: TrainingData; 
+    testing: TrainingData; 
   } {
     const fileIds = Array.from(data.features.keys());
     const trainingFeatures = new Map<string, [string, number][]>();

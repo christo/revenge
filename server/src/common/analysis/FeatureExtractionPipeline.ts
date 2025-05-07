@@ -7,6 +7,7 @@ import {FeatureExtractor} from "./FeatureExtractor.js";
 import {HistogramExtractor} from "./HistogramExtractor.js";
 import {LengthExtractor} from "./LengthExtractor.js";
 import {SignatureExtractor} from "./SignatureExtractor.js";
+import {EnhancedSignatureExtractor} from "./EnhancedSignatureExtractor.js";
 
 /**
  * Pipeline for extracting multiple feature sets from files
@@ -79,8 +80,19 @@ function fullPipeline(): FeaturePipeline {
   pipeline.add(new EntropyExtractor());
   pipeline.add(new LengthExtractor());
   pipeline.add(new BigramExtractor());
-  pipeline.add(new SignatureExtractor());
+  pipeline.add(new EnhancedSignatureExtractor());
   return pipeline;
 }
 
-export {FeaturePipeline, defaultPipeline, fullPipeline};
+/**
+ * Create a pipeline with only the enhanced signature extractor
+ * Useful for quick platform identification without the overhead of other extractors
+ * @returns Signature-focused feature pipeline
+ */
+function enhancedSignaturePipeline(): FeaturePipeline {
+  const pipeline = new FeaturePipeline();
+  pipeline.add(new EnhancedSignatureExtractor());
+  return pipeline;
+}
+
+export {FeaturePipeline, defaultPipeline, fullPipeline, enhancedSignaturePipeline};
