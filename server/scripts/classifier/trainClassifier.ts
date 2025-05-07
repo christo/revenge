@@ -12,7 +12,7 @@ import { BinaryClassifierEnsemble, DataCollector, ModelEvaluator } from '../../s
 import { fullPipeline } from '../../src/common/analysis/FeatureExtractionPipeline.js';
 
 // Directory containing platform-specific files
-const CORPUS_PATH = path.resolve(process.env.CORPUS_BASE_DIR!);
+const TRAINING_PATH = path.resolve('./data/training');
 // Directory for saving analysis data
 const ANALYSIS_DIR = path.resolve('./data/analysis');
 // Output model path
@@ -32,13 +32,13 @@ async function main() {
     fs.mkdirSync(ANALYSIS_DIR, { recursive: true });
   }
   
-  console.log(`\nCollecting training data from ${CORPUS_PATH}...`);
+  console.log(`\nCollecting training data from ${TRAINING_PATH}...`);
   
   // Use the full feature pipeline with all available extractors
   const collector = new DataCollector(fullPipeline());
   
   // Build training data from file corpus
-  const completeData = await collector.buildTrainingData(CORPUS_PATH);
+  const completeData = await collector.buildTrainingData(TRAINING_PATH);
   
   console.log(`\nFound ${completeData.features.size} files across ${new Set(completeData.fileTypes.values()).size} platforms`);
   
@@ -73,7 +73,7 @@ async function main() {
   console.log(`\nEvaluation report saved to ${REPORT_PATH}`);
   
   // Example prediction
-  const exampleFiles = findExampleFiles(CORPUS_PATH);
+  const exampleFiles = findExampleFiles(TRAINING_PATH);
   if (exampleFiles.length > 0) {
     console.log('\nExample predictions:');
     for (const filePath of exampleFiles) {
