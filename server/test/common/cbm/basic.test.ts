@@ -1,15 +1,15 @@
 import {expect} from "chai";
 import * as fs from "fs";
-import {CBM_BASIC_2_0} from "../../../../server/src/common/machine/cbm/BasicDecoder.ts";
-import {LE, LittleEndian} from "../../../../server/src/common/machine/Endian.ts";
-import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
-import {LogicalLine} from "../../../../server/src/common/machine/LogicalLine.ts";
-import {Memory} from "../../../../server/src/common/machine/Memory.ts";
-import {Tag} from "../../../../server/src/common/machine/Tag.ts";
+import {CBM_BASIC_2_0} from "../../../src/common/machine/cbm/BasicDecoder.js";
+import {LE, LittleEndian} from "../../../src/common/machine/Endian.js";
+import {FileBlob} from "../../../src/common/machine/FileBlob.js";
+import {LogicalLine} from "../../../src/common/machine/LogicalLine.js";
+import {Memory} from "../../../src/common/machine/Memory.js";
+import {Tag} from "../../../src/common/machine/Tag.js";
 
 describe("basic decoder", () => {
   it("performs simple linear decode", () => {
-    const fname = "data/Killer Comet.prg";
+    const fname = "data/preload/vic20/Killer Comet.prg";
     const buffer = fs.readFileSync(fname);
 
     let linesRead = 0;

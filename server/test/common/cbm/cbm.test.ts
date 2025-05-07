@@ -1,12 +1,12 @@
 import {expect} from "chai";
 import * as fs from "fs";
-import {PRELOADS_DIR_VIC20} from "../../../../server/src/routes/constants.ts";
-import {Disassembler} from "../../../../server/src/common/machine/asm/Disassembler.ts";
-import {DisassemblyMetaImpl} from "../../../../server/src/common/machine/asm/DisassemblyMetaImpl.ts";
-import {trace} from "../../../../server/src/common/machine/cbm/cbm.ts";
-import {FileBlob} from "../../../../server/src/common/machine/FileBlob.ts";
-import {Mos6502} from "../../../../server/src/common/machine/mos6502.ts";
-import {mockOffsetDescriptor} from "../../../../server/test/common/machine/util.ts";
+import {PRELOADS_DIR_VIC20} from "../../../src/routes/constants.js";
+import {Disassembler} from "../../../src/common/machine/asm/Disassembler.js";
+import {DisassemblyMetaImpl} from "../../../src/common/machine/asm/DisassemblyMetaImpl.js";
+import {trace} from "../../../src/common/machine/cbm/cbm.js";
+import {FileBlob} from "../../../src/common/machine/FileBlob.js";
+import {Mos6502} from "../../../src/common/machine/mos6502.js";
+import {mockOffsetDescriptor} from "../machine/util.js";
 
 
 describe("disassembler integration", () => {

@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {Petscii} from "../../../../server/src/common/machine/cbm/petscii.ts";
+import {Petscii} from "../../../src/common/machine/cbm/petscii.js";
 
 test("petscii sanity test", () => {
   expect(Petscii.C64.vice.length).eql(256);
