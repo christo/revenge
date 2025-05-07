@@ -1,6 +1,6 @@
 import {Disassembler} from "../asm/Disassembler.ts";
 import {OpSemantics} from "../asm/Op.ts";
-import {Addr, hex16} from "../core.ts";
+import {Addr, hex16} from "../../../../server/src/common/machine/core.ts";
 import {Endian} from "../Endian.ts";
 import {Memory} from "../Memory.ts";
 import {FullInstruction, MODE_INDIRECT} from "../mos6502.ts";

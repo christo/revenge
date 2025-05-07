@@ -1,4 +1,4 @@
-import {Addr} from "../core.ts";
+import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {LabelsComments} from "./asm.ts";
 import {IndexedDescriptor} from "./DisassemblyMetaImpl.ts";

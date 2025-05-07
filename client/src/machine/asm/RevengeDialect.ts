@@ -19,7 +19,7 @@ import {
   TAG_SYM_DEF
 } from "../api.ts";
 import {Petscii} from "../cbm/petscii.ts";
-import {hex16, hex8, unToSigned} from "../core.ts";
+import {hex16, hex8, unToSigned} from "../../../../server/src/common/machine/core.ts";
 import {
   FullInstruction,
   MODE_ABSOLUTE,

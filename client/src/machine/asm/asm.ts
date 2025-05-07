@@ -1,6 +1,6 @@
 // assembler / disassembler stuff - 6502-specific
 
-import {Addr, toStringArray} from "../core.ts";
+import {Addr, toStringArray} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 
 

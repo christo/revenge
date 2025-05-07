@@ -1,5 +1,5 @@
 import {AddressingMode} from "../AddressingMode.ts";
-import {assertByte} from "../core.ts";
+import {assertByte} from "../../../../server/src/common/machine/core.ts";
 import {Cycles, Instruction, InstructionCall} from "../mos6502.ts";
 import {Op} from "./Op.ts";
 

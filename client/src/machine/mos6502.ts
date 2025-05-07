@@ -12,7 +12,7 @@ import {AddressingMode} from "./AddressingMode.ts";
 import {InstructionSet} from "./asm/InstructionSet.ts";
 import {Op, OpSemantics} from "./asm/Op.ts";
 import {Byteable} from "../../../server/src/common/Byteable.ts";
-import {Addr, assertByte, hex16, hex8, unToSigned} from "./core.ts";
+import {Addr, assertByte, hex16, hex8, unToSigned} from "../../../server/src/common/machine/core.ts";
 import {Cpu} from "./Cpu.ts";
 import {LE, LittleEndian} from "./Endian.ts";
 

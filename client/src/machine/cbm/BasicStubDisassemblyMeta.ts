@@ -5,7 +5,7 @@ import {IndexedDescriptor} from "../asm/DisassemblyMetaImpl.ts";
 import {Edict} from "../asm/Edict.ts";
 import {InstructionLike, WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
-import {Addr} from "../core.ts";
+import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 
 const PRG_CONTENT_OFFSET = 2;

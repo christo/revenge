@@ -1,4 +1,4 @@
-import {Addr} from "../core.ts";
+import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {EMPTY_JUMP_TARGET_FETCHER, LabelsComments, SymbolResolver} from "./asm.ts";
 import {DisassemblyMeta} from "./DisassemblyMeta.ts";

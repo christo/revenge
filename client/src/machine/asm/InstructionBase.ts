@@ -1,6 +1,6 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../../../../server/src/common/Byteable.ts";
-import {hex16} from "../core.ts";
+import {hex16} from "../../../../server/src/common/machine/core.ts";
 import {LabelsComments, SourceType} from "./asm.ts";
 import {Dialect} from "./Dialect.ts";
 import {Disassembler} from "./Disassembler.ts";

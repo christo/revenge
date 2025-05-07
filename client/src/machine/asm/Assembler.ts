@@ -1,4 +1,4 @@
-import {Addr} from "../core.ts";
+import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {AssemblyMeta} from "./AssemblyMeta.ts";
 import {Dialect} from "./Dialect.ts";
 import {InstructionLike} from "./instructions.ts";

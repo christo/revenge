@@ -1,4 +1,4 @@
-import {Addr} from "../core.ts";
+import {Addr} from "../../../../server/src/common/machine/core.ts";
 import {SymDef} from "./instructions.ts";
 
 /** There are different types of symbols duh. */

@@ -9,7 +9,7 @@ import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {Stench} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
-import {KB_64} from "../core.ts";
+import {KB_64} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {ArrayMemory} from "../Memory.ts";
 import {Mos6502} from "../mos6502.ts";

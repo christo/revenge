@@ -1,6 +1,6 @@
 import * as R from "ramda";
 import {Byteable} from "../../../../server/src/common/Byteable.ts";
-import {Addr, hex16} from "../core.ts";
+import {Addr, hex16} from "../../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {FullInstruction} from "../mos6502.ts";
 import {InstRec} from "../sim/Tracer.ts";

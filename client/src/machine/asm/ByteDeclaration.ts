@@ -1,6 +1,6 @@
 import {Tag} from "../api.ts";
 import {Byteable} from "../../../../server/src/common/Byteable.ts";
-import {assertByte} from "../core.ts";
+import {assertByte} from "../../../../server/src/common/machine/core.ts";
 import {LabelsComments, SourceType} from "./asm.ts";
 import {Dialect} from "./Dialect.ts";
 import {Directive, DirectiveBase} from "./Directive.ts";

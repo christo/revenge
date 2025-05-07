@@ -24,7 +24,7 @@ import {RevengeDialect} from "../asm/RevengeDialect.ts";
 import {SymbolType} from "../asm/SymbolTable.ts";
 import {BlobSniffer, Stench} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
-import {Addr, asHex, hex16, hex8} from "../core.ts";
+import {Addr, asHex, hex16, hex8} from "../../../../server/src/common/machine/core.ts";
 import {DataViewImpl} from "../DataView.ts";
 import {LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";

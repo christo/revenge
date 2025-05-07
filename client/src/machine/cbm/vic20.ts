@@ -9,7 +9,7 @@ import {DisassemblyMetaImpl, IndexedDescriptor} from "../asm/DisassemblyMetaImpl
 import {WordDefinitionEdict} from "../asm/instructions.ts";
 import {SymbolTable} from "../asm/SymbolTable.ts";
 import {BlobSniffer, Stench} from "../BlobSniffer.ts";
-import {KB_64, lsb, msb} from "../core";
+import {KB_64, lsb, msb} from "../../../../server/src/common/machine/core.ts";
 import {LE, LittleEndian} from "../Endian.ts";
 import {FileBlob} from "../FileBlob";
 import {ArrayMemory, Memory} from "../Memory.ts";

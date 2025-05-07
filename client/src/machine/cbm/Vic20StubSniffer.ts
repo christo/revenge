@@ -4,7 +4,7 @@ import {DisassemblyMeta} from "../asm/DisassemblyMeta.ts";
 import {DisassemblyMetaImpl} from "../asm/DisassemblyMetaImpl.ts";
 import {BlobSniffer, Stench, UNKNOWN_BLOB} from "../BlobSniffer.ts";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.ts";
-import {Addr, asHex, hex16} from "../core.ts";
+import {Addr, asHex, hex16} from "../../../../server/src/common/machine/core.ts";
 import {LE} from "../Endian.ts";
 import {FileBlob} from "../FileBlob.ts";
 import {Mos6502} from "../mos6502.ts";
