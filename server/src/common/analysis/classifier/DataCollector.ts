@@ -74,7 +74,6 @@ export class DataCollector {
         if (fs.lstatSync(entryPath).isSymbolicLink()) {
           try {
             resolvedEntryPath = fs.realpathSync(entryPath);
-            // Get stats of the resolved path
             const resolvedStats = fs.statSync(resolvedEntryPath);
             
             if (resolvedStats.isDirectory()) {
@@ -83,7 +82,7 @@ export class DataCollector {
               continue;
             }
           } catch (error: any) {
-            // Handle case where symlink resolution fails (e.g., with files containing backslashes)
+            // TODO Handle case where symlink resolution fails (e.g., with files containing backslashes)
             console.log(`  Skipping symlink resolution for ${path.basename(entryPath)}: ${error.message || error}`);
           }
         }
