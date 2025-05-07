@@ -81,9 +81,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "c64",
         confidence: 0.6
       },
-      
-      // C64 cartridge signatures
-      { 
+      {
         name: "c64_cartridge_cbm80", 
         signature: [0xC3, 0xC2, 0xCD, 0x38, 0x30], // "CBM80"
         offset: 0,
@@ -160,11 +158,9 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "c64",
         confidence: 0.9
       },
-      
-      // C64 BASIC token sequences at standard locations
       {
         name: "c64_basic_line0",
-        signature: [0x0C, 0x08, 0x0A, 0x00, 0x9E], // Line start + '0' + SYS token
+        signature: [0x0C, 0x08, 0x0A, 0x00, 0x9E], // Line start + '10' + SYS token
         offset: 0,
         description: "C64 BASIC program with SYS command on first line",
         platform: "c64",
@@ -172,7 +168,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       },
       {
         name: "c64_basic_rem",
-        signature: [0x0C, 0x08, 0x0A, 0x00, 0x8F], // Line start + '0' + REM token
+        signature: [0x0C, 0x08, 0x0A, 0x00, 0x8F], // Line start + '10' + REM token
         offset: 0,
         description: "C64 BASIC program with REM on first line",
         platform: "c64",
@@ -278,7 +274,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       // VIC-20 BASIC line structures 
       {
         name: "vic20_basic_rem_1001",
-        signature: [0x0C, 0x10, 0x0A, 0x00, 0x8F], // Line link + '0' + REM token
+        signature: [0x0C, 0x10, 0x0A, 0x00, 0x8F], // Line link + '10' + REM token
         offset: 0,
         description: "VIC-20 BASIC program with REM on first line",
         platform: "vic20",
@@ -286,7 +282,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       },
       {
         name: "vic20_basic_sys_1001",
-        signature: [0x0C, 0x10, 0x0A, 0x00, 0x9E], // Line link + '0' + SYS token 
+        signature: [0x0C, 0x10, 0x0A, 0x00, 0x9E], // Line link + '10' + SYS token
         offset: 0,
         description: "VIC-20 BASIC program with SYS on first line",
         platform: "vic20",
