@@ -70,16 +70,26 @@ export class DataCollector {
       
       // If this is a symlink, resolve it
       let resolvedEntryPath = entryPath;
-      if (fs.lstatSync(entryPath).isSymbolicLink()) {
-        resolvedEntryPath = fs.realpathSync(entryPath);
-        // Get stats of the resolved path
-        const resolvedStats = fs.statSync(resolvedEntryPath);
-        
-        if (resolvedStats.isDirectory()) {
-          // Recursively process the resolved directory
-          await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
-          continue;
+      try {
+        if (fs.lstatSync(entryPath).isSymbolicLink()) {
+          try {
+            resolvedEntryPath = fs.realpathSync(entryPath);
+            // Get stats of the resolved path
+            const resolvedStats = fs.statSync(resolvedEntryPath);
+            
+            if (resolvedStats.isDirectory()) {
+              // Recursively process the resolved directory
+              await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
+              continue;
+            }
+          } catch (error: any) {
+            // Handle case where symlink resolution fails (e.g., with files containing backslashes)
+            console.log(`  Skipping symlink resolution for ${path.basename(entryPath)}: ${error.message || error}`);
+          }
         }
+      } catch (error: any) {
+        // Handle case where lstat fails (rare)
+        console.log(`  Error checking if symlink: ${path.basename(entryPath)}: ${error.message || error}`);
       }
       
       if (entryStats.isDirectory()) {
@@ -95,22 +105,27 @@ export class DataCollector {
           try {
             fs.accessSync(pathToProcess, fs.constants.R_OK);
           } catch (e) {
-            console.log(`  Skipping unreadable file: ${pathToProcess}`);
+            console.log(`  Skipping unreadable file: ${path.basename(pathToProcess)}`);
             continue;
           }
           
-          // Create unique file ID - use relative path from platform dir for nested files
-          const relativePath = path.relative(path.join(path.dirname(dirPath), platform), entryPath);
-          const fileId = `${platform}_${relativePath}`;
-          
-          // Extract features
-          const fileFeatures = this.pipeline.extractFromFile(pathToProcess);
-          features.set(fileId, fileFeatures);
-          fileTypes.set(fileId, platform);
-          
-          console.log(`  Processed ${relativePath}`);
-        } catch (error) {
-          console.error(`Error processing ${entryPath}: ${error}`);
+          try {
+            // Create a file ID using just the basename to avoid path separator issues
+            const fileName = path.basename(entryPath);
+            // Create a safe file ID without problematic characters
+            const fileId = `${platform}_${fileName}`;
+            
+            // Extract features
+            const fileFeatures = this.pipeline.extractFromFile(pathToProcess);
+            features.set(fileId, fileFeatures);
+            fileTypes.set(fileId, platform);
+            
+            console.log(`  Processed ${fileName}`);
+          } catch (error: any) {
+            console.error(`  Error extracting features from ${path.basename(entryPath)}: ${error.message || error}`);
+          }
+        } catch (error: any) {
+          console.error(`  Error processing ${path.basename(entryPath)}: ${error.message || error}`);
         }
       }
     }
