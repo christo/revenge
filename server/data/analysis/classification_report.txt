@@ -1,6 +1,6 @@
 === Binary File Type Classification Report ===
 
-Overall Accuracy: 85.43% (3097/3625)
+Overall Accuracy: 85.32% (3093/3625)
 
 Class Distribution:
   c64: 3085 samples (85.10%)
@@ -9,10 +9,10 @@ Class Distribution:
 Per-Class Metrics:
 Class        Precision  Recall     F1 Score
 -------------------------------------------
-c64           85.43%    99.94%    92.11%
-vic20         87.50%     2.59%     5.04%
+c64           85.31%    99.97%    92.06%
+vic20         90.00%     1.67%     3.27%
 
 Confusion Matrix:
              c64   vic20
-c64         3083       2
-vic20        526      14
+c64         3084       1
+vic20        531       9
