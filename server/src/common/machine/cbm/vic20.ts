@@ -17,7 +17,7 @@ import {RomImage} from "../RomImage.js";
 import {CartSigEdict} from "./CartSigEdict.js";
 import {CartSniffer} from "./CartSniffer.js";
 import {prg} from "./cbm.js";
-import CbmBasicSniffer from "./CbmBasicSniffer.js";
+import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
 import {VIC20_BASIC_ROM} from "./vic20Basic.js";
 import {VIC20_KERNAL_ROM} from "./vic20Kernal.js";
 
