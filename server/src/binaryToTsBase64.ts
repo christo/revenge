@@ -1,6 +1,6 @@
 import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
-import {encodeBase64} from "../../server/src/common/analysis/base64.ts";
+import {encodeBase64} from "./common/analysis/base64.ts";
 
 /*
 code generation for binary file to typescript array literal
