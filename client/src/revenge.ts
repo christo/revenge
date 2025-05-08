@@ -1,7 +1,10 @@
 // application-level stuff to tie user interface and domain model
 
+import {Environment} from "../../server/src/common/machine/asm/asm.ts";
+import {RevengeDialect} from "../../server/src/common/machine/asm/RevengeDialect.ts";
 import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "../../server/src/common/machine/BlobSniffer.ts";
 import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT} from "../../server/src/common/machine/cbm/c64.ts";
+import {disassembleActual} from "../../server/src/common/machine/cbm/cbm.ts";
 import {
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
@@ -14,11 +17,9 @@ import {
 } from "../../server/src/common/machine/cbm/vic20.ts";
 import {Vic20StubSniffer} from "../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
 import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
-import {crt64Actions} from "./crt64Actions.ts";
-import {mkDisasmAction} from "./mkDisasmAction.ts";
-import {printBasic} from "./printBasic.ts";
-import {TypeActions} from "./api.ts";
+import {TypeActions, UserAction} from "./api.ts";
 import {hexDumper} from "./hexDumper.ts";
+import {printBasic} from "./printBasic.ts";
 
 
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
@@ -30,6 +31,25 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
   EXP24K_VIC_BASIC,
   C64_BASIC_PRG,
 ];
+
+/**
+ * User action that disassembles the file.
+ */
+function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
+  const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
+  // type: array of at least one UserAction
+  const userActions: [UserAction, ...UserAction[]] = [{
+    label: "disassembly",
+    f: async () => {
+      return disassembleActual(fb, dialect, t.getMeta());
+    }
+  }, hexDumper(fb)];
+  return {
+    t: t,
+    actions: userActions
+  };
+}
+
 
 /**
  * Returns a best-guess file type and user actions that can be done on it.
@@ -55,9 +75,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
 
   const hd = hexDumper(fileBlob);
   if (C64_CRT.sniff(fileBlob).score > 1) {
-    const typeActions = crt64Actions(fileBlob);
-    typeActions.actions.push(hd);
-    // TODO get rid of early return
+    const typeActions: TypeActions = ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
     return typeActions;
   }
 

@@ -3,8 +3,4 @@ import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
 import {BlobToActions} from "./api.ts";
 import {hexDumper} from "./hexDumper.ts";
 
-const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({
-  t: C64_CRT,
-  actions: [hexDumper(fileBlob)]
-});
 export {crt64Actions};
