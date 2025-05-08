@@ -23,8 +23,16 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "@common/*": ["../server/src/common/*"]
-    }
+      "@common/*": ["../server/src/common/*"],
+      "hash-wasm": ["./node_modules/hash-wasm"],
+      "hash-wasm/*": ["./node_modules/hash-wasm/*"],
+      "ramda": ["./node_modules/@types/ramda", "./node_modules/ramda"],
+      "ramda/*": ["./node_modules/@types/ramda/*", "./node_modules/ramda/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "../server/node_modules/@types"
+    ]
   },
   "include": ["src", "test", "../server/src/common/**/*"]
 }

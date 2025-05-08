@@ -13,6 +13,7 @@ export { DataViewImpl } from '@common/DataView.js';
 
 // Analysis
 export { Bigram } from '@common/analysis/Bigram.js';
+export { HashCalc } from '@common/analysis/HashCalc.js';
 
 // Machine
 export { FileBlob } from '@common/machine/FileBlob.js';
@@ -28,6 +29,7 @@ export { Mos6502 } from '@common/machine/mos6502.js';
 // Assembly
 export { Environment } from '@common/machine/asm/asm.js';
 export { RevengeDialect } from '@common/machine/asm/RevengeDialect.js';
+export { Disassembler } from '@common/machine/asm/Disassembler.js';
 
 // CBM
 export { CBM_BASIC_2_0 } from '@common/machine/cbm/BasicDecoder.js';
