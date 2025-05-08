@@ -13,7 +13,7 @@ interface RomFile {
 }
 
 // TODO take these as parameters and move this into server/src/common
-const romFiles: RomFile[] = [
+const ROM_FILES: RomFile[] = [
   {
     input: '../../roms/vic20/KERNAL.ROM',
     output: 'machine/cbm/vic20Kernal.ts',
@@ -34,8 +34,7 @@ function splitStringByLength(str: string, length: number): string[] {
   return result;
 }
 
-// Process each ROM file
-romFiles.forEach((rom: RomFile) => {
+function generateRomFile(rom: RomFile) {
   try {
     const data: Buffer = readFileSync(join(import.meta.dir, rom.input));
 
@@ -54,4 +53,10 @@ romFiles.forEach((rom: RomFile) => {
   } catch (error) {
     console.error(`Error processing ${rom.input}:`, error instanceof Error ? error.message : String(error));
   }
-});
+}
+
+function generateRomFiles(romFiles: RomFile[]) {
+  romFiles.forEach(generateRomFile);
+}
+
+export {splitStringByLength};
