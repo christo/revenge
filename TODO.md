@@ -25,6 +25,7 @@
 * [ ] treat zip files in corpus as directories by doing transparent contents unzipping
   * [x] write transparent unzipper using jszip
   * [ ] integrate unzipper into file preprocessor for ml training
+  * [ ] integrate unzipper for binary loading on client
 * [ ] hovertools for exploration and interactive reversing:
   * [ ] symbol usage should show an inline popup preview of the definition
   * [ ] jump addresses should show an inline popup preview of the destination code
