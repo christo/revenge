@@ -8,11 +8,11 @@
 
  */
 
+import {Byteable} from "../Byteable.js";
 import {AddressingMode} from "./AddressingMode.js";
 import {InstructionSet} from "./asm/InstructionSet.js";
 import {Op, OpSemantics} from "./asm/Op.js";
-import {Byteable} from "../Byteable.js";
-import {Addr, assertByte, hex16, hex8, unToSigned} from "./core.js";
+import {Addr, assertByte, hex8, unToSigned} from "./core.js";
 import {Cpu} from "./Cpu.js";
 import {LE, LittleEndian} from "./Endian.js";
 

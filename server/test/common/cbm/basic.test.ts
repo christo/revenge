@@ -15,7 +15,7 @@ describe("basic decoder", () => {
     let linesRead = 0;
     const fb = FileBlob.fromBytes(fname, Array.from(new Uint8Array(buffer)), LE);
     const fbm = fb.asMemory() as Memory<LittleEndian>;
-    CBM_BASIC_2_0.decode(fbm).getLines().map((ll:LogicalLine) => ll.getTags()).map((t: Tag[]) => t[1]).forEach((_x: Tag) => {
+    CBM_BASIC_2_0.decode(fbm).getLines().map((ll: LogicalLine) => ll.getTags()).map((t: Tag[]) => t[1]).forEach((_x: Tag) => {
       linesRead++;
     })
     expect(linesRead).equal(38);

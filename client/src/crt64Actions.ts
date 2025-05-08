@@ -1,6 +1,7 @@
 import {C64_CRT} from "../../server/src/common/machine/cbm/c64.ts";
 import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
-import {BlobToActions, hexDumper} from "./machine/api.ts";
+import {BlobToActions} from "./api.ts";
+import {hexDumper} from "./hexDumper.ts";
 
 const crt64Actions: BlobToActions = (fileBlob: FileBlob) => ({
   t: C64_CRT,

@@ -1,6 +1,5 @@
 import {expect} from "chai";
 import * as fs from "fs";
-import {PRELOADS_DIR_VIC20} from "../../../src/routes/constants.js";
 import {TOKEN_PRINT, TOKEN_REM} from "../../../src/common/machine/cbm/BasicDecoder.js";
 import {Petscii} from "../../../src/common/machine/cbm/petscii.js";
 import {UNEXPANDED_VIC_BASIC, Vic20} from "../../../src/common/machine/cbm/vic20.js";
@@ -9,6 +8,7 @@ import {Addr} from "../../../src/common/machine/core.js";
 import {LE} from "../../../src/common/machine/Endian.js";
 import {FileBlob} from "../../../src/common/machine/FileBlob.js";
 import {Mos6502} from "../../../src/common/machine/mos6502.js";
+import {PRELOADS_DIR_VIC20} from "../../../src/routes/constants.js";
 
 
 /**

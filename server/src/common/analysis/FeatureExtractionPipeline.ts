@@ -2,12 +2,11 @@ import fs from "fs";
 import path from "path";
 import {FileLike} from "../FileLike.js";
 import {BigramExtractor} from "./BigramExtractor.js";
+import {EnhancedSignatureExtractor} from "./EnhancedSignatureExtractor.js";
 import {EntropyExtractor} from "./EntropyExtractor.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 import {HistogramExtractor} from "./HistogramExtractor.js";
 import {LengthExtractor} from "./LengthExtractor.js";
-import {SignatureExtractor} from "./SignatureExtractor.js";
-import {EnhancedSignatureExtractor} from "./EnhancedSignatureExtractor.js";
 
 /**
  * Pipeline for extracting multiple feature sets from files
@@ -36,7 +35,7 @@ class FeaturePipeline {
 
     return featureVectors.flat();
   }
-  
+
   /**
    * Extract all features from a file buffer
    * @param file FileLike object
@@ -49,7 +48,7 @@ class FeaturePipeline {
 
     return featureVectors.flat();
   }
-  
+
   /**
    * Get names of all extractors in the pipeline
    */

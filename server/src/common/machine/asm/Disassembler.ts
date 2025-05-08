@@ -52,12 +52,12 @@ class Disassembler {
     this.executionPoints = [];
   }
 
-  getLiteralRadix(): number {
-    return 16;
-  }
-
   get currentAddress(): Addr {
     return this.segmentBaseAddress + this.currentIndex - this.contentStartIndex;
+  }
+
+  getLiteralRadix(): number {
+    return 16;
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -118,23 +118,6 @@ class Disassembler {
       }
     }
     return instLike;
-  }
-
-  /**
-   * Generates a byte declaration consuming all bytes that cannot be decoded as legal instructions until
-   * the first legal opcode or the end of file.
-   *
-   * @param lc
-   * @private
-   */
-  private byteDecsForIllegals(lc: LabelsComments): InstructionLike {
-    // slurp up multiple illegal opcodes in a row
-    let numBytes = 1;
-    while (numBytes < this.bytesLeftInFile() && this.iset.illegalOpcode(this.fb.read8(this.currentIndex + numBytes)!)) {
-      numBytes++;
-    }
-    lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
-    return new ByteDeclaration(this.eatBytes(numBytes), lc);
   }
 
   isInBinary(addr: Addr) {
@@ -348,6 +331,23 @@ class Disassembler {
    */
   getContentBytes() {
     return this.fb.getBytes().slice(this.disMeta.contentStartOffset());
+  }
+
+  /**
+   * Generates a byte declaration consuming all bytes that cannot be decoded as legal instructions until
+   * the first legal opcode or the end of file.
+   *
+   * @param lc
+   * @private
+   */
+  private byteDecsForIllegals(lc: LabelsComments): InstructionLike {
+    // slurp up multiple illegal opcodes in a row
+    let numBytes = 1;
+    while (numBytes < this.bytesLeftInFile() && this.iset.illegalOpcode(this.fb.read8(this.currentIndex + numBytes)!)) {
+      numBytes++;
+    }
+    lc.addComments(numBytes === 1 ? "illegal opcode" : "illegal opcodes");
+    return new ByteDeclaration(this.eatBytes(numBytes), lc);
   }
 
   /**

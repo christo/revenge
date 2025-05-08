@@ -1,6 +1,6 @@
-import {Tag} from "../Tag.js";
 import {Byteable} from "../../Byteable.js";
 import {assertByte} from "../core.js";
+import {Tag} from "../Tag.js";
 import {LabelsComments, SourceType} from "./asm.js";
 import {Dialect} from "./Dialect.js";
 import {Directive, DirectiveBase} from "./Directive.js";
@@ -13,7 +13,7 @@ export class ByteDeclaration extends DirectiveBase implements InstructionLike, D
   private readonly _rawBytes: Array<number>;
 
   constructor(rawBytes: number[], lc: LabelsComments) {
-    super(lc, SourceType.DATA, false,  false, false);
+    super(lc, SourceType.DATA, false, false, false);
     this._rawBytes = rawBytes.map(b => assertByte(b));
   }
 

@@ -6,7 +6,7 @@ import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
 import {LogicalLine} from "../../server/src/common/machine/LogicalLine.ts";
 import {Memory} from "../../server/src/common/machine/Memory.ts";
 import {Tag} from "../../server/src/common/machine/Tag.ts";
-import {ActionFunction} from "./machine/api.ts";
+import {ActionFunction} from "./api.ts";
 
 /** Prints the file as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {

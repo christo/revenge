@@ -1,5 +1,5 @@
-import { FileLike } from "../FileLike.js";
-import { FeatureExtractor } from "./FeatureExtractor.js";
+import {FileLike} from "../FileLike.js";
+import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**
  * A signature descriptor for a specific file format
@@ -24,7 +24,7 @@ interface FormatSignature {
 export class EnhancedSignatureExtractor implements FeatureExtractor {
   private static readonly FEATURE_PREFIX = "signature_";
   private readonly signatures: FormatSignature[];
-  
+
   /**
    * Creates a new SignatureExtractor with expanded platform-specific signatures
    */
@@ -33,56 +33,56 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
     this.signatures = [
       // ======== Commodore 64 signatures ========
       // Common C64 load addresses
-      { 
-        name: "c64_prg_basic", 
-        signature: [0x01, 0x08], 
+      {
+        name: "c64_prg_basic",
+        signature: [0x01, 0x08],
         offset: 0,
         description: "C64 BASIC program (load address $0801)",
         platform: "c64",
         confidence: 0.8
       },
-      { 
-        name: "c64_basic_start", 
-        signature: [0x0B, 0x08], 
+      {
+        name: "c64_basic_start",
+        signature: [0x0B, 0x08],
         offset: 0,
         description: "C64 BASIC program alt start",
         platform: "c64",
         confidence: 0.7
       },
-      { 
-        name: "c64_sys_1300", 
-        signature: [0x0C, 0x05], 
+      {
+        name: "c64_sys_1300",
+        signature: [0x0C, 0x05],
         offset: 0,
         description: "C64 program (load address $050C)",
         platform: "c64",
         confidence: 0.7
       },
-      { 
-        name: "c64_prg_2000", 
-        signature: [0x00, 0x20], 
+      {
+        name: "c64_prg_2000",
+        signature: [0x00, 0x20],
         offset: 0,
         description: "C64 program (load address $2000)",
         platform: "c64",
         confidence: 0.6
       },
-      { 
-        name: "c64_prg_4000", 
-        signature: [0x00, 0x40], 
+      {
+        name: "c64_prg_4000",
+        signature: [0x00, 0x40],
         offset: 0,
         description: "C64 program (load address $4000)",
         platform: "c64",
         confidence: 0.6
       },
-      { 
-        name: "c64_prg_c000", 
-        signature: [0x00, 0xC0], 
+      {
+        name: "c64_prg_c000",
+        signature: [0x00, 0xC0],
         offset: 0,
         description: "C64 program (load address $C000)",
         platform: "c64",
         confidence: 0.6
       },
       {
-        name: "c64_cartridge_cbm80", 
+        name: "c64_cartridge_cbm80",
         signature: [0xC3, 0xC2, 0xCD, 0x38, 0x30], // "CBM80"
         offset: 0,
         description: "C64 cartridge with CBM80 signature",
@@ -174,7 +174,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "c64",
         confidence: 0.8
       },
-      
+
       // SID music files
       {
         name: "c64_sid_magic",
@@ -192,46 +192,46 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "c64",
         confidence: 0.95
       },
-      
+
       // ======== VIC-20 signatures ========
       // VIC-20 load addresses (unexpanded, +3K, +8K, +16K, +24K)
-      { 
-        name: "vic20_prg_unexpanded", 
-        signature: [0x01, 0x10], 
+      {
+        name: "vic20_prg_unexpanded",
+        signature: [0x01, 0x10],
         offset: 0,
         description: "VIC-20 BASIC program (unexpanded, load address $1001)",
         platform: "vic20",
         confidence: 0.95
       },
-      { 
-        name: "vic20_prg_3k", 
-        signature: [0x01, 0x04], 
+      {
+        name: "vic20_prg_3k",
+        signature: [0x01, 0x04],
         offset: 0,
         description: "VIC-20 BASIC program (+3K, load address $0401)",
         platform: "vic20",
         confidence: 0.9
       },
-      { 
-        name: "vic20_basic_1201", 
-        signature: [0x01, 0x12], 
+      {
+        name: "vic20_basic_1201",
+        signature: [0x01, 0x12],
         offset: 0,
         description: "VIC-20 BASIC program (+8K, load address $1201)",
         platform: "vic20",
         confidence: 0.9
       },
-      { 
-        name: "vic20_basic_1201_alt", 
-        signature: [0x02, 0x12], 
+      {
+        name: "vic20_basic_1201_alt",
+        signature: [0x02, 0x12],
         offset: 0,
         description: "VIC-20 BASIC alternate start",
         platform: "vic20",
         confidence: 0.8
       },
-      { 
-        name: "vic20_basic_start_token", 
-        signature: [0x0B, 0x10, 0x00, 0x00, 0x9E], 
+      {
+        name: "vic20_basic_start_token",
+        signature: [0x0B, 0x10, 0x00, 0x00, 0x9E],
         offset: 0,
-        description: "VIC-20 BASIC with SYS token", 
+        description: "VIC-20 BASIC with SYS token",
         platform: "vic20",
         confidence: 0.9
       },
@@ -240,13 +240,13 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         name: "vic20_ml_standard",
         signature: [0x20, 0x00, 0x70], // JSR $7000 (common ML entry)
         offset: 2,
-        description: "VIC-20 ML routine at $7000", 
+        description: "VIC-20 ML routine at $7000",
         platform: "vic20",
         confidence: 0.85
       },
       {
         name: "vic20_a000_block",
-        signature: [0x00, 0xA0], 
+        signature: [0x00, 0xA0],
         offset: 0,
         description: "VIC-20 cartridge at $A000",
         platform: "vic20",
@@ -254,7 +254,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       },
       {
         name: "vic20_2000_block",
-        signature: [0x00, 0x20], 
+        signature: [0x00, 0x20],
         offset: 0,
         description: "VIC-20 block at $2000",
         platform: "vic20",
@@ -270,7 +270,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         confidence: 0.7,
         variableLength: true
       },
-      
+
       // VIC-20 BASIC line structures 
       {
         name: "vic20_basic_rem_1001",
@@ -288,7 +288,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "vic20",
         confidence: 0.9
       },
-      
+
       // VIC-20 cartridge formats
       {
         name: "vic20_cartridge",
@@ -300,23 +300,23 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       },
       {
         name: "vic20_cart_vector_a000",
-        signature: [0x00, 0xA0], 
+        signature: [0x00, 0xA0],
         offset: 0,
         description: "VIC-20 cartridge A000 vector",
         platform: "vic20",
         confidence: 0.6
       },
-      
+
       // VIC-20 machine code at common addresses
       {
         name: "vic20_mc_1c00",
-        signature: [0x00, 0x1C], 
+        signature: [0x00, 0x1C],
         offset: 0,
         description: "VIC-20 machine code at $1C00",
         platform: "vic20",
         confidence: 0.6
       },
-      
+
       // ======== ZX Spectrum signatures ========
       {
         name: "zx_snapshot_z80",
@@ -342,7 +342,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "zx",
         confidence: 0.9
       },
-      
+
       // ======== Atari 8-bit signatures ========
       {
         name: "atari_executable",
@@ -361,14 +361,14 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         confidence: 0.9
       },
       {
-        name: "atari_basic_tokenized", 
+        name: "atari_basic_tokenized",
         signature: [0x00, 0x03, 0x00, 0x07], // BASIC tokens
         offset: 0,
         description: "Atari BASIC tokenized program",
         platform: "atari8bit",
         confidence: 0.8
       },
-      
+
       // ======== MSX signatures ========
       {
         name: "msx_basic",
@@ -386,7 +386,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "msx",
         confidence: 0.8
       },
-      
+
       // ======== NES/Famicom signatures ========
       {
         name: "nes_rom",
@@ -396,55 +396,55 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         platform: "nes",
         confidence: 0.95
       },
-      
+
       // ======== Apple II signatures ========
       // Existing Apple II signatures
-      { 
-        name: "apple2_dos33", 
-        signature: [0xA5, 0x27, 0xC9, 0x09], 
+      {
+        name: "apple2_dos33",
+        signature: [0xA5, 0x27, 0xC9, 0x09],
         offset: 0,
         description: "Apple II DOS 3.3 file",
         platform: "apple2",
         confidence: 0.8
       },
-      { 
-        name: "apple2_prodos", 
-        signature: [0x01, 0x38, 0xB0, 0x03], 
+      {
+        name: "apple2_prodos",
+        signature: [0x01, 0x38, 0xB0, 0x03],
         offset: 0,
         description: "Apple II ProDOS file",
         platform: "apple2",
         confidence: 0.8
       },
-      
+
       // ======== BBC Micro signatures ========
       // Existing BBC Micro signatures
-      { 
-        name: "bbc_basic", 
-        signature: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], 
+      {
+        name: "bbc_basic",
+        signature: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
         offset: 0x07,
         description: "BBC Micro BASIC program",
         platform: "bbc",
         confidence: 0.8
       },
-      
+
       // ======== Common 6502 assembly patterns ========
       // These are machine-agnostic but useful for identification
-      { 
-        name: "assembly_jmp_start", 
+      {
+        name: "assembly_jmp_start",
         signature: [0x4C], // JMP instruction 
         offset: 0,
         description: "6502 JMP instruction at start",
         confidence: 0.4
       },
-      { 
-        name: "assembly_sei_start", 
+      {
+        name: "assembly_sei_start",
         signature: [0x78], // SEI instruction
         offset: 0,
         description: "6502 SEI instruction at start",
         confidence: 0.4
       },
-      { 
-        name: "assembly_lda_start", 
+      {
+        name: "assembly_lda_start",
         signature: [0xA9], // LDA immediate
         offset: 0,
         description: "6502 LDA immediate at start",
@@ -464,7 +464,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         description: "6502 CLI instruction in header",
         confidence: 0.4
       },
-      
+
       // ======== Common code patterns ========
       // These look for typical subroutine patterns in 6502 code
       {
@@ -484,7 +484,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
       }
     ];
   }
-  
+
   /**
    * Extract enhanced signature-based features from a file
    * @param file File to analyze
@@ -492,80 +492,88 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
    */
   extract(file: FileLike): [string, number][] {
     const features: [string, number][] = [];
-    
+
     // Track platform-specific signature matches
     const platformMatches = new Map<string, number>();
-    
+
     // Check each signature against the file
     for (const signature of this.signatures) {
       // Match the signature
       const matchResult = this.matchSignature(file, signature);
-      
+
       // If we have a match and a platform is specified, count it
       if (matchResult && signature.platform) {
         const currentCount = platformMatches.get(signature.platform) || 0;
         platformMatches.set(
-          signature.platform, 
-          currentCount + (signature.confidence || 1.0)
+            signature.platform,
+            currentCount + (signature.confidence || 1.0)
         );
       }
-      
+
       // Add the signature feature
       features.push([
-        `${EnhancedSignatureExtractor.FEATURE_PREFIX}${signature.name}`, 
+        `${EnhancedSignatureExtractor.FEATURE_PREFIX}${signature.name}`,
         matchResult ? (signature.confidence || 1.0) : 0.0
       ]);
     }
-    
+
     // Add a feature counting how many signatures matched
     const matchCount = features.filter(([_, value]) => value > 0).length;
     features.push([`${EnhancedSignatureExtractor.FEATURE_PREFIX}match_count`, matchCount]);
-    
+
     // Create a more refined platform scoring system
     // Filter irrelevant platforms like "has" and "basic" that aren't actual platforms
     const relevantPlatforms = new Map<string, number>();
     for (const [platform, count] of platformMatches.entries()) {
       // Only consider actual platform identifiers
-      if (platform === "c64" || platform === "vic20" || 
-          platform === "zx" || platform === "atari8bit" || 
+      if (platform === "c64" || platform === "vic20" ||
+          platform === "zx" || platform === "atari8bit" ||
           platform === "msx" || platform === "nes" ||
           platform === "apple2" || platform === "bbc") {
         relevantPlatforms.set(platform, count);
       }
     }
-    
+
     // Add features for platform signature matches
     for (const [platform, count] of relevantPlatforms.entries()) {
       features.push([
-        `${EnhancedSignatureExtractor.FEATURE_PREFIX}platform_${platform}`, 
+        `${EnhancedSignatureExtractor.FEATURE_PREFIX}platform_${platform}`,
         count
       ]);
     }
-    
+
     // Add dominant platform feature (platform with most matches)
     if (relevantPlatforms.size > 0) {
       let dominantPlatform = "";
       let highestCount = 0;
-      
+
       for (const [platform, count] of relevantPlatforms.entries()) {
         if (count > highestCount) {
           dominantPlatform = platform;
           highestCount = count;
         }
       }
-      
+
       features.push([
-        `${EnhancedSignatureExtractor.FEATURE_PREFIX}dominant_platform`, 
+        `${EnhancedSignatureExtractor.FEATURE_PREFIX}dominant_platform`,
         dominantPlatform === "c64" ? 1.0 : (dominantPlatform === "vic20" ? 0.0 : 0.5)
       ]);
     }
-    
+
     // Additional structural analysis features
     features.push(...this.extractStructuralFeatures(file));
-    
+
     return features;
   }
-  
+
+  /**
+   * Add a custom signature to the extractor
+   * @param signature New signature to add
+   */
+  addSignature(signature: FormatSignature): void {
+    this.signatures.push(signature);
+  }
+
   /**
    * Check if a file matches a given signature with enhanced capabilities
    * @param file File to check
@@ -573,24 +581,24 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
    * @returns true if the signature matches
    */
   private matchSignature(file: FileLike, signature: FormatSignature): boolean {
-    const { offset, signature: signatureBytes, mask, variableLength } = signature;
-    
+    const {offset, signature: signatureBytes, mask, variableLength} = signature;
+
     // Check if file is big enough to contain the signature
     if (file.size < offset + signatureBytes.length) {
       return false;
     }
-    
+
     // Variable length signatures allow partial matches
-    const matchLength = variableLength 
-      ? Math.min(signatureBytes.length, file.size - offset)
-      : signatureBytes.length;
-    
+    const matchLength = variableLength
+        ? Math.min(signatureBytes.length, file.size - offset)
+        : signatureBytes.length;
+
     // Check each byte of the signature
     for (let i = 0; i < matchLength; i++) {
       const fileBytePos = offset + i;
       const fileByte = file.data[fileBytePos];
       const sigByte = signatureBytes[i];
-      
+
       // Apply mask if provided, otherwise exact match
       if (mask && mask[i]) {
         if ((fileByte & mask[i]) !== (sigByte & mask[i])) {
@@ -600,10 +608,10 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         return false;
       }
     }
-    
+
     return true;
   }
-  
+
   /**
    * Extract additional structural features from file content
    * @param file File to analyze
@@ -611,64 +619,66 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
    */
   private extractStructuralFeatures(file: FileLike): [string, number][] {
     const features: [string, number][] = [];
-    
+
     // Check for BASIC line structure (for C64/VIC-20)
     if (file.size >= 5) {
       // Check if the file looks like it has valid BASIC line links
       let validLineLinks = true;
       let lineCount = 0;
       let position = 2; // Skip load address
-      
+
       // Try to follow BASIC line links for up to 10 links
       for (let i = 0; i < 10 && position < file.size - 4; i++) {
         // Get the line link pointer (little endian)
         const lineLink = file.data[position] | (file.data[position + 1] << 8);
-        
+
         // If zero, we've reached the end of the program
-        if (lineLink === 0) break;
-        
+        if (lineLink === 0) {
+          break;
+        }
+
         // If the link points backward or too far forward, it's not a valid BASIC program
         if (lineLink < position || lineLink >= file.size) {
           validLineLinks = false;
           break;
         }
-        
+
         // Move to the next line
         position = lineLink;
         lineCount++;
       }
-      
+
       features.push([
-        `${EnhancedSignatureExtractor.FEATURE_PREFIX}valid_basic_structure`, 
+        `${EnhancedSignatureExtractor.FEATURE_PREFIX}valid_basic_structure`,
         validLineLinks && lineCount > 0 ? 1.0 : 0.0
       ]);
-      
+
       features.push([
-        `${EnhancedSignatureExtractor.FEATURE_PREFIX}basic_line_count`, 
+        `${EnhancedSignatureExtractor.FEATURE_PREFIX}basic_line_count`,
         lineCount / 10.0 // Normalize to 0.0-1.0 range
       ]);
     }
-    
+
     // Check for specific memory patterns with reduced confidence values
     // so they don't dominate platform-specific signatures
     features.push([
       `${EnhancedSignatureExtractor.FEATURE_PREFIX}has_low_memory_access`,
       this.checkMemoryPatterns(file, [0x00, 0x01, 0x02, 0x03]) ? 0.4 : 0.0
     ]);
-    
+
     features.push([
       `${EnhancedSignatureExtractor.FEATURE_PREFIX}has_vic_registers_access`,
       this.checkMemoryPatterns(file, [0x00, 0x90]) ? 0.5 : 0.0 // VIC-20 VIC chip
     ]);
-    
+
     features.push([
       `${EnhancedSignatureExtractor.FEATURE_PREFIX}has_sid_registers_access`,
       this.checkMemoryPatterns(file, [0x00, 0xD4]) ? 0.5 : 0.0 // C64 SID chip
     ]);
-    
+
     return features;
   }
-  
+
   /**
    * Check if file contains access to specific memory patterns
    * @param file File to check
@@ -679,11 +689,11 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
     // Look for common instruction patterns that access memory
     // For example, LDA $9000 would be [0xAD, 0x00, 0x90]
     const memoryAccessOpcodes = [0xAD, 0x8D, 0xAE, 0x8E, 0xAC, 0x8C]; // LDA, STA, LDX, STX, LDY, STY abs
-    
+
     // Scan file for memory access patterns
     for (let i = 0; i < file.size - 3; i++) {
       const opcode = file.data[i];
-      
+
       // If this is a memory access opcode
       if (memoryAccessOpcodes.includes(opcode)) {
         // Check if the address matches our pattern (little endian)
@@ -692,15 +702,7 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
         }
       }
     }
-    
+
     return false;
-  }
-  
-  /**
-   * Add a custom signature to the extractor
-   * @param signature New signature to add
-   */
-  addSignature(signature: FormatSignature): void {
-    this.signatures.push(signature);
   }
 }

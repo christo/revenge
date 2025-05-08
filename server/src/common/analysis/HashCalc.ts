@@ -54,15 +54,6 @@ class HashCalc {
     this.writeHashes("CRC32", CRC32_FILE, this.hashesCrc32);
   }
 
-  private writeHashes(hashName: string, filename: string, hashes: [string, string][]) {
-    const lastWritten = `written at ${new Date().toISOString()}`
-    let filePath = path.join(this.baseDir, filename);
-    const header = `# ${hashName} hashes ${lastWritten}`;
-    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\n");
-    const data = `${header}\n${hashLines}\n`;
-    writeFileSync(filePath, data, 'utf8');
-  }
-
   /**
    * Whether all the hash files exist.
    */
@@ -70,6 +61,24 @@ class HashCalc {
     return fs.existsSync(path.join(this.baseDir, SHA1_FILE))
         && fs.existsSync(path.join(this.baseDir, MD5_FILE))
         && fs.existsSync(path.join(this.baseDir, CRC32_FILE));
+  }
+
+  load() {
+    let hashesLoaded = this.loadHash(SHA1_FILE, this.hashesSha1);
+    console.log(`loaded ${hashesLoaded} SHA1 hashes`);
+    hashesLoaded = this.loadHash(MD5_FILE, this.hashesMd5);
+    console.log(`loaded ${hashesLoaded} MD5 hashes`);
+    hashesLoaded = this.loadHash(CRC32_FILE, this.hashesCrc32);
+    console.log(`loaded ${hashesLoaded} CRC32 hashes`);
+  }
+
+  private writeHashes(hashName: string, filename: string, hashes: [string, string][]) {
+    const lastWritten = `written at ${new Date().toISOString()}`
+    let filePath = path.join(this.baseDir, filename);
+    const header = `# ${hashName} hashes ${lastWritten}`;
+    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\n");
+    const data = `${header}\n${hashLines}\n`;
+    writeFileSync(filePath, data, 'utf8');
   }
 
   private loadHash(filename: string, map: Array<[string, string]>) {
@@ -86,15 +95,6 @@ class HashCalc {
       }
     });
     return hashesLoaded;
-  }
-
-  load() {
-    let hashesLoaded = this.loadHash(SHA1_FILE, this.hashesSha1);
-    console.log(`loaded ${hashesLoaded} SHA1 hashes`);
-    hashesLoaded = this.loadHash(MD5_FILE, this.hashesMd5);
-    console.log(`loaded ${hashesLoaded} MD5 hashes`);
-    hashesLoaded = this.loadHash(CRC32_FILE, this.hashesCrc32);
-    console.log(`loaded ${hashesLoaded} CRC32 hashes`);
   }
 }
 

@@ -7,6 +7,7 @@ import {Op} from "./Op.js";
  * Represents the whole set of machine instructions.
  */
 class InstructionSet {
+  readonly name: string;
   // note redundancy here
   private mnemonicToByte = new Map<string, number>([]);
   private ops: Array<Op> = [];
@@ -16,7 +17,6 @@ class InstructionSet {
   // noinspection JSMismatchedCollectionQueryUpdate
   private cycles: Array<Cycles> = [];
   private instructions: Array<Instruction> = [];
-  readonly name: string;
 
   constructor(name: string) {
     this.name = name;

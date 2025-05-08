@@ -1,5 +1,5 @@
-import {FileLike} from "../FileLike.js";
 import {Byteable} from "../Byteable.js";
+import {FileLike} from "../FileLike.js";
 import {Addr, hex16} from "./core.js";
 import {BE, Endian} from "./Endian.js";
 import {ArrayMemory, Memory} from "./Memory.js";

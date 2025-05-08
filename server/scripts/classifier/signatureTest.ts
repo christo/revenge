@@ -1,7 +1,7 @@
 /**
  * Test script for the EnhancedSignatureExtractor
  * Reports signatures found in a specified file
- * 
+ *
  * Usage:
  *   cd server
  *   bun scripts/classifier/signatureTest.ts <file-path>

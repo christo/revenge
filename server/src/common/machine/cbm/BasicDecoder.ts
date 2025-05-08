@@ -1,8 +1,8 @@
-import {plural} from "../../util.js";
-import {LogicalLine} from "../LogicalLine.js";
-import {hex16, hex8} from "../core.js";
 import {DataView, DataViewImpl} from "../../DataView.js";
+import {plural} from "../../util.js";
+import {hex16, hex8} from "../core.js";
 import {LittleEndian} from "../Endian.js";
+import {LogicalLine} from "../LogicalLine.js";
 import {Memory} from "../Memory.js";
 import {Tag, TAG_ADDRESS, TAG_LINE, TAG_LINE_NUM, TAG_NOTE} from "../Tag.js";
 import {Petscii} from "./petscii.js";

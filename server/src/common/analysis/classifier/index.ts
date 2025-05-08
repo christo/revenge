@@ -1,14 +1,14 @@
 /**
  * Classifier module for binary file type classification
- * 
- * This module provides tools for classifying binary files based on 
+ *
+ * This module provides tools for classifying binary files based on
  * statistical analysis and machine learning techniques.
  */
 
 // Export main classes
-export { BinaryClassifierEnsemble, type TrainingData, type PredictionResult } from './BinaryClassifierEnsemble.js';
-export { DataCollector } from './DataCollector.js';
-export { ModelEvaluator, type EvaluationResults } from './ModelEvaluator.js';
+export {BinaryClassifierEnsemble, type TrainingData, type PredictionResult} from './BinaryClassifierEnsemble.js';
+export {DataCollector} from './DataCollector.js';
+export {ModelEvaluator, type EvaluationResults} from './ModelEvaluator.js';
 
 // Example usage:
 /*

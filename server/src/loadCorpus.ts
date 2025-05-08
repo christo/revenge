@@ -1,7 +1,7 @@
 import pLimit from "p-limit";
-import { Corpus } from "./sys/Corpus.js";
-import { FileInfo, fileInfoToFileLike } from "./sys/finder.js";
-import { HashCalc } from "./common/analysis/HashCalc.js";
+import {HashCalc} from "./common/analysis/HashCalc.js";
+import {Corpus} from "./sys/Corpus.js";
+import {fileInfoToFileLike} from "./sys/finder.js";
 
 const FILE_CONCURRENCY = 120;
 
@@ -45,4 +45,4 @@ async function loadCorpus() {
   }
 }
 
-export { loadCorpus };
+export {loadCorpus};

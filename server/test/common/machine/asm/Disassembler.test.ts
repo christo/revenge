@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import * as fs from "fs";
-import {PRELOADS_DIR_VIC20} from "../../../../src/routes/constants.js";
 import {Disassembler} from "../../../../src/common/machine/asm/Disassembler.js";
 import {DisassemblyMetaImpl} from "../../../../src/common/machine/asm/DisassemblyMetaImpl.js";
 import {InstructionLike} from "../../../../src/common/machine/asm/instructions.js";
@@ -10,6 +9,7 @@ import {LE} from "../../../../src/common/machine/Endian.js";
 import {FileBlob} from "../../../../src/common/machine/FileBlob.js";
 import {ArrayMemory} from "../../../../src/common/machine/Memory.js";
 import {MODE_ABSOLUTE, Mos6502} from "../../../../src/common/machine/mos6502.js";
+import {PRELOADS_DIR_VIC20} from "../../../../src/routes/constants.js";
 import {mockOffsetDescriptor, niladicOpcodes} from "../util.js";
 
 
@@ -42,15 +42,15 @@ describe("disassembler", () => {
     expect(disassembled.getBytes().length).to.equal(3);
     expect(disassembled.operandValue()).to.equal(0x6502);
   });
-    it("disassembles hesmon, shallow test", () => {
-      const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/HesMon.prg`);
-      const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
-      const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
-      const d = new Disassembler(Mos6502.ISA, fb, dm);
-      const lines: InstructionLike[] = [];
-      while (d.hasNext()) {
-        lines.push(d.nextInstructionLine()!);
-      }
-      expect(lines.length).to.equal(1944); // includes *=$a000 directive
-    });
+  it("disassembles hesmon, shallow test", () => {
+    const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/HesMon.prg`);
+    const fb = FileBlob.fromBytes("hesmon", Array.from(f), Mos6502.ENDIANNESS);
+    const dm = new DisassemblyMetaImpl(0, [mockOffsetDescriptor()], 2);
+    const d = new Disassembler(Mos6502.ISA, fb, dm);
+    const lines: InstructionLike[] = [];
+    while (d.hasNext()) {
+      lines.push(d.nextInstructionLine()!);
+    }
+    expect(lines.length).to.equal(1944); // includes *=$a000 directive
+  });
 });

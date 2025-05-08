@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import JSZip from 'jszip';
+import * as path from 'path';
 
 interface FileSystemNode {
   name: string;
@@ -13,27 +13,6 @@ class FileSystem {
   private zipCache: Map<string, JSZip> = new Map();
 
   /**
-   * Check if a path is a zip file
-   */
-  private isZipFile(filePath: string): boolean {
-    return filePath.toLowerCase().endsWith('.zip');
-  }
-
-  /**
-   * Get or create a JSZip instance for a zip file
-   */
-  private async getZipInstance(zipPath: string): Promise<JSZip> {
-    if (this.zipCache.has(zipPath)) {
-      return this.zipCache.get(zipPath)!;
-    }
-
-    const zipData = fs.readFileSync(zipPath);
-    const zip = await JSZip.loadAsync(zipData);
-    this.zipCache.set(zipPath, zip);
-    return zip;
-  }
-
-  /**
    * List files in a directory or zip file
    */
   async listFiles(dirPath: string): Promise<FileSystemNode[]> {
@@ -41,7 +20,7 @@ class FileSystem {
       return this.listZipFiles(dirPath);
     }
 
-    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    const entries = fs.readdirSync(dirPath, {withFileTypes: true});
     const nodes: FileSystemNode[] = [];
 
     for (const entry of entries) {
@@ -65,71 +44,6 @@ class FileSystem {
 
       nodes.push(node);
     }
-
-    return nodes;
-  }
-
-  /**
-   * List files inside a zip file
-   */
-  private async listZipFiles(zipPath: string): Promise<FileSystemNode[]> {
-    const zip = await this.getZipInstance(zipPath);
-    const nodes: FileSystemNode[] = [];
-    const directories = new Map<string, FileSystemNode>();
-
-    // Add root directory
-    directories.set('', {
-      name: '',
-      path: zipPath,
-      isDirectory: true,
-      children: nodes
-    });
-
-    // Process each file in the zip
-    zip.forEach((relativePath, file) => {
-      const parts = relativePath.split('/');
-      const fileName = parts.pop() || '';
-      const dirPath = parts.join('/');
-
-      // Skip directories (they end with /)
-      if (file.dir || !fileName) return;
-
-      // Ensure parent directories exist
-      let currentPath = '';
-      for (const part of parts) {
-        const parentPath = currentPath;
-        currentPath = currentPath ? `${currentPath}/${part}` : part;
-
-        if (!directories.has(currentPath)) {
-          const dirNode: FileSystemNode = {
-            name: part,
-            path: `${zipPath}#${currentPath}`,
-            isDirectory: true,
-            children: []
-          };
-          directories.set(currentPath, dirNode);
-
-          // Add to parent
-          const parent = directories.get(parentPath);
-          if (parent && parent.children) {
-            parent.children.push(dirNode);
-          }
-        }
-      }
-
-      // Add file node
-      const fileNode: FileSystemNode = {
-        name: fileName,
-        path: `${zipPath}#${relativePath}`,
-        isDirectory: false
-      };
-
-      // Add to parent directory
-      const parent = directories.get(dirPath);
-      if (parent && parent.children) {
-        parent.children.push(fileNode);
-      }
-    });
 
     return nodes;
   }
@@ -171,6 +85,94 @@ class FileSystem {
       // Call your ROM analysis function here
       this.analyzeRom(node.path, content);
     }
+  }
+
+  /**
+   * Check if a path is a zip file
+   */
+  private isZipFile(filePath: string): boolean {
+    return filePath.toLowerCase().endsWith('.zip');
+  }
+
+  /**
+   * Get or create a JSZip instance for a zip file
+   */
+  private async getZipInstance(zipPath: string): Promise<JSZip> {
+    if (this.zipCache.has(zipPath)) {
+      return this.zipCache.get(zipPath)!;
+    }
+
+    const zipData = fs.readFileSync(zipPath);
+    const zip = await JSZip.loadAsync(zipData);
+    this.zipCache.set(zipPath, zip);
+    return zip;
+  }
+
+  /**
+   * List files inside a zip file
+   */
+  private async listZipFiles(zipPath: string): Promise<FileSystemNode[]> {
+    const zip = await this.getZipInstance(zipPath);
+    const nodes: FileSystemNode[] = [];
+    const directories = new Map<string, FileSystemNode>();
+
+    // Add root directory
+    directories.set('', {
+      name: '',
+      path: zipPath,
+      isDirectory: true,
+      children: nodes
+    });
+
+    // Process each file in the zip
+    zip.forEach((relativePath, file) => {
+      const parts = relativePath.split('/');
+      const fileName = parts.pop() || '';
+      const dirPath = parts.join('/');
+
+      // Skip directories (they end with /)
+      if (file.dir || !fileName) {
+        return;
+      }
+
+      // Ensure parent directories exist
+      let currentPath = '';
+      for (const part of parts) {
+        const parentPath = currentPath;
+        currentPath = currentPath ? `${currentPath}/${part}` : part;
+
+        if (!directories.has(currentPath)) {
+          const dirNode: FileSystemNode = {
+            name: part,
+            path: `${zipPath}#${currentPath}`,
+            isDirectory: true,
+            children: []
+          };
+          directories.set(currentPath, dirNode);
+
+          // Add to parent
+          const parent = directories.get(parentPath);
+          if (parent && parent.children) {
+            parent.children.push(dirNode);
+          }
+        }
+      }
+
+      // Add file node
+      const fileNode: FileSystemNode = {
+        name: fileName,
+        path: `${zipPath}#${relativePath}`,
+        isDirectory: false
+      };
+
+      // Add to parent directory
+      const parent = directories.get(dirPath);
+      if (parent && parent.children) {
+        parent.children.push(fileNode);
+      }
+    });
+
+    return nodes;
   }
 
   /**

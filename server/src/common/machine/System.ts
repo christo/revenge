@@ -40,7 +40,7 @@ class System {
     return this;
   }
 
-  addUrl(name: string, url: string, blurb?: string, ) {
+  addUrl(name: string, url: string, blurb?: string,) {
     this.urls.push({name, url, blurb});
     return this;
   }

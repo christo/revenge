@@ -1,8 +1,8 @@
 // old hacked up markov analysis
 
 import fs from "fs";
-import path from "path";
 import os from "os";
+import path from "path";
 
 type BytePair = [number, number];
 
@@ -155,7 +155,7 @@ async function* walk(dir: string, m: Markov<BytePair>): any {
   for await (const d of await fs.promises.opendir(dir)) {
     const entry = path.join(dir, d.name);
     if (d.isDirectory()) {
-      yield * walk(entry, m);
+      yield* walk(entry, m);
     } else if (d.isFile() && d.name.toLowerCase().endsWith('.prg')) {
       yield m.readNgrams(entry);
     }

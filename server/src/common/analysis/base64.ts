@@ -1,4 +1,3 @@
-
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 /**
@@ -55,9 +54,15 @@ export function decodeBase64(input: string): Uint8Array {
 
     const triplet = (values[0] << 18) | (values[1] << 12) | (values[2] << 6) | values[3];
 
-    if (pos < len) result[pos++] = (triplet >> 16) & 0xFF;
-    if (pos < len) result[pos++] = (triplet >> 8) & 0xFF;
-    if (pos < len) result[pos++] = triplet & 0xFF;
+    if (pos < len) {
+      result[pos++] = (triplet >> 16) & 0xFF;
+    }
+    if (pos < len) {
+      result[pos++] = (triplet >> 8) & 0xFF;
+    }
+    if (pos < len) {
+      result[pos++] = triplet & 0xFF;
+    }
   }
 
   return result;

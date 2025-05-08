@@ -3,7 +3,8 @@ import {RevengeDialect} from "../../server/src/common/machine/asm/RevengeDialect
 import {BlobSniffer} from "../../server/src/common/machine/BlobSniffer.ts";
 import {disassembleActual} from "../../server/src/common/machine/cbm/cbm.ts";
 import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
-import {hexDumper, TypeActions, UserAction} from "./machine/api.ts";
+import {TypeActions, UserAction} from "./api.ts";
+import {hexDumper} from "./hexDumper.ts";
 
 /**
  * User action that disassembles the file.

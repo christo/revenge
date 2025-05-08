@@ -1,8 +1,4 @@
-import { Worker } from 'worker_threads';
 import fs from 'fs';
-import path from 'path';
-import { FileLike } from "../../FileLike.js";
-import { FeaturePipeline, defaultPipeline } from "../FeatureExtractionPipeline.js";
 
 /**
  * Data structure for training machine learning models
@@ -69,6 +65,99 @@ export class BinaryClassifierEnsemble {
   }
 
   /**
+   * Predict the class of a new file using its features
+   * @param featureTuples Feature tuples from feature extractors
+   */
+  async predict(featureTuples: [string, number][]): Promise<PredictionResult> {
+    const normalizedFeatures = this.normaliseFeatures(featureTuples);
+    const scores = new Map<string, number>();
+
+    // Calculate distances to each class centroid
+    for (const className of this.classNames) {
+      const model = this.models.get(className)!;
+      const positiveDistance = this.euclideanDistance(normalizedFeatures, model.positiveCentroid);
+      const negativeDistance = this.euclideanDistance(normalizedFeatures, model.negativeCentroid);
+
+      // Higher score means closer to positive centroid and further from negative centroid
+      let score;
+
+      // Prevent division by zero and handle edge cases
+      if (positiveDistance === 0 && negativeDistance === 0) {
+        // If both distances are zero, the vector is equidistant
+        score = 0.5;
+      } else if (positiveDistance === 0) {
+        // If positive distance is zero, max confidence
+        score = 1.0;
+      } else if (negativeDistance === 0) {
+        // If negative distance is zero, min confidence
+        score = 0.0;
+      } else {
+        // Normal case
+        score = negativeDistance / (positiveDistance + negativeDistance);
+      }
+
+      // Ensure we never return NaN
+      score = isNaN(score) ? 0.5 : score;
+
+      scores.set(className, score);
+    }
+
+    // Find best class
+    let bestClass = this.classNames[0];
+    let bestScore = scores.get(bestClass)!;
+
+    for (const className of this.classNames) {
+      const score = scores.get(className)!;
+      if (score > bestScore) {
+        bestScore = score;
+        bestClass = className;
+      }
+    }
+
+    return {
+      label: bestClass,
+      confidence: bestScore,
+      allScores: scores
+    };
+  }
+
+  /**
+   * Save the trained model to disk
+   */
+  async saveModel(filePath: string): Promise<void> {
+    const modelData = {
+      classNames: this.classNames,
+      featureNames: this.featureNames,
+      featureScaling: Object.fromEntries(this.featureScaling.entries()),
+      models: Array.from(this.models.entries())
+    };
+
+    fs.writeFileSync(filePath, JSON.stringify(modelData, null, 2));
+  }
+
+  /**
+   * Load a trained model from disk
+   */
+  async loadModel(filePath: string): Promise<void> {
+    const modelJson = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+
+    this.classNames = modelJson.classNames;
+    this.featureNames = modelJson.featureNames;
+
+    // Restore feature scaling
+    this.featureScaling = new Map();
+    for (const [key, value] of Object.entries(modelJson.featureScaling as Record<string, {
+      min: number;
+      max: number
+    }>)) {
+      this.featureScaling.set(key, value);
+    }
+
+    // Restore models
+    this.models = new Map(modelJson.models);
+  }
+
+  /**
    * Compute feature names and scaling parameters
    */
   private computeFeatureMetadata(data: TrainingData): void {
@@ -101,7 +190,7 @@ export class BinaryClassifierEnsemble {
       const values = featureValues.get(featureName)!;
       const min = Math.min(...values);
       const max = Math.max(...values);
-      this.featureScaling.set(featureName, { min, max });
+      this.featureScaling.set(featureName, {min, max});
     }
   }
 
@@ -150,7 +239,7 @@ export class BinaryClassifierEnsemble {
       }
     }
 
-    return { features: preparedFeatures, labels: preparedLabels };
+    return {features: preparedFeatures, labels: preparedLabels};
   }
 
   /**
@@ -210,63 +299,6 @@ export class BinaryClassifierEnsemble {
   }
 
   /**
-   * Predict the class of a new file using its features
-   * @param featureTuples Feature tuples from feature extractors
-   */
-  async predict(featureTuples: [string, number][]): Promise<PredictionResult> {
-    const normalizedFeatures = this.normaliseFeatures(featureTuples);
-    const scores = new Map<string, number>();
-
-    // Calculate distances to each class centroid
-    for (const className of this.classNames) {
-      const model = this.models.get(className)!;
-      const positiveDistance = this.euclideanDistance(normalizedFeatures, model.positiveCentroid);
-      const negativeDistance = this.euclideanDistance(normalizedFeatures, model.negativeCentroid);
-
-      // Higher score means closer to positive centroid and further from negative centroid
-      let score;
-
-      // Prevent division by zero and handle edge cases
-      if (positiveDistance === 0 && negativeDistance === 0) {
-        // If both distances are zero, the vector is equidistant
-        score = 0.5;
-      } else if (positiveDistance === 0) {
-        // If positive distance is zero, max confidence
-        score = 1.0;
-      } else if (negativeDistance === 0) {
-        // If negative distance is zero, min confidence
-        score = 0.0;
-      } else {
-        // Normal case
-        score = negativeDistance / (positiveDistance + negativeDistance);
-      }
-
-      // Ensure we never return NaN
-      score = isNaN(score) ? 0.5 : score;
-
-      scores.set(className, score);
-    }
-
-    // Find best class
-    let bestClass = this.classNames[0];
-    let bestScore = scores.get(bestClass)!;
-
-    for (const className of this.classNames) {
-      const score = scores.get(className)!;
-      if (score > bestScore) {
-        bestScore = score;
-        bestClass = className;
-      }
-    }
-
-    return {
-      label: bestClass,
-      confidence: bestScore,
-      allScores: scores
-    };
-  }
-
-  /**
    * Calculate Euclidean distance between two vectors
    */
   private euclideanDistance(a: number[], b: number[]): number {
@@ -283,38 +315,5 @@ export class BinaryClassifierEnsemble {
     // Guard against unexpected math errors
     const result = Math.sqrt(sum);
     return isNaN(result) ? 0 : result;
-  }
-
-  /**
-   * Save the trained model to disk
-   */
-  async saveModel(filePath: string): Promise<void> {
-    const modelData = {
-      classNames: this.classNames,
-      featureNames: this.featureNames,
-      featureScaling: Object.fromEntries(this.featureScaling.entries()),
-      models: Array.from(this.models.entries())
-    };
-
-    fs.writeFileSync(filePath, JSON.stringify(modelData, null, 2));
-  }
-
-  /**
-   * Load a trained model from disk
-   */
-  async loadModel(filePath: string): Promise<void> {
-    const modelJson = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
-    this.classNames = modelJson.classNames;
-    this.featureNames = modelJson.featureNames;
-
-    // Restore feature scaling
-    this.featureScaling = new Map();
-    for (const [key, value] of Object.entries(modelJson.featureScaling as Record<string, { min: number; max: number }>)) {
-      this.featureScaling.set(key, value);
-    }
-
-    // Restore models
-    this.models = new Map(modelJson.models);
   }
 }

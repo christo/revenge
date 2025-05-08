@@ -3,7 +3,7 @@ import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
 import React, {useEffect, useState} from 'react';
 import {Detail} from "../../../server/src/common/Detail.ts";
 import {Tag, TAG_OPERAND_VALUE} from "../../../server/src/common/machine/Tag.ts";
-import {ActionExecutor} from "../machine/api.ts";
+import {ActionExecutor} from "../api.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 
 type MaybeId = { id?: string }

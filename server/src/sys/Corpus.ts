@@ -15,11 +15,11 @@ class Corpus {
    *
    * @param dir base of file tree to look for files
    */
-  constructor(dir: string ) {
+  constructor(dir: string) {
     if (!fs.existsSync(dir!)) {
       throw Error(`Corpus dir doesn't exist: ${dir}`);
     }
-    this.dir=dir!;
+    this.dir = dir!;
   }
 
   async files(minSize: number = 0, maxSize: number = 64 * 1024): Promise<FileInfo[]> {

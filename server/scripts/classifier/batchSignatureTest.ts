@@ -1,6 +1,6 @@
 /**
  * Test script for batch analysis of files with the EnhancedSignatureExtractor
- * 
+ *
  * Usage:
  *   cd server
  *   bun scripts/classifier/batchSignatureTest.ts

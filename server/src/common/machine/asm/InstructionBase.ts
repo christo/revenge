@@ -1,6 +1,6 @@
-import {Tag} from "../Tag.js";
 import {Byteable} from "../../Byteable.js";
 import {hex16} from "../core.js";
+import {Tag} from "../Tag.js";
 import {LabelsComments, SourceType} from "./asm.js";
 import {Dialect} from "./Dialect.js";
 import {Disassembler} from "./Disassembler.js";

@@ -1,8 +1,8 @@
-import {Tag, TAG_BLANK} from "../Tag.js";
 import {Byteable} from "../../Byteable.js";
 import {plural} from "../../util.js";
 import {FileBlob} from "../FileBlob.js";
 import {FullInstruction} from "../mos6502.js";
+import {Tag, TAG_BLANK} from "../Tag.js";
 import {LabelsComments, SourceType} from "./asm.js";
 import {ByteDeclaration} from "./ByteDeclaration.js";
 import {Dialect} from "./Dialect.js";
