@@ -1,4 +1,5 @@
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
+import * as R from "ramda";
 import axios from "axios";
 import React, {useEffect, useState} from 'react';
 import {FileLike} from "../../../server/src/common/FileLike.ts";
@@ -22,7 +23,7 @@ function systemLogo(background: string, foreground: string, text: string) {
     borderRadius: "5px",
     p: "0 4px",
     ml: 0.5,
-    opacity: 0.7
+    opacity: R.max(0.5, 0.7)
   }}>{text}</Typography>;
 }
 
