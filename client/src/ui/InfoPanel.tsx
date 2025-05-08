@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import React from 'react'
-import {Detail} from "../../../server/src/common/Detail.ts";
+import {Detail} from "../common-imports.ts";
 
 const STYLE = {
   display: "flex",

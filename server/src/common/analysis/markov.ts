@@ -87,7 +87,7 @@ class MapMarkov extends BaseMarkov implements Markov<BytePair> {
       stops: this.stops,
       pairs: this.ngrams
     };
-    const mapToJson = (key: any, value: any) => {
+    const mapToJson = (_key: any, value: any) => {
       if (value instanceof Map) {
         return {
           dataType: 'Map',

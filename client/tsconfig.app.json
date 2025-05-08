@@ -18,7 +18,13 @@
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["../server/src/common/*"]
+    }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "../server/src/common/**/*"]
 }

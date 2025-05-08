@@ -1,21 +1,31 @@
 // application-level stuff to tie user interface and domain model
 
-import {DataViewImpl} from "../../server/src/common/DataView.ts";
-import {Detail} from "../../server/src/common/Detail.ts";
-import {Environment} from "../../server/src/common/machine/asm/asm.ts";
-import {RevengeDialect} from "../../server/src/common/machine/asm/RevengeDialect.ts";
-import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "../../server/src/common/machine/BlobSniffer.ts";
-import {CBM_BASIC_2_0} from "../../server/src/common/machine/cbm/BasicDecoder.ts";
-import {C64_8K16K_CART_SNIFFER, C64_CRT} from "../../server/src/common/machine/cbm/c64.ts";
-import {BASIC_SNIFFERS, disassembleActual} from "../../server/src/common/machine/cbm/cbm.ts";
-import {Vic20, VIC20_CART_SNIFFER, VIC_CART_ADDRS} from "../../server/src/common/machine/cbm/vic20.ts";
-import {Vic20StubSniffer} from "../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
-import {hex8} from "../../server/src/common/machine/core.ts";
-import {LittleEndian} from "../../server/src/common/machine/Endian.ts";
-import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
-import {LogicalLine} from "../../server/src/common/machine/LogicalLine.ts";
-import {Memory} from "../../server/src/common/machine/Memory.ts";
-import {HexTag, Tag, TAG_HEXBYTES} from "../../server/src/common/machine/Tag.ts";
+import {
+  DataViewImpl, 
+  Detail, 
+  Environment, 
+  RevengeDialect, 
+  bestSniffer, 
+  BlobSniffer, 
+  UNKNOWN_BLOB,
+  CBM_BASIC_2_0,
+  C64_8K16K_CART_SNIFFER, 
+  C64_CRT,
+  BASIC_SNIFFERS, 
+  disassembleActual,
+  Vic20, 
+  VIC20_CART_SNIFFER, 
+  VIC_CART_ADDRS,
+  Vic20StubSniffer,
+  hex8,
+  LittleEndian,
+  FileBlob,
+  LogicalLine,
+  Memory,
+  HexTag, 
+  Tag, 
+  TAG_HEXBYTES
+} from "./common-imports.ts";
 import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 
 
