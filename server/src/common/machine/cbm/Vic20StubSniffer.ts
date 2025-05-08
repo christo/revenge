@@ -8,8 +8,9 @@ import {Mos6502} from "../mos6502.js";
 import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.js";
 import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.js";
 import {trace} from "./cbm.js";
+import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
 import {Petscii} from "./petscii.js";
-import {Vic20, VIC20_SYM, CbmBasicSniffer} from "./vic20.js";
+import {Vic20, VIC20_SYM} from "./vic20.js";
 
 /**
  * Guesses the memory configuration based on the provided file blob.

@@ -17,7 +17,8 @@ import {MemoryConfiguration} from "../MemoryConfiguration.js";
 import {Mos6502} from "../mos6502.js";
 import {RomImage} from "../RomImage.js";
 import {CartSigEdict} from "./CartSigEdict.js";
-import {CartSniffer, setC64BasicPrg} from "./cbm.js";
+import {CartSniffer} from "./CartSniffer.js";
+import {setC64BasicPrg} from "./cbm.js";
 import {Petscii} from "./petscii.js";
 
 class C64 extends Computer {

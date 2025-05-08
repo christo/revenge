@@ -67,6 +67,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
       <Box sx={{
         mr: 1,
         mb: 2,
+        border: "red dotted thick",
         maxWidth: "60em",
       }}>
         <Typography display="inline" sx={{
