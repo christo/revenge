@@ -1,13 +1,14 @@
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import React, {useState} from 'react';
-import {FileBlob} from "../common-imports.ts";
+import React, {useEffect, useState} from 'react';
 import {TypeActions} from "../api.ts";
-import {runSniffers} from "../revenge.ts";
+import {FileBlob, FileLike, HashCalc} from "../common-imports.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
+import {runSniffers} from "../revenge.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
 
@@ -46,6 +47,40 @@ function EmptyFile({fb}: { fb: FileBlob }) {
   </Box>;
 }
 
+function HashStack({fb}: { fb: FileBlob }) {
+  const fl = new FileLike(fb.name, fb.getBytes());
+  const hc = new HashCalc();
+  const [sha1, setSha1] = useState<string | null>(null);
+  const [md5, setMd5] = useState<string | null>(null);
+  const [crc32, setCrc32] = useState<string | null>(null);
+  useEffect(() => {
+    hc.sha1(fl).then(s => setSha1(s[1]));
+    hc.md5(fl).then(s => setMd5(s[1]));
+    hc.crc32(fl).then(s => setCrc32(s[1]));
+  }, []);
+  const hashStyle = {fontFamily: '"Martian Mono", monospace', fontSize: "small", opacity: 0.6};
+  return <Grid container spacing={1} sx={{mt: 2}}>
+    <Grid size={2}>
+      SHA1
+    </Grid>
+    <Grid size={10}>
+      <Typography sx={hashStyle}>{sha1 ? sha1 : "..."}</Typography>
+    </Grid>
+    <Grid size={2}>
+      MD5
+    </Grid>
+    <Grid size={10}>
+      <Typography sx={hashStyle}>{md5 ? md5 : "..."}</Typography>
+    </Grid>
+    <Grid size={2}>
+      CRC32
+    </Grid>
+    <Grid size={10}>
+      <Typography sx={hashStyle}>{crc32 ? crc32 : "..."}</Typography>
+    </Grid>
+  </Grid>;
+}
+
 /**
  * Main content showing interpreted file contents.
  *
@@ -77,6 +112,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
         <Typography display="inline" color="secondary" sx={{mr: 1}}>{t.name}</Typography>
         <Typography display="inline" sx={{mr: 1, fontStyle: "italic"}}>{t.desc}</Typography>
         {t.hashTags.map((tag, i) => <HashTag key={`tag_${i}`} label={tag}/>)}
+        <HashStack fb={fb}/>
       </Box>
       <BigramBox fb={fb}/>
     </Box>

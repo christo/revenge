@@ -10,7 +10,7 @@ class HashCalc {
    * Calculate SHA1 hash for a file
    */
   async sha1(fl: FileLike): Promise<[string, string]> {
-    return sha1(Buffer.from(fl.data)).then(hash => {
+    return sha1(Uint8Array.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesSha1.push(entry);
       return entry;
@@ -21,7 +21,7 @@ class HashCalc {
    * Calculate MD5 hash for a file
    */
   async md5(fl: FileLike): Promise<[string, string]> {
-    return md5(Buffer.from(fl.data)).then(hash => {
+    return md5(Uint8Array.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesMd5.push(entry);
       return entry;
@@ -32,7 +32,7 @@ class HashCalc {
    * Calculate CRC32 hash for a file
    */
   async crc32(fl: FileLike): Promise<[string, string]> {
-    return crc32(Buffer.from(fl.data)).then(hash => {
+    return crc32(Uint8Array.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
       this.hashesCrc32.push(entry);
       return entry;
