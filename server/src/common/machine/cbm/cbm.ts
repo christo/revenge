@@ -35,6 +35,19 @@ const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
 const MEDIA_EXTS = ["sid"];
 
 /**
+ * All commodore BASIC sniffers.
+ */
+const BASIC_SNIFFERS: BlobSniffer[] = [
+  UNEXPANDED_VIC_BASIC,
+  EXP03K_VIC_BASIC,
+  EXP08K_VIC_BASIC,
+  EXP16K_VIC_BASIC,
+  EXP24K_VIC_BASIC,
+  C64_BASIC_PRG,
+];
+
+
+/**
  * The expected file extensions for Commodore machines. May need to add more, but these seem initially sufficient
  */
 const ALL_CBM_FILE_EXTS = [...PROGRAM_EXTS, ...VOLUME_EXTS, ...MEDIA_EXTS];
@@ -244,14 +257,6 @@ class CartSniffer implements BlobSniffer {
   }
 }
 
-export {CartSniffer, prg, ALL_CBM_FILE_EXTS, trace, disassembleActual};
 
+export {CartSniffer, prg, ALL_CBM_FILE_EXTS, trace, disassembleActual, BASIC_SNIFFERS};
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
-export const BASIC_SNIFFERS: BlobSniffer[] = [
-  UNEXPANDED_VIC_BASIC,
-  EXP03K_VIC_BASIC,
-  EXP08K_VIC_BASIC,
-  EXP16K_VIC_BASIC,
-  EXP24K_VIC_BASIC,
-  C64_BASIC_PRG,
-];
