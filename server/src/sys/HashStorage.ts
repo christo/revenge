@@ -50,13 +50,13 @@ class HashStorage {
    * Loads hash data from disk into the provided HashCalc instance.
    */
   load(hashCalc: HashCalc) {
-    let hashesLoaded = this.loadHash(SHA1_FILE, (hash, name) => hashCalc.addSha1Hash(name, hash));
+    let hashesLoaded = this.loadHashes(SHA1_FILE, (hash, name) => hashCalc.addSha1Hash(name, hash));
     console.log(`loaded ${hashesLoaded} SHA1 hashes`);
     
-    hashesLoaded = this.loadHash(MD5_FILE, (hash, name) => hashCalc.addMd5Hash(name, hash));
+    hashesLoaded = this.loadHashes(MD5_FILE, (hash, name) => hashCalc.addMd5Hash(name, hash));
     console.log(`loaded ${hashesLoaded} MD5 hashes`);
     
-    hashesLoaded = this.loadHash(CRC32_FILE, (hash, name) => hashCalc.addCrc32Hash(name, hash));
+    hashesLoaded = this.loadHashes(CRC32_FILE, (hash, name) => hashCalc.addCrc32Hash(name, hash));
     console.log(`loaded ${hashesLoaded} CRC32 hashes`);
   }
 
@@ -69,9 +69,10 @@ class HashStorage {
     writeFileSync(filePath, data, 'utf8');
   }
 
-  private loadHash(filename: string, addFn: (hash: string, name: string) => void) {
+  private loadHashes(filename: string, addFn: (hash: string, name: string) => void) {
     const filePath = path.join(this.baseDir, filename);
     if (!fs.existsSync(filePath)) {
+      console.warn(`file ${filePath} does not exist, cannot load hashes`);
       return 0;
     }
     
@@ -79,7 +80,7 @@ class HashStorage {
     let hashesLoaded = 0;
     file.split("\\n").forEach((line) => {
       // skip comment lines or any line not matching expected format
-      const re = line.match(/^([^# ])+\\s(.*)$/);
+      const re = line.match(/^([^# ])+\s(.*)$/);
       if (re) {
         hashesLoaded++;
         const hash = re[1];
