@@ -3,7 +3,7 @@
 ## Next Actions
 
 * [ ] Myriad basic stub does not show symbol definitions (some others too?)
-* [ ] correctly sniff c64 with basic stub
+* [ ] correctly sniff c64 machine code with basic stub
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
