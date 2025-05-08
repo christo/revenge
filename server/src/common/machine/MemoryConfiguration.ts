@@ -6,7 +6,6 @@ import {Addr} from "./core.js";
  */
 class MemoryConfiguration {
 
-  // TODO generalise this to describe VIC20 expansion RAM in banks, C64 and 128
   readonly name: string;
 
   /** Very Commodore-specific, start address of BASIC program. */
@@ -26,7 +25,7 @@ class MemoryConfiguration {
    * @param shortName short designation for UI
    */
   constructor(name: string, basicProgramStart: Addr, shortName = "") {
-    // future: various independent block configurations
+    // future: enable various independent VIC-20 block configurations
     this.name = name;
     this.basicProgramStart = basicProgramStart;
     this.shortName = shortName;
