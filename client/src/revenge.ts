@@ -5,18 +5,9 @@ import {Detail} from "../../server/src/common/Detail.ts";
 import {Environment} from "../../server/src/common/machine/asm/asm.ts";
 import {RevengeDialect} from "../../server/src/common/machine/asm/RevengeDialect.ts";
 import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "../../server/src/common/machine/BlobSniffer.ts";
-import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT} from "../../server/src/common/machine/cbm/c64.ts";
-import {disassembleActual} from "../../server/src/common/machine/cbm/cbm.ts";
-import {
-  EXP03K_VIC_BASIC,
-  EXP08K_VIC_BASIC,
-  EXP16K_VIC_BASIC,
-  EXP24K_VIC_BASIC,
-  UNEXPANDED_VIC_BASIC,
-  Vic20,
-  VIC20_CART_SNIFFER,
-  VIC_CART_ADDRS
-} from "../../server/src/common/machine/cbm/vic20.ts";
+import {C64_8K16K_CART_SNIFFER, C64_CRT} from "../../server/src/common/machine/cbm/c64.ts";
+import {BASIC_SNIFFERS, disassembleActual} from "../../server/src/common/machine/cbm/cbm.ts";
+import {Vic20, VIC20_CART_SNIFFER, VIC_CART_ADDRS} from "../../server/src/common/machine/cbm/vic20.ts";
 import {Vic20StubSniffer} from "../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
 import {hex8} from "../../server/src/common/machine/core.ts";
 import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
@@ -25,16 +16,6 @@ import {HexTag, Tag, TAG_HEXBYTES} from "../../server/src/common/machine/Tag.ts"
 import {TypeActions, UserAction, UserFileAction} from "./api.ts";
 import {printBasic} from "./printBasic.ts";
 
-
-// Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
-const BASIC_SNIFFERS: BlobSniffer[] = [
-  UNEXPANDED_VIC_BASIC,
-  EXP03K_VIC_BASIC,
-  EXP08K_VIC_BASIC,
-  EXP16K_VIC_BASIC,
-  EXP24K_VIC_BASIC,
-  C64_BASIC_PRG,
-];
 
 /**
  * Shows a hex dump for a {@link FileBlob}.

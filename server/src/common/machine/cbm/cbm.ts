@@ -26,6 +26,8 @@ import {
   TAG_HEX,
   TAG_LINE
 } from "../Tag.js";
+import {C64_BASIC_PRG} from "./c64.js";
+import {EXP03K_VIC_BASIC, EXP08K_VIC_BASIC, EXP16K_VIC_BASIC, EXP24K_VIC_BASIC, UNEXPANDED_VIC_BASIC} from "./vic20.js";
 
 // TODO merge these with the bigger list in common/analysis...
 const PROGRAM_EXTS = ["prg", "crt", "bin", "rom", "p00", "bas"];
@@ -243,3 +245,13 @@ class CartSniffer implements BlobSniffer {
 }
 
 export {CartSniffer, prg, ALL_CBM_FILE_EXTS, trace, disassembleActual};
+
+// Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
+export const BASIC_SNIFFERS: BlobSniffer[] = [
+  UNEXPANDED_VIC_BASIC,
+  EXP03K_VIC_BASIC,
+  EXP08K_VIC_BASIC,
+  EXP16K_VIC_BASIC,
+  EXP24K_VIC_BASIC,
+  C64_BASIC_PRG,
+];
