@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "compile": "tsc -b",
+    "build": "tsc -b",
     "start": "bun src/server.ts",
     "dev": "bun --hot src/server.ts",
     "train": "bun src/trainClassifier.ts",

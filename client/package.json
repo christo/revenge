@@ -6,6 +6,7 @@
   "license": "Copyright 2023-2025, Chris Mountford, Licensed under GPLv3.",
   "scripts": {
     "dev": "vite --host",
+    "compile": "tsc -b",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
