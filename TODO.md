@@ -31,7 +31,7 @@
   * [ ] symbol usage should show an inline popup preview of the definition
   * [ ] jump addresses should show an inline popup preview of the destination code
   * [ ] dynamically decorate
-  * [ ] single instruction or selection
+  * [ ] single instruction or range selection
   * [ ] selection lollypop handles can be expanded using tools (drag extend up or down)
   * [ ] extra info
   * [ ] edit options
