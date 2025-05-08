@@ -94,7 +94,7 @@ function fullPipeline(): FeaturePipeline {
   pipeline.add(new EntropyExtractor());
   pipeline.add(new LengthExtractor());
   pipeline.add(new BigramExtractor());
-  pipeline.add(new NgramExtractor(3, 200, NgramSelectionStrategy.FREQUENCY));
+  pipeline.add(new NgramExtractor(3, 30, NgramSelectionStrategy.FREQUENCY));
   pipeline.add(new EnhancedSignatureExtractor());
   return pipeline;
 }
