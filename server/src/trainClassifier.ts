@@ -24,6 +24,7 @@ const REPORT_PATH = path.resolve('./data/analysis/classification_report.txt');
  * Main function to train and evaluate the classifier
  */
 async function main() {
+  const outerStartTime = Date.now();
   console.log('Binary File Type Classification');
   console.log('==============================');
 
@@ -88,6 +89,7 @@ async function main() {
       console.log(`${result} ${fileName} (${platform}): predicted as ${prediction.label} with ${(prediction.confidence * 100).toFixed(1)}% confidence`);
     }
   }
+  console.log(`\nTotal time: ${(Date.now() - outerStartTime) / 1000} seconds`);
 }
 
 /**
