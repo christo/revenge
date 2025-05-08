@@ -32,7 +32,7 @@ export class BigramExtractor implements FeatureExtractor {
     }
 
     // Generate bigram analysis
-    const bigram = new Bigram(this.fileLikeToByteableAdapter(file));
+    const bigram = new Bigram(file.toByteable());
 
     // Track top bigrams by frequency
     const topBigrams: Array<{ first: number, second: number, count: number }> = [];
@@ -111,15 +111,5 @@ export class BigramExtractor implements FeatureExtractor {
     }
   }
 
-  /**
-   * Adapts FileLike to Byteable interface for Bigram class
-   */
-  private fileLikeToByteableAdapter(file: FileLike) {
-    return {
-      getBytes: () => file.data,
-      getLength: () => file.size,
-      read8: (offset: number) => file.data[offset] || 0,
-      byteString: () => file.data.map(b => b.toString(16).padStart(2, '0')).join(' ')
-    };
-  }
+
 }
