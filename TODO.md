@@ -25,8 +25,6 @@
 * [ ] treat zip files in corpus as directories by doing transparent contents unzipping
   * [x] write transparent unzipper using jszip
   * [ ] integrate unzipper into file preprocessor for ml training
-  * many emulators expect to support single file zipped versions of the true binary (spectrum
-    binaries seems to be distributed as a single `rom` file inside a zip file)
 * [ ] hovertools for exploration and interactive reversing:
   * [ ] symbol usage should show an inline popup preview of the definition
   * [ ] jump addresses should show an inline popup preview of the destination code
