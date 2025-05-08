@@ -6,7 +6,7 @@
 
 // Core types
 export { Detail } from '@common/Detail.js';
-export type { FileLike } from '@common/FileLike.js';
+export { FileLike } from '@common/FileLike.js';
 export type { QuickLoad } from '@common/QuickLoad.js';
 export type { ServerError } from '@common/ServerError.js';
 export { DataViewImpl } from '@common/DataView.js';
