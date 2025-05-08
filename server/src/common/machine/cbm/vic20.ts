@@ -343,12 +343,12 @@ class CbmBasicSniffer implements BlobSniffer {
       name: string = "BASIC prg",
       // TODO generalise this for C64 and other CBM systems
       desc: string = `VIC-20 BASIC (${memoryConfig.shortName})`,
-      tags: string[] = ["basic", "vic20", memoryConfig.shortName]
+      hashTags: string[] = ["basic", "vic20", memoryConfig.shortName]
   ) {
     this.memoryConfig = memoryConfig;
     this.name = name;
     this.desc = desc;
-    this.hashTags = tags;
+    this.hashTags = hashTags;
   }
 
   getMeta(): DisassemblyMeta {

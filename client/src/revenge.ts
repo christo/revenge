@@ -128,7 +128,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // we have already detected some basicness
   if (maxBasicSmell > 0.5) {
     // figure out which memory config to use
-    const memoryconfigs = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc));
+    const memoryconfigs = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
     const stubSniff = bestSniffer(memoryconfigs, fileBlob);
     // TODO ideally we wouldn't sniff again
     if (stubSniff.sniff(fileBlob).score > 1) {

@@ -17,7 +17,7 @@ import {MemoryConfiguration} from "../MemoryConfiguration.js";
 import {Mos6502} from "../mos6502.js";
 import {RomImage} from "../RomImage.js";
 import {CartSigEdict} from "./CartSigEdict.js";
-import {CartSniffer} from "./cbm.js";
+import {CartSniffer, setC64BasicPrg} from "./cbm.js";
 import {Petscii} from "./petscii.js";
 
 class C64 extends Computer {
@@ -215,5 +215,8 @@ class C64CrtSniffer extends CartSniffer {
   }
 }
 
+
+// Register C64_BASIC_PRG with cbm.js to break circular dependency
+setC64BasicPrg(C64_BASIC_PRG);
 
 export {C64, C64_CRT, C64_8K16K_CART_SNIFFER, C64_BASIC_PRG};

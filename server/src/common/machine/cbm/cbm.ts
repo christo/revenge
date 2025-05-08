@@ -26,7 +26,6 @@ import {
   TAG_HEX,
   TAG_LINE
 } from "../Tag.js";
-import {C64_BASIC_PRG} from "./c64.js";
 import {EXP03K_VIC_BASIC, EXP08K_VIC_BASIC, EXP16K_VIC_BASIC, EXP24K_VIC_BASIC, UNEXPANDED_VIC_BASIC} from "./vic20.js";
 
 // TODO merge these with the bigger list in common/analysis...
@@ -34,17 +33,33 @@ const PROGRAM_EXTS = ["prg", "crt", "bin", "rom", "p00", "bas"];
 const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
 const MEDIA_EXTS = ["sid"];
 
+// Forward declaration to avoid circular dependency
+let C64_BASIC_PRG: BlobSniffer;
+
 /**
  * All commodore BASIC sniffers.
+ * Note: This is populated after C64_BASIC_PRG is initialized
  */
-const BASIC_SNIFFERS: BlobSniffer[] = [
-  UNEXPANDED_VIC_BASIC,
-  EXP03K_VIC_BASIC,
-  EXP08K_VIC_BASIC,
-  EXP16K_VIC_BASIC,
-  EXP24K_VIC_BASIC,
-  C64_BASIC_PRG,
-];
+let BASIC_SNIFFERS: BlobSniffer[] = [];
+
+/**
+ * Function to set the C64 BASIC PRG sniffer from external module and initialize
+ * BASIC_SNIFFERS with all available sniffers.
+ */
+function setC64BasicPrg(sniffer: BlobSniffer) {
+  C64_BASIC_PRG = sniffer;
+  // Initialize BASIC_SNIFFERS when C64_BASIC_PRG is set
+  if (C64_BASIC_PRG) {
+    BASIC_SNIFFERS = [
+      UNEXPANDED_VIC_BASIC,
+      EXP03K_VIC_BASIC,
+      EXP08K_VIC_BASIC,
+      EXP16K_VIC_BASIC,
+      EXP24K_VIC_BASIC,
+      C64_BASIC_PRG,
+    ];
+  }
+}
 
 
 /**
@@ -258,5 +273,5 @@ class CartSniffer implements BlobSniffer {
 }
 
 
-export {CartSniffer, prg, ALL_CBM_FILE_EXTS, trace, disassembleActual, BASIC_SNIFFERS};
+export {CartSniffer, prg, ALL_CBM_FILE_EXTS, trace, disassembleActual, setC64BasicPrg, BASIC_SNIFFERS};
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers
