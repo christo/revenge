@@ -2,6 +2,7 @@ import pLimit from "p-limit";
 import {HashCalc} from "./common/analysis/HashCalc.js";
 import {Corpus} from "./sys/Corpus.js";
 import {fileInfoToFileLike} from "./sys/finder.js";
+import {HashStorage} from "./sys/HashStorage.js";
 
 const FILE_CONCURRENCY = 120;
 
@@ -10,10 +11,10 @@ async function loadCorpus() {
     console.log("corpus file collection started");
 
     const corpus = new Corpus(process.env.CORPUS_BASE_DIR!);
-    const hashCalc = new HashCalc(process.env.DATA_DIR!);
-
-    if (hashCalc.exists()) {
-      hashCalc.load();
+    const hashCalc = new HashCalc();
+    const hashStorage = new HashStorage(process.env.DATA_DIR!)
+    if (hashStorage.exists()) {
+      hashStorage.load(hashCalc);
       return; // nothing more to do
     }
 
@@ -35,7 +36,7 @@ async function loadCorpus() {
     await Promise.all(tasks);
 
     console.log("saving hash files");
-    hashCalc.save();
+    hashStorage.save(hashCalc);
 
     const elapsedSec = ((Date.now() - start) / 1000).toFixed(2);
     console.log(`corpus hashes calculated in ${elapsedSec} s`);

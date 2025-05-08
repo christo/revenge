@@ -1,23 +1,14 @@
-import fs, {existsSync, mkdirSync, writeFileSync} from 'fs';
 import {crc32, md5, sha1} from "hash-wasm";
-import path from "path";
 import {FileLike} from "../FileLike.js";
-import 'dotenv/config';
-
-const SHA1_FILE = `sha1.txt`;
-const MD5_FILE = `md5.txt`;
-const CRC32_FILE = `crc32.txt`;
 
 class HashCalc {
   private hashesSha1: Array<[string, string]> = [];
   private hashesMd5: Array<[string, string]> = [];
   private hashesCrc32: Array<[string, string]> = [];
-  private readonly baseDir: string;
 
-  constructor(baseDir: string) {
-    this.baseDir = path.join(baseDir, "analysis", "hash");
-  }
-
+  /**
+   * Calculate SHA1 hash for a file
+   */
   async sha1(fl: FileLike): Promise<[string, string]> {
     return sha1(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
@@ -26,6 +17,9 @@ class HashCalc {
     });
   }
 
+  /**
+   * Calculate MD5 hash for a file
+   */
   async md5(fl: FileLike): Promise<[string, string]> {
     return md5(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
@@ -34,6 +28,9 @@ class HashCalc {
     });
   }
 
+  /**
+   * Calculate CRC32 hash for a file
+   */
   async crc32(fl: FileLike): Promise<[string, string]> {
     return crc32(Buffer.from(fl.data)).then(hash => {
       const entry: [string, string] = [fl.name, hash];
@@ -42,59 +39,55 @@ class HashCalc {
     });
   }
 
-  save() {
-    if (!existsSync(this.baseDir)) {
-      console.log(`creating base dir for HashCalc ${this.baseDir}`);
-      mkdirSync(this.baseDir, {recursive: true});
-    }
-    console.log(`HashCalc base dir: ${this.baseDir}`);
-
-    this.writeHashes("SHA1", SHA1_FILE, this.hashesSha1);
-    this.writeHashes("MD5", MD5_FILE, this.hashesMd5);
-    this.writeHashes("CRC32", CRC32_FILE, this.hashesCrc32);
+  /**
+   * Add a SHA1 hash entry
+   */
+  addSha1Hash(name: string, hash: string): void {
+    this.hashesSha1.push([name, hash]);
   }
 
   /**
-   * Whether all the hash files exist.
+   * Add an MD5 hash entry
    */
-  exists() {
-    return fs.existsSync(path.join(this.baseDir, SHA1_FILE))
-        && fs.existsSync(path.join(this.baseDir, MD5_FILE))
-        && fs.existsSync(path.join(this.baseDir, CRC32_FILE));
+  addMd5Hash(name: string, hash: string): void {
+    this.hashesMd5.push([name, hash]);
   }
 
-  load() {
-    let hashesLoaded = this.loadHash(SHA1_FILE, this.hashesSha1);
-    console.log(`loaded ${hashesLoaded} SHA1 hashes`);
-    hashesLoaded = this.loadHash(MD5_FILE, this.hashesMd5);
-    console.log(`loaded ${hashesLoaded} MD5 hashes`);
-    hashesLoaded = this.loadHash(CRC32_FILE, this.hashesCrc32);
-    console.log(`loaded ${hashesLoaded} CRC32 hashes`);
+  /**
+   * Add a CRC32 hash entry
+   */
+  addCrc32Hash(name: string, hash: string): void {
+    this.hashesCrc32.push([name, hash]);
   }
 
-  private writeHashes(hashName: string, filename: string, hashes: [string, string][]) {
-    const lastWritten = `written at ${new Date().toISOString()}`
-    let filePath = path.join(this.baseDir, filename);
-    const header = `# ${hashName} hashes ${lastWritten}`;
-    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\n");
-    const data = `${header}\n${hashLines}\n`;
-    writeFileSync(filePath, data, 'utf8');
+  /**
+   * Get all SHA1 hashes
+   */
+  getHashesSha1(): Array<[string, string]> {
+    return [...this.hashesSha1];
   }
 
-  private loadHash(filename: string, map: Array<[string, string]>) {
-    const file = fs.readFileSync(path.join(this.baseDir, filename), 'utf8');
-    let hashesLoaded = 0;
-    file.split("\n").forEach((line) => {
-      // skip comment lines or any line not matching expected format
-      const re = line.match(/^([^# ])+\s(.*)$/);
-      if (re) {
-        hashesLoaded++;
-        const hash = re[1];
-        const path = re[2];
-        map.push([path, hash]);
-      }
-    });
-    return hashesLoaded;
+  /**
+   * Get all MD5 hashes
+   */
+  getHashesMd5(): Array<[string, string]> {
+    return [...this.hashesMd5];
+  }
+
+  /**
+   * Get all CRC32 hashes
+   */
+  getHashesCrc32(): Array<[string, string]> {
+    return [...this.hashesCrc32];
+  }
+
+  /**
+   * Clear all hashes
+   */
+  clear(): void {
+    this.hashesSha1 = [];
+    this.hashesMd5 = [];
+    this.hashesCrc32 = [];
   }
 }
 
