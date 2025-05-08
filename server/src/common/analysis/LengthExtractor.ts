@@ -13,6 +13,9 @@ const HARD_MAX:[string, number][] = [
     ["root_length_32k",32*1024],
     ["root_length_16k",16*1024],
     ["root_length_8k",8*1024],
+    ["root_length_4k",4*1024],
+    ["root_length_2k",2*1024],
+    ["root_length_1k",1*1024],
 ];
 
 /**
