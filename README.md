@@ -46,21 +46,21 @@ repo. Without the server, you can drag and drop files from your computer into th
 the upload button. The plan for the server is to manage the state of interactive sessions
 and provide access to a filetree of binaries for bulk analysis.
 
-To run the server in its own shell, make sure you're in the `server` dir:
+Run the server in its own shell from the `server` dir:
 
 ```shell
 cd server
-bun start
+bun dev
 ```
 
-To run the client in its own shell, make sure you're in the `client` dir:
+Run the client in its own shell from the `client` dir:
 
 ```shell
 cd client
 bun dev
 ```
 
-The URL to point your browser to is shown in the console.
+The URL to point your browser to is shown in the client console.
 
 ## System Design
 
