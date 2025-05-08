@@ -7,6 +7,7 @@ import {EntropyExtractor} from "./EntropyExtractor.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 import {HistogramExtractor} from "./HistogramExtractor.js";
 import {LengthExtractor} from "./LengthExtractor.js";
+import {NgramExtractor, NgramSelectionStrategy} from "./NgramExtractor.js";
 
 /**
  * Pipeline for extracting multiple feature sets from files
@@ -55,6 +56,20 @@ class FeaturePipeline {
   getExtractorNames(): string[] {
     return this.extractors.map(e => e.constructor.name);
   }
+  
+  /**
+   * Get an extractor by its class type
+   * @param type Constructor type to find
+   * @returns The found extractor instance or undefined if not found
+   */
+  getExtractorByType<T extends FeatureExtractor>(type: new (...args: any[]) => T): T | undefined {
+    for (const extractor of this.extractors) {
+      if (extractor instanceof type) {
+        return extractor as T;
+      }
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -79,7 +94,25 @@ function fullPipeline(): FeaturePipeline {
   pipeline.add(new EntropyExtractor());
   pipeline.add(new LengthExtractor());
   pipeline.add(new BigramExtractor());
+  pipeline.add(new NgramExtractor(3, 200, NgramSelectionStrategy.FREQUENCY));
   pipeline.add(new EnhancedSignatureExtractor());
+  return pipeline;
+}
+
+/**
+ * Create a pipeline optimized for detailed n-gram analysis
+ * @returns N-gram focused feature pipeline
+ */
+function ngramPipeline(): FeaturePipeline {
+  const pipeline = new FeaturePipeline();
+  pipeline.add(new HistogramExtractor());
+  pipeline.add(new LengthExtractor());
+  
+  // Add different n-gram sizes with different selection strategies
+  pipeline.add(new NgramExtractor(2, 16, NgramSelectionStrategy.FREQUENCY)); // Bigrams
+  pipeline.add(new NgramExtractor(3, 16, NgramSelectionStrategy.FREQUENCY)); // Trigrams
+  pipeline.add(new NgramExtractor(4, 12, NgramSelectionStrategy.ENTROPY));  // 4-grams with entropy selection
+  
   return pipeline;
 }
 
@@ -94,4 +127,4 @@ function enhancedSignaturePipeline(): FeaturePipeline {
   return pipeline;
 }
 
-export {FeaturePipeline, defaultPipeline, fullPipeline, enhancedSignaturePipeline};
+export {FeaturePipeline, defaultPipeline, fullPipeline, ngramPipeline, enhancedSignaturePipeline};
