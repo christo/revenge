@@ -9,7 +9,7 @@ import {TOKEN_SPACE, TOKEN_SYS} from "./BasicDecoder.js";
 import {BasicStubDisassemblyMeta} from "./BasicStubDisassemblyMeta.js";
 import {trace} from "./cbm.js";
 import {Petscii} from "./petscii.js";
-import {Vic20, VIC20_SYM, Vic20BasicSniffer} from "./vic20.js";
+import {Vic20, VIC20_SYM, CbmBasicSniffer} from "./vic20.js";
 
 /**
  * Guesses the memory configuration based on the provided file blob.
@@ -29,7 +29,7 @@ function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined 
  * memory configuration requirements are evident from the load address. A
  * trace or simulation could give a good approximation here.
  */
-class Vic20StubSniffer extends Vic20BasicSniffer implements BlobSniffer {
+class Vic20StubSniffer extends CbmBasicSniffer implements BlobSniffer {
   private dm: DisassemblyMeta = DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
 
   constructor(memory: MemoryConfiguration) {

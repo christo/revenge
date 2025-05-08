@@ -329,9 +329,9 @@ class Vic20 extends Computer {
 }
 
 /**
- * Detects Vic-20 BASIC program.
+ * Detects Commodore BASIC program formats.
  */
-class Vic20BasicSniffer implements BlobSniffer {
+class CbmBasicSniffer implements BlobSniffer {
 
   desc: string;
   name: string;
@@ -417,11 +417,11 @@ class Vic20BasicSniffer implements BlobSniffer {
   }
 }
 
-const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.UNEX);
-const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP03K);
-const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP08K);
-const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
-const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
+const UNEXPANDED_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.UNEX);
+const EXP03K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP03K);
+const EXP08K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP08K);
+const EXP16K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP16K);
+const EXP24K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
@@ -455,5 +455,5 @@ export {
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
   VIC20_SYM,
-  Vic20BasicSniffer,
+  CbmBasicSniffer,
 }
