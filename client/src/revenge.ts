@@ -1,5 +1,7 @@
 // application-level stuff to tie user interface and domain model
 
+import {DataViewImpl} from "../../server/src/common/DataView.ts";
+import {Detail} from "../../server/src/common/Detail.ts";
 import {Environment} from "../../server/src/common/machine/asm/asm.ts";
 import {RevengeDialect} from "../../server/src/common/machine/asm/RevengeDialect.ts";
 import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "../../server/src/common/machine/BlobSniffer.ts";
@@ -16,9 +18,11 @@ import {
   VIC_CART_ADDRS
 } from "../../server/src/common/machine/cbm/vic20.ts";
 import {Vic20StubSniffer} from "../../server/src/common/machine/cbm/Vic20StubSniffer.ts";
+import {hex8} from "../../server/src/common/machine/core.ts";
 import {FileBlob} from "../../server/src/common/machine/FileBlob.ts";
-import {TypeActions, UserAction} from "./api.ts";
-import {hexDumper} from "./hexDumper.ts";
+import {LogicalLine} from "../../server/src/common/machine/LogicalLine.ts";
+import {HexTag, Tag, TAG_HEXBYTES} from "../../server/src/common/machine/Tag.ts";
+import {TypeActions, UserAction, UserFileAction} from "./api.ts";
 import {printBasic} from "./printBasic.ts";
 
 
@@ -33,6 +37,23 @@ const BASIC_SNIFFERS: BlobSniffer[] = [
 ];
 
 /**
+ * Shows a hex dump for a {@link FileBlob}.
+ * @param fb
+ */
+const mkHexDumper: UserFileAction = (fb: FileBlob) => ({
+  label: "Hex Dump",
+  f: async () => {
+    // TODO make hex dump have n bytes per line with addresses at beginning of each;
+    //  currently whole hex dump is a single logical line at no address with no instruction
+    // add the classes for hex dump as a whole and for each byte
+    const allData = fb.getBytes().map(x => new HexTag(hex8(x)));
+    const lls = [allData].map((ts: Tag[], i: number) => new LogicalLine(ts, 1, i));
+    return new Detail("Hex Dump", [TAG_HEXBYTES], new DataViewImpl(lls));
+  }
+});
+
+
+/**
  * User action that disassembles the file.
  */
 function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
@@ -43,7 +64,7 @@ function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
     f: async () => {
       return disassembleActual(fb, dialect, t.getMeta());
     }
-  }, hexDumper(fb)];
+  }, mkHexDumper(fb)];
   return {
     t: t,
     actions: userActions
@@ -73,9 +94,9 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     return mkDisasmAction(cartMatch, fileBlob);
   }
 
-  const hd = hexDumper(fileBlob);
+  const hd = mkHexDumper(fileBlob);
   if (C64_CRT.sniff(fileBlob).score > 1) {
-    const typeActions: TypeActions = ({t: C64_CRT, actions: [hexDumper(fileBlob)]});
+    const typeActions: TypeActions = ({t: C64_CRT, actions: [mkHexDumper(fileBlob)]});
     return typeActions;
   }
 
