@@ -11,7 +11,7 @@ export class HistogramExtractor implements FeatureExtractor {
     for (let i = 0; i < buffer.length; i++) {
       histogram[buffer[i]]++;
     }
-    // Normalize and label
+    // Normalise and label
     return histogram.map((count: number, i: number) => [`b_${i}`, count / buffer.length]);
   }
 }
