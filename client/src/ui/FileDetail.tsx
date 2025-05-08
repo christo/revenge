@@ -47,6 +47,10 @@ function EmptyFile({fb}: { fb: FileBlob }) {
   </Box>;
 }
 
+/**
+ * Shows hashes for the file.
+ * @param fb the file
+ */
 function HashStack({fb}: { fb: FileBlob }) {
   const fl = new FileLike(fb.name, fb.getBytes());
   const hc = new HashCalc();
