@@ -1,8 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { FileLike } from '../../FileLike.js';
-import { FeaturePipeline, defaultPipeline } from '../FeatureExtractionPipeline.js';
-import { TrainingData } from './BinaryClassifierEnsemble.js';
+import {defaultPipeline, FeaturePipeline} from '../FeatureExtractionPipeline.js';
+import {TrainingData} from './BinaryClassifierEnsemble.js';
+
+interface PathResolution {
+  resolvedPath: string | null;
+  stats: fs.Stats | null;
+}
 
 /**
  * Collects and processes binary files for training classifiers
@@ -63,103 +67,140 @@ export class DataCollector {
     features: Map<string, [string, number][]>, 
     fileTypes: Map<string, string>
   ): Promise<void> {
-    // Process each file/directory in the current directory
-    let entries: string[] = [];
-    
-    try {
-      entries = fs.readdirSync(dirPath);
-    } catch (error: any) {
-      console.error(`  Error reading directory ${dirPath}: ${error.message || error}`);
-      return; // Skip this directory and return
-    }
-    
+    const entries = this.readDirectoryEntries(dirPath);
+    if (!entries) return;
+
     for (const entry of entries) {
-      let entryPath = path.join(dirPath, entry);
-      let entryStats;
-      
-      // First check if it's a symlink without following it
-      let isSymlink = false;
-      try {
-        isSymlink = fs.lstatSync(entryPath).isSymbolicLink();
-      } catch (error: any) {
-        console.error(`  Error checking if symlink for ${path.basename(entryPath)}: ${error.message || error}`);
-        continue; // Skip this entry if we can't even check if it's a symlink
-      }
-      
-      // Handle symlinks with careful error handling
-      let resolvedEntryPath = entryPath;
-      if (isSymlink) {
-        try {
-          // Try to resolve the symlink (this can fail for broken links)
-          resolvedEntryPath = fs.realpathSync(entryPath);
-        } catch (error: any) {
-          // This is a broken symlink
-          console.log(`  Skipping broken symlink: ${path.basename(entryPath)}`);
-          continue; // Skip processing this entry entirely
-        }
-        
-        // For working symlinks, try to get stats of the target
-        try {
-          entryStats = fs.statSync(resolvedEntryPath);
-          // If it's a directory, recursively process it
-          if (entryStats.isDirectory()) {
-            await this.processDirectory(resolvedEntryPath, platform, features, fileTypes);
-            continue; // Skip further processing of this symlink
-          }
-        } catch (error: any) {
-          console.error(`  Error accessing symlink target ${path.basename(resolvedEntryPath)}: ${error.message || error}`);
-          continue; // Skip this entry if we can't access the target
-        }
-      } else {
-        // For non-symlinks, try to get stats directly
-        try {
-          entryStats = fs.statSync(entryPath);
-        } catch (error: any) {
-          console.error(`  Error accessing ${path.basename(entryPath)}: ${error.message || error}`);
-          continue; // Skip this entry if we can't access it
-        }
-      }
-      
-      // Now we have valid stats for a non-broken entry
-      if (entryStats.isDirectory()) {
+      const entryPath = path.join(dirPath, entry);
+
+      // Handle symlinks and get the correct path to use
+      const { resolvedPath, stats } = this.resolvePathAndStats(entryPath);
+      if (!resolvedPath || !stats) continue;
+
+      if (stats.isDirectory()) {
         // Recursively process subdirectory
-        await this.processDirectory(entryPath, platform, features, fileTypes);
-      } else if (entryStats.isFile()) {
-        // Process file
-        try {
-          // Use the resolved path if it's a symlink, otherwise use the original path
-          const pathToProcess = resolvedEntryPath || entryPath;
-          
-          // Verify the path is a readable regular file, not a special file or device
-          try {
-            fs.accessSync(pathToProcess, fs.constants.R_OK);
-          } catch (e) {
-            console.log(`  Skipping unreadable file: ${path.basename(pathToProcess)}`);
-            continue;
-          }
-          
-          try {
-            // Create a file ID using just the basename to avoid path separator issues
-            const fileName = path.basename(entryPath);
-            // Create a safe file ID without problematic characters
-            const fileId = `${platform}_${fileName}`;
-            
-            // Extract features
-            const fileFeatures = this.pipeline.extractFromFile(pathToProcess);
-            features.set(fileId, fileFeatures);
-            fileTypes.set(fileId, platform);
-            
-            console.log(`  Processed ${fileName}`);
-          } catch (error: any) {
-            console.error(`  Error extracting features from ${path.basename(entryPath)}: ${error.message || error}`);
-          }
-        } catch (error: any) {
-          console.error(`  Error processing ${path.basename(entryPath)}: ${error.message || error}`);
-        }
+        await this.processDirectory(resolvedPath, platform, features, fileTypes);
+      } else if (stats.isFile()) {
+        // Process the file if readable
+        this.processFileEntry(resolvedPath, entryPath, platform, features, fileTypes);
       }
     }
   }
   
+  /**
+   * Safely read directory entries
+   * @param dirPath Directory to read
+   * @returns Array of entry names or null if error
+   */
+  private readDirectoryEntries(dirPath: string): string[] | null {
+    try {
+      return fs.readdirSync(dirPath);
+    } catch (error: any) {
+      console.error(`  Error reading directory ${dirPath}: ${error.message || error}`);
+      return null;
+    }
+  }
+  
+  /**
+   * Resolve a path that might be a symlink and get its stats
+   * @param entryPath Path to resolve
+   * @returns Object with resolved path and stats, or null values if error
+   */
+  private resolvePathAndStats(entryPath: string): PathResolution {
+    // First check if it's a symlink
+    try {
+      if (fs.lstatSync(entryPath).isSymbolicLink()) {
+        return this.resolveSymlink(entryPath);
+      } else {
+        // Handle regular files/directories
+        try {
+          const stats = fs.statSync(entryPath);
+          return { resolvedPath: entryPath, stats };
+        } catch (error: any) {
+          console.error(`  Error accessing ${path.basename(entryPath)}: ${error.message || error}`);
+          return { resolvedPath: null, stats: null };
+        }
+      }
+    } catch (error: any) {
+      console.error(`  Error checking if symlink for ${path.basename(entryPath)}: ${error.message || error}`);
+      return { resolvedPath: null, stats: null };
+    }
+  }
+  
+  /**
+   * Handle a symlink by resolving it and getting the target's stats
+   * @param symlinkPath Path to the symlink
+   * @returns Object with resolved path and stats, or null values if error
+   */
+  private resolveSymlink(symlinkPath: string): PathResolution {
+    // Try to resolve the symlink
+    let resolvedPath: string;
+    try {
+      resolvedPath = fs.realpathSync(symlinkPath);
+    } catch (error: any) {
+      console.log(`  Skipping broken symlink: ${path.basename(symlinkPath)}`);
+      return { resolvedPath: null, stats: null };
+    }
+    
+    // Get stats for the resolved path
+    try {
+      const stats = fs.statSync(resolvedPath);
+      return { resolvedPath, stats };
+    } catch (error: any) {
+      console.error(`  Error accessing symlink target ${path.basename(resolvedPath)}: ${error.message || error}`);
+      return { resolvedPath: null, stats: null };
+    }
+  }
+  
+  /**
+   * Process a file entry by extracting features
+   * @param realPath The actual file path to read (resolved symlink if applicable)
+   * @param originalPath The original entry path (for naming/logging)
+   * @param platform Platform identifier
+   * @param features Features map to update
+   * @param fileTypes File types map to update
+   */
+  private processFileEntry(
+    realPath: string,
+    originalPath: string,
+    platform: string,
+    features: Map<string, [string, number][]>,
+    fileTypes: Map<string, string>
+  ): void {
+    // Check if file is readable
+    if (!this.isFileReadable(realPath)) return;
+    
+    try {
+      // Create a file ID using just the basename to avoid path separator issues
+      const fileName = path.basename(originalPath);
+      const fileId = `${platform}_${fileName}`;
+      
+      // Extract features
+      const fileFeatures = this.pipeline.extractFromFile(realPath);
+      features.set(fileId, fileFeatures);
+      fileTypes.set(fileId, platform);
+      
+      console.log(`  Processed ${fileName}`);
+    } catch (error: any) {
+      console.error(`  Error extracting features from ${path.basename(originalPath)}: ${error.message || error}`);
+    }
+  }
+  
+  /**
+   * Check if a file is readable
+   * @param filePath Path to check
+   * @returns true if file is readable
+   */
+  private isFileReadable(filePath: string): boolean {
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+      return true;
+    } catch (e) {
+      console.log(`  Skipping unreadable file: ${path.basename(filePath)}`);
+      return false;
+    }
+  }
+
   /**
    * Split data into training and testing sets
    * @param data Full dataset
