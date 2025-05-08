@@ -1,10 +1,10 @@
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from 'react';
-import {FileLike} from "../../server/src/common/FileLike.ts";
-import {QuickLoad} from "../../server/src/common/QuickLoad.ts";
-import {ServerError} from "../../server/src/common/ServerError.ts";
-import {background, infoBright, lowKey, primaryBright} from "./neonColourScheme.ts";
+import {FileLike} from "../../../server/src/common/FileLike.ts";
+import {QuickLoad} from "../../../server/src/common/QuickLoad.ts";
+import {ServerError} from "../../../server/src/common/ServerError.ts";
+import {background, infoBright, lowKey, primaryBright} from "../neonColourScheme.ts";
 
 /**
  * Temporary typographic logo for a retro system.
