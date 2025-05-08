@@ -61,11 +61,6 @@ export function FileDetail({fb}: { fb: FileBlob }) {
   const typeActions: TypeActions = runSniffers(fb);
   const [action, setAction] = useState(0);
   const t = typeActions.t;
-  /*
-    dataMeta section summarises how the file content was interpreted
-    tabs are like menu items
-    tabpanel is content area where selected tab content goes
-  */
   return <Box>
 
     <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
