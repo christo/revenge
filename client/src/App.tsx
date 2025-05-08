@@ -18,7 +18,7 @@ import {MenuAppBar} from "./ui/MenuAppBar.tsx";
  */
 const MAX_SIZE_MB = 10;
 
-function AppLogo({size}: {size: 1024 | 512 | 192}) {
+function AppLogo({size}: { size: 1024 | 512 | 192 }) {
   const sx = {
     margin: "0 auto",
     display: "block",
@@ -43,7 +43,7 @@ function App() {
               alignItems: "start",
             }}>
               <QuickLoads setFile={(f) => setFile(f)}/>
-              <Box className="dropZoneContainer" >
+              <Box className="dropZoneContainer">
                 <FileUploader
                     classes="dropZoneActual"
                     handleChange={setFile}

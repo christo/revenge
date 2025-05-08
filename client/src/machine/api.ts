@@ -1,10 +1,10 @@
+import {DataView, DataViewImpl} from "../../../server/src/common/DataView.ts";
 import {Detail} from "../../../server/src/common/Detail.ts";
 import {BlobSniffer} from "../../../server/src/common/machine/BlobSniffer.ts";
 import {hex8} from "../../../server/src/common/machine/core.ts";
 import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
-import {HexTag, Tag, TAG_HEXBYTES} from "../../../server/src/common/machine/Tag.ts";
-import {DataView, DataViewImpl} from "../../../server/src/common/DataView.ts";
 import {LogicalLine} from "../../../server/src/common/machine/LogicalLine.ts";
+import {HexTag, Tag, TAG_HEXBYTES} from "../../../server/src/common/machine/Tag.ts";
 
 /*
 main API types

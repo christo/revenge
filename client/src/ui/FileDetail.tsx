@@ -4,8 +4,8 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import React, {useState} from 'react';
-import {TypeActions} from "../machine/api.ts";
 import {FileBlob} from "../../../server/src/common/machine/FileBlob.ts";
+import {TypeActions} from "../machine/api.ts";
 import {runSniffers} from "../machine/revenge.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
@@ -40,7 +40,7 @@ function HashTag({label}: { label: string }) {
   return <Chip label={label} size="small" sx={{marginRight: 1}} variant="outlined" color="secondary"/>;
 }
 
-function EmptyFile({fb}: {fb: FileBlob}) {
+function EmptyFile({fb}: { fb: FileBlob }) {
   return <Box sx={{flexGrow: 1}}>
     File {fb.name} appears to be empty.
   </Box>;

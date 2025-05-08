@@ -1,10 +1,9 @@
-import React from 'react';
 import {BookmarkBorder, Dangerous, Edit, InsertLink, MenuBook} from "@mui/icons-material";
 import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from 'react';
 import {Detail} from "../../../server/src/common/Detail.ts";
-import {ActionExecutor} from "../machine/api.ts";
 import {Tag, TAG_OPERAND_VALUE} from "../../../server/src/common/machine/Tag.ts";
+import {ActionExecutor} from "../machine/api.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 
 type MaybeId = { id?: string }
@@ -107,7 +106,8 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
                       onClick={() => handleClick(tag.data, operand)}/></Tooltip> : ""}
                   {tag.isKnownSymbol() ? <BookmarkBorder onClick={() => handleClick(tag.data, operand)}/> : ""}
                   { // TODO this tooltip message should be derived from trace result, not hardcoded here
-                    tag.isIndirectMode() ? <Tooltip title="Indirect operand unsupported by trace"><Dangerous/></Tooltip> : ""
+                    tag.isIndirectMode() ?
+                        <Tooltip title="Indirect operand unsupported by trace"><Dangerous/></Tooltip> : ""
                   }
                 </Box>
               </Box>;
