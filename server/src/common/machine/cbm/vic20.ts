@@ -341,8 +341,7 @@ class Vic20BasicSniffer implements BlobSniffer {
   constructor(
       memoryConfig: MemoryConfiguration,
       name: string = "BASIC prg",
-      // TODO generalise this for C64, getting the machine stuff from a Machine definition which also provides
-      //   a place to keep MemoryConfiguration details
+      // TODO generalise this for C64 and other CBM systems
       desc: string = `VIC-20 BASIC (${memoryConfig.shortName})`,
       tags: string[] = ["basic", "vic20", memoryConfig.shortName]
   ) {
