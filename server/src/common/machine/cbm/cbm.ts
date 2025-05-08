@@ -228,7 +228,7 @@ function prg(prefix: ArrayLike<number> | number) {
 }
 
 /**
- * Detects raw cartridge ROM dumps. Currently very VIC-20-biased.
+ * Detects raw cartridge ROM dumps. Currently CBM biased.
  */
 class CartSniffer implements BlobSniffer {
 
