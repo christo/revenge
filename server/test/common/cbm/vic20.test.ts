@@ -76,7 +76,7 @@ describe("vic20", () => {
   it("sniff helloworld.prg machine code with basic stub", () => {
     const f = fs.readFileSync(`../server/${PRELOADS_DIR_VIC20}/helloworld.prg`);
     const fb = FileBlob.fromBytes("helloworld", Array.from(f), Mos6502.ENDIANNESS);
-    const sut = new Vic20StubSniffer(unexpanded);
+    const sut = new Vic20StubSniffer(unexpanded, ["vic20"]);
     const stench = sut.sniff(fb);
     expect(stench.score).gte(2);
   });

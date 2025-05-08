@@ -32,11 +32,11 @@ function guessMemoryConfig(fileBlob: FileBlob): MemoryConfiguration | undefined 
 class Vic20StubSniffer extends CbmBasicSniffer implements BlobSniffer {
   private dm: DisassemblyMeta = DisassemblyMetaImpl.NULL_DISSASSEMBLY_META;
 
-  constructor(memory: MemoryConfiguration) {
+  constructor(memory: MemoryConfiguration, hashTags: string[] = []) {
     super(memory,
-        `6502 Machine Code with BASIC stub`,
-        `6502 Machine Code with BASIC stub(${memory.shortName})`,
-        ["basic", "machine-code", "vic20", memory.shortName]);
+        `6502 Machine Code with CBM BASIC stub`,
+        `6502 Machine Code with CBM BASIC stub (${memory.shortName})`,
+        ["basic", "machine-code", ...hashTags, memory.shortName]);
   }
 
   /**
