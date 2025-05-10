@@ -1,6 +1,6 @@
 # Binary Classifier Improvement Recommendations
 
-Based on an analysis of the current classification results and code, here are recommendations to improve the classifier performance, particularly focusing on the poor VIC20 recall rate.
+The current classification results are disappointing and require significant improvements to achieve nominal classifier performance. Of particular note is poor VIC20 recall rate.
 
 ## Current Issues
 
