@@ -18,6 +18,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install
+      - run: bun compile
       - run: bun test
   client-tests:
     name: client-tests
