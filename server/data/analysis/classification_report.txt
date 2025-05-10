@@ -123,3 +123,108 @@ Confusion Matrix:
              c64   vic20
 c64         3080       5
 vic20        453      87
+
+
+==================================================
+
+=== Binary File Type Classification Report ===
+Timestamp: 2025-05-10T03:55:46.317Z
+Training Time: 677.52 seconds
+Model Size: 64046.10 KB (62.55 MB)
+
+=== Feature Extraction Pipeline ===
+Total Extractors: 5
+
+[1] HistogramExtractor
+Features: 256 byte frequencies
+
+[2] LengthExtractor
+Size Thresholds: 11
+
+[3] NgramExtractor (Bigram)
+N-gram Length: 2
+Features Count: 16
+Selection Strategy: frequency
+
+[4] NgramExtractor (Trigram)
+N-gram Length: 3
+Features Count: 16
+Selection Strategy: frequency
+
+[5] NgramExtractor (4-gram)
+N-gram Length: 4
+Features Count: 12
+Selection Strategy: entropy
+
+=== Binary File Type Classification Report ===
+
+Overall Accuracy: 14.90% (540/3625)
+
+Class Distribution:
+  c64: 3085 samples (85.10%)
+  vic20: 540 samples (14.90%)
+
+Per-Class Metrics:
+Class        Precision  Recall     F1 Score
+-------------------------------------------
+c64            0.00%     0.00%     0.00%
+vic20         14.90%   100.00%    25.93%
+
+Confusion Matrix:
+             c64   vic20
+c64            0    3085
+vic20          0     540
+
+
+==================================================
+
+=== Binary File Type Classification Report ===
+Timestamp: 2025-05-10T04:01:32.226Z
+Training Time: 41.08 seconds
+Model Size: 7747.72 KB (7.57 MB)
+
+=== Feature Extraction Pipeline ===
+Total Extractors: 6
+
+[1] LoadAddressExtractor
+Features based on platform-specific load addresses from machine definitions
+C64 addresses: 6 unique addresses
+VIC20 addresses: 10 unique addresses
+
+[2] EntropyExtractor
+Window Size: 256 bytes
+
+[3] LengthExtractor
+Size Thresholds: 11
+
+[4] EnhancedSignatureExtractor
+Signatures: 52
+
+[5] NgramExtractor (Unigram)
+N-gram Length: 1
+Features Count: 10
+Selection Strategy: entropy
+
+[6] NgramExtractor (Bigram)
+N-gram Length: 2
+Features Count: 10
+Selection Strategy: entropy
+
+=== Binary File Type Classification Report ===
+
+Overall Accuracy: 14.90% (540/3625)
+
+Class Distribution:
+  c64: 3085 samples (85.10%)
+  vic20: 540 samples (14.90%)
+
+Per-Class Metrics:
+Class        Precision  Recall     F1 Score
+-------------------------------------------
+c64            0.00%     0.00%     0.00%
+vic20         14.90%   100.00%    25.93%
+
+Confusion Matrix:
+             c64   vic20
+c64            0    3085
+vic20          0     540
