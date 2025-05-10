@@ -15,7 +15,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import {BinaryClassifierEnsemble, DataCollector, ModelEvaluator} from './common/analysis/classifier/index.js';
+import {
+  BinaryClassifierEnsemble,
+  DataCollector,
+  EvaluationResults,
+  ModelEvaluator
+} from './common/analysis/classifier/index.js';
+import {appendToReport, generateReport, generateTrainingReport} from "./common/analysis/classifier/reportGenerator.js";
 import {
   fullPipeline,
   defaultPipeline,
@@ -86,7 +92,7 @@ async function main() {
   const results = await evaluator.evaluate(classifier, testing);
 
   // Generate and display evaluation report
-  let report = generateTrainingReport(pipeline, trainTime, evaluator, results);
+  let report = generateTrainingReport(pipeline, trainTime, evaluator, results, MODEL_PATH);
   console.log('\n' + report);
 
   // Save the report - append to existing report if it exists
@@ -130,61 +136,6 @@ function selectPipeline(type: string): FeaturePipeline {
     case 'full':
     default:
       return fullPipeline();
-  }
-}
-
-/**
- * Generate a comprehensive training report
- * @param pipeline The feature pipeline used
- * @param trainingTime Training time in milliseconds
- * @param evaluator Model evaluator instance
- * @param results Evaluation results
- * @returns Formatted report string
- */
-function generateTrainingReport(
-  pipeline: FeaturePipeline,
-  trainingTime: number,
-  evaluator: ModelEvaluator,
-  results: any
-): string {
-  const timestamp = new Date().toISOString();
-  const lines = [
-    '=== Binary File Type Classification Report ===',
-    `Timestamp: ${timestamp}`,
-    `Training Time: ${(trainingTime / 1000).toFixed(2)} seconds`,
-    ''
-  ];
-
-  // Add pipeline configuration
-  lines.push(pipeline.descriptor());
-  lines.push('');
-
-  // Add standard evaluation report
-  lines.push(evaluator.generateReport(results));
-
-  return lines.join('\n');
-}
-
-/**
- * Append new report to existing report file
- * @param reportPath Path to the report file
- * @param newReport New report content to append
- */
-function appendToReport(reportPath: string, newReport: string): void {
-  try {
-    // Create divider
-    const divider = '\n\n' + '='.repeat(50) + '\n\n';
-
-    // Check if file exists to determine if we need to append or create
-    if (fs.existsSync(reportPath)) {
-      fs.appendFileSync(reportPath, divider + newReport);
-    } else {
-      fs.writeFileSync(reportPath, newReport);
-    }
-  } catch (err: any) {
-    console.error(`Error writing report: ${err.message || err}`);
-    // Fallback to writing a new file
-    fs.writeFileSync(reportPath, newReport);
   }
 }
 
