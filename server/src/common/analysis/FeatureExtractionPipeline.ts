@@ -56,7 +56,7 @@ class FeaturePipeline {
   getExtractorNames(): string[] {
     return this.extractors.map(e => e.constructor.name);
   }
-  
+
   /**
    * Get an extractor by its class type
    * @param type Constructor type to find
@@ -69,6 +69,26 @@ class FeaturePipeline {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Returns a detailed description of the pipeline configuration
+   * Includes descriptions of all feature extractors
+   * @returns String describing the pipeline configuration
+   */
+  descriptor(): string {
+    const lines: string[] = ['=== Feature Extraction Pipeline ==='];
+    lines.push(`Total Extractors: ${this.extractors.length}`);
+    lines.push('');
+
+    for (let i = 0; i < this.extractors.length; i++) {
+      lines.push(`[${i + 1}] ${this.extractors[i].descriptor()}`);
+      if (i < this.extractors.length - 1) {
+        lines.push('');  // Add blank line between extractors
+      }
+    }
+
+    return lines.join('\n');
   }
 }
 
@@ -94,8 +114,8 @@ function fullPipeline(): FeaturePipeline {
   pipeline.add(new EntropyExtractor());
   pipeline.add(new LengthExtractor());
   pipeline.add(new BigramExtractor());
-  pipeline.add(new NgramExtractor(3, 30, NgramSelectionStrategy.FREQUENCY));
   pipeline.add(new EnhancedSignatureExtractor());
+  pipeline.add(new NgramExtractor(3, 30, NgramSelectionStrategy.FREQUENCY));
   return pipeline;
 }
 
@@ -127,4 +147,29 @@ function enhancedSignaturePipeline(): FeaturePipeline {
   return pipeline;
 }
 
-export {FeaturePipeline, defaultPipeline, fullPipeline, ngramPipeline, enhancedSignaturePipeline};
+/**
+ * Create a streamlined pipeline optimized for n-gram analysis and performance
+ * Uses n-gram extractors to replace redundant features
+ * @returns Optimized n-gram feature pipeline
+ */
+function streamlinedNgramPipeline(): FeaturePipeline {
+  const pipeline = new FeaturePipeline();
+
+  // Keep these non-n-gram features as they provide different information
+  pipeline.add(new EntropyExtractor());
+  pipeline.add(new LengthExtractor());
+  pipeline.add(new EnhancedSignatureExtractor());
+
+  // Replace histogram (n=1) and bigram (n=2) with n-gram extractors
+  // Use entropy selection for better feature quality
+  pipeline.add(new NgramExtractor(1, 16, NgramSelectionStrategy.ENTROPY)); // Replace histogram
+  pipeline.add(new NgramExtractor(2, 16, NgramSelectionStrategy.ENTROPY)); // Replace bigram
+
+  // Add higher-order n-grams that might capture instruction patterns
+  pipeline.add(new NgramExtractor(3, 16, NgramSelectionStrategy.ENTROPY)); // Complete instructions
+  pipeline.add(new NgramExtractor(4, 12, NgramSelectionStrategy.ENTROPY)); // Instruction sequences
+
+  return pipeline;
+}
+
+export {FeaturePipeline, defaultPipeline, fullPipeline, ngramPipeline, enhancedSignaturePipeline, streamlinedNgramPipeline};
