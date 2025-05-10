@@ -75,7 +75,7 @@ async function main() {
   const results = await evaluator.evaluate(classifier, testing);
 
   // Generate and display evaluation report
-  let report = generateTrainingReport(pipeline, trainTime, evaluator, results, MODEL_PATH);
+  let report = generateTrainingReport(pipeline, trainTime, results, MODEL_PATH);
   console.log('\n' + report);
 
   // Save the report - append to existing report if it exists

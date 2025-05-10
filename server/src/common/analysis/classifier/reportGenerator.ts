@@ -37,7 +37,6 @@ function appendToReport(reportPath: string, newReport: string): void {
 function generateTrainingReport(
     pipeline: FeaturePipeline,
     trainingTime: number,
-    evaluator: ModelEvaluator,
     results: any,
     modelPath?: string
 ): string {
