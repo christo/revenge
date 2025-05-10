@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {EntropyExtractor} from "../../../src/common/analysis/EntropyExtractor";
+import {EntropyExtractor} from "../../../src/common/analysis/extractor/EntropyExtractor";
 import {FileLike} from "../../../src/common/FileLike";
 
 describe("entropy feature extractor", () => {

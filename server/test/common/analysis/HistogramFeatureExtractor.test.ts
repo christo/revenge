@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {HistogramExtractor} from "../../../src/common/analysis/HistogramExtractor";
+import {HistogramExtractor} from "../../../src/common/analysis/extractor/HistogramExtractor";
 import {FileLike} from "../../../src/common/FileLike";
 
 describe("histogram feature extractor", () => {

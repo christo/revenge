@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import {defaultPipeline, FeaturePipeline} from '../FeatureExtractionPipeline.js';
+import {defaultPipeline, FeaturePipeline} from '../extractor/FeatureExtractionPipeline.js';
 import {TrainingData} from './BinaryClassifierEnsemble.js';
 
 interface PathResolution {

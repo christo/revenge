@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {EnhancedSignatureExtractor} from "./common/analysis/EnhancedSignatureExtractor.js";
+import {EnhancedSignatureExtractor} from "./common/analysis/extractor/EnhancedSignatureExtractor.js";
 import {FileLike} from "./common/FileLike.js";
 
 const PRELOAD_PATH = path.resolve('./data/preload');

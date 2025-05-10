@@ -1,5 +1,5 @@
-import {FileLike} from "../FileLike.js";
-import {Bigram} from "./Bigram.js";
+import {FileLike} from "../../FileLike.js";
+import {Bigram} from "../Bigram.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**

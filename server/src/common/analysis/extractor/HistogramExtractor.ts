@@ -1,4 +1,4 @@
-import {FileLike} from "../FileLike.js";
+import {FileLike} from "../../FileLike.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**

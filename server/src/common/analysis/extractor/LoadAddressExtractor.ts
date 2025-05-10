@@ -1,6 +1,6 @@
-import {FileLike} from "../FileLike.js";
-import {C64_16K_BASE_ADDRESS, C64_COMPUTER, C64_ROMH_BASE_ADDRESS} from "../machine/cbm/c64.js";
-import {Vic20} from "../machine/cbm/vic20.js";
+import {FileLike} from "../../FileLike.js";
+import {C64_16K_BASE_ADDRESS, C64_COMPUTER, C64_ROMH_BASE_ADDRESS} from "../../machine/cbm/c64.js";
+import {Vic20} from "../../machine/cbm/vic20.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**

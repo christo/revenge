@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {FileLike} from "../FileLike.js";
+import {FileLike} from "../../FileLike.js";
 import {BigramExtractor} from "./BigramExtractor.js";
 import {EnhancedSignatureExtractor} from "./EnhancedSignatureExtractor.js";
 import {EntropyExtractor} from "./EntropyExtractor.js";

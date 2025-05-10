@@ -9,7 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {BinaryClassifierEnsemble} from '../../src/common/analysis/classifier/index.js';
-import {fullPipeline} from '../../src/common/analysis/FeatureExtractionPipeline.js';
+import {fullPipeline} from '../../src/common/analysis/extractor/FeatureExtractionPipeline.js';
 
 // Path to the trained model
 const MODEL_PATH = path.resolve('./data/analysis/binary_classifier_model.json');

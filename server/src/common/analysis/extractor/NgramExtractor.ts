@@ -1,7 +1,7 @@
-import {FileLike} from "../FileLike.js";
-import {Ngram} from "./Ngram.js";
+import {FileLike} from "../../FileLike.js";
+import {Ngram} from "../Ngram.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
-import {NgramFeatureSelector} from "./NgramFeatureSelector.js";
+import {NgramFeatureSelector} from "../NgramFeatureSelector.js";
 
 /**
  * Extracts feature vectors based on n-gram patterns in data

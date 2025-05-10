@@ -1,5 +1,5 @@
 import fs from "fs";
-import {FeaturePipeline} from "../FeatureExtractionPipeline.js";
+import {FeaturePipeline} from "../extractor/FeatureExtractionPipeline.js";
 import {EvaluationResults, ModelEvaluator} from "./ModelEvaluator.js";
 
 /**

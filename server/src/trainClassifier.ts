@@ -15,7 +15,7 @@ import {
   streamlinedNgramPipeline,
   balancedPlatformPipeline,
   FeaturePipeline
-} from './common/analysis/FeatureExtractionPipeline.js';
+} from './common/analysis/extractor/FeatureExtractionPipeline.js';
 
 // Directory containing platform-specific files
 const TRAINING_PATH = path.resolve('./data/training');
