@@ -272,7 +272,6 @@ export class DataCollector {
       features.set(fileId, fileFeatures);
       fileTypes.set(fileId, platform);
 
-      console.log(`  Processed ${fileName}`);
     } catch (error: any) {
       console.error(`  Error extracting features from ${path.basename(originalPath)}: ${error.message || error}`);
     }
