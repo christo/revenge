@@ -3,13 +3,27 @@
  *
  * Usage:
  *   cd server
- *   bun src/trainClassifier.ts
+ *   bun src/trainClassifier.ts [pipeline-type]
+ *
+ * Pipeline options:
+ *   - full (default): All available extractors
+ *   - default: Basic extractors only
+ *   - ngram: N-gram focused extractors
+ *   - streamlined: Optimized n-gram extractors (recommended)
+ *   - signature: Only signature-based extractors
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import {BinaryClassifierEnsemble, DataCollector, ModelEvaluator} from './common/analysis/classifier/index.js';
-import {fullPipeline} from './common/analysis/FeatureExtractionPipeline.js';
+import {
+  fullPipeline,
+  defaultPipeline,
+  ngramPipeline,
+  enhancedSignaturePipeline,
+  streamlinedNgramPipeline,
+  FeaturePipeline
+} from './common/analysis/FeatureExtractionPipeline.js';
 
 // Directory containing platform-specific files
 const TRAINING_PATH = path.resolve('./data/training');
@@ -28,6 +42,12 @@ async function main() {
   console.log('Binary File Type Classification');
   console.log('==============================');
 
+  // Select pipeline based on command line argument
+  const pipelineType = process.argv[2] || 'full';
+  const pipeline = selectPipeline(pipelineType);
+
+  console.log(`\nUsing '${pipelineType}' feature extraction pipeline`);
+
   // Ensure analysis directory exists
   if (!fs.existsSync(ANALYSIS_DIR)) {
     fs.mkdirSync(ANALYSIS_DIR, {recursive: true});
@@ -35,8 +55,8 @@ async function main() {
 
   console.log(`\nCollecting training data from ${TRAINING_PATH}...`);
 
-  // Use the full feature pipeline with all available extractors
-  const collector = new DataCollector(fullPipeline());
+  // Use the selected feature pipeline
+  const collector = new DataCollector(pipeline);
 
   // Build training data from file corpus
   const completeData = await collector.buildTrainingData(TRAINING_PATH);
@@ -66,11 +86,11 @@ async function main() {
   const results = await evaluator.evaluate(classifier, testing);
 
   // Generate and display evaluation report
-  const report = evaluator.generateReport(results);
+  let report = generateTrainingReport(pipeline, trainTime, evaluator, results);
   console.log('\n' + report);
 
-  // Save the report
-  fs.writeFileSync(REPORT_PATH, report);
+  // Save the report - append to existing report if it exists
+  appendToReport(REPORT_PATH, report);
   console.log(`\nEvaluation report saved to ${REPORT_PATH}`);
 
   // Example prediction
@@ -78,7 +98,7 @@ async function main() {
   if (exampleFiles.length > 0) {
     console.log('\nExample predictions:');
     for (const filePath of exampleFiles) {
-      const features = fullPipeline().extractFromFile(filePath);
+      const features = pipeline.extractFromFile(filePath);
       const prediction = await classifier.predict(features);
 
       // Get actual platform from directory name
@@ -89,7 +109,83 @@ async function main() {
       console.log(`${result} ${fileName} (${platform}): predicted as ${prediction.label} with ${(prediction.confidence * 100).toFixed(1)}% confidence`);
     }
   }
-  console.log(`\nTotal time: ${(Date.now() - outerStartTime) / 1000} seconds`);
+  console.log(`\nTotal time: ${((Date.now() - outerStartTime) / 1000).toFixed(2)} seconds`);
+}
+
+/**
+ * Select pipeline based on type string
+ * @param type Pipeline type name
+ * @returns The selected feature pipeline
+ */
+function selectPipeline(type: string): FeaturePipeline {
+  switch (type.toLowerCase()) {
+    case 'default':
+      return defaultPipeline();
+    case 'ngram':
+      return ngramPipeline();
+    case 'signature':
+      return enhancedSignaturePipeline();
+    case 'streamlined':
+      return streamlinedNgramPipeline();
+    case 'full':
+    default:
+      return fullPipeline();
+  }
+}
+
+/**
+ * Generate a comprehensive training report
+ * @param pipeline The feature pipeline used
+ * @param trainingTime Training time in milliseconds
+ * @param evaluator Model evaluator instance
+ * @param results Evaluation results
+ * @returns Formatted report string
+ */
+function generateTrainingReport(
+  pipeline: FeaturePipeline,
+  trainingTime: number,
+  evaluator: ModelEvaluator,
+  results: any
+): string {
+  const timestamp = new Date().toISOString();
+  const lines = [
+    '=== Binary File Type Classification Report ===',
+    `Timestamp: ${timestamp}`,
+    `Training Time: ${(trainingTime / 1000).toFixed(2)} seconds`,
+    ''
+  ];
+
+  // Add pipeline configuration
+  lines.push(pipeline.descriptor());
+  lines.push('');
+
+  // Add standard evaluation report
+  lines.push(evaluator.generateReport(results));
+
+  return lines.join('\n');
+}
+
+/**
+ * Append new report to existing report file
+ * @param reportPath Path to the report file
+ * @param newReport New report content to append
+ */
+function appendToReport(reportPath: string, newReport: string): void {
+  try {
+    // Create divider
+    const divider = '\n\n' + '='.repeat(50) + '\n\n';
+
+    // Check if file exists to determine if we need to append or create
+    if (fs.existsSync(reportPath)) {
+      fs.appendFileSync(reportPath, divider + newReport);
+    } else {
+      fs.writeFileSync(reportPath, newReport);
+    }
+  } catch (err: any) {
+    console.error(`Error writing report: ${err.message || err}`);
+    // Fallback to writing a new file
+    fs.writeFileSync(reportPath, newReport);
+  }
 }
 
 /**
