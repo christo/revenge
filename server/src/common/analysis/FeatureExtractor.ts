@@ -10,4 +10,9 @@ export interface FeatureExtractor {
    */
   extract(buffer: FileLike): [string, number][];
 
+  /**
+   * Returns a descriptive string of the extractor and its configuration parameters
+   * Used for logging and reporting the pipeline configuration
+   */
+  descriptor(): string;
 }

@@ -16,3 +16,110 @@ Confusion Matrix:
              c64   vic20
 c64         3076       9
 vic20        426     114
+
+
+==================================================
+
+=== Binary File Type Classification Report ===
+Timestamp: 2025-05-09T11:28:45.501Z
+Training Time: 820.30 seconds
+
+=== Feature Extraction Pipeline ===
+Total Extractors: 6
+
+[1] HistogramExtractor
+Features: 256 byte frequencies
+
+[2] EntropyExtractor
+Window Size: 256 bytes
+
+[3] LengthExtractor
+Size Thresholds: 11
+
+[4] BigramExtractor
+Top Bigrams Count: 16
+
+[5] EnhancedSignatureExtractor
+Signatures: 52
+
+[6] NgramExtractor (Trigram)
+N-gram Length: 3
+Features Count: 30
+Selection Strategy: frequency
+
+=== Binary File Type Classification Report ===
+
+Overall Accuracy: 87.53% (3173/3625)
+
+Class Distribution:
+  c64: 3085 samples (85.10%)
+  vic20: 540 samples (14.90%)
+
+Per-Class Metrics:
+Class        Precision  Recall     F1 Score
+-------------------------------------------
+c64           87.41%    99.71%    93.16%
+vic20         91.51%    17.96%    30.03%
+
+Confusion Matrix:
+             c64   vic20
+c64         3076       9
+vic20        443      97
+
+
+==================================================
+
+=== Binary File Type Classification Report ===
+Timestamp: 2025-05-09T12:01:19.296Z
+Training Time: 780.85 seconds
+
+=== Feature Extraction Pipeline ===
+Total Extractors: 7
+
+[1] EntropyExtractor
+Window Size: 256 bytes
+
+[2] LengthExtractor
+Size Thresholds: 11
+
+[3] EnhancedSignatureExtractor
+Signatures: 52
+
+[4] NgramExtractor (Unigram)
+N-gram Length: 1
+Features Count: 16
+Selection Strategy: entropy
+
+[5] NgramExtractor (Bigram)
+N-gram Length: 2
+Features Count: 16
+Selection Strategy: entropy
+
+[6] NgramExtractor (Trigram)
+N-gram Length: 3
+Features Count: 16
+Selection Strategy: entropy
+
+[7] NgramExtractor (4-gram)
+N-gram Length: 4
+Features Count: 12
+Selection Strategy: entropy
+
+=== Binary File Type Classification Report ===
+
+Overall Accuracy: 87.37% (3167/3625)
+
+Class Distribution:
+  c64: 3085 samples (85.10%)
+  vic20: 540 samples (14.90%)
+
+Per-Class Metrics:
+Class        Precision  Recall     F1 Score
+-------------------------------------------
+c64           87.18%    99.84%    93.08%
+vic20         94.57%    16.11%    27.53%
+
+Confusion Matrix:
+             c64   vic20
+c64         3080       5
+vic20        453      87

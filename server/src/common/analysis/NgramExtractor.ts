@@ -9,19 +9,40 @@ import {NgramFeatureSelector} from "./NgramFeatureSelector.js";
  */
 export class NgramExtractor implements FeatureExtractor {
   private static readonly FEATURE_PREFIX = "ngram_";
-  
+
   // Length of n-grams to extract (default: 3 for trigrams)
   private readonly ngramLength: number;
-  
+
   // Number of top n-grams to consider as features
   private readonly topNgramsCount: number;
-  
+
   // Strategy for selecting important n-grams
   private readonly selectionStrategy: NgramSelectionStrategy;
-  
+
   // Optional document frequency information for TF-IDF selection
   private documentFrequencies: Map<string, number> | null = null;
   private totalDocuments: number = 0;
+
+  /**
+   * Returns a descriptive string of this extractor and its configuration
+   */
+  descriptor(): string {
+    const ngramName = this.ngramLength === 1 ? "Unigram" :
+                      this.ngramLength === 2 ? "Bigram" :
+                      this.ngramLength === 3 ? "Trigram" :
+                      `${this.ngramLength}-gram`;
+
+    let description = `NgramExtractor (${ngramName})`;
+    description += `\nN-gram Length: ${this.ngramLength}`;
+    description += `\nFeatures Count: ${this.topNgramsCount}`;
+    description += `\nSelection Strategy: ${this.selectionStrategy}`;
+
+    if (this.selectionStrategy === NgramSelectionStrategy.TFIDF && this.documentFrequencies) {
+      description += `\nCorpus Documents: ${this.totalDocuments}`;
+    }
+
+    return description;
+  }
   
   /**
    * Creates a new NgramExtractor

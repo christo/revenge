@@ -13,6 +13,13 @@ export class BigramExtractor implements FeatureExtractor {
   private readonly topBigramsCount: number;
 
   /**
+   * Returns a descriptive string of this extractor and its configuration
+   */
+  descriptor(): string {
+    return `BigramExtractor\nTop Bigrams Count: ${this.topBigramsCount}`;
+  }
+
+  /**
    * Creates a new BigramExtractor
    * @param topBigramsCount Number of most frequent bigrams to include (default: 16)
    */

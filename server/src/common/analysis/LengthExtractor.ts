@@ -22,6 +22,13 @@ const HARD_MAX: [string, number][] = [
  * Experimental Feature Extractor based on the root of normalised values clamped to different maxima.
  */
 class LengthExtractor implements FeatureExtractor {
+  /**
+   * Returns a descriptive string of this extractor and its configuration
+   */
+  descriptor(): string {
+    return `LengthExtractor\nSize Thresholds: ${HARD_MAX.length}`;
+  }
+
   extract(fileLike: FileLike): [string, number][] {
     return HARD_MAX.map(kv => [kv[0], Math.sqrt(Math.min(fileLike.size, kv[1]) / kv[1])])
   }

@@ -21,6 +21,13 @@ export class EntropyExtractor implements FeatureExtractor {
     this.windowSize = windowSize;
   }
 
+  /**
+   * Returns a descriptive string of this extractor and its configuration
+   */
+  descriptor(): string {
+    return `EntropyExtractor\nWindow Size: ${this.windowSize} bytes`;
+  }
+
   extract(fileLike: FileLike): [string, number][] {
     const buffer = Array.from(fileLike.data);
     // Global entropy

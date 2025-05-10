@@ -575,6 +575,13 @@ export class EnhancedSignatureExtractor implements FeatureExtractor {
   }
 
   /**
+   * Returns a descriptive string of this extractor and its configuration
+   */
+  descriptor(): string {
+    return `EnhancedSignatureExtractor\nSignatures: ${this.signatures.length}`;
+  }
+
+  /**
    * Check if a file matches a given signature with enhanced capabilities
    * @param file File to check
    * @param signature Signature to match
