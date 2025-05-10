@@ -18,12 +18,12 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 **Project Status**: _pre alpha_ (it sort of works with plenty left [TODO](TODO.md))
 
+![revenge screenshot](docs/revenge-screenshot-20250407.png)
+
 Currently the disassembler is fully automatic, although it identifies very few bytes
 definitively as data. Binary content type (basic, machine code with basic stub, cart
 image, etc.) is detected using heuristics and falls back to a hex dump if it can't
 detect the filetype.
-
-![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
 Work is in progress to train a classifier (you can call it AI) to recognise
 binaries based on statistics collected by various implementations of `FeatureExtractor`.
