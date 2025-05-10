@@ -8,6 +8,10 @@
     "start": "bun src/server.ts",
     "dev": "bun --hot src/server.ts",
     "train": "bun src/trainClassifier.ts",
+    "train-ngram": "bun src/trainClassifier.ts ngram",
+    "train-signature": "bun src/trainClassifier.ts signature",
+    "train-streamlined": "bun src/trainClassifier.ts streamlined",
+    "train-full": "bun src/trainClassifier.ts full",
     "nodeversion": "ts-node --showConfig -vv"
   },
   "keywords": [],
