@@ -153,4 +153,11 @@ export class SignatureExtractor implements FeatureExtractor {
 
     return true;
   }
+
+  descriptor(): string {
+    const n = this.signatures.length;
+    return `SignatureExtractor (with ${n} signatures)`;
+  }
+
+
 }
