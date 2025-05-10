@@ -7,6 +7,7 @@ import {EntropyExtractor} from "./EntropyExtractor.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 import {HistogramExtractor} from "./HistogramExtractor.js";
 import {LengthExtractor} from "./LengthExtractor.js";
+import {LoadAddressExtractor} from "./LoadAddressExtractor.js";
 import {NgramExtractor, NgramSelectionStrategy} from "./NgramExtractor.js";
 
 /**
@@ -172,4 +173,38 @@ function streamlinedNgramPipeline(): FeaturePipeline {
   return pipeline;
 }
 
-export {FeaturePipeline, defaultPipeline, fullPipeline, ngramPipeline, enhancedSignaturePipeline, streamlinedNgramPipeline};
+/**
+ * Create a balanced pipeline specifically optimized for VIC20/C64 distinction
+ * Uses load address information from machine definitions and optimized feature selection
+ * @returns Feature pipeline optimized for balanced platform classification
+ */
+function balancedPlatformPipeline(): FeaturePipeline {
+  const pipeline = new FeaturePipeline();
+
+  // Add specialized load address extractor that uses platform-specific constants
+  pipeline.add(new LoadAddressExtractor());
+
+  // Add the core signal extractors
+  pipeline.add(new EntropyExtractor());
+  pipeline.add(new LengthExtractor());
+
+  // Add the signature extractor with platform-specific signatures
+  pipeline.add(new EnhancedSignatureExtractor());
+
+  // Add optimized n-gram extractors with entropy-based selection
+  pipeline.add(new NgramExtractor(1, 10, NgramSelectionStrategy.ENTROPY)); // Unigrams
+  pipeline.add(new NgramExtractor(2, 10, NgramSelectionStrategy.ENTROPY)); // Bigrams
+  pipeline.add(new NgramExtractor(3, 16, NgramSelectionStrategy.ENTROPY)); // Bigrams
+
+  return pipeline;
+}
+
+export {
+  FeaturePipeline,
+  defaultPipeline,
+  fullPipeline,
+  ngramPipeline,
+  enhancedSignaturePipeline,
+  streamlinedNgramPipeline,
+  balancedPlatformPipeline
+};

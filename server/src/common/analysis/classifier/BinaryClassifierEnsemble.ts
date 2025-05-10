@@ -99,6 +99,11 @@ export class BinaryClassifierEnsemble {
       // Ensure we never return NaN
       score = isNaN(score) ? 0.5 : score;
 
+      // Apply class weighting to the score
+      // This increases the influence of minority classes like vic20
+      const classWeight = model.classWeight || 1.0;
+      score = score * classWeight;
+
       scores.set(className, score);
     }
 
@@ -244,12 +249,13 @@ export class BinaryClassifierEnsemble {
 
   /**
    * Train a single binary classifier for one class
+   * Includes class-weighting to address class imbalance
    */
   private async trainClassifier(className: string, preparedData: {
     features: number[][],
     labels: Map<string, number[]>
   }): Promise<void> {
-    // Simple nearest centroid classifier
+    // Simple nearest centroid classifier with class weighting
     const positiveIndices: number[] = [];
     const negativeIndices: number[] = [];
 
@@ -263,15 +269,36 @@ export class BinaryClassifierEnsemble {
       }
     }
 
+    // Calculate weight based on class distribution
+    // Minority classes get higher weights to compensate for class imbalance
+    // For vic20 class specifically, use a larger weight factor to address severe imbalance
+    let classWeight = 1.0;
+
+    if (positiveIndices.length > 0 && negativeIndices.length > 0) {
+      // Calculate imbalance ratio - higher for minority classes
+      const imbalanceRatio = negativeIndices.length / positiveIndices.length;
+
+      // Apply higher weight to minority classes (like vic20)
+      // Special handling for severely underrepresented vic20 class
+      if (className === 'vic20') {
+        // Additional weight boost to counteract severe imbalance
+        classWeight = Math.min(4.0, imbalanceRatio * 1.5);
+      } else if (imbalanceRatio > 1.0) {
+        // For other minority classes, use standard class weighting
+        classWeight = Math.min(3.0, imbalanceRatio);
+      }
+    }
+
     // Calculate centroids for positive and negative classes
     const positiveCentroid = this.calculateCentroid(preparedData.features, positiveIndices);
     const negativeCentroid = this.calculateCentroid(preparedData.features, negativeIndices);
 
-    // Store model
+    // Store model with class weight
     this.models.set(className, {
       positiveCentroid,
       negativeCentroid,
-      className
+      className,
+      classWeight // Add weight to model for use during prediction
     });
   }
 

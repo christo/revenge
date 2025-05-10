@@ -21,16 +21,17 @@ import {CartSniffer} from "./CartSniffer.js";
 import {setC64BasicPrg} from "./cbm.js";
 import {Petscii} from "./petscii.js";
 
+const BASIC_PROGRAM_START = 0x0801;
+const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", BASIC_PROGRAM_START);
+
 class C64 extends Computer {
   static readonly NAME = "C64";
 
-  constructor(memoryConfig: MemoryConfiguration, roms: RomImage[] = []) {
+  constructor(memoryConfig: MemoryConfiguration = C64_MEMORY, roms: RomImage[] = []) {
     super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
 
-const C64_BASIC_PROGRAM_START = 0x0801;
-const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", C64_BASIC_PROGRAM_START);
 const C64_BASIC_PRG = new BlobTypeSniffer(
     "C64 basic prg",
     "BASIC program",
@@ -52,14 +53,12 @@ const C64_8K_BASE_ADDRESS = 0x8000;
  * The base address for 16kb C64 carts.
  * Turns out carts are pretty complex in c64, so this is WIP
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const C64_16K_BASE_ADDRESS = 0x8000;
 
 /**
  * 16kb carts load two 8k blocks, ROML at the normal base address
  * and ROMH at this address.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const C64_ROMH_BASE_ADDRESS = 0xa000;
 
 /**
@@ -220,4 +219,14 @@ class C64CrtSniffer extends CartSniffer {
 // Register C64_BASIC_PRG with cbm.js to break circular dependency
 setC64BasicPrg(C64_BASIC_PRG);
 
-export {C64, C64_CRT, C64_8K16K_CART_SNIFFER, C64_BASIC_PRG};
+const C64_COMPUTER = new C64(C64_MEMORY);
+
+export {
+  C64,
+  C64_CRT,
+  C64_8K16K_CART_SNIFFER,
+  C64_BASIC_PRG,
+  C64_COMPUTER,
+  C64_16K_BASE_ADDRESS,
+  C64_ROMH_BASE_ADDRESS
+};

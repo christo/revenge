@@ -1,18 +1,3 @@
-/**
- * Example script for training and evaluating the binary file classifier
- *
- * Usage:
- *   cd server
- *   bun src/trainClassifier.ts [pipeline-type]
- *
- * Pipeline options:
- *   - full (default): All available extractors
- *   - default: Basic extractors only
- *   - ngram: N-gram focused extractors
- *   - streamlined: Optimized n-gram extractors (recommended)
- *   - signature: Only signature-based extractors
- */
-
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -28,6 +13,7 @@ import {
   ngramPipeline,
   enhancedSignaturePipeline,
   streamlinedNgramPipeline,
+  balancedPlatformPipeline,
   FeaturePipeline
 } from './common/analysis/FeatureExtractionPipeline.js';
 
@@ -133,6 +119,8 @@ function selectPipeline(type: string): FeaturePipeline {
       return enhancedSignaturePipeline();
     case 'streamlined':
       return streamlinedNgramPipeline();
+    case 'balanced':
+      return balancedPlatformPipeline();
     case 'full':
     default:
       return fullPipeline();
