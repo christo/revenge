@@ -12,6 +12,7 @@
     "train-signature": "bun src/trainClassifier.ts signature",
     "train-streamlined": "bun src/trainClassifier.ts streamlined",
     "train-full": "bun src/trainClassifier.ts full",
+    "train-balanced": "bun src/trainClassifier.ts balanced",
     "nodeversion": "ts-node --showConfig -vv"
   },
   "keywords": [],
