@@ -23,6 +23,14 @@ definitively as data. Binary content type (basic, machine code with basic stub, 
 image, etc.) is detected using heuristics and falls back to a hex dump if it can't
 detect the filetype.
 
+Work is in progress to train a classifier (you can call it AI) to recognise
+binaries based on statistics collected by various implementations of `FeatureExtractor`. 
+The model can be trained in `server` with `bun train`. Note that a corpus of binary
+files must exist in the `server/data/training/c64` and `server/data/training/vic20`
+trees. Based on my current testing, the results are still very poor but I am confident
+this method will work once the implementation is good enough. Recognising compressed
+files and other container formats like disk images is not yet tested.
+
 ![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
 ## Architecture
