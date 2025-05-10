@@ -1,11 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import {
-  BinaryClassifierEnsemble,
-  DataCollector,
-  EvaluationResults,
-  ModelEvaluator
-} from './common/analysis/classifier/index.js';
+import {BinaryClassifierEnsemble} from "./common/analysis/classifier/BinaryClassifierEnsemble.js";
+import {DataCollector} from "./common/analysis/classifier/DataCollector.js";
+import {ModelEvaluator} from "./common/analysis/classifier/ModelEvaluator.js";
 import {appendToReport, generateReport, generateTrainingReport} from "./common/analysis/classifier/reportGenerator.js";
 import {
   fullPipeline,
