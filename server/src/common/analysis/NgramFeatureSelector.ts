@@ -78,7 +78,8 @@ export class NgramFeatureSelector {
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
   }
-  
+
+  // TODO use variance in pipeline
   /**
    * Feature selection based on variance across a corpus
    * N-grams with high variance may have more discriminative power
