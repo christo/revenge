@@ -14,8 +14,8 @@
     * create specific instances of fixed size feature extractor - binary outcome
   * [ ] index value feature extractor - rom images can start with a load address
     * feature is an index, value and length (maybe just 1 or 2?)
-  * [ ] convert bigram to feature extractor
-    * [ ] 256^2 may be too many features so consider:
+  * [x] convert bigram to feature extractor
+    * [x] 256^2 may be too many features so consider:
       * How to decide how many features are too many?
       * Only include the top N most frequent bigrams
       * Use dimensionality reduction techniques (PCA, t-SNE)
