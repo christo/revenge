@@ -20,8 +20,8 @@
      * [x] 256^2 may be too many features so consider:
        * [x] Only include the top N most frequent bigrams (implemented for n-grams)
        * [x] Test the use of entropy for selecting n-grams
-       * [ ] Use dimensionality reduction techniques (PCA, t-SNE)
-       * [ ] Apply feature selection to identify the most discriminative bigrams
+  * [ ] Use dimensionality reduction techniques (PCA, t-SNE)
+  * [ ] Apply feature selection to identify the most discriminative features
 * [ ] write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
   * enable defining explicit basic stub in assembly
   * help future rendering of BASIC syntax
