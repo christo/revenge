@@ -184,64 +184,9 @@ software written for these enigmatic retro systems.
 
 Read more notes about [Dynamic Analysis](docs/dynamic-analysis.md).
 
-It may also be useful to use LLMs to help interpret code although I haven't begun to integrate
-such a system.
-
-## Design Notes
-
-Machine language BASIC loaders often use base 10 data sequences of bytes. This is a low compression
-format. Higher radix formats can be used as strings, rem comments or some other transport format and
-the encoding of the instruction data can be a custom, variable-length compression format.
-
-Peep-hole optimiser.
-See [documented optimisations](https://www.nesdev.org/wiki/6502_assembly_optimisations).
-
-Patchy comprehensions - in a given disassembly, is the byte literal treated as a zero-page address?
-If so, or if it is a 16-bit address for, say, a load or store, is there some kernal symbol for that
-address or is it a JSR destination?
-
-Run small trial executions in the background to score various areas as code or data. Detect code
-sequences that modify code (self-modifying code is harder to understand, although if the only change
-during simulation is to a memory address that is read from, and not thereafter jumped to or used as
-an index for a branch, signs point to likely separation between code and data).
-
-Try to make this multipronged analysis somewhat automatic so the user can just confirm simple
-hunches or heuristic interpretations.
-
-### Pattern Recogniser and Macro Synthesiser
-
-* The long conditional branch, [64tass supports it](https://tass64.sourceforge.net/#branch-long)
-* Register stack save, restore
-* Infinite unconditional loop
-* Block of zeroes
-* Block of pattern repeat
-
-### Canonicalisation
-
-There are different ways to represent data and code which are equivalent. A canonical form functions
-as a single representation into which any variation can be transformed for the purpose of deciding
-equivalence and should help in identifying behaviour, optimisation, deobfuscation and porting.
-
-The canonical form of a piece of interpreted data enables divergent yet semantically equivalent
-forms to be recognised. In the case of character data, the canonical form might make the reverse
-form equivalent. In the case of code, the canonical form will have equivalences that, for example
-use the y register instead of the x register, all else being equal. Canonical forms for code may
-execute in a different number of cycles or use a different number of bytes or have instructions in a
-different order (some design is required to analyse alternate orderings with preservation of
-semantics).
-
-## Interactive Disassembly
-
-While as much _automated_ detection as possible is ideal, it can't be perfect and all designation
-options should be selectable by the user.
-
-* Mark self-modifying code
-* Mark block or line
-* Macro extraction
-* Expression synthesis
-* Symbol definition
-* Comments, labels, alternate literal forms including escape characters
-
+Read more about how machine learning techniques are being developed to build a
+[Classifier](docs/classifier_improvements.md) that may be able to identify salient features
+of binaries. This is a work in progress.
 
 ## Useful Resources Documented Here
 
@@ -252,3 +197,5 @@ options should be selectable by the user.
 * [Dynamic Analysis](docs/dynamic-analysis.md) - some thoughts on prospects for runtime techniques for
   automating the detection of code and data and topics like program comprehension and program transformation.
 * How [Basic Stubs](docs/basic-headers.md) work on 8-bit Commodore machines.
+* [Ideas for the future](docs/ideas.md) of Revenge covering not only reverse engineering but
+reengineering and source renovation.
