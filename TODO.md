@@ -13,13 +13,13 @@
     * empirically determine n most common fixed sizes in corpus
     * create specific instances of fixed size feature extractor - binary outcome
   * [ ] index value feature extractor - rom images can start with a load address
-    * feature is an index, value and length (maybe just 1 or 2?)
+    * [ ] feature is an index, value and length (maybe just 1 or 2?)
     * [x] signature with offset feature extractor
     * [ ] empirically test discriminating power of hand-coded signature extractors
     * [x] convert bigram to feature extractor
      * [x] 256^2 may be too many features so consider:
-       * How to decide how many features are too many?
        * [x] Only include the top N most frequent bigrams (implemented for n-grams)
+       * [x] Test the use of entropy for selecting n-grams
        * Use dimensionality reduction techniques (PCA, t-SNE)
        * Apply feature selection to identify the most discriminative bigrams
 * [ ] write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
