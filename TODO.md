@@ -8,7 +8,7 @@
   * [ ] add test case
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
-* [ ] more feature vector extractor implementations
+* [ ] machine learning for binary file classification
   * [ ] precise length feature extractor
     * empirically determine n most common fixed sizes in corpus
     * create specific instances of fixed size feature extractor - binary outcome
