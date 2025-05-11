@@ -31,7 +31,9 @@ export class DataCollector {
     const features = new Map<string, [string, number][]>();
     const fileTypes = new Map<string, string>();
 
-    // Process each platform directory
+    // For now, the only classes are those signaled by containment in a directory tree
+    // rooted in the training dir where the dir name is the platform name is the class.
+    // TODO hierarchial classes and better class specification method
     for (const platform of fs.readdirSync(baseDir)) {
       const platformDir = path.join(baseDir, platform);
       // Use the symbolic link flag available in Node.js 
