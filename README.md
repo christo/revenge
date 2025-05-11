@@ -134,10 +134,11 @@ software libraries. The following table shows estimations, not promises.
 | ZX Spectrum & clones         | Planned     | Z80        |
 | TRS-80 I-III                 | Probable    | Z80        |
 | Microbee                     | Probable    | Z80        |
+| CHIP-80                      | Probable    | virtual    |
 | VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
-| Gameboy series               | ?           | Z80 -ish   |
-| Vectrex, TRS-80 Coco, Dragon | ?           | 6809       |
-| CHIP-80                      | ?           | virtual    |
+| Gameboy, Gameboy Color       | Probable    | Z80 -ish   |
+| Gameboy Advance              | Possible    | ARM        |
+| Vectrex, TRS-80 Coco, Dragon | Possible    | 6809       |
 
 ## File Formats
 
