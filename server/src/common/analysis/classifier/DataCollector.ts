@@ -120,6 +120,7 @@ export class DataCollector {
    * @param filePath File path to save to
    */
   saveTrainingData(data: TrainingData, filePath: string): void {
+    // TODO save the training data between runs
     const serializable = {
       features: Array.from(data.features.entries()),
       fileTypes: Array.from(data.fileTypes.entries())
@@ -134,6 +135,7 @@ export class DataCollector {
    * @returns Training data
    */
   loadTrainingData(filePath: string): TrainingData {
+    // TODO figure out when to resuse loaded training data
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
     return {
@@ -165,16 +167,14 @@ export class DataCollector {
 
       // Handle symlinks and get the correct path to use
       const {resolvedPath, stats} = this.resolvePathAndStats(entryPath);
-      if (!resolvedPath || !stats) {
-        continue;
-      }
-
-      if (stats.isDirectory()) {
-        // Recursively process subdirectory
-        await this.processDirectory(resolvedPath, platform, features, fileTypes);
-      } else if (stats.isFile()) {
-        // Process the file if readable
-        this.processFileEntry(resolvedPath, entryPath, platform, features, fileTypes);
+      if (resolvedPath && stats) {
+        if (stats.isDirectory()) {
+          // Recursively process subdirectory
+          await this.processDirectory(resolvedPath, platform, features, fileTypes);
+        } else if (stats.isFile()) {
+          // Process the file if readable
+          this.processFileEntry(resolvedPath, entryPath, platform, features, fileTypes);
+        }
       }
     }
   }
