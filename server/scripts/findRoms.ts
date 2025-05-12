@@ -9,7 +9,6 @@ async function findLargeFiles(directory: string) {
     const rootDir1 = resolve(directory);
     const files: FileInfo[] = [];
     await scanDirectory(rootDir1, files);
-    const fileInfos = [];
     files.filter((fi: FileInfo) => fi.size > MB1)
         .sort(bySize)
         .forEach(fileInfo => {
