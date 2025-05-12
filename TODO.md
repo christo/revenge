@@ -39,10 +39,10 @@
     * [ ] feature is an index, value and length (maybe just 1 or 2?)
     * [x] signature with offset feature extractor
     * [ ] empirically test discriminating power of hand-coded signature extractors
-    * [x] convert bigram to feature extractor
-     * [x] 256^2 may be too many features so consider:
-       * [x] Only include the top N most frequent bigrams (implemented for n-grams)
-       * [x] Test the use of entropy for selecting n-grams
+  * [x] convert bigram to feature extractor
+    * [x] 256^2 may be too many features so consider:
+      * [x] Only include the top N most frequent bigrams (implemented for n-grams)
+      * [x] Test the use of entropy for selecting n-grams
   * [ ] Use dimensionality reduction techniques (PCA, t-SNE)
   * [ ] Apply feature selection to identify the most discriminative features
     * work on this is started, but it's currently specific to n-gram feature extraction
