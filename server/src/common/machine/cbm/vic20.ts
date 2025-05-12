@@ -327,7 +327,7 @@ class Vic20 extends Computer {
 
 class Vic20BasicSniffer extends CbmBasicSniffer {
   constructor(memConfig: MemoryConfiguration) {
-    super(memConfig, "VIC-20 Basic prg", `VIC-20 BASIC (${memConfig.shortName})`);
+    super(memConfig, "VIC-20 Basic prg", `VIC-20 BASIC (${memConfig.shortName})`, ["vic-20"]);
   }
 }
 

@@ -24,12 +24,12 @@ class CbmBasicSniffer implements BlobSniffer {
       memoryConfig: MemoryConfiguration,
       name: string = "BASIC prg",
       desc: string = `CBM BASIC (${memoryConfig.shortName})`,
-      hashTags: string[] = ["basic", "cbm", memoryConfig.shortName]
+      hashTags: string[] = []
   ) {
     this.memoryConfig = memoryConfig;
     this.name = name;
     this.desc = desc;
-    this.hashTags = hashTags;
+    this.hashTags = ["basic", "cbm", memoryConfig.shortName, ...hashTags];
   }
 
   getMeta(): DisassemblyMeta {
