@@ -8,4 +8,4 @@ PROJECT_DIR=$(dirname "$0")/..
 MODULE="$PROJECT_DIR/server"
 bun --cwd="$MODULE" run compile && bun --cwd="$MODULE" test && bun --cwd="$MODULE" run lint
 MODULE="$PROJECT_DIR/client"
-bun --cwd="$MODULE" run compile && bun --cwd="$MODULE" test && bun --cwd="$MODULE" build && bun --cwd="$MODULE" run lint
+bun --cwd="$MODULE" run compile && bun --cwd="$MODULE" test && bun --cwd="$MODULE" run build && bun --cwd="$MODULE" run lint
