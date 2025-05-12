@@ -5,8 +5,7 @@
 * [ ] correctly sniff c64 machine code with basic stub
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
-  * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
-  * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
+  * [x] `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
 * [ ] `#quick` use new c64 and vic20 system logos
 * [ ] Find usable software/game database info to identify binaries from checksums or content
     hashes. MAME seems to have one such database
