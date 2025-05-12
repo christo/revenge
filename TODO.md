@@ -2,7 +2,6 @@
 
 ## Next Actions
 
-* [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] correctly sniff c64 machine code with basic stub
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
