@@ -8,6 +8,14 @@ interface PathResolution {
   stats: fs.Stats | null;
 }
 
+function fsError(error: unknown, message: string) {
+  if (error instanceof Error && typeof (error as NodeJS.ErrnoException).code === 'string') {
+    console.error(`${message}: ${error.message}`);
+  } else {
+    console.error(`${message}: ${error}`);
+  }
+}
+
 /**
  * Collects and processes binary files for training classifiers
  */
@@ -187,8 +195,8 @@ export class DataCollector {
   private readDirectoryEntries(dirPath: string): string[] | null {
     try {
       return fs.readdirSync(dirPath);
-    } catch (error: any) {
-      console.error(`  Error reading directory ${dirPath}: ${error.message || error}`);
+    } catch (error: unknown) {
+      fsError(error, `  Error reading directory ${dirPath}`);
       return null;
     }
   }
@@ -208,13 +216,13 @@ export class DataCollector {
         try {
           const stats = fs.statSync(entryPath);
           return {resolvedPath: entryPath, stats};
-        } catch (error: any) {
-          console.error(`  Error accessing ${path.basename(entryPath)}: ${error.message || error}`);
+        } catch (error: unknown) {
+          fsError(error, `  Error accessing ${path.basename(entryPath)}`);
           return {resolvedPath: null, stats: null};
         }
       }
-    } catch (error: any) {
-      console.error(`  Error checking if symlink for ${path.basename(entryPath)}: ${error.message || error}`);
+    } catch (error: unknown) {
+      fsError(error, `  Error checking if ${path.basename(entryPath)} is a symlink`);
       return {resolvedPath: null, stats: null};
     }
   }
@@ -229,7 +237,7 @@ export class DataCollector {
     let resolvedPath: string;
     try {
       resolvedPath = fs.realpathSync(symlinkPath);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(`  Skipping broken symlink: ${path.basename(symlinkPath)}`);
       return {resolvedPath: null, stats: null};
     }
@@ -238,8 +246,8 @@ export class DataCollector {
     try {
       const stats = fs.statSync(resolvedPath);
       return {resolvedPath, stats};
-    } catch (error: any) {
-      console.error(`  Error accessing symlink target ${path.basename(resolvedPath)}: ${error.message || error}`);
+    } catch (error: unknown) {
+      fsError(error, `Error accessing symlink target ${path.basename(resolvedPath)}:`)
       return {resolvedPath: null, stats: null};
     }
   }
@@ -274,8 +282,8 @@ export class DataCollector {
       features.set(fileId, fileFeatures);
       fileTypes.set(fileId, platform);
 
-    } catch (error: any) {
-      console.error(`  Error extracting features from ${path.basename(originalPath)}: ${error.message || error}`);
+    } catch (error: unknown) {
+      fsError(error, `  Error extracting features from ${path.basename(originalPath)}`);
     }
   }
 
