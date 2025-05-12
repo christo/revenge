@@ -6,19 +6,20 @@ import pluginReact from "eslint-plugin-react";
 
 export default defineConfig([
   globalIgnores(["dist/"]),
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },
-  tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
+
   {
-    settings: {
-      react: {
-        version: "detect",
-      }
-    },
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    languageOptions: { globals: globals.browser },
+    plugins: { js },
+    extends: ["js/recommended"],
+  },
+
+  // Spread typescript-eslint configs (array of objects)
+  ...tseslint.configs.recommended,
+
+  {
+    files: ["**/*.{ts,tsx}"],
     rules: {
-      // unused underscore-prefixed variables are explicitly ignored
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -26,4 +27,13 @@ export default defineConfig([
     },
   },
 
+  {
+    files: ["**/*.{jsx,tsx}"],
+    ...pluginReact.configs.flat.recommended,
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
 ]);
