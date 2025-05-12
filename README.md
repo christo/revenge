@@ -1,9 +1,9 @@
 # Revenge
 
-Retrocomputing Reverse Engineering Environment
-
 <!--suppress HtmlDeprecatedAttribute -->
 <img alt="revenge logo" align="right" src="client/public/revenge-logo192.png">
+
+Retrocomputing Reverse Engineering Environment
 
 This is a web app for programmers to reverse engineer software written
 for 1980s era home computers. It's a work in progress.
