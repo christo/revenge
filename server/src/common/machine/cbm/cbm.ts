@@ -1,6 +1,5 @@
 // Shared Commodore 8-bit machine stuff
 
-import {BlobSniffer} from "../BlobSniffer.js";
 import {BlobTypeSniffer} from "../BlobTypeSniffer.js";
 import {hex8} from "../core.js";
 import {Mos6502} from "../mos6502.js";
@@ -9,30 +8,6 @@ import {Mos6502} from "../mos6502.js";
 const PROGRAM_EXTS = ["prg", "crt", "bin", "rom", "p00", "bas"];
 const VOLUME_EXTS = ["d64", "tap", "t64", "d71", "d81"];
 const MEDIA_EXTS = ["sid"];
-
-// Forward declaration to avoid circular dependency
-let C64_BASIC_PRG: BlobSniffer;
-
-/**
- * All commodore BASIC sniffers.
- * Note: This is populated after C64_BASIC_PRG is initialized
- */
-let BASIC_SNIFFERS: BlobSniffer[] = [];
-
-/**
- * Function to set the C64 BASIC PRG sniffer from external module and initialize
- * BASIC_SNIFFERS with all available sniffers.
- */
-function setC64BasicPrg(sniffer: BlobSniffer) {
-  C64_BASIC_PRG = sniffer;
-  // Initialize BASIC_SNIFFERS when C64_BASIC_PRG is set
-  if (C64_BASIC_PRG) {
-    BASIC_SNIFFERS = [
-
-      C64_BASIC_PRG,
-    ];
-  }
-}
 
 
 /**
@@ -56,5 +31,5 @@ function prg(prefix: ArrayLike<number> | number) {
 }
 
 
-export {prg, ALL_CBM_FILE_EXTS, setC64BasicPrg, BASIC_SNIFFERS};
+export {prg, ALL_CBM_FILE_EXTS};
 // Make these decode the basic and do a few sanity checks, e.g. monotonic unique line numbers

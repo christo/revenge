@@ -33,9 +33,9 @@ export { Disassembler } from '@common/machine/asm/Disassembler.js';
 
 // CBM
 export { CBM_BASIC_2_0 } from '@common/machine/cbm/BasicDecoder.js';
-export { C64_8K16K_CART_SNIFFER, C64_CRT } from '@common/machine/cbm/c64.js';
+export { C64_8K16K_CART_SNIFFER, C64_CRT, C64_SNIFFERS } from '@common/machine/cbm/c64.js';
 export { VIC20_SNIFFERS, VIC20_CART_SNIFFER, Vic20, VIC_CART_IMAGE_SNIFFERS } from '@common/machine/cbm/vic20.js';
-export { BASIC_SNIFFERS, ALL_CBM_FILE_EXTS } from '@common/machine/cbm/cbm.js';
+export { ALL_CBM_FILE_EXTS } from '@common/machine/cbm/cbm.js';
 export { disassembleActual } from '@common/machine/dynamicAnalysis.ts';
 export { CbmBasicSniffer } from '@common/machine/cbm/CbmBasicSniffer';
 export { Vic20StubSniffer } from '@common/machine/cbm/Vic20StubSniffer.js';

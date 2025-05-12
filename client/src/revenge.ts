@@ -2,7 +2,7 @@
 
 import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 import {
-  BASIC_SNIFFERS,
+  C64_SNIFFERS,
   bestSniffer,
   BlobSniffer,
   C64_8K16K_CART_SNIFFER,
@@ -104,7 +104,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     const basicSmell = VIC20_SNIFFERS[i].sniff(fileBlob);
     maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
     if (basicSmell.score > 1) {
-      const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
+      const ta = printBasic(VIC20_SNIFFERS[i], fileBlob);
       ta.actions.push(hd);
       // TODO get rid of early return
       return ta;

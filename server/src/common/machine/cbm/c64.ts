@@ -18,7 +18,6 @@ import {Mos6502} from "../mos6502.js";
 import {RomImage} from "../RomImage.js";
 import {CartSigEdict} from "./CartSigEdict.js";
 import {CartSniffer} from "./CartSniffer.js";
-import {setC64BasicPrg} from "./cbm.js";
 import {Petscii} from "./petscii.js";
 
 const BASIC_PROGRAM_START = 0x0801;
@@ -215,11 +214,9 @@ class C64CrtSniffer extends CartSniffer {
   }
 }
 
-
-// Register C64_BASIC_PRG with cbm.js to break circular dependency
-setC64BasicPrg(C64_BASIC_PRG);
-
 const C64_COMPUTER = new C64(C64_MEMORY);
+
+const C64_SNIFFERS = []
 
 export {
   C64,
@@ -228,5 +225,6 @@ export {
   C64_BASIC_PRG,
   C64_COMPUTER,
   C64_16K_BASE_ADDRESS,
-  C64_ROMH_BASE_ADDRESS
+  C64_ROMH_BASE_ADDRESS,
+  C64_SNIFFERS
 };
