@@ -2,7 +2,7 @@
 
 ## Next Actions
 
-* [ ] `#quick` use new c64 and vic20 system logos
+* [x] `#quick` use new c64 and vic20 system logos
 * [ ] Find usable software/game database info to identify binaries from checksums or content
     hashes. MAME seems to have one such database
     for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml)
