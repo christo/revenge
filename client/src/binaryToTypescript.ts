@@ -1,6 +1,6 @@
+import {hex16} from "@common/machine/core.ts";
 import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
-import {hex16} from "./common-imports.ts";
 
 /*
 code generation for binary file to typescript array literal
