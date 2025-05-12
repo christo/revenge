@@ -22,6 +22,7 @@ export interface PredictionResult {
  * Uses a one-vs-rest approach to classify binary files
  */
 export class BinaryClassifierEnsemble {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private models: Map<string, any> = new Map();
   private classNames: string[] = [];
   private featureNames: string[] = [];

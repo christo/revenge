@@ -7,7 +7,7 @@ import {PRELOADS_DIR_C64, PRELOADS_DIR_VIC20} from "../constants.js";
 const router = express.Router();
 
 function getPreloads(fromPath: string): FileLike[] {
-  let plDir = path.join(".", fromPath);
+  const plDir = path.join(".", fromPath);
 
   return fs.readdirSync(plDir).filter(f => !f.startsWith(".")).map(fname => {
     console.log(`preparing preload blob ${fname}`);

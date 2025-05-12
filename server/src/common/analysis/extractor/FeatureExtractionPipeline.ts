@@ -63,6 +63,7 @@ class FeaturePipeline {
    * @param type Constructor type to find
    * @returns The found extractor instance or undefined if not found
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getExtractorByType<T extends FeatureExtractor>(type: new (...args: any[]) => T): T | undefined {
     for (const extractor of this.extractors) {
       if (extractor instanceof type) {

@@ -18,6 +18,7 @@ function appendToReport(reportPath: string, newReport: string): void {
     } else {
       fs.writeFileSync(reportPath, newReport);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error(`Error writing report: ${err.message || err}`);
     // Fallback to writing a new file
@@ -37,7 +38,7 @@ function appendToReport(reportPath: string, newReport: string): void {
 function generateTrainingReport(
     pipeline: FeaturePipeline,
     trainingTime: number,
-    results: any,
+    results: EvaluationResults,
     modelPath?: string
 ): string {
   const timestamp = new Date().toISOString();

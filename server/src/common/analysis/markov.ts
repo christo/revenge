@@ -7,7 +7,7 @@ import path from "path";
 type BytePair = [number, number];
 
 const incM = <K>(map: Map<K, number>, key: K) => {
-  // @ts-ignore missing key handled by if
+  // @ts-expect-error missing key handled by if
   map.set(key, map.has(key) ? map.get(key) + 1 : 1);
 };
 
@@ -87,6 +87,7 @@ class MapMarkov extends BaseMarkov implements Markov<BytePair> {
       stops: this.stops,
       pairs: this.ngrams
     };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mapToJson = (_key: any, value: any) => {
       if (value instanceof Map) {
         return {
@@ -151,6 +152,7 @@ class ArrayMarkov extends BaseMarkov implements Markov<BytePair> {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function* walk(dir: string, m: Markov<BytePair>): any {
   for await (const d of await fs.promises.opendir(dir)) {
     const entry = path.join(dir, d.name);
@@ -163,7 +165,7 @@ async function* walk(dir: string, m: Markov<BytePair>): any {
 }
 
 async function main(markov: Markov<BytePair>, root: string, file: string) {
-  let startTime = Date.now();
+  const startTime = Date.now();
   for await (const p of walk(root, markov)) {
     console.log(p);
   }
@@ -178,6 +180,14 @@ const RULEZ = path.join(os.homedir(), "/stuff/retro/cbm/c64/rulez-demos-cd/");
 const SMALL = path.join(os.homedir(), "/stuff/retro/cbm/c64/new-games/");
 const VIC20 = path.join(os.homedir(), "/stuff/retro/cbm/vic20/");
 const SINGLE = path.join(os.homedir(), "/stuff/retro/cbm/c64/new-games/RobotsRumble/");
+
+[CBM, C64, RULEZ, SMALL, VIC20, SINGLE].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    console.error(`directory ${dir} does not exist`);
+  } else {
+    console.log(`directory ${dir} exists`);
+  }
+})
 
 // main(new ArrayMarkov(), CBM, 'byte-freq.csv').then(_ => console.log("done"));
 main(new MapMarkov(), RULEZ, 'byte-freq.json').then(_ => console.log("done"));
