@@ -1,14 +1,14 @@
 # Revenge
 
-Reverse Engineering Environment
+Retrocomputing Reverse Engineering Environment
 
-Short story: This is a web app for programmers to reverse engineer software written
+This is a web app for programmers to reverse engineer software written
 for 1980s era home computers. It's a work in progress.
-
-![automated tests](https://github.com/christo/revenge/actions/workflows/workflow.yml/badge.svg)
 
 <!--suppress HtmlDeprecatedAttribute -->
 <img alt="revenge logo" align="right" src="client/public/revenge-logo192.png">
+
+![automated tests](https://github.com/christo/revenge/actions/workflows/workflow.yml/badge.svg)
 
 The grand idea is a web-based reverse engineering environment for retro computers
 with very small initial goals: binary file type detection and simple disassembly of
