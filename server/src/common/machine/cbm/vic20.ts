@@ -69,7 +69,7 @@ VIC20_SYM.sub(0xffc6, "ichkin", "Set Input [F2C7] (indirect entry)", "contains j
 VIC20_SYM.sub(0xffc9, "ichkout", "Set Output [F309] (indirect entry)", "contains jmp ($0320)");
 VIC20_SYM.sub(0xffcc, "iclrch", "Restore I/O Vector [F353] (indirect entry)", "contains jmp ($0322)");
 VIC20_SYM.sub(0xffcf, "ichrin", "Input Vector, chrin [F20E] (indirect entry)", "contains jmp ($0324)");
-VIC20_SYM.sub(0xffd2, "ichrout", "Output Vector, chrout [F27A] (indirect entry) (indirect entry)", "contains jmp ($0326)");
+VIC20_SYM.sub(0xffd2, "ichrout", "Output Vector, chrout [F27A] (indirect entry)", "contains jmp ($0326)");
 VIC20_SYM.sub(0xffd5, "load", "Load RAM From Device", "contains jmp $f542");
 VIC20_SYM.sub(0xf542, "_load", "internal Load RAM From Device");
 VIC20_SYM.sub(0xffd8, "save", "Save RAM To Device", "contains jmp $f675");
