@@ -7,5 +7,8 @@ PROJECT_DIR=$(dirname "$0")/..
 
 MODULE="$PROJECT_DIR/server"
 bun --cwd="$MODULE" run compile && bun --cwd="$MODULE" test && bun --cwd="$MODULE" run lint
+if [[ $? != 0 ]]; then
+  exit 1
+fi
 MODULE="$PROJECT_DIR/client"
 bun --cwd="$MODULE" run compile && bun --cwd="$MODULE" test && bun --cwd="$MODULE" run build && bun --cwd="$MODULE" run lint
