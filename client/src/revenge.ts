@@ -86,54 +86,39 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   if (fileBlob.getLength() === 0) {
     throw Error(`empty fileblob ${fileBlob.name}`);
   }
-  // run through various detection matchers which return a match coefficient;
-  // we look for a good match to decide what TypeActions to give the user,
-  // falling through to unknown which can only hexdump.
-  // hexdump is always an option
 
   const hd = mkHexDumper(fileBlob);
 
-  let maxBasicSmell = 0;
-  for (let i = 0; i < VIC20_BASIC_SNIFFERS.length; i++) {
-    const basicSmell = VIC20_BASIC_SNIFFERS[i].sniff(fileBlob);
-    maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
-    if (basicSmell.score > 1) {
-      const ta = printBasic(VIC20_BASIC_SNIFFERS[i], fileBlob);
-      ta.actions.push(hd);
-      // TODO get rid of early return
-      return ta;
-    }
+  const bestBasicSniffer = bestSniffer(VIC20_BASIC_SNIFFERS, fileBlob);
+  if (bestBasicSniffer.sniff(fileBlob).score > 1) {
+    const ta = printBasic(bestBasicSniffer, fileBlob);
+    ta.actions.push(hd);
+    // TODO get rid of early return
+    return ta;
   }
-
 
   const disassemblySniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
   const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
-    const typeActions1 = mkDisasmAction(cartMatch, fileBlob);
-    typeActions1.actions.push(hd);
-    return typeActions1;
+    const tas = mkDisasmAction(cartMatch, fileBlob);
+    tas.actions.push(hd);
+    return tas;
   }
 
   if (C64_CRT.sniff(fileBlob).score > 1) {
-    const typeActions: TypeActions = ({t: C64_CRT, actions: [hd]});
+    const tas: TypeActions = ({t: C64_CRT, actions: [hd]});
     console.warn("temporarily resorting to hexdump for C64_CRT");
-    return typeActions;
+    return tas;
   }
 
-
   // common cartridge image load addresses
-
-  for (let i = 0; i < VIC_PRG_SNIFFERS_AT_CART_BASES.length; i++) {
-    const prg = VIC_PRG_SNIFFERS_AT_CART_BASES[i];
-    // currently returns the first one that scores above 1
-    const stench = prg.sniff(fileBlob);
-    if (stench.score > 1) {
-      console.log(`sniffed common prg blob type`);
-      // TODO get rid of early return
-      const tas = mkDisasmAction(prg, fileBlob);
-      tas.actions.push(hd);
-      return tas;
-    }
+  const bestPrgSniffer = bestSniffer(VIC_PRG_SNIFFERS_AT_CART_BASES, fileBlob);
+  if (bestPrgSniffer.sniff(fileBlob).score > 1) {
+    console.log(`sniffed common prg blob type`);
+    // TODO get rid of early return
+    const tas = mkDisasmAction(bestPrgSniffer, fileBlob);
+    tas.actions.push(hd);
+    return tas;
   }
   // detect VIC20 machine code with basic stub
   // we have already detected some basicness
@@ -144,9 +129,9 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   const stench1 = stubSniff.sniff(fileBlob);
   if (stench1.score > 1) {
     // TODO disassembly missing basic stub edicts
-    const typeActions3 = mkDisasmAction(stubSniff, fileBlob);
-    typeActions3.actions.push(hd);
-    return typeActions3;
+    const tas = mkDisasmAction(stubSniff, fileBlob);
+    tas.actions.push(hd);
+    return tas;
   }
   // resort to hex dump only
   return {t: UNKNOWN_BLOB, actions: [hd]};
