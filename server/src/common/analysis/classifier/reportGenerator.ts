@@ -30,7 +30,6 @@ function appendToReport(reportPath: string, newReport: string): void {
  * Generate a comprehensive training report
  * @param pipeline The feature pipeline used
  * @param trainingTime Training time in milliseconds
- * @param evaluator Model evaluator instance
  * @param results Evaluation results
  * @param modelPath Optional path to the saved model file to report its size
  * @returns Formatted report string
