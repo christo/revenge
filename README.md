@@ -2,11 +2,11 @@
 
 Retrocomputing Reverse Engineering Environment
 
-This is a web app for programmers to reverse engineer software written
-for 1980s era home computers. It's a work in progress.
-
 <!--suppress HtmlDeprecatedAttribute -->
 <img alt="revenge logo" align="right" src="client/public/revenge-logo192.png">
+
+This is a web app for programmers to reverse engineer software written
+for 1980s era home computers. It's a work in progress.
 
 ![automated tests](https://github.com/christo/revenge/actions/workflows/workflow.yml/badge.svg)
 
