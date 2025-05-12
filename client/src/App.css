@@ -10,6 +10,10 @@
   url("./fonts/Martian_Mono/static/MartianMono/MartianMono-SemiBold.ttf") format("truetype");
 }
 
+.system_logo {
+  border-radius: 20%;
+}
+
 
 /*
 logo colours:

@@ -12,7 +12,7 @@ import {background, infoBright, lowKey, primaryBright} from "../neonColourScheme
  * @param foreground
  * @param text
  */
-function systemLogo(background: string, foreground: string, text: string) {
+function systemLogoText(background: string, foreground: string, text: string) {
   return <Typography sx={{
     font: "Martian Mono",
     fontWeight: "bold",
@@ -82,12 +82,12 @@ export function QuickLoads(props: { setFile: (f: FileLike) => void }) {
             justifyContent="flex-start"
             alignContent="flex-start">
           {items.VIC20.map((item, i) => {
-            return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="primary"
-                           key={`qlvic_${i}`}>{item.name}&nbsp;{systemLogo(primaryBright, background, "VIC")}</Button>
+            return <Button onClick={() => handleFile(item)} size="medium" variant="outlined" color="primary"
+                           key={`qlvic_${i}`}>{item.name}&nbsp;<img src="icon-vic20.png" width="24" height="24" className="system_logo" alt="VIC-20"/></Button>
           })}
           {items.C64.map((item, i) => {
-            return <Button onClick={() => handleFile(item)} size="small" variant="outlined" color="info"
-                           key={`qlc64_${i}`}>{item.name}&nbsp;{systemLogo(infoBright, background, "64")}</Button>
+            return <Button onClick={() => handleFile(item)} size="medium" variant="outlined" color="info"
+                           key={`qlc64_${i}`}>{item.name}&nbsp;<img src="icon-c64.png" width="24" height="24" className="system_logo" alt="C64"/></Button>
           })}
         </Stack>
       </Stack>
