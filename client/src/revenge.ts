@@ -66,11 +66,19 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
       label: "basic",
       f: async () => {
         const cbmFb: Memory<LittleEndian> = fb.asMemory() as Memory<LittleEndian>;
-        const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
-        // exclude "note" tags which are not a "line"
-        const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
-        detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);
-        return detail;
+
+        try {
+          const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
+          // exclude "note" tags which are not a "line"
+          const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
+          detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);
+          return detail;
+        } catch (e) {
+          // TODO figure out how to handle this, we detected basic but couldn't decode it
+          //  malformed basic programs seem to exist and still work (e.g. gamepack.prg)
+          throw Error(`failure to decode basic: ${e}`);
+        }
+
       }
     }]
   };
