@@ -325,11 +325,17 @@ class Vic20 extends Computer {
   }
 }
 
-const UNEXPANDED_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.UNEX);
-const EXP03K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP03K);
-const EXP08K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP08K);
-const EXP16K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP16K);
-const EXP24K_VIC_BASIC = new CbmBasicSniffer(Vic20.MEM_CONFIG.EXP24K);
+class Vic20BasicSniffer extends CbmBasicSniffer {
+  constructor(memConfig: MemoryConfiguration) {
+    super(memConfig, "VIC-20 Basic prg", `VIC-20 BASIC (${memConfig.shortName})`);
+  }
+}
+
+const UNEXPANDED_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.UNEX);
+const EXP03K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP03K);
+const EXP08K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP08K);
+const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
+const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
  * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
