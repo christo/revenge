@@ -99,11 +99,7 @@ class FeaturePipeline {
  * @returns Configured feature pipeline
  */
 function defaultPipeline(): FeaturePipeline {
-  const pipeline = new FeaturePipeline();
-  pipeline.add(new HistogramExtractor());
-  pipeline.add(new EntropyExtractor());
-  pipeline.add(new LengthExtractor());
-  return pipeline;
+  return streamlinedNgramPipeline();
 }
 
 /**
@@ -164,12 +160,13 @@ function streamlinedNgramPipeline(): FeaturePipeline {
 
   // Replace histogram (n=1) and bigram (n=2) with n-gram extractors
   // Use entropy selection for better feature quality
-  pipeline.add(new NgramExtractor(1, 16, NgramSelectionStrategy.ENTROPY)); // Replace histogram
-  pipeline.add(new NgramExtractor(2, 16, NgramSelectionStrategy.ENTROPY)); // Replace bigram
+  pipeline.add(new NgramExtractor(1, 16, NgramSelectionStrategy.ENTROPY));
+  pipeline.add(new NgramExtractor(2, 16, NgramSelectionStrategy.ENTROPY));
 
   // Add higher-order n-grams that might capture instruction patterns
-  pipeline.add(new NgramExtractor(3, 16, NgramSelectionStrategy.ENTROPY)); // Complete instructions
-  pipeline.add(new NgramExtractor(4, 12, NgramSelectionStrategy.ENTROPY)); // Instruction sequences
+  pipeline.add(new NgramExtractor(3, 20, NgramSelectionStrategy.ENTROPY));
+  pipeline.add(new NgramExtractor(3, 20, NgramSelectionStrategy.FREQUENCY));
+  pipeline.add(new NgramExtractor(4, 12, NgramSelectionStrategy.FREQUENCY));
 
   return pipeline;
 }
