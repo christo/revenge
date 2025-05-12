@@ -35,8 +35,8 @@ class Vic20StubSniffer extends CbmBasicSniffer implements BlobSniffer {
 
   constructor(memory: MemoryConfiguration, hashTags: string[] = []) {
     super(memory,
-        `6502 Machine Code with CBM BASIC stub`,
-        `6502 Machine Code with CBM BASIC stub (${memory.shortName})`,
+        `VIC-20 Machine Code with BASIC stub`,
+        `VIC-20 (${memory.shortName}) 6502 Machine Code with BASIC stub`,
         ["basic", "machine-code", ...hashTags, memory.shortName]);
   }
 
