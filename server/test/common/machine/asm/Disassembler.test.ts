@@ -9,7 +9,7 @@ import {LE} from "../../../../src/common/machine/Endian.js";
 import {FileBlob} from "../../../../src/common/machine/FileBlob.js";
 import {ArrayMemory} from "../../../../src/common/machine/Memory.js";
 import {MODE_ABSOLUTE, Mos6502} from "../../../../src/common/machine/mos6502.js";
-import {PRELOADS_DIR_VIC20} from "../../../../src/routes/constants.js";
+import {PRELOADS_DIR_VIC20} from "../../../../src/constants.js";
 import {mockOffsetDescriptor, niladicOpcodes} from "../util.js";
 
 

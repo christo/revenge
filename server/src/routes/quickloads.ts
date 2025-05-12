@@ -2,7 +2,7 @@ import express from "express";
 import fs from 'fs';
 import path from 'path';
 import {FileLike} from "../common/FileLike.js";
-import {PRELOADS_DIR_C64, PRELOADS_DIR_VIC20} from "./constants.js";
+import {PRELOADS_DIR_C64, PRELOADS_DIR_VIC20} from "../constants.js";
 
 const router = express.Router();
 

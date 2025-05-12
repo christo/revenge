@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import * as fs from "fs";
 import * as path from "node:path";
-import {PRELOADS_DIR_C64} from "../../../src/routes/constants.js";
+import {PRELOADS_DIR_C64} from "../../../src/constants.js";
 
 describe("c64", () => {
 
