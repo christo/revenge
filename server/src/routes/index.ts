@@ -4,7 +4,7 @@ const router: Router = express.Router();
 
 /*
  * GET home page.
- * TODO make this work with the frontend build, should be a static serve
+ * TODO make this work with the frontend build, should be a static serve of the client
  */
 router.get('/', (_req, res, _next) => {
   res.render('main', {title: 'Revenge'});
