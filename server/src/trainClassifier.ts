@@ -3,7 +3,7 @@ import * as path from 'path';
 import {BinaryClassifierEnsemble} from "./common/analysis/classifier/BinaryClassifierEnsemble.js";
 import {DataCollector} from "./common/analysis/classifier/DataCollector.js";
 import {ModelEvaluator} from "./common/analysis/classifier/ModelEvaluator.js";
-import {appendToReport, generateReport, generateTrainingReport} from "./common/analysis/classifier/reportGenerator.js";
+import {appendToReport, generateTrainingReport} from "./common/analysis/classifier/reportGenerator.js";
 import {
   fullPipeline,
   defaultPipeline,
