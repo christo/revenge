@@ -8,9 +8,9 @@ export class Ngram {
   public readonly SIZE = 256; // Byte values range from 0-255
   private readonly freqMap: Map<string, number>;
   private readonly n: number;
-  private min: number;
-  private max: number;
-  private totalCount: number;
+  private readonly min: number;
+  private readonly max: number;
+  private readonly totalCount: number;
 
   /**
    * Creates a new Ngram processor
