@@ -6,16 +6,14 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from 'react';
 import {TypeActions} from "../api.ts";
-import {FileBlob, FileLike, HashCalc} from "../common-imports.ts";
+import {BlobSniffer, FileBlob, FileLike, HashCalc} from "../common-imports.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {runSniffers} from "../revenge.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
 import {DetailRenderer} from "./DetailRenderer.tsx";
 
 
-function TabPanel(props: { children: React.ReactNode, value: number, item: number }) {
-  const {children, value, item} = props;
-
+function TabPanel({children, value, item}: { children: React.ReactNode, value: number, item: number }) {
   return (
       <div role="tabpanel" hidden={value !== item} id={`simple-tabpanel-${item}`}>
         {value === item && (<Box sx={{pt: 3}}>{children}</Box>)}
@@ -99,7 +97,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
   // get actions that can be done on this blob based on scoring from sniff:
   const typeActions: TypeActions = runSniffers(fb);
   const [action, setAction] = useState(0);
-  const t = typeActions.t;
+  const t:BlobSniffer = typeActions.t;
   return <Box>
 
     <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>

@@ -1,32 +1,33 @@
 // application-level stuff to tie user interface and domain model
 
+import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 import {
-  DataViewImpl, 
-  Detail, 
-  Environment, 
-  RevengeDialect, 
-  bestSniffer, 
-  BlobSniffer, 
-  UNKNOWN_BLOB,
-  CBM_BASIC_2_0,
-  C64_8K16K_CART_SNIFFER, 
+  BASIC_SNIFFERS,
+  bestSniffer,
+  BlobSniffer,
+  C64_8K16K_CART_SNIFFER,
   C64_CRT,
-  BASIC_SNIFFERS, 
+  CBM_BASIC_2_0,
+  DataViewImpl,
+  Detail,
   disassembleActual,
-  Vic20, 
-  VIC20_CART_SNIFFER, 
-  VIC_CART_ADDRS,
-  Vic20StubSniffer,
-  hex8,
-  LittleEndian,
+  Environment,
   FileBlob,
+  hex8,
+  HexTag,
+  LittleEndian,
   LogicalLine,
   Memory,
-  HexTag, 
-  Tag, 
-  TAG_HEXBYTES
+  RevengeDialect,
+  Tag,
+  TAG_HEXBYTES,
+  UNKNOWN_BLOB,
+  Vic20,
+  VIC20_CART_SNIFFER,
+  VIC20_SNIFFERS,
+  Vic20StubSniffer,
+  VIC_CART_ADDRS
 } from "./common-imports.ts";
-import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 
 
 /**
@@ -57,7 +58,7 @@ function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
     f: async () => {
       return disassembleActual(fb, dialect, t.getMeta());
     }
-  }, mkHexDumper(fb)];
+  }];
   return {
     t: t,
     actions: userActions
@@ -97,23 +98,24 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // falling through to unknown which can only hexdump.
   // hexdump is always an option
 
-  // TODO C64 CRT file format sniffer
-
-  const cartSniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
-  const cartMatch = cartSniffers.find(c => c.sniff(fileBlob).score > 1);
+  const hd = mkHexDumper(fileBlob);
+  const disassemblySniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
+  const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
-    return mkDisasmAction(cartMatch, fileBlob);
+    const typeActions1 = mkDisasmAction(cartMatch, fileBlob);
+    typeActions1.actions.push(hd);
+    return typeActions1;
   }
 
-  const hd = mkHexDumper(fileBlob);
   if (C64_CRT.sniff(fileBlob).score > 1) {
-    const typeActions: TypeActions = ({t: C64_CRT, actions: [mkHexDumper(fileBlob)]});
+    const typeActions: TypeActions = ({t: C64_CRT, actions: [hd]});
+    console.warn("temporarily resorting to hexdump for C64_CRT");
     return typeActions;
   }
 
   let maxBasicSmell = 0;
-  for (let i = 0; i < BASIC_SNIFFERS.length; i++) {
-    const basicSmell = BASIC_SNIFFERS[i].sniff(fileBlob);
+  for (let i = 0; i < VIC20_SNIFFERS.length; i++) {
+    const basicSmell = VIC20_SNIFFERS[i].sniff(fileBlob);
     maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
     if (basicSmell.score > 1) {
       const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
@@ -128,23 +130,27 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   for (let i = 0; i < VIC_CART_ADDRS.length; i++) {
     const prg = VIC_CART_ADDRS[i];
     // currently returns the first one that scores above 1
-    if (prg.sniff(fileBlob).score > 1) {
+    const stench = prg.sniff(fileBlob);
+    if (stench.score > 1) {
       console.log(`sniffed common prg blob type`);
       // TODO get rid of early return
-      return mkDisasmAction(prg, fileBlob);
+      const tas = mkDisasmAction(prg, fileBlob);
+      tas.actions.push(hd);
+      return tas;
     }
   }
   // detect VIC20 machine code with basic stub
   // we have already detected some basicness
-  if (maxBasicSmell > 0.5) {
-    // figure out which memory config to use
-    const memoryconfigs = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
-    const stubSniff = bestSniffer(memoryconfigs, fileBlob);
-    // TODO ideally we wouldn't sniff again
-    if (stubSniff.sniff(fileBlob).score > 1) {
-      // TODO disassembly missing basic stub edicts
-      return mkDisasmAction(stubSniff, fileBlob);
-    }
+  // figure out which memory config to use
+  const sniffers = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
+  const stubSniff = bestSniffer(sniffers, fileBlob);
+  // TODO ideally we wouldn't sniff again
+  const stench1 = stubSniff.sniff(fileBlob);
+  if (stench1.score > 1) {
+    // TODO disassembly missing basic stub edicts
+    const typeActions3 = mkDisasmAction(stubSniff, fileBlob);
+    typeActions3.actions.push(hd);
+    return typeActions3;
   }
   // resort to hex dump only
   return {t: UNKNOWN_BLOB, actions: [hd]};
