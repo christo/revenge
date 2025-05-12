@@ -3,8 +3,8 @@
 ## Next Actions
 
 * [ ] correctly sniff c64 machine code with basic stub
-* [ ] many C64 binaries are not detected correctly. investigate
-  * [ ] add test case
+* [x] many C64 binaries are not detected correctly. investigate
+  * [x] add test case
   * [x] `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
 * [ ] `#quick` use new c64 and vic20 system logos
 * [ ] Find usable software/game database info to identify binaries from checksums or content
