@@ -6,7 +6,7 @@ import {Environment} from "@common/machine/asm/asm.ts";
 import {RevengeDialect} from "@common/machine/asm/RevengeDialect.ts";
 import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "@common/machine/BlobSniffer.ts";
 import {CBM_BASIC_2_0} from "@common/machine/cbm/BasicDecoder.ts";
-import {C64_8K16K_CART_SNIFFER, C64_CRT} from "@common/machine/cbm/c64.ts";
+import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT} from "@common/machine/cbm/c64.ts";
 import {
   Vic20,
   VIC20_BASIC_SNIFFERS,
@@ -88,7 +88,11 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
 
   const hd = mkHexDumper(fileBlob);
 
-  const bestBasicSniffer = bestSniffer(VIC20_BASIC_SNIFFERS, fileBlob);
+  const ALL_BASIC_SNIFFERS = [
+    ...VIC20_BASIC_SNIFFERS,
+    C64_BASIC_PRG
+  ];
+  const bestBasicSniffer = bestSniffer(ALL_BASIC_SNIFFERS, fileBlob);
   if (bestBasicSniffer.sniff(fileBlob).score > 1) {
     const ta = printBasic(bestBasicSniffer, fileBlob);
     ta.actions.push(hd);
