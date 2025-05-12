@@ -50,7 +50,7 @@ class Vic20StubSniffer extends CbmBasicSniffer implements BlobSniffer {
     const guessedMemoryConfig = guessMemoryConfig(fb);
     if (!guessedMemoryConfig) {
       // cannot derive memory configuration, cannot work as a basic stub
-      console.log("no memory config");
+      // console.log("no known memory config");
       score *= 0.1;
     } else if (guessedMemoryConfig.basicProgramStart !== this.getMemoryConfig().basicProgramStart) {
       // guessed memory config is not the same as configured one

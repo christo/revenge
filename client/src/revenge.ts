@@ -26,7 +26,7 @@ import {
   VIC20_CART_SNIFFER,
   VIC20_SNIFFERS,
   Vic20StubSniffer,
-  VIC_CART_ADDRS
+  VIC_CART_IMAGE_SNIFFERS
 } from "./common-imports.ts";
 
 
@@ -83,7 +83,6 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   };
 };
 
-
 /**
  * Returns a best-guess file type and user actions that can be done on it.
  *
@@ -99,6 +98,20 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // hexdump is always an option
 
   const hd = mkHexDumper(fileBlob);
+
+  let maxBasicSmell = 0;
+  for (let i = 0; i < VIC20_SNIFFERS.length; i++) {
+    const basicSmell = VIC20_SNIFFERS[i].sniff(fileBlob);
+    maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
+    if (basicSmell.score > 1) {
+      const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
+      ta.actions.push(hd);
+      // TODO get rid of early return
+      return ta;
+    }
+  }
+
+
   const disassemblySniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
   const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
@@ -113,22 +126,11 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     return typeActions;
   }
 
-  let maxBasicSmell = 0;
-  for (let i = 0; i < VIC20_SNIFFERS.length; i++) {
-    const basicSmell = VIC20_SNIFFERS[i].sniff(fileBlob);
-    maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
-    if (basicSmell.score > 1) {
-      const ta = printBasic(BASIC_SNIFFERS[i], fileBlob);
-      ta.actions.push(hd);
-      // TODO get rid of early return
-      return ta;
-    }
-  }
 
   // common cartridge image load addresses
 
-  for (let i = 0; i < VIC_CART_ADDRS.length; i++) {
-    const prg = VIC_CART_ADDRS[i];
+  for (let i = 0; i < VIC_CART_IMAGE_SNIFFERS.length; i++) {
+    const prg = VIC_CART_IMAGE_SNIFFERS[i];
     // currently returns the first one that scores above 1
     const stench = prg.sniff(fileBlob);
     if (stench.score > 1) {
