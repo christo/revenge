@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import JSZip from 'jszip';
 import * as path from 'path';
 
+/**
+ * Represents a file or directory inside a Zip archive.
+ */
 interface FileSystemNode {
   name: string;
   path: string;
@@ -9,6 +12,9 @@ interface FileSystemNode {
   children?: FileSystemNode[];
 }
 
+/**
+ * Transparent unzipping interface over a file tree. Zip files are treated as logical directories.
+ */
 class FileSystem {
   private zipCache: Map<string, JSZip> = new Map();
 
@@ -16,7 +22,7 @@ class FileSystem {
    * List files in a directory or zip file
    */
   async listFiles(dirPath: string): Promise<FileSystemNode[]> {
-    if (this.isZipFile(dirPath)) {
+    if (this.hasZipExt(dirPath)) {
       return this.listZipFiles(dirPath);
     }
 
@@ -33,7 +39,7 @@ class FileSystem {
 
       if (node.isDirectory) {
         node.children = await this.listFiles(entryPath);
-      } else if (this.isZipFile(entryPath)) {
+      } else if (this.hasZipExt(entryPath)) {
         // Handle zip files as directories
         const zipChildren = await this.listZipFiles(entryPath);
         if (zipChildren.length > 0) {
@@ -72,25 +78,20 @@ class FileSystem {
   }
 
   /**
-   * Process a file tree and analyze all files
+   * Process a file tree and run a callback on files only.
    */
-  async processFileTree(node: FileSystemNode): Promise<void> {
+  async processFileTree(node: FileSystemNode, visitFile: (path: string, content: Buffer<ArrayBufferLike>) => void): Promise<void> {
     if (node.isDirectory && node.children) {
       for (const child of node.children) {
-        await this.processFileTree(child);
+        await this.processFileTree(child, visitFile);
       }
     } else {
-      // This is where you'd analyze the file content for your ROM classifier
-      const content = await this.readFile(node.path);
-      // Call your ROM analysis function here
-      this.analyzeRom(node.path, content);
+      const content: Buffer<ArrayBufferLike> = await this.readFile(node.path);
+      visitFile(node.path, content);
     }
   }
 
-  /**
-   * Check if a path is a zip file
-   */
-  private isZipFile(filePath: string): boolean {
+  private hasZipExt(filePath: string): boolean {
     return filePath.toLowerCase().endsWith('.zip');
   }
 
@@ -175,13 +176,6 @@ class FileSystem {
     return nodes;
   }
 
-  /**
-   * Example ROM analysis function - replace with your actual implementation
-   */
-  private analyzeRom(filePath: string, content: Buffer): void {
-    console.log(`Analyzing ROM: ${filePath}, size: ${content.length} bytes`);
-    // TODO callback to process file
-  }
 }
 
 // Example usage
@@ -197,7 +191,11 @@ async function main() {
     children: await fs.listFiles(rootDir)
   };
 
-  await fs.processFileTree(rootNode);
+  const printPath = (path: string) => {
+    console.log(path);
+  }
+
+  await fs.processFileTree(rootNode, printPath);
 }
 
-main().catch(console.error);
+// main().catch(console.error);
