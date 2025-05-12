@@ -39,15 +39,17 @@
   * [ ] edit options
   * [ ] branch icon import AltRouteIcon from '@mui/icons-material/AltRoute';
 * [ ] bulk back-end corpus
-  * test-time analysis for tuning detectors
-  * incorporate `file` output - it does a reasonable job for many files
-  * slurp tree, content hashing, indexing, duplicate detection, cache-invalidation
-  * train some kind of statistical thing, bayesian or full ml (baby steps grasshopper)
-  * [ ] Find usable game database info to identify binaries from checksums or content
-    hashes. MAME seems to have one such database 
-    for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) 
-    among many others (licensed CC0) organised by system under the `hash/` directory that includes
-    CRC32 and SHA1 for the few files I checked.
+  * [ ] incorporate `file` output - it does a reasonable job for many files
+  * [ ] slurp tree
+    * [x] content hashing
+    * [ ] indexing
+    * [ ] duplicate detection
+    * [ ] hash cache invalidation to re-do hashes
+* [ ] Find usable game database info to identify binaries from checksums or content
+  hashes. MAME seems to have one such database 
+  for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) 
+  among many others (licensed CC0) organised by system under the `hash/` directory that includes
+  CRC32 and SHA1 for the few files I checked.
   * Gamebase 64 also seems to have a big database and there is evidence of many github projects that
     make use of the database. 
   * Design some kind of system with a multi-authority claim of fact. The idea is that a given
@@ -58,9 +60,6 @@
     low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in
     the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be
     ideal at that point. The user can take it or leave it.
-  * Such claims might be accepted as a hint or fact with which to guide a reverse engineering
-    session.
-  * Could be used for machine learning tuning of a classifier
 * [ ] distinguishing data and code:
   * [ ] designation of interpretation of a line should have a confidence score
   * [ ] executed lines should be detected as code with high confidence score
@@ -115,13 +114,12 @@
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and
   code layout clash.
 * [ ] MOS 8502 C128 support github issue [https://github.com/christo/revenge/issues/2]
-* [ ] BASIC data statements embedded machine code detection/designation
 * [ ] Subroutines: map the inputs, outputs and register effects of subroutines
   * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
   * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
     routines using the same code path
 * [ ] petscii view (views abstraction)
-  * UI: render text data in machine-original font, derived directly from the character ROM
+  * [ ] UI: render text data in machine-original font, derived directly from the character ROM
 * [ ] find a suitable minimal system like CHIP-8 to add as a second machine architecture family
 
 ## Reading List
