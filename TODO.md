@@ -3,6 +3,7 @@
 ## Next Actions
 
 * [ ] correctly sniff c64 machine code with basic stub
+  * [x] add quickload example of c64 basic prg
 * [ ] `#quick` use new c64 and vic20 system logos
 * [ ] Find usable software/game database info to identify binaries from checksums or content
     hashes. MAME seems to have one such database
