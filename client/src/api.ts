@@ -1,4 +1,6 @@
-import {Detail, BlobSniffer, FileBlob} from "./common-imports.ts";
+import {Detail} from "@common/Detail.ts";
+import {BlobSniffer} from "@common/machine/BlobSniffer.ts";
+import {FileBlob} from "@common/machine/FileBlob.ts";
 
 /**
  * Main function for generating the file detail.

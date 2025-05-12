@@ -1,6 +1,7 @@
+import {Bigram} from "@common/analysis/Bigram.ts";
+import {FileBlob} from "@common/machine/FileBlob.ts";
 import {Box} from "@mui/material";
 import React, {useEffect, useRef} from 'react';
-import {Bigram, FileBlob} from "../common-imports.ts";
 import {background, secondaryBright} from "../neonColourScheme.ts";
 
 

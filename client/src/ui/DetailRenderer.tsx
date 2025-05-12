@@ -1,7 +1,8 @@
+import {Detail} from "@common/Detail.ts";
+import {Tag, TAG_OPERAND_VALUE} from "@common/machine/Tag.ts";
 import {BookmarkBorder, Dangerous, Edit, InsertLink, MenuBook} from "@mui/icons-material";
 import {Alert, Box, CircularProgress, Tooltip} from "@mui/material";
 import React, {useEffect, useState} from 'react';
-import {Detail, Tag, TAG_OPERAND_VALUE} from "../common-imports.ts";
 import {ActionExecutor} from "../api.ts";
 import {InfoPanel} from "./InfoPanel.tsx";
 

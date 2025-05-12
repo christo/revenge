@@ -1,3 +1,5 @@
+import {FileLike} from "@common/FileLike.ts";
+import {ALL_CBM_FILE_EXTS} from "@common/machine/cbm/cbm.ts";
 import {Box, ThemeProvider} from '@mui/material';
 import React, {useState} from "react";
 
@@ -5,7 +7,6 @@ import './App.css';
 import "./fonts/Bebas_Neue/BebasNeue-Regular.ttf";
 import {FileUploader} from "react-drag-drop-files";
 
-import {FileLike, ALL_CBM_FILE_EXTS} from "./common-imports.ts";
 import {darkTheme} from "./neonColourScheme.ts";
 import {QuickLoads} from "./ui/QuickLoads.tsx";
 import {CurrentFileSummary} from "./ui/CurrentFileSummary.tsx";

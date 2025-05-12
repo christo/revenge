@@ -1,8 +1,10 @@
+import {FileLike} from "@common/FileLike.ts";
+import {FileBlob} from "@common/machine/FileBlob.ts";
+import {Mos6502} from "@common/machine/mos6502.ts";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from 'react';
-import {FileLike, FileBlob, Mos6502} from "../common-imports.ts";
 import {neonYellow} from "../neonColourScheme.ts";
 import {FileDetail} from "./FileDetail.tsx";
 

@@ -1,33 +1,27 @@
 // application-level stuff to tie user interface and domain model
 
-import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
+import {DataViewImpl} from "@common/DataView.ts";
+import {Detail} from "@common/Detail.ts";
+import {Environment} from "@common/machine/asm/asm.ts";
+import {RevengeDialect} from "@common/machine/asm/RevengeDialect.ts";
+import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "@common/machine/BlobSniffer.ts";
+import {CBM_BASIC_2_0} from "@common/machine/cbm/BasicDecoder.ts";
+import {C64_8K16K_CART_SNIFFER, C64_CRT} from "@common/machine/cbm/c64.ts";
 import {
-  C64_SNIFFERS,
-  bestSniffer,
-  BlobSniffer,
-  C64_8K16K_CART_SNIFFER,
-  C64_CRT,
-  CBM_BASIC_2_0,
-  DataViewImpl,
-  Detail,
-  disassembleActual,
-  Environment,
-  FileBlob,
-  hex8,
-  HexTag,
-  LittleEndian,
-  LogicalLine,
-  Memory,
-  RevengeDialect,
-  Tag,
-  TAG_HEXBYTES,
-  UNKNOWN_BLOB,
   Vic20,
+  VIC20_BASIC_SNIFFERS,
   VIC20_CART_SNIFFER,
-  VIC20_SNIFFERS,
-  Vic20StubSniffer,
-  VIC_CART_IMAGE_SNIFFERS
-} from "./common-imports.ts";
+  VIC_PRG_SNIFFERS_AT_CART_BASES
+} from "@common/machine/cbm/vic20.ts";
+import {Vic20StubSniffer} from "@common/machine/cbm/Vic20StubSniffer.ts";
+import {hex8} from "@common/machine/core.ts";
+import {disassembleActual} from "@common/machine/dynamicAnalysis.ts";
+import {LittleEndian} from "@common/machine/Endian.ts";
+import {FileBlob} from "@common/machine/FileBlob.ts";
+import {LogicalLine} from "@common/machine/LogicalLine.ts";
+import {Memory} from "@common/machine/Memory.ts";
+import {HexTag, Tag, TAG_HEXBYTES} from "@common/machine/Tag.ts";
+import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 
 
 /**
@@ -100,11 +94,11 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   const hd = mkHexDumper(fileBlob);
 
   let maxBasicSmell = 0;
-  for (let i = 0; i < VIC20_SNIFFERS.length; i++) {
-    const basicSmell = VIC20_SNIFFERS[i].sniff(fileBlob);
+  for (let i = 0; i < VIC20_BASIC_SNIFFERS.length; i++) {
+    const basicSmell = VIC20_BASIC_SNIFFERS[i].sniff(fileBlob);
     maxBasicSmell = Math.max(maxBasicSmell, basicSmell.score);
     if (basicSmell.score > 1) {
-      const ta = printBasic(VIC20_SNIFFERS[i], fileBlob);
+      const ta = printBasic(VIC20_BASIC_SNIFFERS[i], fileBlob);
       ta.actions.push(hd);
       // TODO get rid of early return
       return ta;
@@ -129,8 +123,8 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
 
   // common cartridge image load addresses
 
-  for (let i = 0; i < VIC_CART_IMAGE_SNIFFERS.length; i++) {
-    const prg = VIC_CART_IMAGE_SNIFFERS[i];
+  for (let i = 0; i < VIC_PRG_SNIFFERS_AT_CART_BASES.length; i++) {
+    const prg = VIC_PRG_SNIFFERS_AT_CART_BASES[i];
     // currently returns the first one that scores above 1
     const stench = prg.sniff(fileBlob);
     if (stench.score > 1) {

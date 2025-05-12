@@ -271,7 +271,7 @@ const COMMON_CART_LOAD_ADDRESSES = [
  * Common load addresses for machine language cartridge images on VIC-20.
  * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
  */
-const VIC_CART_IMAGE_SNIFFERS = COMMON_CART_LOAD_ADDRESSES.map(a => prg(LE.wordToTwoBytes(a)));
+const VIC_PRG_SNIFFERS_AT_CART_BASES = COMMON_CART_LOAD_ADDRESSES.map(a => prg(LE.wordToTwoBytes(a)));
 
 /** where kernal rom image is mapped */
 const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
@@ -353,17 +353,22 @@ const VIC20_CART_SNIFFER = new CartSniffer(
     )
 );
 
-const VIC20_SNIFFERS = [
+const VIC20_BASIC_SNIFFERS = [
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,
   EXP08K_VIC_BASIC,
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
-]
+];
+
+const VIC20_MC_SNIFFERS = [
+  ...VIC_PRG_SNIFFERS_AT_CART_BASES,
+  VIC20_CART_SNIFFER,
+];
 
 export {
   Vic20,
-  VIC_CART_IMAGE_SNIFFERS,
+  VIC_PRG_SNIFFERS_AT_CART_BASES,
   VIC20_CART_SNIFFER,
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,
@@ -371,5 +376,7 @@ export {
   EXP16K_VIC_BASIC,
   EXP24K_VIC_BASIC,
   VIC20_SYM,
-  VIC20_SNIFFERS
+  VIC20_BASIC_SNIFFERS,
+  VIC20_MC_SNIFFERS,
+  COMMON_CART_LOAD_ADDRESSES
 }

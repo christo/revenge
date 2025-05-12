@@ -1,7 +1,9 @@
+import {FileLike} from "@common/FileLike.ts";
+import {QuickLoad} from "@common/QuickLoad.ts";
+import {ServerError} from "@common/ServerError.ts";
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from 'react';
-import {FileLike, QuickLoad, ServerError} from "../common-imports.ts";
 import {background, infoBright, lowKey, primaryBright} from "../neonColourScheme.ts";
 
 /**

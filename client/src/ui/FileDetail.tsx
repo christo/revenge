@@ -1,3 +1,7 @@
+import {HashCalc} from "@common/analysis/HashCalc.ts";
+import {FileLike} from "@common/FileLike.ts";
+import {BlobSniffer} from "@common/machine/BlobSniffer.ts";
+import {FileBlob} from "@common/machine/FileBlob.ts";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
@@ -6,7 +10,6 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from 'react';
 import {TypeActions} from "../api.ts";
-import {BlobSniffer, FileBlob, FileLike, HashCalc} from "../common-imports.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {runSniffers} from "../revenge.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
