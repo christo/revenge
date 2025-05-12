@@ -23,7 +23,6 @@ import {Memory} from "@common/machine/Memory.ts";
 import {HexTag, Tag, TAG_HEXBYTES} from "@common/machine/Tag.ts";
 import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
 
-
 /**
  * Shows a hex dump for a {@link FileBlob}.
  * @param fb
@@ -101,7 +100,7 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     VIC20_CART_SNIFFER,
     C64_8K16K_CART_SNIFFER,
     ...VIC_PRG_SNIFFERS_AT_CART_BASES,
-      ...Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]))
+    ...Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]))
   ];
   const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
@@ -119,6 +118,5 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   // resort to hex dump only
   return {t: UNKNOWN_BLOB, actions: [hd]};
 }
-
 
 export {runSniffers};
