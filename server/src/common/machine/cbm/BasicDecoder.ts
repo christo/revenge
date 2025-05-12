@@ -200,7 +200,11 @@ class BasicDecoder {
         dataView.addLine(mkBasicLine(byteSize, thisLineAddr, lineNumber, line));
       } else {
         // interpret as a character in quoteMode, otherwise a BASIC token
-        const token = quoteMode ? Petscii.C64.vice[b] : this.decodeToken(b);
+        let token = quoteMode ? Petscii.C64.vice[b] : this.decodeToken(b);
+        if (token === "{space}") {
+          // space is a special case, we just want to print a space
+          token = " ";
+        }
         // toggle quotemode
         if (token === '"') {
           quoteMode = !quoteMode;
