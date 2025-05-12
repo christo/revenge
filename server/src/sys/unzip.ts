@@ -179,7 +179,7 @@ class FileSystem {
 }
 
 // Example usage
-async function main() {
+async function _main() {
   const fs = new FileSystem();
   const rootDir = './roms';
 
@@ -197,5 +197,3 @@ async function main() {
 
   await fs.processFileTree(rootNode, printPath);
 }
-
-// main().catch(console.error);
