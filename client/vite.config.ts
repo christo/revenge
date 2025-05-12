@@ -26,6 +26,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ['hash-wasm', 'ramda'],
-    }
+    },
+    chunkSizeWarningLimit: 800,
   }
 })
