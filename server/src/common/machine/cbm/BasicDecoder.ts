@@ -209,8 +209,7 @@ class BasicDecoder {
       }
       // two zero bytes mark the end, if we are out of bytes, same thing.
       // i has already been incremented, so i and i+1 peek ahead for a zero-terminating word
-      const eof = isZeroish(source.read8(i)) && isZeroish(source.read8(i + 1));
-      finished = finished || (eol && eof);
+      finished = finished || (eol && isZeroish(source.read8(i)) && isZeroish(source.read8(i + 1)));
     }
 
     // "i" is pointing at the termination word
