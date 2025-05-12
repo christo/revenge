@@ -64,11 +64,15 @@ class CbmBasicSniffer implements BlobSniffer {
             // decrease in basic line numbers
             messages.push(`decrease in basic line numbers for ${fb.name}`)
             isBasic *= 0.5;
+          } else {
+            isBasic *= 2.5;
           }
           if (lastAddr !== -1 && lastAddr >= parseInt(addrStr.value, 16)) {
             // next line address is allegedly lower? This ain't basic
             messages.push(`lower next line address for ${fb.name} after line at address ${lastAddr}`)
             isBasic *= 0.3;
+          } else {
+            isBasic *= 2.5;
           }
           lastNum = thisNum;
           byteCount += ll.getByteSize();
@@ -93,6 +97,7 @@ class CbmBasicSniffer implements BlobSniffer {
       //console.error(e);
       isBasic = 0.01;
     }
+    console.log(`basic sniff for ${fb.name}: ${isBasic}  - ${messages.join(", ")}`);
     return {score: isBasic, messages: messages};
   }
 }
