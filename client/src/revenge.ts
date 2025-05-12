@@ -100,23 +100,12 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
   const disassemblySniffers = [
     VIC20_CART_SNIFFER,
     C64_8K16K_CART_SNIFFER,
-    ...VIC_PRG_SNIFFERS_AT_CART_BASES
+    ...VIC_PRG_SNIFFERS_AT_CART_BASES,
+      ...Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]))
   ];
   const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
     const tas = mkDisasmAction(cartMatch, fileBlob);
-    tas.actions.push(hd);
-    return tas;
-  }
-
-  // detect VIC20 machine code with basic stub
-  // we have already detected some basicness
-  // figure out which memory config to use
-  const sniffers = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
-  const stubSniff = bestSniffer(sniffers, fileBlob);
-  if (stubSniff.sniff(fileBlob).score > 1) {
-    // TODO disassembly missing basic stub edicts
-    const tas = mkDisasmAction(stubSniff, fileBlob);
     tas.actions.push(hd);
     return tas;
   }
