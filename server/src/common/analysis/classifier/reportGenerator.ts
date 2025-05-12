@@ -1,6 +1,6 @@
 import fs from "fs";
 import {FeaturePipeline} from "../extractor/FeatureExtractionPipeline.js";
-import {EvaluationResults, ModelEvaluator} from "./ModelEvaluator.js";
+import {EvaluationResults} from "./ModelEvaluator.js";
 
 /**
  * Append new report to existing report file

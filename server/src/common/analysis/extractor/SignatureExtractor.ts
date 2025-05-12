@@ -121,6 +121,11 @@ export class SignatureExtractor implements FeatureExtractor {
     this.signatures.push(signature);
   }
 
+  descriptor(): string {
+    const n = this.signatures.length;
+    return `SignatureExtractor (with ${n} signatures)`;
+  }
+
   /**
    * Check if a file matches a given signature
    * @param file File to check
@@ -152,11 +157,6 @@ export class SignatureExtractor implements FeatureExtractor {
     }
 
     return true;
-  }
-
-  descriptor(): string {
-    const n = this.signatures.length;
-    return `SignatureExtractor (with ${n} signatures)`;
   }
 
 

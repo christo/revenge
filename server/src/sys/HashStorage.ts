@@ -52,10 +52,10 @@ class HashStorage {
   load(hashCalc: HashCalc) {
     let hashesLoaded = this.loadHashes(SHA1_FILE, (hash, name) => hashCalc.addSha1Hash(name, hash));
     console.log(`loaded ${hashesLoaded} SHA1 hashes`);
-    
+
     hashesLoaded = this.loadHashes(MD5_FILE, (hash, name) => hashCalc.addMd5Hash(name, hash));
     console.log(`loaded ${hashesLoaded} MD5 hashes`);
-    
+
     hashesLoaded = this.loadHashes(CRC32_FILE, (hash, name) => hashCalc.addCrc32Hash(name, hash));
     console.log(`loaded ${hashesLoaded} CRC32 hashes`);
   }
@@ -75,7 +75,7 @@ class HashStorage {
       console.warn(`file ${filePath} does not exist, cannot load hashes`);
       return 0;
     }
-    
+
     const file = fs.readFileSync(filePath, 'utf8');
     let hashesLoaded = 0;
     file.split("\\n").forEach((line) => {

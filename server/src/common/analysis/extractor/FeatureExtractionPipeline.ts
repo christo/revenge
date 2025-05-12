@@ -129,12 +129,12 @@ function ngramPipeline(): FeaturePipeline {
   const pipeline = new FeaturePipeline();
   pipeline.add(new HistogramExtractor());
   pipeline.add(new LengthExtractor());
-  
+
   // Add different n-gram sizes with different selection strategies
   pipeline.add(new NgramExtractor(2, 16, NgramSelectionStrategy.FREQUENCY)); // Bigrams
   pipeline.add(new NgramExtractor(3, 16, NgramSelectionStrategy.FREQUENCY)); // Trigrams
   pipeline.add(new NgramExtractor(4, 12, NgramSelectionStrategy.ENTROPY));  // 4-grams with entropy selection
-  
+
   return pipeline;
 }
 

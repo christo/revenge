@@ -5,13 +5,13 @@ import {DataCollector} from "./common/analysis/classifier/DataCollector.js";
 import {ModelEvaluator} from "./common/analysis/classifier/ModelEvaluator.js";
 import {appendToReport, generateTrainingReport} from "./common/analysis/classifier/reportGenerator.js";
 import {
-  fullPipeline,
-  defaultPipeline,
-  ngramPipeline,
-  enhancedSignaturePipeline,
-  streamlinedNgramPipeline,
   balancedPlatformPipeline,
-  FeaturePipeline
+  defaultPipeline,
+  enhancedSignaturePipeline,
+  FeaturePipeline,
+  fullPipeline,
+  ngramPipeline,
+  streamlinedNgramPipeline
 } from './common/analysis/extractor/FeatureExtractionPipeline.js';
 
 // Directory containing platform-specific files
