@@ -97,10 +97,26 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     return ta;
   }
 
-  const disassemblySniffers = [VIC20_CART_SNIFFER, C64_8K16K_CART_SNIFFER];
+  const disassemblySniffers = [
+    VIC20_CART_SNIFFER,
+    C64_8K16K_CART_SNIFFER,
+    ...VIC_PRG_SNIFFERS_AT_CART_BASES
+  ];
   const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
   if (cartMatch) {
     const tas = mkDisasmAction(cartMatch, fileBlob);
+    tas.actions.push(hd);
+    return tas;
+  }
+
+  // detect VIC20 machine code with basic stub
+  // we have already detected some basicness
+  // figure out which memory config to use
+  const sniffers = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
+  const stubSniff = bestSniffer(sniffers, fileBlob);
+  if (stubSniff.sniff(fileBlob).score > 1) {
+    // TODO disassembly missing basic stub edicts
+    const tas = mkDisasmAction(stubSniff, fileBlob);
     tas.actions.push(hd);
     return tas;
   }
@@ -111,28 +127,6 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
     return tas;
   }
 
-  // common cartridge image load addresses
-  const bestPrgSniffer = bestSniffer(VIC_PRG_SNIFFERS_AT_CART_BASES, fileBlob);
-  if (bestPrgSniffer.sniff(fileBlob).score > 1) {
-    console.log(`sniffed common prg blob type`);
-    // TODO get rid of early return
-    const tas = mkDisasmAction(bestPrgSniffer, fileBlob);
-    tas.actions.push(hd);
-    return tas;
-  }
-  // detect VIC20 machine code with basic stub
-  // we have already detected some basicness
-  // figure out which memory config to use
-  const sniffers = Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]));
-  const stubSniff = bestSniffer(sniffers, fileBlob);
-  // TODO ideally we wouldn't sniff again
-  const stench1 = stubSniff.sniff(fileBlob);
-  if (stench1.score > 1) {
-    // TODO disassembly missing basic stub edicts
-    const tas = mkDisasmAction(stubSniff, fileBlob);
-    tas.actions.push(hd);
-    return tas;
-  }
   // resort to hex dump only
   return {t: UNKNOWN_BLOB, actions: [hd]};
 }
