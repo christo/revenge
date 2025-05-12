@@ -7,6 +7,7 @@ import {RevengeDialect} from "@common/machine/asm/RevengeDialect.ts";
 import {bestSniffer, BlobSniffer, UNKNOWN_BLOB} from "@common/machine/BlobSniffer.ts";
 import {CBM_BASIC_2_0} from "@common/machine/cbm/BasicDecoder.ts";
 import {C64_8K16K_CART_SNIFFER, C64_BASIC_PRG, C64_CRT} from "@common/machine/cbm/c64.ts";
+import {C64StubSniffer} from "@common/machine/cbm/C64StubSniffer.ts";
 import {
   Vic20,
   VIC20_BASIC_SNIFFERS,
@@ -96,27 +97,33 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
 
   const hd = mkHexDumper(fileBlob);
 
-  const ALL_BASIC_SNIFFERS = [
+  const ALL_BASIC_SNIFFERS: BlobSniffer[] = [
     ...VIC20_BASIC_SNIFFERS,
     C64_BASIC_PRG
   ];
+
+  const DISASM_SNIFFERS: BlobSniffer[] = [
+    VIC20_CART_SNIFFER,
+    C64_8K16K_CART_SNIFFER,
+    ...VIC_PRG_SNIFFERS_AT_CART_BASES,
+    ...Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc)),
+    new C64StubSniffer()
+  ];
+
   const bestBasicSniffer = bestSniffer(ALL_BASIC_SNIFFERS, fileBlob);
-  if (bestBasicSniffer.sniff(fileBlob).score > 1) {
+  const bestDisasmSniffer = bestSniffer(DISASM_SNIFFERS, fileBlob);
+
+  const basicStench = bestBasicSniffer.sniff(fileBlob);
+  const disasmStench = bestDisasmSniffer.sniff(fileBlob);
+
+  // choose the best of disasm or basic
+  if (basicStench.score > disasmStench.score && basicStench.score > 1) {
     const ta = printBasic(bestBasicSniffer, fileBlob);
     ta.actions.push(hd);
     // TODO get rid of early return
     return ta;
-  }
-
-  const disassemblySniffers = [
-    VIC20_CART_SNIFFER,
-    C64_8K16K_CART_SNIFFER,
-    ...VIC_PRG_SNIFFERS_AT_CART_BASES,
-    ...Vic20.MEMORY_CONFIGS.map(mc => new Vic20StubSniffer(mc, ["vic20"]))
-  ];
-  const cartMatch = disassemblySniffers.find(c => c.sniff(fileBlob).score > 1);
-  if (cartMatch) {
-    const tas = mkDisasmAction(cartMatch, fileBlob);
+  } else if (disasmStench.score > 1) {
+    const tas = mkDisasmAction(bestDisasmSniffer, fileBlob);
     tas.actions.push(hd);
     return tas;
   }

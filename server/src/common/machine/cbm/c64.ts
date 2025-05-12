@@ -25,8 +25,9 @@ const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", BASIC_PROGRAM_STA
 
 class C64 extends Computer {
   static readonly NAME = "C64";
+  static STANDARD_MEMORY = C64_MEMORY;
 
-  constructor(memoryConfig: MemoryConfiguration = C64_MEMORY, roms: RomImage[] = []) {
+  constructor(memoryConfig: MemoryConfiguration = C64.STANDARD_MEMORY, roms: RomImage[] = []) {
     super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
@@ -224,4 +225,5 @@ export {
   C64_COMPUTER,
   C64_16K_BASE_ADDRESS,
   C64_ROMH_BASE_ADDRESS,
+  C64_SYM
 };

@@ -29,7 +29,8 @@ class CbmBasicSniffer implements BlobSniffer {
     this.memoryConfig = memoryConfig;
     this.name = name;
     this.desc = desc;
-    this.hashTags = ["basic", "cbm", memoryConfig.shortName, ...hashTags];
+    this.hashTags = Array.from(new Set(["basic", "cbm", ...hashTags]));
+    this.hashTags.sort();
   }
 
   getMeta(): DisassemblyMeta {
