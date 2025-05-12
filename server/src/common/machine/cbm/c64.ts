@@ -216,8 +216,6 @@ class C64CrtSniffer extends CartSniffer {
 
 const C64_COMPUTER = new C64(C64_MEMORY);
 
-const C64_SNIFFERS = []
-
 export {
   C64,
   C64_CRT,
@@ -226,5 +224,4 @@ export {
   C64_COMPUTER,
   C64_16K_BASE_ADDRESS,
   C64_ROMH_BASE_ADDRESS,
-  C64_SNIFFERS
 };
