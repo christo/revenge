@@ -32,6 +32,7 @@ server/node_modules
 /server/data/preload/c64/teleporter64.prg
 /server/.env
 /server/data/analysis/hash/
+/server/data/analysis/binary_classifier_model.json
 
 **/.claude/settings.local.json
 /CLAUDE.md
