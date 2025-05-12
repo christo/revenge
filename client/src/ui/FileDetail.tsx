@@ -59,27 +59,19 @@ function HashStack({fb}: { fb: FileBlob }) {
     hc.sha1(fl).then(s => setSha1(s[1]));
     hc.md5(fl).then(s => setMd5(s[1]));
     hc.crc32(fl).then(s => setCrc32(s[1]));
-  }, []);
+  }, [fb]);
   const hashStyle = {fontFamily: '"Martian Mono", monospace', fontSize: "small", opacity: 0.6};
+  const showHash = (label: string, hash: string | null) => {
+    return <><Grid size={2}>{label}</Grid>
+      <Grid size={10}>
+        <Typography sx={hashStyle}>{hash ? hash : "..."}</Typography>
+      </Grid>
+    </>
+  };
   return <Grid container spacing={1} sx={{mt: 2}}>
-    <Grid size={2}>
-      SHA1
-    </Grid>
-    <Grid size={10}>
-      <Typography sx={hashStyle}>{sha1 ? sha1 : "..."}</Typography>
-    </Grid>
-    <Grid size={2}>
-      MD5
-    </Grid>
-    <Grid size={10}>
-      <Typography sx={hashStyle}>{md5 ? md5 : "..."}</Typography>
-    </Grid>
-    <Grid size={2}>
-      CRC32
-    </Grid>
-    <Grid size={10}>
-      <Typography sx={hashStyle}>{crc32 ? crc32 : "..."}</Typography>
-    </Grid>
+    {showHash("SHA1", sha1)}
+    {showHash("MD5", md5)}
+    {showHash("CRC32", crc32)}
   </Grid>;
 }
 
@@ -97,7 +89,7 @@ export function FileDetail({fb}: { fb: FileBlob }) {
   // get actions that can be done on this blob based on scoring from sniff:
   const typeActions: TypeActions = runSniffers(fb);
   const [action, setAction] = useState(0);
-  const t:BlobSniffer = typeActions.t;
+  const t: BlobSniffer = typeActions.t;
   return <Box>
 
     <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
