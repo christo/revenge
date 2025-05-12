@@ -14,12 +14,12 @@ interface RomFile {
 
 const romFiles: RomFile[] = [
   {
-    input: '../../roms/vic20/KERNAL.ROM',
+    input: 'data/roms/vic20/KERNAL.ROM',
     output: 'machine/cbm/vic20Kernal.ts',
     varName: 'VIC20_KERNAL_ROM'
   },
   {
-    input: '../../roms/vic20/BASIC.ROM',
+    input: 'data/roms/vic20/BASIC.ROM',
     output: 'machine/cbm/vic20Basic.ts',
     varName: 'VIC20_BASIC_ROM'
   }

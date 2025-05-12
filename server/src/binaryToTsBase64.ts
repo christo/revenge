@@ -15,12 +15,12 @@ interface RomFile {
 // TODO take these as parameters and move this into server/src/common
 const ROM_FILES: RomFile[] = [
   {
-    input: '../../roms/vic20/KERNAL.ROM',
+    input: 'data/roms/vic20/KERNAL.ROM',
     output: 'machine/cbm/vic20Kernal.ts',
     varName: 'VIC20_KERNAL_ROM'
   },
   {
-    input: '../../roms/vic20/BASIC.ROM',
+    input: 'data/roms/vic20/BASIC.ROM',
     output: 'machine/cbm/vic20Basic.ts',
     varName: 'VIC20_BASIC_ROM'
   }
@@ -41,7 +41,7 @@ function generateRomFile(rom: RomFile) {
     const byteArray = new Uint8Array(data);
 
     let tsContent: string = `// Converted from ${rom.input}\n\n`;
-    tsContent += `import {decodeBase64} from "../../../../server/src/common/analysis/base64.ts";\n\n`
+    tsContent += `import {decodeBase64} from "./common/analysis/base64.ts";\n\n`
     tsContent += `export const ${rom.varName}: number[] = Array.from(decodeBase64(\`\n`;
 
     tsContent += splitStringByLength(encodeBase64(byteArray), 110).join('\n');
