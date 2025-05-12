@@ -287,3 +287,53 @@ Confusion Matrix:
              c64   vic20
 c64            0    3085
 vic20          0     540
+
+
+==================================================
+
+=== Binary File Type Classification Report ===
+Timestamp: 2025-05-12T12:41:46.990Z
+Training Time: 923.18 seconds
+Model Size: 61656.50 KB (60.21 MB)
+
+=== Feature Extraction Pipeline ===
+Total Extractors: 6
+
+[1] HistogramExtractor
+Features: 256 byte frequencies
+
+[2] EntropyExtractor
+Window Size: 256 bytes
+
+[3] LengthExtractor
+Size Thresholds: 11
+
+[4] BigramExtractor
+Top Bigrams Count: 16
+
+[5] EnhancedSignatureExtractor
+Signatures: 52
+
+[6] NgramExtractor (Trigram)
+N-gram Length: 3
+Features Count: 30
+Selection Strategy: frequency
+
+=== Binary File Type Classification Report ===
+
+Overall Accuracy: 14.90% (540/3624)
+
+Class Distribution:
+  c64: 3084 samples (85.10%)
+  vic20: 540 samples (14.90%)
+
+Per-Class Metrics:
+Class        Precision  Recall     F1 Score
+-------------------------------------------
+c64            0.00%     0.00%     0.00%
+vic20         14.90%   100.00%    25.94%
+
+Confusion Matrix:
+             c64   vic20
+c64            0    3084
+vic20          0     540
