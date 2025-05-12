@@ -5,11 +5,33 @@
 * [ ] Myriad basic stub does not show symbol definitions (some others too?)
 * [ ] correctly sniff c64 machine code with basic stub
 * [ ] `#quick` use new c64 and vic20 system logos
+* [ ] Find usable software/game database info to identify binaries from checksums or content
+    hashes. MAME seems to have one such database
+    for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml)
+    among many others (licensed CC0) organised by system under the `hash/` directory that includes
+    CRC32 and SHA1 for the few files I checked.
+  * Gamebase 64 also seems to have a big database and there is evidence of many github projects that
+    make use of the database.
+  * Design some kind of system with a multi-authority claim of fact. The idea is that a given
+    authority claims that a binary of a given size, with a given hash etc. has a given name and runs
+    on a given system etc. The content of the claim will not be homogenous however each claimable
+    field should be consistently defined.
+  * End users and known published sources can be authorities. When a binary matches a claim by
+    low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in
+    the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be
+    ideal at that point. The user can take it or leave it.
+* [ ] review and update per-system file format metadata
+  * [ ] integrate file format metadata with system definition
+  * [ ] integrate file format metadata with ML analysis pipeline
 * [ ] many C64 binaries are not detected correctly. investigate
   * [ ] add test case
   * `80columns.prg` and `Gridrunner.prg` detected as C64 BASIC instead of MC with a BASIC stub
   * `gamepack.prg` is detected as C64 BASIC but rendered in the BASIC tab as a hex dump
 * [ ] machine learning for binary file classification
+  * [ ] add preprocessing stage in ml pipeline
+  * [ ] add cache to ml pipeline
+    * different feature extractors may be used during a training run, but for a given config
+      of a given feature extractor, this should be cacheable.
   * [ ] precise length feature extractor
     * empirically determine n most common fixed sizes in corpus
     * create specific instances of fixed size feature extractor - binary outcome
@@ -23,6 +45,7 @@
        * [x] Test the use of entropy for selecting n-grams
   * [ ] Use dimensionality reduction techniques (PCA, t-SNE)
   * [ ] Apply feature selection to identify the most discriminative features
+    * work on this is started, but it's currently specific to n-gram feature extraction
 * [ ] write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
   * enable defining explicit basic stub in assembly
   * help future rendering of BASIC syntax
@@ -46,21 +69,6 @@
     * [ ] indexing
     * [ ] duplicate detection
     * [ ] hash cache invalidation to re-do hashes
-* [ ] Find usable game database info to identify binaries from checksums or content
-  hashes. MAME seems to have one such database 
-  for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml) 
-  among many others (licensed CC0) organised by system under the `hash/` directory that includes
-  CRC32 and SHA1 for the few files I checked.
-  * Gamebase 64 also seems to have a big database and there is evidence of many github projects that
-    make use of the database. 
-  * Design some kind of system with a multi-authority claim of fact. The idea is that a given
-    authority claims that a binary of a given size, with a given hash etc. has a given name and runs
-    on a given system etc. The content of the claim will not be homogenous however each claimable
-    field should be consistently defined.
-  * End users and known published sources can be authorities. When a binary matches a claim by
-    low-collision hash (even MD5 would probably never collide) the database entry can be surfaced in
-    the user interface like this: "MAME v12345 claims this binary is XXX" and some citation would be
-    ideal at that point. The user can take it or leave it.
 * [ ] distinguishing data and code:
   * [ ] designation of interpretation of a line should have a confidence score
   * [ ] executed lines should be detected as code with high confidence score
