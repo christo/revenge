@@ -2,7 +2,8 @@ import {Byteable} from "../../Byteable.js";
 import {Petscii} from "../cbm/petscii.js";
 import {hex16, hex8, unToSigned} from "../core.js";
 import {
-  FullInstruction, Instruction,
+  FullInstruction,
+  Instruction,
   MODE_ABSOLUTE,
   MODE_ABSOLUTE_X,
   MODE_ABSOLUTE_Y,
@@ -33,8 +34,10 @@ import {
   TAG_NO_ADDRESS,
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
-  TAG_PETSCII,
-  TAG_SYM_DEF, TAG_SYMBLURB, TAG_SYMNAME
+  TAG_PETSCII, TAG_RELATIVE,
+  TAG_SYM_DEF,
+  TAG_SYMBLURB,
+  TAG_SYMNAME
 } from "../Tag.js";
 import {Environment, LabelsComments} from "./asm.js";
 import {Emitter, emitThis, errorEmitter, instructionEmitter} from "./Assembler.js";
@@ -54,8 +57,6 @@ import {SymbolLookup} from "./SymbolLookup.js";
  * @param ts
  */
 const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
-
-
 
 /**
  * Homebrew 6502 dialect with modern conventional idioms.
@@ -311,7 +312,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
   private taggedCode(fil: FullInstructionLine, dis: Disassembler): Tag[] {
     // add the mnemonic tag and also the mnemonic category
     const fi = fil.fullInstruction;
-    const mi:Instruction = fi.instruction;
+    const mi: Instruction = fi.instruction;
     const mnemonicText = mi.op.mnemonic.toLowerCase();
     const mnemonic: Tag = new Tag([TAG_MNEMONIC, mi.op.cat], mnemonicText);
     const operandText = this.renderOperand(fi, dis).trim();
@@ -319,10 +320,9 @@ class RevengeDialect extends BaseDialect implements Dialect {
     if (operandText.length > 0) {
       const operandTag = new Tag([TAG_OPERAND, mi.mode.code], operandText);
       if (fi.staticallyResolvableOperand()) {
-        const opnd = fi.operandValue();
-        // future: check other addressing modes
+        const opnd = mi.mode === MODE_RELATIVE ? dis.currentAddress + fi.operandValue() : fi.operandValue();
         // check if the operand is an address inside the binary
-        if (mi.mode === MODE_ABSOLUTE) {
+        if (mi.mode === MODE_ABSOLUTE || mi.mode === MODE_RELATIVE) {
           if (dis.isInBinary(opnd)) {
             operandTag.classNames.push(TAG_IN_BINARY);
           } else {
@@ -335,6 +335,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
               operandTag.classNames.push(TAG_KNOWN_SYMBOL);
             }
           }
+        }
+        if (mi.mode === MODE_RELATIVE) {
+          // stash the decimal signed value
+          operandTag.data.push([TAG_RELATIVE, unToSigned(fi.operandValue()).toString(10)]);
         }
         // add operand value as data so front-end can always extract it - could be symbol
         operandTag.data.push([TAG_OPERAND_VALUE, hex16(opnd)]);
@@ -424,8 +428,11 @@ class RevengeDialect extends BaseDialect implements Dialect {
         operand = "(" + this.hexByteText(il.firstByte) + "), y";
         break;
       case MODE_RELATIVE:
-        // render decimal two's complement 8-bit
-        operand = unToSigned(il.firstByte).toString(10);
+        // the literal byte represents two's complement 8-bit offset
+          // to get the absolute address, add the current PC to the offset
+
+        // operand = unToSigned(il.firstByte).toString(10);
+          operand = this.hexWordText(unToSigned(il.firstByte) + dis.currentAddress);
         break;
       case MODE_ZEROPAGE:
         operand = this.hexByteText(il.firstByte);
