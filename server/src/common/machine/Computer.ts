@@ -6,7 +6,6 @@ import {RomImage} from "./RomImage.js";
 
 /**
  * Stateful instance of a specific computer with memory, cpu, etc.
- * TODO implement method to load ROMs
  */
 abstract class Computer {
   private _memory: Memory<Endian>;
