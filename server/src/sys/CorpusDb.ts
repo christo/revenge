@@ -34,7 +34,7 @@ class CorpusDb implements ContentDb {
       throw Error(`Unknown hash type: ${type}`);
     }
     names.sort();
-    // ignore hash collisions (only plausible with crc32)
+    // ignore hash collisions (though we could cross-correlate other hashes)
     // so we assume each name is a duplicate of the same content,
     // therefore we should return a single entity with multiple names
     return [new ContentEntity(names, [], "", ["corpus"], CORPUS_AUTHORITY)];
