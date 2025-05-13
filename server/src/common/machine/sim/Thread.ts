@@ -3,7 +3,7 @@ import {OpSemantics} from "../asm/Op.js";
 import {Addr, hex16} from "../core.js";
 import {Endian} from "../Endian.js";
 import {Memory} from "../Memory.js";
-import {FullInstruction, MODE_INDIRECT} from "../mos6502.js";
+import {FullInstruction, MODE_INDIRECT, ST} from "../mos6502.js";
 import {enumInstAddr, InstRec} from "./Tracer.js";
 
 
@@ -197,7 +197,8 @@ export class Thread {
             }
           }
         }
-        if (inst.staticallyResolvableOperand()) {
+        // exclude stack read/write because we can't statically derive the address
+        if (inst.staticallyResolvableOperand() && op.cat !== ST) {
           if (op.has(OpSemantics.IS_MEMORY_READ)) {
             this.read.push(inst.operandValue());
           }

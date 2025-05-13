@@ -141,14 +141,10 @@ const LDY = new Op("LDY", "load Y", MEM, [OpSemantics.IS_MEMORY_READ]);
 const LSR = new Op("LSR", "logical shift right", MATH);
 const NOP = new Op("NOP", "no operation", MS);
 const ORA = new Op("ORA", "or with accumulator", LG);
-// TODO memory write to stack
-const PHA = new Op("PHA", "push accumulator", ST);
-// TODO memory write to stack
-const PHP = new Op("PHP", "push processor status (SR)", ST);  // TODO
-// TODO memory read from stack
-const PLA = new Op("PLA", "pull accumulator", ST);
-// TODO memory read from stack
-const PLP = new Op("PLP", "pull processor status (SR)", ST);
+const PHA = new Op("PHA", "push accumulator", ST, [OpSemantics.IS_MEMORY_WRITE]);
+const PHP = new Op("PHP", "push processor status (SR)", ST, [OpSemantics.IS_MEMORY_WRITE]);
+const PLA = new Op("PLA", "pull accumulator", ST, [OpSemantics.IS_MEMORY_READ]);
+const PLP = new Op("PLP", "pull processor status (SR)", ST, [OpSemantics.IS_MEMORY_READ]);
 const ROL = new Op("ROL", "rotate left", MATH);
 const ROR = new Op("ROR", "rotate right", MATH);
 const RTI = new Op("RTI", "return from interrupt", INT, [OpSemantics.IS_RETURN]);
@@ -609,7 +605,7 @@ export {
   MODE_INDIRECT_Y,
   MODE_INDIRECT,
   MODE_ZEROPAGE_Y,
-
+  ST
 };
 
 export type {InstructionCall}
