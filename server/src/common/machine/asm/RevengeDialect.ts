@@ -275,7 +275,6 @@ class RevengeDialect extends BaseDialect implements Dialect {
    * Parse an operand, either literal or symbolic
    * @param operand
    * @param am metadata about the assembler context
-   * @private
    */
   parseOperand(operand: string, am: AssemblyMeta): OperandResolver | undefined {
     if (operand.length < 2) {
@@ -328,7 +327,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
             if (symDef) {
               // we found a symbol for this add the data signifying usage of the symbol
               operandTag.data.push([`symname`, symDef.name]);
-              operandTag.data.push([`symblurb`, symDef.descriptor]); // TODO maybe build a comment out of this
+              operandTag.data.push([`symblurb`, symDef.descriptor]);
               operandTag.classNames.push(TAG_KNOWN_SYMBOL);
             }
           }
