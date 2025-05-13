@@ -24,7 +24,7 @@ export function CurrentFileSummary({file}: { file: File | FileLike }) {
     <Typography display="inline" sx={{pr: 1, fontWeight: "bold", fontSize: "200%", lineHeight: 1.8, color: neonYellow}}>
       {file.name}
     </Typography>
-    <Typography display="inline" sx={{pr: 1, fontFamily: '"Martian Mono", monospace'}}>
+    <Typography display="inline" sx={{pr: 1, fontFamily: '"Martian Mono", monospace', opacity: 0.6}}>
       {file.size} bytes
     </Typography>
     <Box className="contents">
