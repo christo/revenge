@@ -43,6 +43,7 @@ class HashStorage {
 
   /**
    * Saves hash data to disk.
+   * @param hashCalc contains the calculated hash values with file references
    */
   save(hashCalc: HashCalc) {
     if (!existsSync(this.baseDir)) {
