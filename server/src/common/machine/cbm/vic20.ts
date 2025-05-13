@@ -370,6 +370,9 @@ const VIC20_BASIC_SNIFFERS = [
   EXP24K_VIC_BASIC,
 ];
 
+/**
+ * Pure machine language sniffers, cartridge and prg files.
+ */
 const VIC20_MC_SNIFFERS = [
   ...VIC_PRG_SNIFFERS_AT_CART_BASES,
   VIC20_CART_SNIFFER,
