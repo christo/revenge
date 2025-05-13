@@ -292,7 +292,6 @@ const VIC_ROMS = [
 
 class Vic20 extends Computer {
   static NAME = "VIC-20";
-  static LONG_NAME = "Commodore VIC-20";
   static ROMS = VIC_ROMS;
 
   // future: add screen and colour memory relocation for 8k, 16k, 24k, 32k
@@ -338,7 +337,8 @@ const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
 const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
- * VIC-20 raw cart image sniffer. Currently only handles single contiguous mapped-regions.
+ * VIC-20 raw cart image sniffer. Currently only handles single contiguous mapped-regions,
+ * multi-part carts commonly used have two blocks, at 0xa000 and 0x6000.
  */
 const VIC20_CART_SNIFFER = new CartSniffer(
     "VIC-20 cart",
