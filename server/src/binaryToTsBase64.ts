@@ -14,33 +14,33 @@ interface RomFile {
 
 const ROM_FILES: RomFile[] = [
   {
-    input: 'data/roms/vic20/KERNAL.ROM',
-    output: 'machine/cbm/vic20Kernal.ts',
+    input: '../data/roms/vic20/KERNAL.ROM',
+    output: 'common/machine/cbm/vic20Kernal.ts',
     varName: 'VIC20_KERNAL_ROM'
   },
   {
-    input: 'data/roms/vic20/BASIC.ROM',
-    output: 'machine/cbm/vic20Basic.ts',
+    input: '../data/roms/vic20/BASIC.ROM',
+    output: 'common/machine/cbm/vic20Basic.ts',
     varName: 'VIC20_BASIC_ROM'
   },
   {
-    input: 'data/roms/vic20/CHAR.ROM',
-    output: 'machine/cbm/vic20Char.ts',
+    input: '../data/roms/vic20/CHAR.ROM',
+    output: 'common/machine/cbm/vic20Char.ts',
     varName: 'VIC20_CHAR_ROM'
   },
   {
-    input: 'data/roms/c64/KERNAL.ROM',
-    output: 'machine/cbm/c64Kernal.ts',
+    input: '../data/roms/c64/KERNAL.ROM',
+    output: 'common/machine/cbm/c64Kernal.ts',
     varName: 'C64_KERNAL_ROM'
   },
   {
-    input: 'data/roms/c64/BASIC.ROM',
-    output: 'machine/cbm/c64Basic.ts',
+    input: '../data/roms/c64/BASIC.ROM',
+    output: 'common/machine/cbm/c64Basic.ts',
     varName: 'C64_BASIC_ROM'
   },
   {
-    input: 'data/roms/c64/CHAR.ROM',
-    output: 'machine/cbm/c64Char.ts',
+    input: '../data/roms/c64/CHAR.ROM',
+    output: 'common/machine/cbm/c64Char.ts',
     varName: 'C64_CHAR_ROM'
   }
 ];
@@ -60,7 +60,7 @@ function generateRomFile(rom: RomFile) {
     const byteArray = new Uint8Array(data);
 
     let tsContent: string = `// Converted from ${rom.input}\n\n`;
-    tsContent += `import {decodeBase64} from "./common/analysis/base64.ts";\n\n`
+    tsContent += `import {decodeBase64} from "../../analysis/base64.js";\n\n`
     tsContent += `export const ${rom.varName}: number[] = Array.from(decodeBase64(\`\n`;
 
     tsContent += splitStringByLength(encodeBase64(byteArray), 110).join('\n');
@@ -77,5 +77,7 @@ function generateRomFile(rom: RomFile) {
 function generateRomFiles(romFiles: RomFile[] = ROM_FILES) {
   romFiles.forEach(generateRomFile);
 }
+
+generateRomFiles();
 
 export {splitStringByLength};

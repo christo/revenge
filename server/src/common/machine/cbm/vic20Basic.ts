@@ -1,4 +1,4 @@
-// Converted from ../../roms/vic20/BASIC.ROM
+// Converted from ../data/roms/vic20/BASIC.ROM
 
 import {decodeBase64} from "../../analysis/base64.js";
 
