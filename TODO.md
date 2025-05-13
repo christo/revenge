@@ -87,6 +87,10 @@
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
   * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
+* [ ] multiple disassembly dialect support
+  * The dialect API should enable opt-in to supported ISA families
+  * representing assembly source for a given ISA may impose a configuration directive,
+    e.g. `.cpu = 6502`
 * [ ] consult published reverse engineering work on retro binaries I have as relevant ground truth
   * [ ] https://github.com/mwenge/gridrunner
   * [ ] Matson Dawson's published version of Lee Davison's VIC-20
@@ -119,6 +123,12 @@
 * [ ] petscii view (views abstraction)
   * [ ] UI: render text data in machine-original font, derived directly from the character ROM
 * [ ] find a suitable minimal system like CHIP-8 to add as a second machine architecture family
+* [ ] Broaden code detection to fuller emulation
+  * [ ] check out MIT licensed typescript 6502 emulator
+    core https://github.com/6502ts/6502.ts
+  * [ ] check out full js/ts system emulators - need to be able to support multiple emulators
+    at some point so ensure the multi-emulator context exists in the speculative binary detection
+    and code detection code path
 
 ## Reading List
 
@@ -168,12 +178,6 @@
   * recognise dialect by syntax / platform etc.
   * use an LLM to help categorise the dialect or build a dialect with revenge api
   * build test suite for this
-* [ ] Broaden code detection to fuller emulation
-  * [ ] check out MIT licensed typescript 6502 emulator
-    core https://github.com/6502ts/6502.ts
-  * [ ] check out full js/ts system emulators - need to be able to support multiple emulators
-    at some point so ensure the multi-emulator context exists in the speculative binary detection
-    and code detection code path
 * check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to Ramda
 * check out Haskell Difference List datastructure
 * Add readonly memory region support (will help isolate selfmod potential and help with static
@@ -186,8 +190,6 @@
 * data section detection - probabilistic
   * human-designated
   * detected score
-* use ts-md5 for md5 hash generation? unless there's an easy way to support SHA1 also?
-  * what do online software databases prefer? Probably md5 or sha1
 * handle file uploads in the background
   * only bother with files that have an unseen hash
 * use c64ref submodule for petscii rendering
@@ -199,7 +201,6 @@
 * introduce user abstraction well before multiple user accounts or permissions
 * database persistence
 * interactive choice of data/code regions
-* multiple disassembly dialect support
 * type possibility list with probabilities etc.
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo
   halting prob,
