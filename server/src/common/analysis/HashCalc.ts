@@ -1,6 +1,9 @@
 import {crc32, md5, sha1} from "hash-wasm";
 import {FileLike} from "../FileLike.js";
 
+/**
+ * Performs content hash calculations for supported hash algorithms.
+ */
 class HashCalc {
   private hashesSha1: Array<[string, string]> = [];
   private hashesMd5: Array<[string, string]> = [];
