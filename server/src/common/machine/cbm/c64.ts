@@ -16,6 +16,9 @@ import {ArrayMemory} from "../Memory.js";
 import {MemoryConfiguration} from "../MemoryConfiguration.js";
 import {Mos6502} from "../mos6502.js";
 import {RomImage} from "../RomImage.js";
+import {C64_BASIC_ROM} from "./c64Basic.js";
+import {C64_CHAR_ROM} from "./c64Char.js";
+import {C64_KERNAL_ROM} from "./c64Kernal.js";
 import {CartSigEdict} from "./CartSigEdict.js";
 import {CartSniffer} from "./CartSniffer.js";
 import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
@@ -24,16 +27,33 @@ import {Petscii} from "./petscii.js";
 const BASIC_PROGRAM_START = 0x0801;
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", BASIC_PROGRAM_START);
 
+/** where kernal rom image is mapped */
+const C64_KERNAL_LOCATION = [0xe000, 0xffff];
+/** where basic rom image is mapped */
+const C64_BASIC_LOCATION = [0xa000, 0xbfff];
+/** where character rom is located */
+const C64_CHAR_LOCATION = [0xd000, 0xdfff];
+
+/**
+ * VIC-20 ROMs and their locations
+ */
+const C64_ROMS = [
+  new RomImage("VIC-20 Kernal ROM", C64_KERNAL_LOCATION[0], C64_KERNAL_ROM),
+  new RomImage("VIC-20 BASIC ROM", C64_BASIC_LOCATION[0], C64_BASIC_ROM),
+  new RomImage("VIC-20 CHAR ROM", C64_CHAR_LOCATION[0], C64_CHAR_ROM),
+];
+
 class C64 extends Computer {
   static readonly NAME = "C64";
   static STANDARD_MEMORY = C64_MEMORY;
+  static ROMS = C64_ROMS;
 
-  constructor(memoryConfig: MemoryConfiguration = C64.STANDARD_MEMORY, roms: RomImage[] = []) {
+  constructor(memoryConfig: MemoryConfiguration = C64.STANDARD_MEMORY, roms: RomImage[] = C64.ROMS) {
     super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
 
-const C64_BASIC_PRG = new CbmBasicSniffer(
+const C64_BASIC_PRG:CbmBasicSniffer = new CbmBasicSniffer(
     C64_MEMORY,
     "C64 BASIC program",
     `C64 CBM BASIC V2`,
