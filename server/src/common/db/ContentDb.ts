@@ -12,8 +12,9 @@ export interface ContentDb {
 
   /**
    * Find content entities by hash. Multiple results are duplicates (or hash collisions).
-   * @param type
-   * @param hash
+   * @param type hash algorithm
+   * @param hash value
+   * @returns possibly empty entities identified by content
    */
   findByHash(type: HashType, hash: string): ContentEntity[];
 
