@@ -91,10 +91,6 @@
   * The dialect API should enable opt-in to supported ISA families
   * representing assembly source for a given ISA may impose a configuration directive,
     e.g. `.cpu = 6502`
-* [ ] consult published reverse engineering work on retro binaries I have as relevant ground truth
-  * [ ] https://github.com/mwenge/gridrunner
-  * [ ] Matson Dawson's published version of Lee Davison's VIC-20
-    [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
 * [ ] make separate view components for hex, disassembly, basic
 * [ ] top nav source index: jump to entry point and other important locations
 * [ ] Distinguish between code and data mostly automatically

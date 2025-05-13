@@ -42,6 +42,8 @@ might one day achieve.
   examples
 * ["Awesome Reverse Engineering" resource list](https://github.com/wtsxDev/reverse-engineering)
 * Matson Dawson's Dart VIC-20 emulator https://github.com/matsondawson/vic20dart
+* Matson Dawson's published version of Lee Davison's VIC-20
+  [kernal disassembly](https://www.mdawson.net/vic20chrome/vic20/docs/kernel_disassembly.txt)
 * C / WASM VIC-20 emulator by Nino Porcino (nippur72) https://github.com/nippur72/vic20-emu
   Also check out the reference software https://github.com/nippur72/vic20-emu/tree/master/software
 * Scala commodore multi-system emulator [kernal64](https://github.com/abbruzze/kernal64)
