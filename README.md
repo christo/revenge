@@ -107,6 +107,8 @@ accommodate any sane suggestions. To use `npm` or `pnpm`, check the `client/pack
 * Visual plot of bi-gram frequency analysis of overlapping byte pairs in a binary. These
   are pretty good at visually distinguishing encrypted or compressed binaries. Machine code looks
   pretty different to BASIC.
+* Content hash system for identifying uploads that exist in local corpus 
+  * future support of third-party software databases 
 
 ## System Support Status
 
