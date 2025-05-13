@@ -3,7 +3,8 @@ import {join} from 'path';
 import {encodeBase64} from "./common/analysis/base64.js";
 
 /*
-code generation for binary file to typescript array literal using base 64 encoding
+Code generation for binary file to typescript array literal using base 64 encoding.
+This exists so that the ROM files can be loaded in-browser without a server.
  */
 
 interface RomFile {
