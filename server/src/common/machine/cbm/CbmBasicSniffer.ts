@@ -24,22 +24,14 @@ function stripQuoted(s: string): string {
  * @return [forCount, nextCount]
  */
 function countForsAndNexts(basicLine: LogicalLine): [number, number] {
-  const lineNumber = basicLine.getTags().find(t => t.isLineNumber());
-  console.log(lineNumber?.value); // TODO figure out if it is petscii or what
-  const withoutStrings = basicLine
+  return basicLine
       .getTags()
       .filter(t => t.isLine())
-      .map(l => stripQuoted(l.value));
-
-  if (withoutStrings.length !== 1) {
-    console.warn(`basic line has ${withoutStrings.length} lines: ${withoutStrings.join(", ")}`);
-  }
-  return withoutStrings.reduce((acc, line) => {
-    acc[0] += countTerm(line, "for");
-    acc[1] += countTerm(line, "next");
-    return acc;
-  }, [0, 0]);
-
+      .map(l => stripQuoted(l.value)).reduce((acc, line) => {
+        acc[0] += countTerm(line, "for");
+        acc[1] += countTerm(line, "next");
+        return acc;
+      }, [0, 0]);
 }
 
 const MAX_BASIC_LINE_BYTES = 255; // according to https://www.c64-wiki.com/wiki/BASIC

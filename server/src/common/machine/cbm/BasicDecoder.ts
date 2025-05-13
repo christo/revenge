@@ -137,6 +137,7 @@ class BasicDecoder {
   private name: string;
   private minor: number;
   private major: number;
+
   /**
    * Byte-indexed, sparse array.
    * @private

@@ -122,7 +122,7 @@ class Tag {
   wasReadFrom = () => this.classNames.includes(TAG_ADDRESS_WAS_READ);
 
   toString(): string {
-    return  `Tag[classes=[${this.classNames.join(",")}],value=${this.value}]`
+    return `Tag[classes=[${this.classNames.join(",")}],value=${this.value}]`
   }
 }
 
