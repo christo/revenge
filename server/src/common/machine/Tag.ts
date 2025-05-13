@@ -65,10 +65,14 @@ export const TAG_HEXBYTE = "hexbyte";
 /** the name of a symbol */
 export const TAG_SYMNAME = `symname`;
 
+export const TAG_DYNAMIC = 'dynamic';
+
 /**
  * Usage descriptor for a symbol.
  */
 export const TAG_SYMBLURB = `symblurb`;
+
+export const TAG_RELATIVE = "rel";
 
 /** a label in the source code */
 export const TAG_LABEL = "label";
