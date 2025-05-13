@@ -1,4 +1,4 @@
-import {MODE_INDIRECT} from "./mos6502.js";
+import {MODE_INDIRECT, MODE_INDIRECT_X, MODE_INDIRECT_Y} from "./mos6502.js";
 
 /** operand in absolute addressing mode is */
 export const TAG_ABSOLUTE = "abs";
