@@ -101,7 +101,7 @@ export function DetailRenderer({ae}: { ae: ActionExecutor }) {
                 {tag.value}
                 {tag.wasWrittenTo() && <Tooltip title="Written to"><Edit/></Tooltip>}
                 {tag.wasReadFrom() && <Tooltip title="Read from"><MenuBook/></Tooltip>}
-                <Box display="inline" className="iconAnno">
+                <Box display="inline" className="iconAnno" sx={{verticalAlign: "middle", top: "0.1rem", mt: "-0.1rem"}}>
                   {internalLink ? <Tooltip title="Jump in binary"><InsertLink
                       onClick={() => handleClick(tag.data, operand)}/></Tooltip> : ""}
                   {tag.isKnownSymbol() ? <BookmarkBorder onClick={() => handleClick(tag.data, operand)}/> : ""}
