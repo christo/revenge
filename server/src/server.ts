@@ -11,7 +11,7 @@ const app = express();
 
 loadCorpus().then((corpusDb: CorpusDb | null) => {
   if (corpusDb) {
-    console.log("corpus loaded, /api/hash available at  /api/hash/sha1/1337dad...");
+    console.log("corpus loaded, hash api now at /api/hash/(algo)/(hash)");
     app.use('/api/hash', hashRouter(corpusDb));
   } else {
     console.log("/api/hash not available");
