@@ -54,7 +54,7 @@ function generateRomFile(rom: RomFile) {
   }
 }
 
-function generateRomFiles(romFiles: RomFile[]) {
+function generateRomFiles(romFiles: RomFile[] = ROM_FILES) {
   romFiles.forEach(generateRomFile);
 }
 
