@@ -58,10 +58,6 @@
     * [ ] indexing
     * [ ] duplicate detection
     * [ ] hash cache invalidation to re-do hashes
-* [ ] Support zipped files
-  * automatically unzip
-  * if contains multiple, show contents for selection of single item to load
-  * if simgle file contents, just load it with its own filename
 * [ ] support tape and disk image formats
   * if multiple contents show list for selection and loading
   * if single item just load it
