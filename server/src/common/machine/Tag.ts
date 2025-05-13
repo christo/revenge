@@ -125,7 +125,11 @@ class Tag {
 
   isNote = () => this.classNames.includes(TAG_NOTE);
 
-  isIndirectMode = () => this.classNames.includes(MODE_INDIRECT.code);
+  isIndirectMode = () => {
+    return this.classNames.includes(MODE_INDIRECT.code)
+        || this.classNames.includes(MODE_INDIRECT_X.code)
+        || this.classNames.includes(MODE_INDIRECT_Y.code);
+  };
 
   wasWrittenTo = () => this.classNames.includes(TAG_ADDRESS_WAS_WRITTEN);
   wasReadFrom = () => this.classNames.includes(TAG_ADDRESS_WAS_READ);
