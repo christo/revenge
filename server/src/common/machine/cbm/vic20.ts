@@ -19,6 +19,7 @@ import {CartSniffer} from "./CartSniffer.js";
 import {prg} from "./cbm.js";
 import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
 import {VIC20_BASIC_ROM} from "./vic20Basic.js";
+import {VIC20_CHAR_ROM} from "./vic20Char.js";
 import {VIC20_KERNAL_ROM} from "./vic20Kernal.js";
 
 const VIC20_SYM = new SymbolTable("VIC-20");
@@ -276,15 +277,23 @@ const VIC_PRG_SNIFFERS_AT_CART_BASES = COMMON_CART_LOAD_ADDRESSES.map(a => prg(L
 const VIC_20_KERNAL_LOCATION = [0xe000, 0xffff];
 /** where basic rom image is mapped */
 const VIC_20_BASIC_LOCATION = [0xc000, 0xdfff];
+/** where character rom is located */
+const VIC_20_CHAR_LOCATION = [0x8000, 0x8fff];
 
+/**
+ * VIC-20 ROMs and their locations
+ */
 const VIC_ROMS = [
   new RomImage("VIC-20 Kernal ROM", VIC_20_KERNAL_LOCATION[0], VIC20_KERNAL_ROM),
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
+  new RomImage("VIC-20 CHAR ROM", VIC_20_CHAR_LOCATION[0], VIC20_CHAR_ROM),
 ];
+
 
 class Vic20 extends Computer {
   static NAME = "VIC-20";
-  static LONG_NAME = "Commodore VIC-20"
+  static LONG_NAME = "Commodore VIC-20";
+  static ROMS = VIC_ROMS;
 
   // future: add screen and colour memory relocation for 8k, 16k, 24k, 32k
   static MEM_CONFIG = {
@@ -311,16 +320,7 @@ class Vic20 extends Computer {
     Vic20.MEM_CONFIG.EXP35K,
   ];
 
-  /**
-   * Create a BlobTypeSniffer for each VIC memory configuration.
-   */
-  static BASIC_LOAD_PRGS = Vic20.MEMORY_CONFIGS.map(mc => {
-    const blobTypeSniffer = prg(mc.basicProgramStart);
-    blobTypeSniffer.hashTags.push("vic20");
-    return blobTypeSniffer
-  });
-
-  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = VIC_ROMS) {
+  constructor(memConfig: MemoryConfiguration, roms: RomImage[] = Vic20.ROMS) {
     super(Vic20.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memConfig, roms, [Vic20.NAME]);
   }
 }
@@ -338,7 +338,7 @@ const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
 const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
- * VIC-20 cart image sniffer. Currently only handles single contiguous mapped-regions.
+ * VIC-20 raw cart image sniffer. Currently only handles single contiguous mapped-regions.
  */
 const VIC20_CART_SNIFFER = new CartSniffer(
     "VIC-20 cart",
@@ -384,6 +384,5 @@ export {
   EXP24K_VIC_BASIC,
   VIC20_SYM,
   VIC20_BASIC_SNIFFERS,
-  VIC20_MC_SNIFFERS,
-  COMMON_CART_LOAD_ADDRESSES
+  VIC20_MC_SNIFFERS
 }
