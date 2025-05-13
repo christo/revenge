@@ -71,6 +71,8 @@ export const TAG_COMMENT = "comment";
  * A sequence of string tuples that represent a name-value pair that will be rendered with
  * the name as a className and the value as the text content of a span element.
  *
+ * Represents a fine-grained view component correlated by css classes.
+ *
  * TODO kill this crazy Tag idea
  *   it's an overly desperate attempt to not use tsx by holding a fence-sitting abstraction that is
  *   ultimately just hard to use - it would be more ergonomic to have separate front-end components
