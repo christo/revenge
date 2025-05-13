@@ -24,7 +24,7 @@ class C64StubSniffer extends CbmStubSniffer {
 
   sniff(fb: FileBlob): Stench {
     const stench = super.sniff(fb);
-    console.log(`c64 stub sniff for ${fb.name}: ${stench.score}  - ${stench.messages.join(", ")}`);
+    // console.log(`c64 stub sniff for ${fb.name}: ${stench.score}  - ${stench.messages.join(", ")}`);
     return stench;
   }
 }
