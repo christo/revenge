@@ -114,7 +114,7 @@ class Tag {
 
   isOperandResolvingToInternalAddress = () => {
     const cns = this.classNames;
-    return cns.includes(TAG_OPERAND) && cns.includes(TAG_ABSOLUTE) && cns.includes(TAG_IN_BINARY);
+    return cns.includes(TAG_OPERAND) && (cns.includes(TAG_ABSOLUTE) || cns.includes(TAG_RELATIVE)) && cns.includes(TAG_IN_BINARY);
   }
 
   isLine = () => this.classNames.includes(TAG_LINE);
