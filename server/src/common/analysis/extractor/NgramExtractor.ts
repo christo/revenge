@@ -1,6 +1,6 @@
 import {FileLike} from "../../FileLike.js";
-import {Ngram} from "../Ngram.js";
 import {NgramFeatureSelector} from "../classifier/NgramFeatureSelector.js";
+import {Ngram} from "../Ngram.js";
 import {FeatureExtractor} from "./FeatureExtractor.js";
 
 /**

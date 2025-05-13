@@ -1,5 +1,5 @@
-import {Contributor} from "./Contributor.js";
 import {Authority} from "./Authority.js";
+import {Contributor} from "./Contributor.js";
 
 /**
  * Represents a claimed piece of content like published software or other piece of media.

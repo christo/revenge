@@ -1,4 +1,4 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import {defineConfig, globalIgnores} from "eslint/config";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
@@ -7,7 +7,7 @@ export default defineConfig([
 
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
-        plugins: { js },
+        plugins: {js},
         extends: ["js/recommended"],
     },
 
@@ -19,7 +19,7 @@ export default defineConfig([
         rules: {
             "@typescript-eslint/no-unused-vars": [
                 "warn",
-                { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+                {argsIgnorePattern: "^_", varsIgnorePattern: "^_"},
             ],
         },
     },
