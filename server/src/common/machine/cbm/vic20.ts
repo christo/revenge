@@ -269,7 +269,6 @@ const COMMON_CART_LOAD_ADDRESSES = [
 
 /**
  * Common load addresses for machine language cartridge images on VIC-20.
- * TODO add common sizes; cartridge dumps are always round kilobyte multiples, say of 4k?
  */
 const VIC_PRG_SNIFFERS_AT_CART_BASES = COMMON_CART_LOAD_ADDRESSES.map(a => prg(LE.wordToTwoBytes(a)));
 
@@ -295,7 +294,8 @@ class Vic20 extends Computer {
     EXP16K: new MemoryConfiguration("16k expansion", 0x1201, "16k"),
     EXP24K: new MemoryConfiguration("24k expansion", 0x1201, "24k"),
     EXP32K: new MemoryConfiguration("32k expansion", 0x1201, "32k"),
-    EXP35K: new MemoryConfiguration("35k expansion", 0x401, "35k"), // note basic location is same as 3k
+    // note basic location in 35k is same as 3k
+    EXP35K: new MemoryConfiguration("35k expansion", 0x401, "35k"),
   };
 
   /**
