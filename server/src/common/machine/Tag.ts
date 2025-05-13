@@ -56,10 +56,19 @@ export const TAG_ADDRESS_WAS_READ = "wasread";
 
 export const TAG_BLANK = "blank";
 
+/** a keyword in source code */
 export const TAG_KEYWORD = 'kw';
+
 /** single byte as hex digit pair */
 export const TAG_HEXBYTE = "hexbyte";
 
+/** the name of a symbol */
+export const TAG_SYMNAME = `symname`;
+
+/**
+ * Usage descriptor for a symbol.
+ */
+export const TAG_SYMBLURB = `symblurb`;
 
 /** a label in the source code */
 export const TAG_LABEL = "label";

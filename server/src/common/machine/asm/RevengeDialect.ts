@@ -2,7 +2,7 @@ import {Byteable} from "../../Byteable.js";
 import {Petscii} from "../cbm/petscii.js";
 import {hex16, hex8, unToSigned} from "../core.js";
 import {
-  FullInstruction,
+  FullInstruction, Instruction,
   MODE_ABSOLUTE,
   MODE_ABSOLUTE_X,
   MODE_ABSOLUTE_Y,
@@ -34,7 +34,7 @@ import {
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
   TAG_PETSCII,
-  TAG_SYM_DEF
+  TAG_SYM_DEF, TAG_SYMBLURB, TAG_SYMNAME
 } from "../Tag.js";
 import {Environment, LabelsComments} from "./asm.js";
 import {Emitter, emitThis, errorEmitter, instructionEmitter} from "./Assembler.js";
@@ -54,6 +54,8 @@ import {SymbolLookup} from "./SymbolLookup.js";
  * @param ts
  */
 const tagText = (ts: Tag[]) => ts.map(t => t.value).join(" ");
+
+
 
 /**
  * Homebrew 6502 dialect with modern conventional idioms.
@@ -266,7 +268,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     const symName = symDef.symDef.name;
     const symVal = `${this.hexWordText(symDef.symDef.value)}`;
     const symbolDefinition = new Tag([TAG_SYM_DEF], `${symName} = ${symVal}`);
-    symbolDefinition.data.push(['symname', symName])
+    symbolDefinition.data.push([TAG_SYMNAME, symName])
     const dummy = new Tag([TAG_NO_ADDRESS], " "); // TODO fix this hack with better columnar layout
     return [dummy, labels, symbolDefinition, comments];
   }
@@ -308,17 +310,19 @@ class RevengeDialect extends BaseDialect implements Dialect {
    */
   private taggedCode(fil: FullInstructionLine, dis: Disassembler): Tag[] {
     // add the mnemonic tag and also the mnemonic category
-    const mi = fil.fullInstruction.instruction;
-    const mnemonic: Tag = new Tag([TAG_MNEMONIC, mi.op.cat], mi.op.mnemonic.toLowerCase());
-    const operandText = this.renderOperand(fil.fullInstruction, dis).trim();
+    const fi = fil.fullInstruction;
+    const mi:Instruction = fi.instruction;
+    const mnemonicText = mi.op.mnemonic.toLowerCase();
+    const mnemonic: Tag = new Tag([TAG_MNEMONIC, mi.op.cat], mnemonicText);
+    const operandText = this.renderOperand(fi, dis).trim();
     // check the symbol table for a symbol that matches this operand
     if (operandText.length > 0) {
       const operandTag = new Tag([TAG_OPERAND, mi.mode.code], operandText);
-      if (fil.fullInstruction.staticallyResolvableOperand()) {
-        const opnd = fil.fullInstruction.operandValue();
+      if (fi.staticallyResolvableOperand()) {
+        const opnd = fi.operandValue();
         // future: check other addressing modes
         // check if the operand is an address inside the binary
-        if (fil.fullInstruction.instruction.mode === MODE_ABSOLUTE) {
+        if (mi.mode === MODE_ABSOLUTE) {
           if (dis.isInBinary(opnd)) {
             operandTag.classNames.push(TAG_IN_BINARY);
           } else {
@@ -326,14 +330,16 @@ class RevengeDialect extends BaseDialect implements Dialect {
             const symDef = dis.getSymbol(opnd);
             if (symDef) {
               // we found a symbol for this add the data signifying usage of the symbol
-              operandTag.data.push([`symname`, symDef.name]);
-              operandTag.data.push([`symblurb`, symDef.descriptor]);
+              operandTag.data.push([TAG_SYMNAME, symDef.name]);
+              operandTag.data.push([TAG_SYMBLURB, symDef.descriptor]);
               operandTag.classNames.push(TAG_KNOWN_SYMBOL);
             }
           }
         }
         // add operand value as data so front-end can always extract it - could be symbol
         operandTag.data.push([TAG_OPERAND_VALUE, hex16(opnd)]);
+      } else {
+        // operand must be indirect or indexed
       }
       return [mnemonic, operandTag];
     } else {
