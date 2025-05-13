@@ -18,6 +18,7 @@ import {Mos6502} from "../mos6502.js";
 import {RomImage} from "../RomImage.js";
 import {CartSigEdict} from "./CartSigEdict.js";
 import {CartSniffer} from "./CartSniffer.js";
+import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
 import {Petscii} from "./petscii.js";
 
 const BASIC_PROGRAM_START = 0x0801;
@@ -32,12 +33,11 @@ class C64 extends Computer {
   }
 }
 
-const C64_BASIC_PRG = new BlobTypeSniffer(
-    "C64 basic prg",
-    "BASIC program",
-    ["basic", "c64", "prg"],
-    "prg",
-    Mos6502.ENDIANNESS.wordToByteArray(C64_MEMORY.basicProgramStart)
+const C64_BASIC_PRG = new CbmBasicSniffer(
+    C64_MEMORY,
+    "C64 BASIC program",
+    `C64 CBM BASIC V2`,
+    ["c64"]
 );
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
