@@ -22,6 +22,26 @@ const ROM_FILES: RomFile[] = [
     input: 'data/roms/vic20/BASIC.ROM',
     output: 'machine/cbm/vic20Basic.ts',
     varName: 'VIC20_BASIC_ROM'
+  },
+  {
+    input: 'data/roms/vic20/CHAR.ROM',
+    output: 'machine/cbm/vic20Char.ts',
+    varName: 'VIC20_CHAR_ROM'
+  },
+  {
+    input: 'data/roms/c64/KERNAL.ROM',
+    output: 'machine/cbm/c64Kernal.ts',
+    varName: 'C64_KERNAL_ROM'
+  },
+  {
+    input: 'data/roms/c64/BASIC.ROM',
+    output: 'machine/cbm/c64Basic.ts',
+    varName: 'C64_BASIC_ROM'
+  },
+  {
+    input: 'data/roms/c64/CHAR.ROM',
+    output: 'machine/cbm/c64Char.ts',
+    varName: 'C64_CHAR_ROM'
   }
 ];
 
