@@ -2,6 +2,9 @@
 
 ## Next Actions
 
+* [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
+  * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
+    only using constants for magic keys in stringland)
 * [ ] Find usable software/game database info to identify binaries from checksums or content
     hashes. MAME seems to have one such database
     for [VIC-20](https://github.com/riley110/mame/blob/7187bc958d2b7e069fee7d57f599bb04a171678e/hash/vic20_cass_tosec.xml)
@@ -61,9 +64,6 @@
 * [ ] support tape and disk image formats
   * if multiple contents show list for selection and loading
   * if single item just load it
-* [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
-  * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
-    only using constants for magic keys in stringland)
 * [ ] multiple disassembly dialect support
   * The dialect API should enable opt-in to supported ISA families
   * representing assembly source for a given ISA may impose a configuration directive,
