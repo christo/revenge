@@ -58,19 +58,6 @@
     * [ ] indexing
     * [ ] duplicate detection
     * [ ] hash cache invalidation to re-do hashes
-* [ ] distinguishing data and code:
-  * [ ] designation of interpretation of a line should have a confidence score
-  * [ ] executed lines should be detected as code with high confidence score
-  * [ ] line interpretation can be multiple in theory
-  * [ ] in-binary locations that were statically read from or written to and not executed would
-    have a reasonably high confidence detection as data
-  * [ ] identity as data can go deeper to data types: bytes, words, strings, graphics, sound etc.
-  * [ ] the session should store any choices or overrides by the user:
-    * interpreting binary bytes
-    * naming symbols
-    * configuring disassembly options
-    * adding annotations
-    * identifying the target machine configuration (impacts memory layout, instruction set etc.)
 * [ ] Support zipped files
   * automatically unzip
   * if contains multiple, show contents for selection of single item to load
@@ -78,12 +65,6 @@
 * [ ] support tape and disk image formats
   * if multiple contents show list for selection and loading
   * if single item just load it
-* [ ] Add to sniffer for CBM files the "smart attach" filename tag system that VICE and TheC64 understands e.g.:
-  * (PAL), (NTSC) - TV system
-  * (Cart) - Cartridge type
-  * (8) - Drive number
-  * (BASIC) - ROM requirement
-  * Machine model indicators like (C64), (C128), etc.
 * [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
   * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
@@ -107,6 +88,12 @@
     * [ ] implement thread stack for path-accurate `JSR`/`RTS` pairs, also then detect unpaired  
   * [x] Detect and report currently unsupported instructions, e.g. indirect jump `JMP ($1337)`
   * [ ] report disassembly/trace errors to ui in some nice note
+* [ ] Add to sniffer for CBM files the "smart attach" filename tag system that VICE and TheC64 understands e.g.:
+  * (PAL), (NTSC) - TV system
+  * (Cart) - Cartridge type
+  * (8) - Drive number
+  * (BASIC) - ROM requirement
+  * Machine model indicators like (C64), (C128), etc.
 * [ ] view options - disassembly, basic, hex each should define their own config options
 * [ ] better styling for BASIC decoder
 * [ ] Render generated comments on the line before if the line is too long to prevent comment and
@@ -116,9 +103,9 @@
   * [ ] For kernel subroutines, wait until full kernel trace is done and add this in stages
   * [ ] full mapping is best done by hybrid static/dynamic analysis and reused for user
     routines using the same code path
+* [ ] find a suitable minimal system like CHIP-8 to add as a second machine architecture family
 * [ ] petscii view (views abstraction)
   * [ ] UI: render text data in machine-original font, derived directly from the character ROM
-* [ ] find a suitable minimal system like CHIP-8 to add as a second machine architecture family
 * [ ] Broaden code detection to fuller emulation
   * [ ] check out MIT licensed typescript 6502 emulator
     core https://github.com/6502ts/6502.ts
