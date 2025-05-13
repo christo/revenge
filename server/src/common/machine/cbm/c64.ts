@@ -35,12 +35,12 @@ const C64_BASIC_LOCATION = [0xa000, 0xbfff];
 const C64_CHAR_LOCATION = [0xd000, 0xdfff];
 
 /**
- * VIC-20 ROMs and their locations
+ * C64 ROMs and their locations
  */
 const C64_ROMS = [
-  new RomImage("VIC-20 Kernal ROM", C64_KERNAL_LOCATION[0], C64_KERNAL_ROM),
-  new RomImage("VIC-20 BASIC ROM", C64_BASIC_LOCATION[0], C64_BASIC_ROM),
-  new RomImage("VIC-20 CHAR ROM", C64_CHAR_LOCATION[0], C64_CHAR_ROM),
+  new RomImage("C64 Kernal ROM", C64_KERNAL_LOCATION[0], C64_KERNAL_ROM),
+  new RomImage("C64 BASIC ROM", C64_BASIC_LOCATION[0], C64_BASIC_ROM),
+  new RomImage("C64 CHAR ROM", C64_CHAR_LOCATION[0], C64_CHAR_ROM),
 ];
 
 class C64 extends Computer {
