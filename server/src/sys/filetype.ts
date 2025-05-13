@@ -26,8 +26,7 @@ export function getFileVersion(): string | null {
  * @param filePath must exist
  */
 function filetype(filePath: string): string {
-  const output = execFileSync("file", ["-b", filePath], {encoding: "utf8"});
-  return output.trim();
+  return execFileSync("file", ["-b", filePath], {encoding: "utf8"}).trim();
 }
 
 export {filetype};
