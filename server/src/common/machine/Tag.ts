@@ -120,6 +120,10 @@ class Tag {
 
   wasWrittenTo = () => this.classNames.includes(TAG_ADDRESS_WAS_WRITTEN);
   wasReadFrom = () => this.classNames.includes(TAG_ADDRESS_WAS_READ);
+
+  toString(): string {
+    return  `Tag[classes=[${this.classNames.join(",")}],value=${this.value}]`
+  }
 }
 
 export {Tag};
