@@ -49,7 +49,7 @@ class C64 extends Computer {
   static ROMS = C64_ROMS;
 
   constructor(memoryConfig: MemoryConfiguration = C64.STANDARD_MEMORY, roms: RomImage[] = C64.ROMS) {
-    super(C64.NAME, new Mos6502(), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
+    super(C64.NAME, new Mos6502("Mos 6510"), new ArrayMemory(KB_64, Mos6502.ENDIANNESS), memoryConfig, roms, ["c64"]);
   }
 }
 

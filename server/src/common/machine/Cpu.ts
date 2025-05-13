@@ -7,6 +7,6 @@ import {Endian} from "./Endian.js";
  */
 export interface Cpu<T extends Endian> {
   endianness: () => T;
-  name: () => string;
+  getName(): string;
   isa: () => InstructionSet;
 }

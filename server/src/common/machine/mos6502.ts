@@ -578,9 +578,17 @@ class Mos6502 implements Cpu<LittleEndian> {
   static readonly VECTOR_IRQ_LB = 0xfffe;
   static readonly VECTOR_IRQ_HB = 0xffff;
   static readonly ENDIANNESS = LE;
-  // implement Cpu
+
+  private readonly name: string;
+
+  constructor(name: string = Mos6502.NAME) {
+    this.name = name;
+  }
+
   endianness = () => Mos6502.ENDIANNESS;
-  name = () => Mos6502.NAME;
+  getName() {
+   return this.name;
+  }
   isa = () => Mos6502.ISA;
 }
 
