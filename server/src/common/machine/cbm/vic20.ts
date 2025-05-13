@@ -359,6 +359,9 @@ const VIC20_CART_SNIFFER = new CartSniffer(
     )
 );
 
+/**
+ * Sniffers of plain BASIC for various common {@link MemoryConfiguration MemoryConfigurations}.
+ */
 const VIC20_BASIC_SNIFFERS = [
   UNEXPANDED_VIC_BASIC,
   EXP03K_VIC_BASIC,
