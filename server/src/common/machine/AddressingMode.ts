@@ -1,5 +1,5 @@
 /**
- * Represents how operand are interpreted.
+ * Represents how operands are interpreted.
  */
 class AddressingMode {
   readonly code: string;
