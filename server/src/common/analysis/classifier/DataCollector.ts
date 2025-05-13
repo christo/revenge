@@ -237,7 +237,7 @@ export class DataCollector {
     let resolvedPath: string;
     try {
       resolvedPath = fs.realpathSync(symlinkPath);
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       console.log(`  Skipping broken symlink: ${path.basename(symlinkPath)}`);
       return {resolvedPath: null, stats: null};
     }
@@ -296,7 +296,7 @@ export class DataCollector {
     try {
       fs.accessSync(filePath, fs.constants.R_OK);
       return true;
-    } catch (e) {
+    } catch (_e) {
       console.log(`  Skipping unreadable file: ${path.basename(filePath)}`);
       return false;
     }
