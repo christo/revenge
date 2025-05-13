@@ -1,3 +1,6 @@
+/**
+ * Component interface to provide content addressable queries.
+ */
 export interface HashLookup {
   findSha1(sha1: string): string[];
 
