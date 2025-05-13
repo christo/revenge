@@ -64,8 +64,8 @@ class HashStorage {
     const lastWritten = `written at ${new Date().toISOString()}`
     const filePath = path.join(this.baseDir, filename);
     const header = `# ${hashName} hashes ${lastWritten}`;
-    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\\n");
-    const data = `${header}\\n${hashLines}\\n`;
+    const hashLines = hashes.map(v => `${v[1]} ${v[0]}`).join("\n");
+    const data = `${header}\n${hashLines}\n`;
     writeFileSync(filePath, data, 'utf8');
   }
 

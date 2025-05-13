@@ -128,8 +128,20 @@
 
 ## Long Term Ideas
 
-* [ ] plan memory model with: banking, shadowing, overlay, seperate read/write sets,
-  read/write permissions, io mapping. Base required features on C128, BBC and Apple II
+* [ ] open d64 and tap files as container types (make work like zip) - also per-system types
+  * [ ] when a container format is opened, the contents are shown in a menu at the top like quickloads
+  * [ ] quickloads becomes an instance of a container
+  * [ ] a user's uploads are shown as a container tree with root being the collection of their uploads
+  * [ ] containers do not need to have content for each entry, e.g. a reference to a public database
+    of software can be shown without having the content. Content hashes and metadata should all
+    be optional
+  * [ ] the root container is the universe of possible software. Subcontainers will include:
+    * quickloads - convenience content provided by server
+    * known published databases
+    * user uploads
+    * other user uploads (permissioned)
+    * software can be a file or a container (a lot of software is distributed as a disk or tape)
+    * some software is a set of files, this should impose a virtual container (list/set)
 * [ ] dialect translation: source -> source
 * [ ] execution harness for automatically running generated source:
   * multiple assemblers installed on the server

@@ -1,10 +1,15 @@
 import {crc32, md5, sha1} from "hash-wasm";
+import {HashLookup} from "../../sys/HashLookup.js";
 import {FileLike} from "../FileLike.js";
 
 /**
  * Performs content hash calculations for supported hash algorithms.
  */
-class HashCalc {
+class HashCalc implements HashLookup {
+
+  private static NAME = 0;
+  private static HASH = 1;
+
   private hashesSha1: Array<[string, string]> = [];
   private hashesMd5: Array<[string, string]> = [];
   private hashesCrc32: Array<[string, string]> = [];
@@ -82,6 +87,18 @@ class HashCalc {
    */
   getHashesCrc32(): Array<[string, string]> {
     return [...this.hashesCrc32];
+  }
+
+  findSha1(sha1: string): string[] {
+    return this.hashesSha1.filter(h => h[HashCalc.HASH] === sha1).map(h => h[HashCalc.NAME]);
+  }
+
+  findMd5(md5: string): string[] {
+    return this.hashesMd5.filter(h => h[HashCalc.HASH] === md5).map(h => h[HashCalc.NAME]);
+  }
+
+  findCrc32(crc32: string): string[] {
+    return this.hashesCrc32.filter(h => h[HashCalc.HASH] === crc32).map(h => h[HashCalc.NAME]);
   }
 
   /**
