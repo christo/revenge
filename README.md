@@ -126,6 +126,7 @@ software libraries. The following table shows estimations, not promises.
 |------------------------------|-------------|------------|
 | VIC-20                       | In Progress | 6502       |
 | C64                          | In Progress | 6502       |
+| CHIP-8                       | Planned     | virtual    |
 | Apple II                     | Planned     | 6502       |
 | BBC B                        | Planned     | 6502       |
 | C128                         | Planned     | 6502       |
@@ -136,7 +137,6 @@ software libraries. The following table shows estimations, not promises.
 | ZX Spectrum & clones         | Planned     | Z80        |
 | TRS-80 I-III                 | Probable    | Z80        |
 | Microbee                     | Probable    | Z80        |
-| CHIP-80                      | Probable    | virtual    |
 | VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
 | Gameboy, Gameboy Color       | Probable    | Z80 -ish   |
 | Gameboy Advance              | Possible    | ARM        |
