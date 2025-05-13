@@ -230,25 +230,11 @@ const CART_COLD_VECTOR_OFFSET = 2;
 /** The warm reset vector (NMI) is stored at this offset. */
 const CART_WARM_VECTOR_OFFSET = 4;
 
-/**
- * Offset of the cartridge signature.
- * 2 bytes for the load address,
- * 2 for the reset vector,
- * 2 for the nmi vector.
- */
-const CART_SIG_OFFSET = 6;
-
-/**
- * VIC-20 cartridge magic signature A0CBM in petscii where
- * CBM is in reverse video (&70).
- */
-const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
 
 const CART_JUMP_POINT_OFFSETS: IndexedDescriptor[] = [
   // TODO fix code duplication
   {index: CART_COLD_VECTOR_OFFSET, name: "reset", description: "cold reset vector"},
   {index: CART_WARM_VECTOR_OFFSET, name: "nmi", description: "warm reset vector"},
-
 ];
 
 /**
@@ -288,7 +274,6 @@ const VIC_ROMS = [
   new RomImage("VIC-20 BASIC ROM", VIC_20_BASIC_LOCATION[0], VIC20_BASIC_ROM),
   new RomImage("VIC-20 CHAR ROM", VIC_20_CHAR_LOCATION[0], VIC20_CHAR_ROM),
 ];
-
 
 class Vic20 extends Computer {
   static NAME = "VIC-20";
@@ -337,6 +322,20 @@ const EXP16K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP16K);
 const EXP24K_VIC_BASIC = new Vic20BasicSniffer(Vic20.MEM_CONFIG.EXP24K);
 
 /**
+ * VIC-20 cartridge magic signature A0CBM in petscii where
+ * CBM is in reverse video (&70).
+ */
+const A0CBM = [0x41, 0x30, 0xc3, 0xc2, 0xcd];
+
+/**
+ * Offset of the cartridge signature.
+ * 2 bytes for the load address,
+ * 2 for the reset vector,
+ * 2 for the nmi vector.
+ */
+const CART_SIG_OFFSET = 6;
+
+/**
  * VIC-20 raw cart image sniffer. Currently only handles single contiguous mapped-regions,
  * multi-part carts commonly used have two blocks, at 0xa000 and 0x6000.
  */
@@ -371,7 +370,7 @@ const VIC20_BASIC_SNIFFERS = [
 ];
 
 /**
- * Pure machine language sniffers, cartridge and prg files.
+ * Pure machine code sniffers, cartridge and prg files.
  */
 const VIC20_MC_SNIFFERS = [
   ...VIC_PRG_SNIFFERS_AT_CART_BASES,
