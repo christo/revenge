@@ -12,7 +12,8 @@ for 1980s era home computers. It's a work in progress.
 
 The grand idea is a web-based reverse engineering environment for retro computers
 with very small initial goals: binary file type detection and simple disassembly of
-6502 machine code for the Vic-20 and C64. Z80 is a likely future supported architecture.
+6502 machine code for the Vic-20 and C64. Z80 is a likely supported architecture
+in future.
 
 Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
@@ -157,7 +158,7 @@ Currently only one arbitrary custom dialect is implemented while the API is bein
 
 ## Code Detection
 
-It's not hard to make good guesses about what parts of a binary are code or data but it is harder to
+It's not hard to make good guesses about what parts of a binary are code or data, but it is harder to
 do reliably and automatically. Therefore, most reverse engineering tools are interactive; the user
 must get involved to interpret and understand the binary and to dictate what is code, text data,
 image data, audio etc. and this is even trickier when code is self-modifying, compressed, encrypted,
