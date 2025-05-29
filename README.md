@@ -21,7 +21,7 @@ Beyond the small initial goals lies a vast land of unfulfilled wishes.
 
 ![revenge screenshot](docs/revenge-screenshot-20250407.png)
 
-Currently the disassembler is fully automatic, although it identifies very few bytes
+Currently, the disassembler is fully automatic, although it identifies very few bytes
 definitively as data. Binary content type (basic, machine code with basic stub, cart
 image, etc.) is detected using heuristics and falls back to a hex dump if it can't
 detect the filetype.
@@ -30,7 +30,7 @@ Work is in progress to train a classifier (you can call it AI) to recognise
 binaries based on statistics collected by various implementations of `FeatureExtractor`.
 The model can be trained in `server` with `bun train`. Note that a corpus of binary
 files must exist in the `server/data/training/c64` and `server/data/training/vic20`
-trees. Based on my current testing, the results are still very poor but I am confident
+trees. Based on my current testing, the results are still very poor, but I am confident
 this method will work once the implementation is good enough. Recognising compressed
 files and other container formats like disk images is not yet tested.
 
@@ -49,11 +49,11 @@ to check you have the relevant/recommended tools installed:
 ./sanity.sh
 ```
 
-The main system is a single page web app with an optional server comonent which provides
+The main system is a single page web app with an optional server component which provides
 access to retro binaries stored on the local filesystem a few are included in this
 repo. Without the server, you can drag and drop files from your computer into the browser or click
 the upload button. The plan for the server is to manage the state of interactive sessions
-and provide access to a filetree of binaries for bulk analysis.
+and provide access to a file tree of binaries for bulk analysis.
 
 Run the server in its own shell from the `server` dir:
 
@@ -139,8 +139,8 @@ software libraries. The following table shows estimations, not promises.
 | TRS-80 I-III                 | Probable    | Z80        |
 | Microbee                     | Probable    | Z80        |
 | VZ-200 / VZ-300 / Laser      | Probable    | Z80        |
-| Gameboy, Gameboy Color       | Probable    | Z80 -ish   |
-| Gameboy Advance              | Possible    | ARM        |
+| GameBoy, GameBoy Color       | Probable    | Z80 -ish   |
+| GameBoy Advance              | Possible    | ARM        |
 | Vectrex, TRS-80 Coco, Dragon | Possible    | 6809       |
 
 ## File Formats
@@ -194,7 +194,7 @@ of binaries. This is a work in progress.
 ## Useful Resources Documented Here
 
 * [Reverse Engineering](docs/reverse-engineering.md) references
-* [Retro Assembler Dalects](docs/assembler-dialects.md)
+* [Retro Assembler Dialects](docs/assembler-dialects.md)
 * [Emulators](docs/emulators.md)
 * Relevant [file formats](docs/file-formats.md) for retro computing
 * [Dynamic Analysis](docs/dynamic-analysis.md) - some thoughts on prospects for runtime techniques for
