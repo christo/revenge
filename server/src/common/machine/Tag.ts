@@ -146,6 +146,10 @@ class Tag {
 export {Tag};
 
 
+/**
+ * Represents a single byte in hex.
+ *
+ */
 export class HexTag extends Tag {
 
   constructor(value: string, data: [string, string][] = [], id: string | undefined = undefined) {
@@ -153,8 +157,11 @@ export class HexTag extends Tag {
   }
 }
 
+/**
+ * Represents a keyword in source code.
+ *
+ */
 export class KeywordTag extends Tag {
-
   constructor(value: string) {
     super([TAG_KEYWORD], value, [], undefined);
   }
