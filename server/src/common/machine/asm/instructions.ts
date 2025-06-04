@@ -247,7 +247,6 @@ class ByteDefinitionEdict implements Edict<InstructionLike> {
 /**
  * Define text
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class TextDefinitionEdict extends ByteDefinitionEdict implements Edict<InstructionLike> {
 
   /**
