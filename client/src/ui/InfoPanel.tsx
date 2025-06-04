@@ -2,6 +2,7 @@ import {Detail} from "@common/Detail.ts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import React from 'react'
+import {ControlPanel} from "./ControlPanel.tsx";
 
 const STYLE = {
   display: "flex",
@@ -27,7 +28,7 @@ export function InfoPanel({detail}: { detail: Detail }) {
       )}
     </Box>
     <Box>
-      <Typography sx={SUBDUED}>Control panel will go here...</Typography>
+      <ControlPanel detail={detail} />
     </Box>
   </Box>;
 }

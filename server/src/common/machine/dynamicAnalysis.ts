@@ -7,6 +7,7 @@ import {BLANK_LINE, InstructionLike, PcAssign, SymbolDefinition, SymDef} from ".
 import {RevengeDialect} from "./asm/RevengeDialect.js";
 import {SymbolType} from "./asm/SymbolTable.js";
 import {Addr, asHex, hex16} from "./core.js";
+import {DisassemblyDetailConfig} from "./DisassemblyDetailConfig.js";
 import {FileBlob} from "./FileBlob.js";
 import {LogicalLine} from "./LogicalLine.js";
 import {ArrayMemory} from "./Memory.js";
@@ -32,7 +33,7 @@ import {
  */
 function disassembleActual(fb: FileBlob, dialect: RevengeDialect, meta: DisassemblyMeta): Detail {
   const dis = new Disassembler(Mos6502.ISA, fb, meta);
-  const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]))
+  const detail = new Detail("Disassembly", [TAG_LINE], new DataViewImpl([]), new DisassemblyDetailConfig(dialect))
 
   // do trace to decide which is code
   const traceResult: TraceResult = trace(dis, fb, meta);

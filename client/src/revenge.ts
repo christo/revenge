@@ -23,6 +23,7 @@ import {LogicalLine} from "@common/machine/LogicalLine.ts";
 import {Memory} from "@common/machine/Memory.ts";
 import {HexTag, Tag, TAG_HEXBYTES} from "@common/machine/Tag.ts";
 import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
+import {HexDumpDetailConfig} from "@common/machine/HexDumpDetailConfig.ts";
 
 /**
  * Shows a hex dump for a {@link FileBlob}.
@@ -36,7 +37,7 @@ const mkHexDumper: UserFileAction = (fb: FileBlob) => ({
     // add the classes for hex dump as a whole and for each byte
     const allData = fb.getBytes().map(x => new HexTag(hex8(x)));
     const lls = [allData].map((ts: Tag[], i: number) => new LogicalLine(ts, 1, i));
-    return new Detail("Hex Dump", [TAG_HEXBYTES], new DataViewImpl(lls));
+    return new Detail("Hex Dump", [TAG_HEXBYTES], new DataViewImpl(lls), new HexDumpDetailConfig());
   }
 });
 
@@ -69,7 +70,8 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
         const cbmFb: Memory<LittleEndian> = fb.asMemory() as Memory<LittleEndian>;
 
         try {
-          const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb));
+          // TODO make CbmBasicDetailConfig class
+          const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb), undefined);
           // exclude "note" tags which are not a "line"
           const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
           detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);
