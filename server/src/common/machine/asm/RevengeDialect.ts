@@ -19,7 +19,7 @@ import {
   MODE_ZEROPAGE_Y
 } from "../mos6502.js";
 import {
-  KeywordTag,
+  KeywordTag, MnemonicTag,
   Tag,
   TAG_ABSOLUTE,
   TAG_CODE,
@@ -313,8 +313,7 @@ class RevengeDialect extends BaseDialect implements Dialect {
     // add the mnemonic tag and also the mnemonic category
     const fi = fil.fullInstruction;
     const mi: Instruction = fi.instruction;
-    const mnemonicText = mi.op.mnemonic.toLowerCase();
-    const mnemonic: Tag = new Tag([TAG_MNEMONIC, mi.op.cat], mnemonicText);
+    const mnemonic: Tag = new MnemonicTag(mi);
     const operandText = this.renderOperand(fi, dis).trim();
     // check the symbol table for a symbol that matches this operand
     if (operandText.length > 0) {

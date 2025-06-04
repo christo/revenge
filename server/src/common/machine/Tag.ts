@@ -1,4 +1,4 @@
-import {MODE_INDIRECT, MODE_INDIRECT_X, MODE_INDIRECT_Y} from "./mos6502.js";
+import {Instruction, MODE_INDIRECT, MODE_INDIRECT_X, MODE_INDIRECT_Y} from "./mos6502.js";
 
 /** operand in absolute addressing mode is */
 export const TAG_ABSOLUTE = "abs";
@@ -86,13 +86,13 @@ export const TAG_COMMENT = "comment";
  *
  * Represents a fine-grained view component correlated by css classes.
  *
- * TODO kill this crazy Tag idea
+ * TODO evolve this crazy Tag idea into a better domain-modelled abstraction.
  *   it's an overly desperate attempt to not use tsx by holding a fence-sitting abstraction that is
- *   ultimately just hard to use - it would be more ergonomic to have separate front-end components
- *   for semantically rich front-end rendering. This gets in the way of that. Introduce api with
- *   types and methods for dispatching to the correct component.
+ *   consequently hard to use and brittle - it would be more ergonomic to have separate front-end components
+ *   for semantically rich front-end rendering. Migration path is through subtyping Tag until we remove the
+ *   base abstraction from use in the front end.
  */
-class Tag {
+export class Tag {
 
   readonly classNames: string[];
   readonly data: [string, string][];
@@ -143,15 +143,11 @@ class Tag {
   }
 }
 
-export {Tag};
-
-
 /**
  * Represents a single byte in hex.
  *
  */
 export class HexTag extends Tag {
-
   constructor(value: string, data: [string, string][] = [], id: string | undefined = undefined) {
     super([TAG_HEXBYTE], value, data, id);
   }
@@ -166,3 +162,11 @@ export class KeywordTag extends Tag {
     super([TAG_KEYWORD], value, [], undefined);
   }
 }
+
+export class MnemonicTag extends Tag {
+  constructor(mi: Instruction) {
+    super([TAG_MNEMONIC, mi.op.cat], mi.op.mnemonic.toLowerCase(), []);
+  }
+}
+
+
