@@ -4,7 +4,7 @@ import {ServerError} from "@common/ServerError.ts";
 import {Box, Button, CircularProgress, Stack, Typography} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from 'react';
-import {background, infoBright, lowKey, primaryBright} from "../neonColourScheme.ts";
+import {lowKey} from "../neonColourScheme.ts";
 
 /**
  * Temporary typographic logo for a retro system.
@@ -12,6 +12,7 @@ import {background, infoBright, lowKey, primaryBright} from "../neonColourScheme
  * @param foreground
  * @param text
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function systemLogoText(background: string, foreground: string, text: string) {
   return <Typography sx={{
     font: "Martian Mono",
@@ -83,11 +84,13 @@ export function QuickLoads(props: { setFile: (f: FileLike) => void }) {
             alignContent="flex-start">
           {items.VIC20.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="medium" variant="outlined" color="primary"
-                           key={`qlvic_${i}`}>{item.name}&nbsp;<img src="icon-vic20.png" width="24" height="24" className="system_logo" alt="VIC-20"/></Button>
+                           key={`qlvic_${i}`}>{item.name}&nbsp;<img src="icon-vic20.png" width="24" height="24"
+                                                                    className="system_logo" alt="VIC-20"/></Button>
           })}
           {items.C64.map((item, i) => {
             return <Button onClick={() => handleFile(item)} size="medium" variant="outlined" color="info"
-                           key={`qlc64_${i}`}>{item.name}&nbsp;<img src="icon-c64.png" width="24" height="24" className="system_logo" alt="C64"/></Button>
+                           key={`qlc64_${i}`}>{item.name}&nbsp;<img src="icon-c64.png" width="24" height="24"
+                                                                    className="system_logo" alt="C64"/></Button>
           })}
         </Stack>
       </Stack>
