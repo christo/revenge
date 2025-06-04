@@ -19,7 +19,8 @@ import {
   MODE_ZEROPAGE_Y
 } from "../mos6502.js";
 import {
-  KeywordTag, MnemonicTag,
+  KeywordTag,
+  MnemonicTag,
   Tag,
   TAG_ABSOLUTE,
   TAG_CODE,
@@ -30,11 +31,11 @@ import {
   TAG_IN_BINARY,
   TAG_KNOWN_SYMBOL,
   TAG_LABEL,
-  TAG_MNEMONIC,
   TAG_NO_ADDRESS,
   TAG_OPERAND,
   TAG_OPERAND_VALUE,
-  TAG_PETSCII, TAG_RELATIVE,
+  TAG_PETSCII,
+  TAG_RELATIVE,
   TAG_SYM_DEF,
   TAG_SYMBLURB,
   TAG_SYMNAME
@@ -310,6 +311,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
    * @private
    */
   private taggedCode(fil: FullInstructionLine, dis: Disassembler): Tag[] {
+
+    // TODO move out of the dialect all the abstract logic that derives semantic detail about operands, symbols etc.
+    //  note we do still need to be responsible for rendering the acdtual operand in the dialect
+
     // add the mnemonic tag and also the mnemonic category
     const fi = fil.fullInstruction;
     const mi: Instruction = fi.instruction;
@@ -428,10 +433,10 @@ class RevengeDialect extends BaseDialect implements Dialect {
         break;
       case MODE_RELATIVE:
         // the literal byte represents two's complement 8-bit offset
-          // to get the absolute address, add the current PC to the offset
+        // to get the absolute address, add the current PC to the offset
 
         // operand = unToSigned(il.firstByte).toString(10);
-          operand = this.hexWordText(unToSigned(il.firstByte) + dis.currentAddress);
+        operand = this.hexWordText(unToSigned(il.firstByte) + dis.currentAddress);
         break;
       case MODE_ZEROPAGE:
         operand = this.hexByteText(il.firstByte);
