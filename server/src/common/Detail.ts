@@ -1,8 +1,8 @@
 import {DataView} from "./DataView.js";
 
 /**
- * Data interpretation output form. Tags represent top level "folksonomy". Stats relay generic summary information.
- * The {@link DataView} holds the data itself.
+ * Front end type that holds data conveniently for interpretation in an output format. Stats relay generic summary
+ * information about the view as key-value pairs. The {@link DataView} holds the data itself.
  */
 class Detail {
   private readonly _classNames: string[];
