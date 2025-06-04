@@ -1,4 +1,4 @@
-import {DetailConfig} from "common/DetailConfig.ts";
+import {DetailConfig} from "../DetailConfig.js";
 
 export class HexDumpDetailConfig implements DetailConfig {
 
