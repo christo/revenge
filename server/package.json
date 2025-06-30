@@ -23,7 +23,7 @@
   "description": "revenge back end",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.0.0",
     "eslint": "^9.26.0",
     "express": "^5.1.0",
     "hash-wasm": "^4.12.0",
