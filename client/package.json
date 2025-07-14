@@ -34,7 +34,7 @@
     "@types/bun": "^1.2.12",
     "@types/chai": "^5.2.2",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.15.16",
+    "@types/node": "^24.0.13",
     "@types/prop-types": "^15.7.14",
     "@types/ramda": "^0.30.2",
     "@types/react": "^19.1.3",
