@@ -29,7 +29,7 @@
     "hash-wasm": "^4.12.0",
     "jszip": "^3.10.1",
     "p-limit": "^6.2.0",
-    "ramda": "^0.30.1",
+    "ramda": "^0.32.0",
     "sha1": "^1.1.1",
     "typescript-eslint": "^8.32.0"
   },
