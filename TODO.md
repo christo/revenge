@@ -38,7 +38,7 @@
   * [ ] Use dimensionality reduction techniques (PCA, t-SNE)
   * [ ] Apply feature selection to identify the most discriminative features
     * work on this is started, but it's currently specific to n-gram feature extraction
-* [ ] write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
+* [ ] wip: write CBM BASIC tokeniser and detokeniser (maybe later generalise to other BASICs)
   * enable defining explicit basic stub in assembly
   * help future rendering of BASIC syntax
 * [ ] treat zip files in corpus as directories by doing transparent contents unzipping
