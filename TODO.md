@@ -2,7 +2,7 @@
 
 ## Next Actions
 
-* [ ] migrate from overgeneralised `Tag` abstraction (ongoing)
+* [ ] wip: migrate from overgeneralised `Tag` abstraction
   * [x] introduce convenience methods on Tag at current call sites to reduce api noise (currently
     only using constants for magic keys in stringland)
 * [ ] Find usable software/game database info to identify binaries from checksums or content
