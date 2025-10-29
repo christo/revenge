@@ -25,6 +25,8 @@ import {Tag} from "./Tag.js";
  *
  */
 class LogicalLine {
+  /** Include only lines that are really lines, as opposed to "note" tags which are not a "line". */
+  public static JUST_LINES = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
 
   private readonly tags: Tag[];
   private readonly address: Addr | undefined;

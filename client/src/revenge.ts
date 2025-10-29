@@ -19,11 +19,11 @@ import {hex8} from "@common/machine/core.ts";
 import {disassembleActual} from "@common/machine/dynamicAnalysis.ts";
 import {LittleEndian} from "@common/machine/Endian.ts";
 import {FileBlob} from "@common/machine/FileBlob.ts";
+import {HexDumpDetailConfig} from "@common/machine/HexDumpDetailConfig.ts";
 import {LogicalLine} from "@common/machine/LogicalLine.ts";
 import {Memory} from "@common/machine/Memory.ts";
 import {HexTag, Tag, TAG_HEXBYTES} from "@common/machine/Tag.ts";
 import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
-import {HexDumpDetailConfig} from "@common/machine/HexDumpDetailConfig.ts";
 
 /**
  * Shows a hex dump for a {@link FileBlob}.
@@ -72,9 +72,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
         try {
           // TODO make CbmBasicDetailConfig class
           const detail = new Detail("CBM Basic", ["basic"], CBM_BASIC_2_0.decode(cbmFb), undefined);
-          // exclude "note" tags which are not a "line"
-          const justLines = (ll: LogicalLine) => ll.getTags().find((t: Tag) => t.isLine()) !== undefined;
-          detail.stats.push(["lines", detail.dataView.getLines().filter(justLines).length.toString()]);
+          detail.stats.push(["lines", detail.dataView.getLines().filter(LogicalLine.JUST_LINES).length.toString()]);
           return detail;
         } catch (e) {
           // TODO figure out how to handle this, we detected basic but couldn't decode it
