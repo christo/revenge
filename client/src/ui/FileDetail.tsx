@@ -9,7 +9,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from 'react';
-import {TypeActions} from "../api.ts";
+import {SnifferWithActions} from "../api.ts";
 import {secondaryBright} from "../neonColourScheme.ts";
 import {runSniffers} from "../revenge.ts";
 import {BigramPlot} from "./BigramPlot.tsx";
@@ -90,9 +90,9 @@ export function FileDetail({fb}: { fb: FileBlob }) {
     return <EmptyFile fb={fb}/>
   }
   // get actions that can be done on this blob based on scoring from sniff:
-  const typeActions: TypeActions = runSniffers(fb);
+  const typeActions: SnifferWithActions = runSniffers(fb);
   const [action, setAction] = useState(0);
-  const t: BlobSniffer = typeActions.t;
+  const t: BlobSniffer = typeActions.bs;
   return <Box>
 
     <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>

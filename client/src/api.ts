@@ -19,25 +19,25 @@ type UserAction = { label: string, f: ActionExecutor };
 type UserFileAction = (fb: FileBlob) => UserAction;
 
 /**
- * Holds the sniffer and the set of actions that can be taken for this type. At least one action required.
+ * Holds the sniffer and the set of actions that can be taken for this sniffer. At least one action required.
  */
-type TypeActions = { t: BlobSniffer, actions: [UserAction, ...UserAction[]] };
+type SnifferWithActions = { bs: BlobSniffer, actions: [UserAction, ...UserAction[]] };
 
 /**
  * Encapsulation of the function for determining the set of actions that can be taken
- * given knowledge of the type and contents of a file.
+ * given knowledge of the sniffer and contents of a file.
  */
-type ActionFunction = (t: BlobSniffer, fb: FileBlob) => TypeActions;
+type ActionFunction = (bs: BlobSniffer, fb: FileBlob) => SnifferWithActions;
 
 /** Function that produces TypeActions with only a {@link FileBlob}. */
-type BlobToActions = (fileBlob: FileBlob) => TypeActions;
+type BlobToActions = (fileBlob: FileBlob) => SnifferWithActions;
 
 export type {
   ActionExecutor,
   ActionFunction,
   BlobToActions,
   Continuation,
-  TypeActions,
+  SnifferWithActions,
   UserAction,
   UserFileAction
 };

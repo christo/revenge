@@ -23,7 +23,7 @@ import {HexDumpDetailConfig} from "@common/machine/HexDumpDetailConfig.ts";
 import {LogicalLine} from "@common/machine/LogicalLine.ts";
 import {Memory} from "@common/machine/Memory.ts";
 import {HexTag, Tag, TAG_HEXBYTES} from "@common/machine/Tag.ts";
-import {ActionFunction, TypeActions, UserAction, UserFileAction} from "./api.ts";
+import {ActionFunction, SnifferWithActions, UserAction, UserFileAction} from "./api.ts";
 
 /**
  * Shows a hex dump for a {@link FileBlob}.
@@ -45,25 +45,25 @@ const mkHexDumper: UserFileAction = (fb: FileBlob) => ({
 /**
  * User action that disassembles the file.
  */
-function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
+function mkDisasmAction(bs: BlobSniffer, fb: FileBlob): SnifferWithActions {
   const dialect = new RevengeDialect(Environment.DEFAULT_ENV);  // to be made configurable later
   // type: array of at least one UserAction
   const userActions: [UserAction, ...UserAction[]] = [{
     label: "disassembly",
     f: async () => {
-      return disassembleActual(fb, dialect, t.getMeta());
+      return disassembleActual(fb, dialect, bs.getMeta());
     }
   }];
   return {
-    t: t,
+    bs: bs,
     actions: userActions
-  };
+  } as SnifferWithActions;
 }
 
 /** Prints the all bytes in the file interpreted as a BASIC program. */
-const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
+const printBasic: ActionFunction = (bs: BlobSniffer, fb: FileBlob) => {
   return {
-    t: t,
+    bs: bs,
     actions: [{
       label: "basic",
       f: async () => {
@@ -90,7 +90,7 @@ const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
  *
  * @param fileBlob
  */
-const runSniffers = (fileBlob: FileBlob): TypeActions => {
+const runSniffers = (fileBlob: FileBlob): SnifferWithActions => {
   if (fileBlob.getLength() === 0) {
     throw Error(`empty fileblob ${fileBlob.name}`);
   }
@@ -118,24 +118,24 @@ const runSniffers = (fileBlob: FileBlob): TypeActions => {
 
   // choose the best of disasm or basic
   if (basicStench.score > disasmStench.score && basicStench.score > 1) {
-    const ta = printBasic(bestBasicSniffer, fileBlob);
-    ta.actions.push(hd);
+    const swa = printBasic(bestBasicSniffer, fileBlob);
+    swa.actions.push(hd);
     // TODO get rid of early return
-    return ta;
+    return swa;
   } else if (disasmStench.score > 1) {
-    const tas = mkDisasmAction(bestDisasmSniffer, fileBlob);
-    tas.actions.push(hd);
-    return tas;
+    const swa = mkDisasmAction(bestDisasmSniffer, fileBlob);
+    swa.actions.push(hd);
+    return swa;
   }
 
   if (C64_CRT.sniff(fileBlob).score > 1) {
-    const tas: TypeActions = ({t: C64_CRT, actions: [hd]});
+    const swa: SnifferWithActions = ({bs: C64_CRT, actions: [hd]});
     console.warn("temporarily resorting to hexdump for C64_CRT");
-    return tas;
+    return swa;
   }
 
   // resort to hex dump only
-  return {t: UNKNOWN_BLOB, actions: [hd]};
+  return {bs: UNKNOWN_BLOB, actions: [hd]};
 }
 
 export {runSniffers};
