@@ -60,7 +60,7 @@ function mkDisasmAction(t: BlobSniffer, fb: FileBlob): TypeActions {
   };
 }
 
-/** Prints the file as a BASIC program. */
+/** Prints the all bytes in the file interpreted as a BASIC program. */
 const printBasic: ActionFunction = (t: BlobSniffer, fb: FileBlob) => {
   return {
     t: t,
