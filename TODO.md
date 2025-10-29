@@ -182,8 +182,7 @@
 * interactive choice of data/code regions
 * type possibility list with probabilities etc.
 * canonicalisation of code - equivalences (given jump guards and immutable memory blocks, and modulo
-  halting prob,
-  natch)
+  halting prob, natch)
 * user accounts
 * file back-end
   * store file on back-end
@@ -195,9 +194,8 @@
 * enable multiple people to do analysis of files, to store, share and collaborate on the analysis of
   files
 * Build and test with round-trip to targeted assembler syntax. Verify that the produced assembly
-  listing will
-  assemble in the target assembler and reproduce the same binary. Can't figure out if this is easy
-  or hard.
+  listing will assemble in the target assembler and reproduce the same binary. Can't figure out if
+  this is easy or hard.
 * useful material icons:
   * ManageHistory (reverse engineering)
   * DragIndicator
