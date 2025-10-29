@@ -113,6 +113,8 @@
 
 * [ ] [Statically Recompiling NES Games into Native Executables with LLVM and Go](https://andrewkelley.me/post/jamulator.html)
   by Andrew Kelley
+* [ ] [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to Ramda
+* [ ] Haskell Difference List datastructure
 
 ## Long Term Ideas
 
@@ -157,8 +159,6 @@
   * recognise dialect by syntax / platform etc.
   * use an LLM to help categorise the dialect or build a dialect with revenge api
   * build test suite for this
-* check out [Ramda-Adjunct](https://char0n.github.io/ramda-adjunct/4.0.0/) possible addition to Ramda
-* check out Haskell Difference List datastructure
 * Add readonly memory region support (will help isolate selfmod potential and help with static
   analysis)
 * functional data structure for byte interpretation
