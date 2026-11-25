@@ -21,7 +21,7 @@ class FileLike {
     return {
       getBytes: () => this.data,
       getLength: () => this.size,
-      read8: (offset: number) => (this.data[offset] || 0) && 0xff,
+      read8: (offset: number) => (this.data[offset] || 0) & 0xff,
       byteString: () => this.data.map(b => b.toString(16).padStart(2, '0')).join(' ')
     };
   }

@@ -47,8 +47,8 @@ class Petscii {
         bytes.push(32);
       } else {
         const mayMatch: [string, number] | undefined = Petscii.C64.vice
-            .filter((s: string) => s.length === 1)
             .map((s: string, i: number): [string, number] => [s, i])
+            .filter((t: [string, number]) => t[0].length === 1)
             .find((t: [string, number]) => t[0] === ch);
         // lookup char
         if (mayMatch !== undefined) {

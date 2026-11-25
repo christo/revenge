@@ -22,7 +22,6 @@ import {C64_KERNAL_ROM} from "./c64Kernal.js";
 import {CartSigEdict} from "./CartSigEdict.js";
 import {CartSniffer} from "./CartSniffer.js";
 import {CbmBasicSniffer} from "./CbmBasicSniffer.js";
-import {Petscii} from "./petscii.js";
 
 const BASIC_PROGRAM_START = 0x0801;
 const C64_MEMORY = new MemoryConfiguration("C64 standard 64k", BASIC_PROGRAM_START);
@@ -61,13 +60,16 @@ const C64_BASIC_PRG:CbmBasicSniffer = new CbmBasicSniffer(
 );
 
 // CRT format detailed here: https://codebase64.org/doku.php?id=base:crt_file_format
-const prefix = Petscii.codes("C64 CARTRIDGE   ");
-const C64_CRT = new BlobTypeSniffer("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", prefix);
+/** ASCII "C64 CARTRIDGE   ", 16 bytes space-padded. */
+const CRT_SIG = [
+  0x43, 0x36, 0x34, 0x20, 0x43, 0x41, 0x52, 0x54, 0x52, 0x49, 0x44, 0x47, 0x45, 0x20, 0x20, 0x20
+];
+const C64_CRT = new BlobTypeSniffer("CCS64 CRT", "ROM cart format by Per Hakan Sundell", ["crt"], "crt", CRT_SIG);
 
 /**
- * The base address for all 8kb C64 carts.
+ * File offset of the 2-byte load address prefixing a C64 cart dump.
  */
-const C64_8K_BASE_ADDRESS = 0x8000;
+const C64_CART_BASE_ADDRESS_OFFSET = 0;
 
 /**
  * The base address for 16kb C64 carts.
@@ -169,7 +171,7 @@ const C64_8K16K_CART_SNIFFER = new CartSniffer(
     ["cart", C64.name],
     CBM80, MAGIC_OFFSET,
     new DisassemblyMetaImpl(
-        C64_8K_BASE_ADDRESS,
+        C64_CART_BASE_ADDRESS_OFFSET,
         ENTRY_POINT_OFFSETS,
         2, [
           C64_CART_MAGIC,
@@ -185,10 +187,6 @@ const C64_8K16K_CART_SNIFFER = new CartSniffer(
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 class C64CrtSniffer extends CartSniffer {
-  private static CRT_SIG = [
-    // "C64 CARTRIDGE   " 16 byte space-padded
-    0x43, 0x36, 0x34, 0x20, 0x43, 0x41, 0x52, 0x54, 0x52, 0x49, 0x44, 0x47, 0x45, 0x20, 0x20, 0x20
-  ];
   private static VERSION1 = new Uint8Array([0x01, 0x00]);
   private static VERSION_OFFSET = 0x14;
 
@@ -196,7 +194,7 @@ class C64CrtSniffer extends CartSniffer {
     super(
         "C64 crt file", "CCS64 format cartridge file from C64 cartridge",
         ["cart", C64.name],
-        C64CrtSniffer.CRT_SIG,
+        CRT_SIG,
         0,
         dm
     );

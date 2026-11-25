@@ -107,16 +107,16 @@ class HashStorage {
     const file = fs.readFileSync(filePath, 'utf8');
     let hashesLoaded = 0;
     const headers: [string, string][] = [];
-    file.split("\\n").forEach((line) => {
+    file.split("\n").forEach((line) => {
       // read headers
-      const hre = line.match(/#(\w+):(.*)/);
+      const hre = line.match(/^#\s*([^:]+):(.*)$/);
       if (hre) {
         const field = hre[1];
         const value = hre[2];
         headers.push([field, value]);
       }
       // skip comment lines or any line not matching expected format
-      const re = line.match(/^([^# ])+\s(.*)$/);
+      const re = line.match(/^([^#\s]+)\s+(.*)$/);
       if (re) {
         hashesLoaded++;
         const hash = re[1];

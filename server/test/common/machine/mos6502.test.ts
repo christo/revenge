@@ -12,3 +12,11 @@ describe("Mos6502 implied mode opcodes", () => {
     expect(Mos6502.ISA.byName("INX")!.getBytes()).to.eql([0xe8]);
   });
 });
+
+describe("Mos6502 mnemonics", () => {
+  it("names ADC opcodes ADC", () => {
+    const ADC_IMMEDIATE = 0x69;
+    expect(Mos6502.ISA.op(ADC_IMMEDIATE)!.mnemonic).to.equal("ADC");
+    expect(Mos6502.ISA.byName("ADC")?.op.mnemonic).to.equal("ADC");
+  });
+});

@@ -24,9 +24,6 @@ export default defineConfig({
     commonjsOptions: {
       include: [/node_modules/],
     },
-    rollupOptions: {
-      external: ['hash-wasm', 'ramda'],
-    },
     chunkSizeWarningLimit: 800,
   }
 })

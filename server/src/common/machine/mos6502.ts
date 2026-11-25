@@ -106,7 +106,7 @@ const SUB = "sub"
 /** Misc */
 const MS = "ms";
 
-const ADC = new Op("ADD", "add with carry", MATH);
+const ADC = new Op("ADC", "add with carry", MATH);
 const AND = new Op("AND", "and (with accumulator)", LG);
 const ASL = new Op("ASL", "arithmetic shift left", MATH);
 const BCC = new Op("BCC", "branch on carry clear", BRA, [OpSemantics.IS_CONDITIONAL_JUMP]);
